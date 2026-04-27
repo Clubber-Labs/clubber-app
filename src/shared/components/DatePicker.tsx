@@ -26,11 +26,11 @@ export function DatePicker({
     <>
       <Pressable
         onPress={() => setOpen(true)}
-        className={`border ${hasError ? 'border-red-400' : 'border-gray-200'} bg-gray-50 rounded-xl px-4 py-3.5`}
+        className={`border ${hasError ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5`}
       >
         <Text
           className={
-            value ? 'text-base text-gray-900' : 'text-base text-gray-400'
+            value ? 'text-base text-white' : 'text-base text-zinc-500'
           }
         >
           {value ? value.toLocaleDateString('pt-BR') : placeholder}
@@ -40,10 +40,10 @@ export function DatePicker({
       {Platform.OS === 'ios' ? (
         <Modal visible={open} transparent animationType="slide">
           <View className="flex-1 justify-end bg-black/40">
-            <View className="bg-white rounded-t-2xl pb-8">
+            <View className="bg-zinc-900 rounded-t-2xl pb-8">
               <View className="flex-row justify-end px-4 pt-4 pb-2">
                 <Pressable onPress={() => setOpen(false)}>
-                  <Text className="text-blue-600 font-semibold text-base">
+                  <Text className="text-violet-400 font-semibold text-base">
                     Confirmar
                   </Text>
                 </Pressable>

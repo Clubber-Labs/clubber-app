@@ -26,7 +26,7 @@ export function FeedList() {
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#2563eb" />
+        <ActivityIndicator size="large" color="#8b5cf6" />
       </View>
     )
   }
@@ -34,7 +34,7 @@ export function FeedList() {
   if (isError) {
     return (
       <View className="flex-1 items-center justify-center px-6">
-        <Text className="text-gray-500 text-center">
+        <Text className="text-zinc-400 text-center">
           Erro ao carregar o feed.
         </Text>
       </View>
@@ -46,10 +46,10 @@ export function FeedList() {
   if (events.length === 0) {
     return (
       <View className="flex-1 items-center justify-center px-6">
-        <Text className="text-gray-900 font-semibold text-base mb-1">
+        <Text className="text-white font-semibold text-base mb-1">
           Nada por aqui ainda
         </Text>
-        <Text className="text-gray-500 text-center text-sm">
+        <Text className="text-zinc-400 text-center text-sm">
           Siga pessoas para ver os eventos delas no seu feed.
         </Text>
       </View>
@@ -71,7 +71,7 @@ export function FeedList() {
         <RefreshControl
           refreshing={isRefetching}
           onRefresh={refetch}
-          tintColor="#2563eb"
+          tintColor="#8b5cf6"
         />
       }
       onEndReached={() => {
@@ -80,7 +80,7 @@ export function FeedList() {
       onEndReachedThreshold={0.3}
       ListFooterComponent={
         isFetchingNextPage ? (
-          <ActivityIndicator size="small" color="#2563eb" className="py-4" />
+          <ActivityIndicator size="small" color="#8b5cf6" className="py-4" />
         ) : null
       }
     />

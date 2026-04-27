@@ -12,8 +12,8 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View className="flex-1 bg-white px-6 pt-16">
-      <Text className="text-2xl font-bold text-gray-900 mb-8">Perfil</Text>
+    <View className="flex-1 bg-black px-6 pt-16">
+      <Text className="text-2xl font-bold text-white mb-8">Perfil</Text>
       <Button label="Sair" onPress={handleLogout} variant="secondary" />
     </View>
   )

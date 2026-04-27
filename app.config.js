@@ -25,6 +25,7 @@ export default {
     ],
     extra: {
       apiUrl: process.env.API_URL,
+      mapboxAccessToken: process.env.MAPBOX_ACCESS_TOKEN,
       eas: {
         projectId: "89ff5c01-195a-42ea-a8d0-94425a85a89d"
       }

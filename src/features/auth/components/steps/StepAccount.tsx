@@ -13,23 +13,23 @@ export function StepAccount({ control, errors }: Props) {
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-gray-900">Sua conta</Text>
-        <Text className="text-sm text-gray-500">
+        <Text className="text-2xl font-bold text-white">Sua conta</Text>
+        <Text className="text-sm text-zinc-400">
           Esses dados são usados para acessar o ConnectAI.
         </Text>
       </View>
 
       <View className="gap-4">
         <View className="gap-1">
-          <Text className="text-sm font-medium text-gray-600">Username</Text>
+          <Text className="text-sm font-medium text-zinc-300">Username</Text>
           <Controller
             control={control}
             name="username"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.username ? 'border-red-400' : 'border-gray-200'} bg-gray-50 rounded-xl px-4 py-3.5 text-base text-gray-900`}
+                className={`border ${errors.username ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                 placeholder="joaosilva"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor="#71717a"
                 onChangeText={onChange}
                 value={value}
                 autoCapitalize="none"
@@ -44,15 +44,15 @@ export function StepAccount({ control, errors }: Props) {
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-gray-600">E-mail</Text>
+          <Text className="text-sm font-medium text-zinc-300">E-mail</Text>
           <Controller
             control={control}
             name="email"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.email ? 'border-red-400' : 'border-gray-200'} bg-gray-50 rounded-xl px-4 py-3.5 text-base text-gray-900`}
+                className={`border ${errors.email ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                 placeholder="joao@email.com"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor="#71717a"
                 onChangeText={onChange}
                 value={value}
                 autoCapitalize="none"
@@ -66,15 +66,15 @@ export function StepAccount({ control, errors }: Props) {
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-gray-600">Telefone</Text>
+          <Text className="text-sm font-medium text-zinc-300">Telefone</Text>
           <Controller
             control={control}
             name="phone"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.phone ? 'border-red-400' : 'border-gray-200'} bg-gray-50 rounded-xl px-4 py-3.5 text-base text-gray-900`}
+                className={`border ${errors.phone ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                 placeholder="(11) 99999-9999"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor="#71717a"
                 onChangeText={text => onChange(text.replace(/\D/g, ''))}
                 value={formatPhone(value ?? '')}
                 keyboardType="phone-pad"

@@ -6,7 +6,7 @@ export default function Index() {
   const isAuthenticated = useAuthStore(s => s.isAuthenticated)
   const hydrated = useAuthStore(s => s.hydrated)
 
-  if (!hydrated) return <View className="flex-1 bg-white" />
+  if (!hydrated) return <View className="flex-1 bg-black" />
 
   if (isAuthenticated) {
     return <Redirect href="/(tabs)/feed" />

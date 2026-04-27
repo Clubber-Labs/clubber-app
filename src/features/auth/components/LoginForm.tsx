@@ -22,7 +22,7 @@ export function LoginForm() {
         name="email"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            className="border border-gray-300 rounded-lg px-4 py-3 text-base"
+            className="border border-zinc-700 rounded-lg px-4 py-3 text-base"
             placeholder="E-mail"
             onChangeText={onChange}
             value={value}
@@ -40,7 +40,7 @@ export function LoginForm() {
         name="password"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            className="border border-gray-300 rounded-lg px-4 py-3 text-base"
+            className="border border-zinc-700 rounded-lg px-4 py-3 text-base"
             placeholder="Senha"
             onChangeText={onChange}
             value={value}

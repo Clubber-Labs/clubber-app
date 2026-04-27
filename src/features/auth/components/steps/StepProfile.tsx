@@ -12,23 +12,23 @@ export function StepProfile({ control, errors }: Props) {
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-gray-900">Seu perfil</Text>
-        <Text className="text-sm text-gray-500">
+        <Text className="text-2xl font-bold text-white">Seu perfil</Text>
+        <Text className="text-sm text-zinc-400">
           Opcional — você pode preencher depois.
         </Text>
       </View>
 
       <View className="gap-4">
         <View className="gap-1">
-          <Text className="text-sm font-medium text-gray-600">Bio</Text>
+          <Text className="text-sm font-medium text-zinc-300">Bio</Text>
           <Controller
             control={control}
             name="bio"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.bio ? 'border-red-400' : 'border-gray-200'} bg-gray-50 rounded-xl px-4 py-3.5 text-base text-gray-900`}
+                className={`border ${errors.bio ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                 placeholder="Conte algo sobre você..."
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor="#71717a"
                 onChangeText={onChange}
                 value={value}
                 multiline
@@ -41,12 +41,12 @@ export function StepProfile({ control, errors }: Props) {
           )}
         </View>
 
-        <View className="flex-row items-center justify-between bg-gray-50 border border-gray-200 rounded-xl px-4 py-3.5">
+        <View className="flex-row items-center justify-between bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3.5">
           <View className="gap-0.5">
-            <Text className="text-base font-medium text-gray-900">
+            <Text className="text-base font-medium text-white">
               Perfil privado
             </Text>
-            <Text className="text-xs text-gray-500">
+            <Text className="text-xs text-zinc-400">
               Apenas seguidores aprovados verão seu conteúdo
             </Text>
           </View>
@@ -57,7 +57,7 @@ export function StepProfile({ control, errors }: Props) {
               <Switch
                 value={value}
                 onValueChange={onChange}
-                trackColor={{ false: '#e5e7eb', true: '#2563eb' }}
+                trackColor={{ false: '#e5e7eb', true: '#8b5cf6' }}
                 thumbColor="#fff"
               />
             )}
