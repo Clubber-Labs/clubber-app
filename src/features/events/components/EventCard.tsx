@@ -3,6 +3,11 @@ import { View, Text, Pressable, Image } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useToggleLike } from '../hooks/useToggleLike'
 import { InlineCommentsSection } from './InlineCommentsSection'
+import { FriendAttendancesStack } from './FriendAttendancesStack'
+import { AttendanceStatusBadge } from './AttendanceStatusBadge'
+import { FeedReasonBanner } from './FeedReasonBanner'
+import { computeFeedReason } from '../utils/feedReason'
+import { useAuthStore } from '@/features/auth/store/authStore'
 import { showError } from '@/shared/lib/toast'
 import { formatRelative } from '@/shared/utils/dateFormat'
 import type { FeedEvent } from '@/shared/types'
@@ -15,8 +20,12 @@ type Props = {
 export function EventCard({ event, onPress }: Props) {
   const [expanded, setExpanded] = useState(false)
   const toggleLike = useToggleLike(event.id)
+  const userId = useAuthStore(s => s.userId)
 
   const liked = event.userReaction === 'LIKE'
+  const reason = computeFeedReason(event, userId)
+  const showReason =
+    !!reason && event.userAttendance === null && event.userReaction === null
 
   function handleLike() {
     toggleLike.mutate(event.userReaction, { onError: showError })
@@ -24,6 +33,7 @@ export function EventCard({ event, onPress }: Props) {
 
   return (
     <View className="bg-zinc-900 rounded-2xl mb-3 border border-zinc-800 overflow-hidden">
+      {showReason && <FeedReasonBanner reason={reason} />}
       <Pressable onPress={onPress}>
         <View className="flex-row items-center justify-between px-4 pt-4">
           <View className="flex-row items-center gap-2">
@@ -41,11 +51,14 @@ export function EventCard({ event, onPress }: Props) {
               </Text>
             </View>
           </View>
-          {!event.isPublic && (
-            <View className="bg-zinc-800 px-2 py-0.5 rounded-full">
-              <Text className="text-xs text-zinc-400">Privado</Text>
-            </View>
-          )}
+          <View className="flex-row items-center gap-1.5">
+            <AttendanceStatusBadge attendance={event.userAttendance} />
+            {!event.isPublic && (
+              <View className="bg-zinc-800 px-2 py-0.5 rounded-full">
+                <Text className="text-xs text-zinc-400">Privado</Text>
+              </View>
+            )}
+          </View>
         </View>
 
         <View className="px-4 pt-3 gap-1">
@@ -82,6 +95,15 @@ export function EventCard({ event, onPress }: Props) {
             </Text>
           </View>
         </View>
+
+        {event.friendAttendances.length > 0 && (
+          <View className="px-4 pt-2">
+            <FriendAttendancesStack
+              attendances={event.friendAttendances}
+              totalAttendances={event._count.attendances}
+            />
+          </View>
+        )}
       </Pressable>
 
       <View className="flex-row items-center gap-1 px-2 pt-2">
