@@ -47,10 +47,14 @@
     </dict>
     <key>NSCameraUsageDescription</key>
     <string>Precisamos da câmera para fotos de perfil e eventos</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Use sua localização para mostrar eventos próximos no mapa.</string>
     <key>NSFaceIDUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your Face ID biometric data.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Use sua localização para mostrar eventos próximos no mapa.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Allow $(PRODUCT_NAME) to access your location</string>
     <key>NSUserActivityTypes</key>
     <array>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>

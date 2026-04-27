@@ -50,6 +50,10 @@ export type FeedEvent = {
   isPublic: boolean
   createdAt: string
   date: string
+  latitude: number
+  longitude: number
+  address?: string
+  category: string
   author: FeedAuthor
   attendances: FeedAttendee[]
   recentComments: EventComment[]

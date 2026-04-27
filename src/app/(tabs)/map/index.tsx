@@ -1,105 +1,125 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import {
-  View,
-  Text,
-  Pressable,
-  ActivityIndicator,
-  ScrollView,
-} from 'react-native'
+import { useEffect, useRef, useState } from 'react'
+import { View, ActivityIndicator } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
-import { Ionicons } from '@expo/vector-icons'
-import * as Location from 'expo-location'
 import { useRouter } from 'expo-router'
-import { useEventsList } from '@/features/events/hooks/useEvents'
-import { formatEventDate } from '@/shared/utils/dateFormat'
 import type { FeedEvent } from '@/shared/types'
-
-const BRAZIL_CENTER: [number, number] = [-47.9292, -15.7801]
-const BRAZIL_ZOOM = 4
-const USER_ZOOM = 13
-const ALL_CATEGORIES = 'Todas'
+import {
+  ALL_CATEGORIES,
+  BRAZIL_CENTER,
+  BRAZIL_ZOOM,
+  MAP_STYLE_URL,
+  MARKERS_ZOOM_THRESHOLD,
+  MAX_ZOOM,
+  USER_ZOOM,
+  ZOOM_STEP,
+} from '@/features/map/constants'
+import { useMapEvents } from '@/features/map/hooks/useMapEvents'
+import { useMapCamera } from '@/features/map/hooks/useMapCamera'
+import { useUserLocation } from '@/features/map/hooks/useUserLocation'
+import { computeClusterZoom } from '@/features/map/utils/clusterZoom'
+import { EventCategoriesFilter } from '@/features/map/components/EventCategoriesFilter'
+import { MapZoomControls } from '@/features/map/components/MapZoomControls'
+import { EventClustersLayer } from '@/features/map/components/EventClustersLayer'
+import { EventMarkers } from '@/features/map/components/EventMarkers'
+import { EventClusterList } from '@/features/map/components/EventClusterList'
+import { EventPreviewCard } from '@/features/map/components/EventPreviewCard'
 
 export default function MapScreen() {
   const router = useRouter()
-  const cameraRef = useRef<Mapbox.Camera>(null)
-  const [userCoords, setUserCoords] = useState<[number, number] | null>(null)
-  const [selectedEvent, setSelectedEvent] = useState<FeedEvent | null>(null)
+  const userCoords = useUserLocation()
+  const { cameraRef, mapRef, flyTo, adjustZoom, focusOnEvent } = useMapCamera()
+
   const [activeCategory, setActiveCategory] = useState<string>(ALL_CATEGORIES)
+  const [zoomLevel, setZoomLevel] = useState<number>(BRAZIL_ZOOM)
+  const [selectedEvent, setSelectedEvent] = useState<FeedEvent | null>(null)
+  const [clusterEvents, setClusterEvents] = useState<FeedEvent[] | null>(null)
 
-  const { data, isLoading } = useEventsList(50)
+  const shapeSourceRef = useRef<Mapbox.ShapeSource>(null)
+  const { categories, filteredEvents, eventsGeoJson, isLoading } =
+    useMapEvents(activeCategory)
 
-  const events = useMemo(
-    () =>
-      (data?.data ?? []).filter(
-        e => typeof e.latitude === 'number' && typeof e.longitude === 'number',
-      ),
-    [data],
-  )
-
-  const categories = useMemo(() => {
-    const set = new Set<string>()
-    events.forEach(e => e.category && set.add(e.category))
-    return [ALL_CATEGORIES, ...Array.from(set)]
-  }, [events])
-
-  const filteredEvents = useMemo(
-    () =>
-      activeCategory === ALL_CATEGORIES
-        ? events
-        : events.filter(e => e.category === activeCategory),
-    [events, activeCategory],
-  )
+  const showMarkers = zoomLevel >= MARKERS_ZOOM_THRESHOLD
 
   useEffect(() => {
-    let cancelled = false
-    async function getLocation() {
-      const { status } = await Location.requestForegroundPermissionsAsync()
-      if (status !== 'granted') return
-      const pos = await Location.getCurrentPositionAsync({})
-      if (cancelled) return
-      const coords: [number, number] = [
-        pos.coords.longitude,
-        pos.coords.latitude,
-      ]
-      setUserCoords(coords)
-      cameraRef.current?.setCamera({
-        centerCoordinate: coords,
-        zoomLevel: USER_ZOOM,
-        animationDuration: 800,
-      })
-    }
-    getLocation()
-    return () => {
-      cancelled = true
-    }
-  }, [])
+    setClusterEvents(null)
+  }, [activeCategory])
 
-  function recenterOnUser() {
-    if (!userCoords) return
-    cameraRef.current?.setCamera({
-      centerCoordinate: userCoords,
-      zoomLevel: USER_ZOOM,
-      animationDuration: 600,
-    })
-  }
+  useEffect(() => {
+    if (userCoords) flyTo(userCoords, USER_ZOOM, 800)
+  }, [userCoords, flyTo])
 
   function handleMarkerPress(event: FeedEvent) {
     setSelectedEvent(event)
-    cameraRef.current?.setCamera({
-      centerCoordinate: [event.longitude, event.latitude],
-      zoomLevel: USER_ZOOM,
-      animationDuration: 500,
-    })
+    focusOnEvent([event.longitude, event.latitude])
+  }
+
+  async function openClusterList(feature: GeoJSON.Feature) {
+    if (feature.geometry.type !== 'Point') return
+    const source = shapeSourceRef.current
+    if (!source) return
+    const [lng, lat] = feature.geometry.coordinates
+    try {
+      const leaves = (await source.getClusterLeaves(
+        feature,
+        100,
+        0,
+      )) as GeoJSON.FeatureCollection
+      const ids = (leaves.features ?? [])
+        .map(
+          (f: GeoJSON.Feature) =>
+            (f.properties as { eventId?: string } | null)?.eventId,
+        )
+        .filter((id: string | undefined): id is string => !!id)
+      const found = ids
+        .map((id: string) => filteredEvents.find(e => e.id === id))
+        .filter((e: FeedEvent | undefined): e is FeedEvent => !!e)
+      if (found.length === 0) return
+
+      setSelectedEvent(null)
+      setClusterEvents(found)
+      flyTo([lng, lat], computeClusterZoom(found, [lng, lat], zoomLevel), 600)
+    } catch {
+      flyTo([lng, lat], Math.min(zoomLevel + 2, MAX_ZOOM), 500)
+    }
+  }
+
+  function handleClusterShapePress(event: { features: GeoJSON.Feature[] }) {
+    const feature = event.features[0]
+    if (!feature) return
+    const props = feature.properties as Record<string, unknown> | null
+    if (props?.cluster) {
+      openClusterList(feature)
+      return
+    }
+    const eventId = props?.eventId as string | undefined
+    const found = filteredEvents.find(e => e.id === eventId)
+    if (found) {
+      setClusterEvents(null)
+      handleMarkerPress(found)
+    }
+  }
+
+  function handleClusterItemPress(event: FeedEvent) {
+    setClusterEvents(null)
+    focusOnEvent([event.longitude, event.latitude])
+    router.push(`/events/${event.id}`)
+  }
+
+  function dismissOverlays() {
+    setSelectedEvent(null)
+    setClusterEvents(null)
   }
 
   return (
     <View className="flex-1 bg-black">
       <Mapbox.MapView
+        ref={mapRef}
         style={{ flex: 1 }}
-        styleURL="mapbox://styles/mapbox/dark-v11"
+        styleURL={MAP_STYLE_URL}
         scaleBarEnabled={false}
         compassEnabled={false}
-        onPress={() => setSelectedEvent(null)}
+        onPress={dismissOverlays}
+        onCameraChanged={state => setZoomLevel(state.properties.zoom)}
       >
         <Mapbox.Camera
           ref={cameraRef}
@@ -107,53 +127,28 @@ export default function MapScreen() {
           centerCoordinate={BRAZIL_CENTER}
           animationMode="flyTo"
         />
-        {filteredEvents.map(event => (
-          <Mapbox.PointAnnotation
-            key={event.id}
-            id={`event-${event.id}`}
-            coordinate={[event.longitude, event.latitude]}
-            onSelected={() => handleMarkerPress(event)}
-          >
-            <View
-              className={`w-9 h-9 rounded-full items-center justify-center border-2 ${
-                selectedEvent?.id === event.id
-                  ? 'bg-violet-400 border-white'
-                  : 'bg-violet-600 border-white'
-              }`}
-            >
-              <Ionicons name="calendar" size={16} color="#ffffff" />
-            </View>
-          </Mapbox.PointAnnotation>
-        ))}
+        {!showMarkers && (
+          <EventClustersLayer
+            ref={shapeSourceRef}
+            shape={eventsGeoJson}
+            onPress={handleClusterShapePress}
+          />
+        )}
+        {showMarkers && (
+          <EventMarkers
+            events={filteredEvents}
+            selectedId={selectedEvent?.id}
+            onPress={handleMarkerPress}
+          />
+        )}
       </Mapbox.MapView>
 
       <View className="absolute top-3 left-0 right-0">
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 12, gap: 8 }}
-        >
-          {categories.map(category => {
-            const active = activeCategory === category
-            return (
-              <Pressable
-                key={category}
-                onPress={() => setActiveCategory(category)}
-                className={`px-4 py-2 rounded-full border ${
-                  active
-                    ? 'bg-violet-600 border-violet-600'
-                    : 'bg-zinc-900/90 border-zinc-800'
-                }`}
-              >
-                <Text
-                  className={`text-xs font-semibold ${active ? 'text-white' : 'text-zinc-200'}`}
-                >
-                  {category}
-                </Text>
-              </Pressable>
-            )
-          })}
-        </ScrollView>
+        <EventCategoriesFilter
+          categories={categories}
+          active={activeCategory}
+          onChange={setActiveCategory}
+        />
       </View>
 
       {isLoading && (
@@ -162,60 +157,27 @@ export default function MapScreen() {
         </View>
       )}
 
-      {userCoords && (
-        <Pressable
-          onPress={recenterOnUser}
-          className="absolute bottom-32 right-4 w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 items-center justify-center"
-        >
-          <Ionicons name="locate" size={22} color="#8b5cf6" />
-        </Pressable>
+      <MapZoomControls
+        onZoomIn={() => adjustZoom(ZOOM_STEP)}
+        onZoomOut={() => adjustZoom(-ZOOM_STEP)}
+        onRecenter={() => userCoords && flyTo(userCoords, USER_ZOOM, 600)}
+        showRecenter={!!userCoords}
+      />
+
+      {clusterEvents && (
+        <EventClusterList
+          events={clusterEvents}
+          onClose={() => setClusterEvents(null)}
+          onSelect={handleClusterItemPress}
+        />
       )}
 
-      {selectedEvent && (
-        <View className="absolute bottom-4 left-4 right-4 bg-zinc-900 border border-zinc-800 rounded-2xl p-4 gap-3">
-          <View className="flex-row items-start justify-between gap-2">
-            <View className="flex-1">
-              <Text
-                className="text-base font-bold text-white"
-                numberOfLines={1}
-              >
-                {selectedEvent.title}
-              </Text>
-              <View className="flex-row items-center gap-1 mt-1">
-                <Ionicons name="calendar-outline" size={14} color="#a1a1aa" />
-                <Text className="text-xs text-zinc-400">
-                  {formatEventDate(selectedEvent.date)}
-                </Text>
-              </View>
-              {selectedEvent.address && (
-                <View className="flex-row items-center gap-1 mt-1">
-                  <Ionicons name="location-outline" size={14} color="#a1a1aa" />
-                  <Text
-                    className="text-xs text-zinc-400 flex-1"
-                    numberOfLines={1}
-                  >
-                    {selectedEvent.address}
-                  </Text>
-                </View>
-              )}
-            </View>
-            <Pressable
-              onPress={() => setSelectedEvent(null)}
-              className="w-7 h-7 items-center justify-center"
-            >
-              <Ionicons name="close" size={20} color="#a1a1aa" />
-            </Pressable>
-          </View>
-
-          <Pressable
-            onPress={() => router.push(`/events/${selectedEvent.id}`)}
-            className="bg-violet-600 rounded-xl py-3 items-center"
-          >
-            <Text className="text-sm font-semibold text-white">
-              Ver detalhes
-            </Text>
-          </Pressable>
-        </View>
+      {selectedEvent && !clusterEvents && (
+        <EventPreviewCard
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+          onSeeDetails={() => router.push(`/events/${selectedEvent.id}`)}
+        />
       )}
     </View>
   )
