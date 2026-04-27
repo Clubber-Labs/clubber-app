@@ -1,0 +1,74 @@
+import { View, Text, Image } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
+import { formatEventDate } from '@/shared/utils/dateFormat'
+import type { EventDetail } from '@/shared/types'
+
+type Props = {
+  event: EventDetail
+}
+
+export function EventHeader({ event }: Props) {
+  return (
+    <View>
+      {event.imageUrl ? (
+        <Image
+          source={{ uri: event.imageUrl }}
+          className="w-full h-56 bg-zinc-800"
+        />
+      ) : (
+        <View className="w-full h-56 bg-violet-700 items-center justify-center">
+          <Ionicons name="calendar" size={56} color="#ffffff" />
+        </View>
+      )}
+
+      <View className="pt-4 gap-3">
+        <View className="flex-row items-center gap-2">
+          <View className="bg-violet-950 px-2 py-1 rounded-full">
+            <Text className="text-violet-300 text-xs font-semibold">
+              {event.category}
+            </Text>
+          </View>
+          {!event.isPublic && (
+            <View className="bg-zinc-800 px-2 py-1 rounded-full">
+              <Text className="text-zinc-300 text-xs font-semibold">
+                Privado
+              </Text>
+            </View>
+          )}
+        </View>
+
+        <Text className="text-2xl font-bold text-white">{event.title}</Text>
+
+        <View className="flex-row items-center gap-2">
+          <Ionicons name="time-outline" size={16} color="#a1a1aa" />
+          <Text className="text-zinc-300 text-sm">
+            {formatEventDate(event.date)}
+          </Text>
+        </View>
+
+        {event.address && (
+          <View className="flex-row items-center gap-2">
+            <Ionicons name="location-outline" size={16} color="#a1a1aa" />
+            <Text className="text-zinc-300 text-sm flex-1">
+              {event.address}
+            </Text>
+          </View>
+        )}
+
+        <View className="flex-row items-center gap-2">
+          <Ionicons name="person-outline" size={16} color="#a1a1aa" />
+          <Text className="text-zinc-300 text-sm">
+            por {event.author.name} {event.author.lastname}
+          </Text>
+        </View>
+        <View className="flex-row items-center gap-2">
+          <Ionicons name="people-outline" size={16} color="#a1a1aa" />
+          <Text className="text-zinc-300 text-sm">
+            {event._count.attendances} presença
+            {event._count.attendances !== 1 && 's'}
+          </Text>
+        </View>
+      </View>
+    </View>
+  )
+}

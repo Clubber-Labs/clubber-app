@@ -12,23 +12,23 @@ export function StepPassword({ control, errors }: Props) {
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-gray-900">Crie sua senha</Text>
-        <Text className="text-sm text-gray-500">
+        <Text className="text-2xl font-bold text-white">Crie sua senha</Text>
+        <Text className="text-sm text-zinc-400">
           Use pelo menos 8 caracteres.
         </Text>
       </View>
 
       <View className="gap-4">
         <View className="gap-1">
-          <Text className="text-sm font-medium text-gray-600">Senha</Text>
+          <Text className="text-sm font-medium text-zinc-300">Senha</Text>
           <Controller
             control={control}
             name="password"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.password ? 'border-red-400' : 'border-gray-200'} bg-gray-50 rounded-xl px-4 py-3.5 text-base text-gray-900`}
+                className={`border ${errors.password ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                 placeholder="Mínimo 8 caracteres"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor="#71717a"
                 onChangeText={onChange}
                 value={value}
                 secureTextEntry
@@ -43,7 +43,7 @@ export function StepPassword({ control, errors }: Props) {
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-gray-600">
+          <Text className="text-sm font-medium text-zinc-300">
             Confirmar senha
           </Text>
           <Controller
@@ -51,9 +51,9 @@ export function StepPassword({ control, errors }: Props) {
             name="confirmPassword"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.confirmPassword ? 'border-red-400' : 'border-gray-200'} bg-gray-50 rounded-xl px-4 py-3.5 text-base text-gray-900`}
+                className={`border ${errors.confirmPassword ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                 placeholder="Repita a senha"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor="#71717a"
                 onChangeText={onChange}
                 value={value}
                 secureTextEntry

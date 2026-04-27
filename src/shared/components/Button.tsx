@@ -18,8 +18,8 @@ export function Button({
   const base = 'rounded-lg py-3 px-6 items-center justify-center flex-row gap-2'
   const styles =
     variant === 'primary'
-      ? `${base} bg-blue-600`
-      : `${base} border border-gray-300`
+      ? `${base} bg-violet-600`
+      : `${base} border border-zinc-700`
 
   return (
     <Pressable
@@ -34,7 +34,7 @@ export function Button({
         />
       )}
       <Text
-        className={`font-semibold text-base ${variant === 'primary' ? 'text-white' : 'text-gray-700'}`}
+        className={`font-semibold text-base ${variant === 'primary' ? 'text-white' : 'text-zinc-200'}`}
       >
         {label}
       </Text>

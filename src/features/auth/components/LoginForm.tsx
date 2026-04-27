@@ -22,8 +22,9 @@ export function LoginForm() {
         name="email"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            className="border border-gray-300 rounded-lg px-4 py-3 text-base"
+            className={`border ${errors.email ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
             placeholder="E-mail"
+            placeholderTextColor="#71717a"
             onChangeText={onChange}
             value={value}
             autoCapitalize="none"
@@ -40,8 +41,9 @@ export function LoginForm() {
         name="password"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            className="border border-gray-300 rounded-lg px-4 py-3 text-base"
+            className={`border ${errors.password ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
             placeholder="Senha"
+            placeholderTextColor="#71717a"
             onChangeText={onChange}
             value={value}
             secureTextEntry
