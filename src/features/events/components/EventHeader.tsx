@@ -16,7 +16,7 @@ export function EventHeader({ event }: Props) {
           className="w-full h-56 bg-zinc-800"
         />
       ) : (
-        <View className="w-full h-56 bg-gradient-to-b from-blue-500 to-blue-700 items-center justify-center">
+        <View className="w-full h-56 bg-violet-700 items-center justify-center">
           <Ionicons name="calendar" size={56} color="#ffffff" />
         </View>
       )}

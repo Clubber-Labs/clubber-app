@@ -122,6 +122,7 @@ export function EventCreateForm() {
               <DatePicker
                 value={value}
                 onChange={onChange}
+                mode="datetime"
                 placeholder="Selecione a data e hora"
                 minimumDate={new Date()}
                 hasError={!!errors.date}
