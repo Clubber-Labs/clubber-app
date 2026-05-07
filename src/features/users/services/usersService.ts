@@ -17,9 +17,18 @@ export type UpdateMePayload = {
   birthdate?: string
 }
 
-type RNFile = { uri: string; name: string; type: string }
+type ReactNativeFile = { uri: string; name: string; type: string }
 
-function buildAvatarFile(uri: string): RNFile {
+// O `FormData` do React Native aceita `{ uri, name, type }` nativamente como
+// valor de campo de arquivo, mas as tipagens DOM padrão só permitem
+// `string | Blob`. Adicionamos um overload pra refletir o runtime do RN.
+declare global {
+  interface FormData {
+    append(name: string, value: ReactNativeFile): void
+  }
+}
+
+function buildAvatarFile(uri: string): ReactNativeFile {
   const filename = uri.split('/').pop() ?? 'avatar.jpg'
   const ext = filename.split('.').pop()?.toLowerCase() ?? 'jpg'
   const type = ext === 'png' ? 'image/png' : 'image/jpeg'
@@ -37,7 +46,7 @@ export const usersService = {
 
   uploadAvatar: (uri: string): Promise<UserProfile> => {
     const form = new FormData()
-    form.append('avatar', buildAvatarFile(uri) as unknown as Blob)
+    form.append('avatar', buildAvatarFile(uri))
     return api
       .patch('/users/me/avatar', form, {
         headers: { 'Content-Type': 'multipart/form-data' },

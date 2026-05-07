@@ -30,7 +30,8 @@ export function useFollowUser(userId: string) {
 
   const follow = useMutation({
     mutationFn: () => followsService.follow(userId),
-    onMutate: () => {
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey })
       const prev = snapshot()
       const isPrivate = prev.profile?.isPrivate ?? false
       applyStatus(isPrivate ? 'PENDING' : 'ACCEPTED', isPrivate ? 0 : 1)
@@ -42,7 +43,8 @@ export function useFollowUser(userId: string) {
 
   const unfollow = useMutation({
     mutationFn: () => followsService.unfollow(userId),
-    onMutate: () => {
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey })
       const prev = snapshot()
       const wasAccepted = prev.profile?.followStatus === 'ACCEPTED'
       applyStatus(null, wasAccepted ? -1 : 0)
