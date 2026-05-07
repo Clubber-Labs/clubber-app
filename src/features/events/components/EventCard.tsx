@@ -8,6 +8,7 @@ import { AttendanceStatusBadge } from './AttendanceStatusBadge'
 import { FeedReasonBanner } from './FeedReasonBanner'
 import { computeFeedReason } from '../utils/feedReason'
 import { useAuthStore } from '@/features/auth/store/authStore'
+import { UserAvatar } from '@/shared/components/UserAvatar'
 import { showError } from '@/shared/lib/toast'
 import { formatRelative } from '@/shared/utils/dateFormat'
 import type { FeedEvent } from '@/shared/types'
@@ -37,11 +38,7 @@ export function EventCard({ event, onPress }: Props) {
       <Pressable onPress={onPress}>
         <View className="flex-row items-center justify-between px-4 pt-4">
           <View className="flex-row items-center gap-2">
-            <View className="w-9 h-9 rounded-full bg-violet-900 items-center justify-center">
-              <Text className="text-violet-300 font-semibold">
-                {event.author.name[0]?.toUpperCase()}
-              </Text>
-            </View>
+            <UserAvatar name={event.author.name} avatarUrl={event.author.avatarUrl} />
             <View>
               <Text className="text-sm font-semibold text-white">
                 {event.author.name} {event.author.lastname}

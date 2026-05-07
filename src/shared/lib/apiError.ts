@@ -22,3 +22,7 @@ export function isConflictError(error: unknown): boolean {
 export function isValidationError(error: unknown): boolean {
   return isAxiosError(error) && error.response?.status === 400
 }
+
+export function isUnauthorizedError(error: unknown): boolean {
+  return isAxiosError(error) && error.response?.status === 401
+}

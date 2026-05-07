@@ -47,6 +47,8 @@
     </dict>
     <key>NSCameraUsageDescription</key>
     <string>Precisamos da câmera para fotos de perfil e eventos</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Precisamos de acesso às suas fotos para alterar a foto de perfil.</string>
     <key>NSFaceIDUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your Face ID biometric data.</string>
     <key>NSLocationWhenInUseUsageDescription</key>

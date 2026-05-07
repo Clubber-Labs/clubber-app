@@ -1,40 +1,53 @@
 import { useMutation } from '@tanstack/react-query'
-import { useRouter } from 'expo-router'
 import { authService } from '../services/authService'
 import { useAuthStore } from '../store/authStore'
-import { saveToken } from '@/shared/lib/secureStore'
+import {
+  saveToken,
+  saveUserId,
+  clearAuthSession,
+} from '@/shared/lib/secureStore'
 import type { RegisterInput, RegisterPayload } from '../schemas/registerSchema'
+
+function toPayload(data: RegisterInput): RegisterPayload {
+  return {
+    name: data.name,
+    lastname: data.lastname,
+    username: data.username,
+    phone: data.phone,
+    email: data.email,
+    password: data.password,
+    birthdate: data.birthdate.toISOString(),
+    bio: data.bio,
+    isPrivate: data.isPrivate,
+  }
+}
 
 export function useRegister() {
   const setUser = useAuthStore(s => s.setUser)
-  const router = useRouter()
 
   return useMutation({
     mutationFn: async (data: RegisterInput) => {
-      const payload: RegisterPayload = {
-        name: data.name,
-        lastname: data.lastname,
-        username: data.username,
-        phone: data.phone,
-        email: data.email,
-        password: data.password,
-        birthdate: data.birthdate.toISOString(),
-        bio: data.bio,
-        isPrivate: data.isPrivate,
-      }
-
-      await authService.register(payload)
-      const { token } = await authService.login({
+      await authService.register(toPayload(data))
+      const response = await authService.login({
         email: data.email,
         password: data.password,
       })
-      const me = await authService.me()
-      return { token: token as string, userId: me.id as string }
-    },
-    onSuccess: async ({ token, userId }) => {
+      const token = response.token as string
       await saveToken(token)
+
+      try {
+        const userId =
+          (response.userId as string | undefined) ??
+          (await authService.me()).id
+        await saveUserId(userId)
+        return { token, userId }
+      } catch (err) {
+        await clearAuthSession()
+        throw err
+      }
+    },
+    onSuccess: ({ userId }) => {
       setUser(userId)
-      router.replace('/(tabs)/feed')
     },
   })
 }

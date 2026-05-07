@@ -383,6 +383,110 @@ export const useAuthStore = create<AuthState>(set => ({
 
 ---
 
+## Separação de responsabilidades
+
+Princípio guia: **cada arquivo, função e camada tem uma única responsabilidade clara**. Quando uma função tem `if/else` aninhados, `try/catch` misturados com mutação de estado, ou um `useEffect` com mais de 15 linhas, é sinal de que há responsabilidades misturadas.
+
+### Pure functions vs orchestration
+
+Separe **decisão** (pura, testável, sem efeitos) de **orquestração** (efeitos colaterais, side-effects no store, navegação).
+
+❌ **Errado** — lógica de decisão e efeitos misturados num `useEffect`:
+```tsx
+useEffect(() => {
+  async function run() {
+    const token = await getToken()
+    if (!token) { setHydrated(); return }
+    const userId = await getUserId()
+    if (userId) {
+      setUser(userId)
+      authService.me().catch(err => {
+        if (err.response?.status === 401) {
+          clearAuthSession()
+          logout()
+        }
+      })
+      setHydrated()
+      return
+    }
+    try {
+      const me = await authService.me()
+      await saveUserId(me.id)
+      setUser(me.id)
+    } catch (err) { /* ... */ }
+    setHydrated()
+  }
+  run()
+}, [])
+```
+
+✅ **Certo** — decisão isolada em função pura, orquestração no hook:
+```ts
+// função pura: retorna o que deve acontecer
+async function loadSession(): Promise<SessionResult> {
+  const token = await getToken()
+  if (!token) return { kind: 'unauthenticated' }
+  const stored = await getUserId()
+  if (stored) return { kind: 'authenticated', userId: stored }
+  // ... recovery
+}
+
+// hook: aplica os efeitos
+export function useRestoreSession() {
+  useEffect(() => {
+    loadSession().then(session => {
+      if (session.kind === 'authenticated') setUser(session.userId)
+      setHydrated()
+    })
+  }, [])
+}
+```
+
+### Discriminated unions ao invés de booleanos múltiplos
+
+Quando uma operação tem 3+ resultados possíveis, use um tipo discriminado em vez de retornar booleans/null:
+
+❌ `Promise<{ ok: boolean; userId: string | null; reason: string | null }>`
+✅ `Promise<{ kind: 'authenticated'; userId: string } | { kind: 'unauthenticated' }>`
+
+Discriminated unions forçam o consumidor a tratar todos os casos — o TypeScript não compila se você esquecer.
+
+### Layouts e telas focados
+
+- **`_layout.tsx`** existe pra prover providers globais e roteamento. Não coloque lógica de domínio (auth, fetch, validação) direto nele — delega via hook.
+- **Telas (`app/.../index.tsx`)** orquestram componentes e passam dados. Lógica de negócio vai em hooks.
+- **Hooks** orquestram services + estado. Lógica pura (transformações, decisões) vai em funções puras dentro do mesmo arquivo ou em `utils/`.
+
+### Sinais de que falta separação
+
+- Mesmo `useEffect` lendo storage **e** chamando API **e** setando estado **e** redirecionando
+- Função com múltiplos `try/catch` aninhados
+- Componente com mais de 1 estado de loading misturado a lógica condicional de UI
+- Helper que faz I/O (rede/disco) e ainda muta estado global
+
+Quando perceber qualquer desses, extraia.
+
+---
+
+## Sugestões de code review (Copilot, humano, IA)
+
+**Não aplique sugestões mecanicamente.** Cada comentário precisa passar por uma reflexão antes de virar código:
+
+1. **Reproduza o problema mentalmente.** A sugestão descreve um cenário real que ocorre no nosso uso, ou uma edge case teórica que dificilmente acontece com nossos dados? Ex: bug com dados malformados de uma API que sabemos que sempre retorna o esperado.
+
+2. **Pese custo vs. benefício.** Adicionar union-find pra resolver fronteiras de grid é tecnicamente correto, mas se geocoders sempre retornam coordenadas idênticas para o mesmo endereço, é complexidade desnecessária.
+
+3. **Forme uma opinião própria e justifique.** Se vai aplicar, explique por quê com argumentos do nosso contexto. Se vai recusar, diga **por que** não faz sentido aqui — não só "já está bom".
+
+4. **Pode ser uma terceira via.** Às vezes a sugestão original é cara demais e dispensar é negligente. Procure a versão **mais barata que resolve o caso real** — ex: em vez de union-find completo, verificar os 8 buckets vizinhos é O(n) com fator constante 9, suficiente.
+
+5. **Sugestões podem estar desatualizadas.** Reviews automáticos como Copilot podem estar comentando sobre um trecho que já foi refatorado em outra sugestão. Valide primeiro contra o estado atual do código.
+
+❌ **Não faça:** "Copilot disse X, vou aplicar X"
+✅ **Faça:** "Copilot apontou um problema de fronteira em buckets. No nosso caso, isso só afetaria geocoders inconsistentes — improvável. Mas como o custo de checar 8 vizinhos é trivial e elimina toda a classe de bug, aplico essa versão mais simples ao invés do union-find completo."
+
+---
+
 ## Navegação (Expo Router)
 
 O Expo Router usa file-based routing — o nome do arquivo define a rota:

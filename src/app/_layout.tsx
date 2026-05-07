@@ -13,41 +13,21 @@ import { Toaster } from 'sonner-native'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { queryClient } from '@/shared/lib/queryClient'
 import { useAuthStore } from '@/features/auth/store/authStore'
-import { getToken, deleteToken } from '@/shared/lib/secureStore'
-import { authService } from '@/features/auth/services/authService'
+import { useRestoreSession } from '@/features/auth/hooks/useRestoreSession'
 import { GlobalHeader } from '@/shared/components/GlobalHeader'
 
 function AuthGuard() {
+  useRestoreSession()
+
   const isAuthenticated = useAuthStore(s => s.isAuthenticated)
   const hydrated = useAuthStore(s => s.hydrated)
-  const setUser = useAuthStore(s => s.setUser)
-  const logout = useAuthStore(s => s.logout)
-  const setHydrated = useAuthStore(s => s.setHydrated)
   const segments = useSegments()
   const router = useRouter()
-
-  useEffect(() => {
-    async function restoreSession() {
-      const token = await getToken()
-      if (token) {
-        try {
-          const me = await authService.me()
-          setUser(me.id)
-        } catch {
-          await deleteToken()
-          logout()
-        }
-      }
-      setHydrated()
-    }
-    restoreSession()
-  }, [setUser, logout, setHydrated])
 
   useEffect(() => {
     if (!hydrated) return
 
     const inAuthGroup = segments[0] === '(auth)'
-
     if (!isAuthenticated && !inAuthGroup) {
       router.replace('/(auth)/login')
     } else if (isAuthenticated && inAuthGroup) {

@@ -20,6 +20,7 @@ export type FeedAuthor = {
   name: string
   lastname: string
   username: string
+  avatarUrl?: string | null
 }
 
 export type FriendAttendance = {
@@ -115,4 +116,35 @@ export type EventPost = {
     comments: number
     reactions: number
   }
+}
+
+export type FollowStatus = 'PENDING' | 'ACCEPTED' | null
+
+export type UserProfile = {
+  id: string
+  name: string
+  lastname: string
+  username: string
+  bio?: string | null
+  avatarUrl?: string | null
+  isPrivate: boolean
+  birthdate?: string
+  phone?: string
+  email?: string
+  createdAt: string
+  followStatus?: FollowStatus
+  eventsCount: number
+  followersCount: number
+  followingCount: number
+}
+
+export type UserEventSummary = {
+  id: string
+  title: string
+  date: string
+  category: string
+  imageUrl?: string | null
+  address?: string | null
+  isPublic: boolean
+  attendancesCount?: number
 }

@@ -24,6 +24,9 @@ export default {
       }],
       ["expo-location", {
         locationWhenInUsePermission: "Usamos sua localização para mostrar eventos próximos no mapa."
+      }],
+      ["expo-image-picker", {
+        photosPermission: "Precisamos de acesso às suas fotos para alterar a foto de perfil."
       }]
     ],
     extra: {

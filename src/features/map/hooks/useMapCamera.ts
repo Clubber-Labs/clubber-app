@@ -1,8 +1,25 @@
 import { useCallback, useRef } from 'react'
 import Mapbox from '@rnmapbox/maps'
-import { MAX_ZOOM, MIN_ZOOM, USER_ZOOM } from '../constants'
+import { MARKERS_ZOOM_THRESHOLD, MAX_ZOOM, MIN_ZOOM } from '../constants'
+
+const FOCUS_ZOOM = MARKERS_ZOOM_THRESHOLD + 1
+const COINCIDENT_THRESHOLD = 0.0005
 
 type Coords = [number, number]
+
+export type FitPadding = {
+  top?: number
+  right?: number
+  bottom?: number
+  left?: number
+}
+
+const DEFAULT_FIT_PADDING: Required<FitPadding> = {
+  top: 80,
+  right: 40,
+  bottom: 360,
+  left: 40,
+}
 
 export function useMapCamera() {
   const cameraRef = useRef<Mapbox.Camera>(null)
@@ -28,9 +45,53 @@ export function useMapCamera() {
   }, [])
 
   const focusOnEvent = useCallback(
-    (coords: Coords) => flyTo(coords, USER_ZOOM, 500),
+    async (coords: Coords) => {
+      const map = mapRef.current
+      const current = map ? await map.getZoom() : 0
+      // mantém o zoom atual se já estiver acima do limiar — ao tocar num pin
+      // já visível em zoom alto não devemos zoom out
+      const target = Math.max(current, FOCUS_ZOOM)
+      flyTo(coords, target, 500)
+    },
     [flyTo],
   )
 
-  return { cameraRef, mapRef, flyTo, adjustZoom, focusOnEvent }
+  const fitToCoords = useCallback(
+    (coords: Coords[], padding?: FitPadding, duration = 600) => {
+      if (coords.length === 0) return
+      const pad = { ...DEFAULT_FIT_PADDING, ...padding }
+
+      let minLng = Infinity
+      let minLat = Infinity
+      let maxLng = -Infinity
+      let maxLat = -Infinity
+      for (const [lng, lat] of coords) {
+        if (lng < minLng) minLng = lng
+        if (lat < minLat) minLat = lat
+        if (lng > maxLng) maxLng = lng
+        if (lat > maxLat) maxLat = lat
+      }
+
+      const lngSpan = maxLng - minLng
+      const latSpan = maxLat - minLat
+
+      // pontos coincidentes ou muito próximos: fitBounds zoomaria pro infinito,
+      // então caímos para flyTo com FOCUS_ZOOM
+      if (lngSpan < COINCIDENT_THRESHOLD && latSpan < COINCIDENT_THRESHOLD) {
+        const center: Coords = [(minLng + maxLng) / 2, (minLat + maxLat) / 2]
+        flyTo(center, FOCUS_ZOOM, duration)
+        return
+      }
+
+      cameraRef.current?.fitBounds(
+        [maxLng, maxLat],
+        [minLng, minLat],
+        [pad.top, pad.right, pad.bottom, pad.left],
+        duration,
+      )
+    },
+    [flyTo],
+  )
+
+  return { cameraRef, mapRef, flyTo, adjustZoom, focusOnEvent, fitToCoords }
 }

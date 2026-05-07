@@ -1,6 +1,7 @@
 import { View, Text, Pressable, Alert } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useAuthStore } from '@/features/auth/store/authStore'
+import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useDeletePost } from '../hooks/usePosts'
 import { showError } from '@/shared/lib/toast'
 import { formatRelative } from '@/shared/utils/dateFormat'
@@ -32,11 +33,7 @@ export function PostItem({ eventId, post }: Props) {
     <View className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 gap-3">
       <View className="flex-row items-start justify-between">
         <View className="flex-row items-center gap-2 flex-1">
-          <View className="w-9 h-9 rounded-full bg-violet-900 items-center justify-center">
-            <Text className="text-violet-300 font-semibold">
-              {post.author.name[0]?.toUpperCase()}
-            </Text>
-          </View>
+          <UserAvatar name={post.author.name} avatarUrl={post.author.avatarUrl} />
           <View className="flex-1">
             <Text className="text-sm font-semibold text-white">
               {post.author.name} {post.author.lastname}
