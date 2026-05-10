@@ -29,6 +29,17 @@ export type FriendAttendance = {
 
 export type AttendanceType = 'INTERESTED' | 'CONFIRMED' | 'NOT_INTERESTED'
 
+/**
+ * Ciclo de vida do evento, computado pelo backend a cada request.
+ * NUNCA calcular no client.
+ */
+export type EventStatus =
+  | 'UPCOMING'
+  | 'SOON'
+  | 'ONGOING'
+  | 'PAST'
+  | 'CANCELED'
+
 export type ReactionType = 'LIKE' | 'LOVE' | 'HAHA' | 'WOW' | 'SAD' | 'ANGRY'
 
 export type CommentAuthor = FeedAuthor
@@ -49,6 +60,9 @@ export type FeedEvent = {
   isPublic: boolean
   createdAt: string
   date: string
+  endDate?: string | null
+  status?: EventStatus | null
+  canceledAt?: string | null
   latitude: number
   longitude: number
   address?: string
@@ -70,6 +84,8 @@ export type EventDetail = {
   title: string
   description: string
   date: string
+  endDate?: string | null
+  status?: EventStatus | null
   latitude: number
   longitude: number
   address?: string
@@ -77,7 +93,7 @@ export type EventDetail = {
   isPublic: boolean
   imageUrl?: string
   maxCapacity?: number
-  canceledAt?: string
+  canceledAt?: string | null
   createdAt: string
   updatedAt: string
   authorId: string

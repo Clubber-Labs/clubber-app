@@ -19,14 +19,21 @@ type HeaderProps = {
 }
 
 function DetailHeader({ event }: HeaderProps) {
+  // PAST e CANCELED não permitem novas presenças (regra de ciclo de vida do
+  // backend). Quando o backend ainda não popular `status`, mostra normal.
+  const allowAttendance =
+    event.status !== 'PAST' && event.status !== 'CANCELED'
+
   return (
     <View>
       <EventHeader event={event} />
       <View className="pt-4 pb-5 gap-5">
-        <EventAttendanceButton
-          eventId={event.id}
-          current={event.userAttendance}
-        />
+        {allowAttendance && (
+          <EventAttendanceButton
+            eventId={event.id}
+            current={event.userAttendance}
+          />
+        )}
         <EventMap latitude={event.latitude} longitude={event.longitude} />
       </View>
       <View className="px-4 pb-2 border-t border-zinc-800" />
