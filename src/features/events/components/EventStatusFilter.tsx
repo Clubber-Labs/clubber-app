@@ -22,11 +22,12 @@ type Props = {
 
 export function EventStatusFilter({ value, onChange }: Props) {
   function toggle(status: EventStatus) {
-    if (value.includes(status)) {
-      onChange(value.filter(s => s !== status))
-    } else {
-      onChange([...value, status])
-    }
+    const next = value.includes(status)
+      ? value.filter(s => s !== status)
+      : [...value, status]
+    // Ordena pela ordem canônica do OPTIONS pra evitar queryKeys duplicadas
+    // (ex: [SOON, ONGOING] ≠ [ONGOING, SOON] no hash do react-query).
+    onChange(OPTIONS.map(o => o.value).filter(s => next.includes(s)))
   }
 
   return (

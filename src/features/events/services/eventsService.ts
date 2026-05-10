@@ -17,7 +17,7 @@ type ListParams = { limit?: number; cursor?: string }
 
 type ListEventsParams = ListParams & {
   status?: EventStatus[]
-  category?: string
+  category?: string[]
   dateFrom?: string
   dateTo?: string
 }
@@ -37,7 +37,7 @@ export const eventsService = {
         params: {
           ...buildParams(pagination),
           ...(status?.length ? { status } : {}),
-          ...(category ? { category } : {}),
+          ...(category?.length ? { category } : {}),
           ...(dateFrom ? { dateFrom } : {}),
           ...(dateTo ? { dateTo } : {}),
         },

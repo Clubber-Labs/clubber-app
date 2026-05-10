@@ -50,13 +50,11 @@
     <key>NSFaceIDUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your Face ID biometric data.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <string>Usamos sua localização para mostrar eventos próximos no mapa.</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your location</string>
+    <string>Usamos sua localização para mostrar eventos próximos no mapa.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Usamos sua localização para mostrar eventos próximos no mapa.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your microphone</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Precisamos de acesso às suas fotos para alterar a foto de perfil.</string>
     <key>NSUserActivityTypes</key>
