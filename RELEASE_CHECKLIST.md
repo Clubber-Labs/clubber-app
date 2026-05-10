@@ -18,7 +18,20 @@ Pendências e configurações que precisam ser revisadas antes do primeiro build
 
 **Antes de mexer:** confirmar com EAS Build se há mecanismo automático. Se sim, item resolvido. Se não, escolher entre opções 1 ou 2 e validar com primeiro build de produção.
 
-**Apontado por:** code review do PR #12 (feat/explore-screen).
+**Apontado por:** code review do PR feat/explore-screen.
+
+### Push Notifications — `expo-notifications` removido temporariamente
+
+**Contexto:** o package `expo-notifications` foi removido porque o Apple Developer profile não tem Push Notifications capability registrada, e o config-plugin do package adicionava `aps-environment` automaticamente, quebrando builds em device físico (`Provisioning Profile does not support the Push Notifications capability`) e versionando um valor `development` indevido no entitlements.
+
+**Quando reintegrar:**
+
+1. Habilitar **Push Notifications** capability no Apple Developer Portal (`developer.apple.com` → Identifiers → `com.netobonato.connectaimobile` → Capabilities → Push Notifications)
+2. Reinstalar package: `pnpm add expo-notifications`
+3. Recriar `src/features/notifications/` (hook + service) — esqueleto antigo no histórico do git: `git show <hash>:src/features/notifications/hooks/usePushNotifications.ts`
+4. Consumir `usePushNotifications` no layout autenticado (provavelmente `_layout.tsx` ou tab layout)
+5. Rodar `npx expo prebuild --platform ios` pra regenerar entitlements com `aps-environment`
+6. **Resolver o item acima** (`aps-environment` Debug vs Release) ANTES do primeiro build de produção, senão push falha em release
 
 ## Antes de cada release
 
