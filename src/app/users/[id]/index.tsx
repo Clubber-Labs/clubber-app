@@ -19,8 +19,7 @@ export default function UserProfileScreen() {
   const viewerId = useAuthStore(s => s.userId)
   const isOwnProfile = viewerId === id
 
-  // edge case: deep link pro próprio perfil → redireciona pra "Meu Perfil"
-  // (a tela alheia não tem campos privados como email/phone)
+  // /users/:id não retorna campos privados (email/phone) — vai pra Meu Perfil
   useEffect(() => {
     if (isOwnProfile) router.replace('/(tabs)/profile')
   }, [isOwnProfile, router])

@@ -19,14 +19,19 @@ type HeaderProps = {
 }
 
 function DetailHeader({ event }: HeaderProps) {
+  const allowAttendance =
+    event.status !== 'PAST' && event.status !== 'CANCELED'
+
   return (
     <View>
       <EventHeader event={event} />
       <View className="pt-4 pb-5 gap-5">
-        <EventAttendanceButton
-          eventId={event.id}
-          current={event.userAttendance}
-        />
+        {allowAttendance && (
+          <EventAttendanceButton
+            eventId={event.id}
+            current={event.userAttendance}
+          />
+        )}
         <EventMap latitude={event.latitude} longitude={event.longitude} />
       </View>
       <View className="px-4 pb-2 border-t border-zinc-800" />

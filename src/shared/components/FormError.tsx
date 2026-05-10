@@ -4,14 +4,8 @@ type Props = {
   message: string | null | undefined
 }
 
-/**
- * Mensagem de erro inline pra forms — texto vermelho centralizado, renderizada
- * próximo ao botão de submit. Padrão do projeto pra feedback explícito de
- * submissão deliberada (login, edição de perfil, criação de evento).
- *
- * Não usar pra ações otimistas (likes, attendance, deletes) — essas usam
- * silent revert via TanStack Query optimistic update. Ver CLAUDE.md.
- */
+// Use só em forms (login, edição, criação) — ações otimistas usam silent
+// revert. Ver CLAUDE.md → "Tratamento de erros e feedback ao usuário".
 export function FormError({ message }: Props) {
   if (!message) return null
   return (

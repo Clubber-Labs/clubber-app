@@ -1,3 +1,5 @@
+// Pure function (loadSession) + orquestração (useRestoreSession) —
+// ver CLAUDE.md → "Separação de responsabilidades".
 import { useEffect } from 'react'
 import { useAuthStore } from '../store/authStore'
 import { authService } from '../services/authService'
@@ -7,13 +9,7 @@ type SessionResult =
   | { kind: 'authenticated'; userId: string }
   | { kind: 'unauthenticated' }
 
-/**
- * Resolve a sessão a partir do SecureStore, recuperando o userId via API
- * quando o token existe mas o userId não está persistido (estado legado).
- *
- * Falhas de 401 são tratadas globalmente pelo interceptor do axios
- * (`shared/lib/api.ts`), que limpa a sessão e dispara o logout.
- */
+// 401 é tratado globalmente pelo interceptor em shared/lib/api.ts.
 async function loadSession(): Promise<SessionResult> {
   const token = await getToken()
   if (!token) return { kind: 'unauthenticated' }
@@ -39,7 +35,6 @@ export function useRestoreSession() {
       const session = await loadSession()
       if (session.kind === 'authenticated') {
         setUser(session.userId)
-        // valida em background — interceptor cuida do 401
         authService.me().catch(() => {})
       }
       setHydrated()

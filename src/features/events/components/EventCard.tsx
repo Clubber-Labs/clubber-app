@@ -5,6 +5,7 @@ import { useToggleLike } from '../hooks/useToggleLike'
 import { InlineCommentsSection } from './InlineCommentsSection'
 import { FriendAttendancesStack } from './FriendAttendancesStack'
 import { AttendanceStatusBadge } from './AttendanceStatusBadge'
+import { EventStatusBadge } from './EventStatusBadge'
 import { FeedReasonBanner } from './FeedReasonBanner'
 import { computeFeedReason } from '../utils/feedReason'
 import { useAuthStore } from '@/features/auth/store/authStore'
@@ -26,8 +27,8 @@ export function EventCard({ event, onPress }: Props) {
 
   const liked = event.userReaction === 'LIKE'
   const reason = computeFeedReason(event, userId)
-  const showReason =
-    !!reason && event.userAttendance === null && event.userReaction === null
+  // self_created duplica o autor já exibido no card
+  const showReason = !!reason && reason.kind !== 'self_created'
 
   function handleLike() {
     toggleLike.mutate(event.userReaction)
@@ -54,6 +55,7 @@ export function EventCard({ event, onPress }: Props) {
             </View>
           </Pressable>
           <View className="flex-row items-center gap-1.5">
+            <EventStatusBadge status={event.status} date={event.date} />
             <AttendanceStatusBadge attendance={event.userAttendance} />
             {!event.isPublic && (
               <View className="bg-zinc-800 px-2 py-0.5 rounded-full">

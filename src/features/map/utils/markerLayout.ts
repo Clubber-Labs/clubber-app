@@ -2,14 +2,6 @@ import type { FeedEvent } from '@/shared/types'
 
 const COINCIDENT_GRID = 0.0001
 
-/**
- * Agrupa eventos coincidentes via bucket por coordenada quantizada.
- * Complexidade O(n). Eventos isolados aparecem em grupos de tamanho 1.
- *
- * Edge case conhecido: dois pontos em lados opostos de uma fronteira de
- * grid acabam em buckets diferentes. Não ocorre com geocoding real porque
- * o mesmo endereço gera coordenadas idênticas.
- */
 export function groupCoincidentEvents(events: FeedEvent[]): FeedEvent[][] {
   const buckets = new Map<string, FeedEvent[]>()
   for (const event of events) {
@@ -27,10 +19,6 @@ function bucketKey(lng: number, lat: number): string {
   return `${x}|${y}`
 }
 
-/**
- * Calcula o offset em pixels (na tela) de um marker dentro de um grupo
- * coincidente, espalhando-os em círculo. Para grupos de 1, retorna {0,0}.
- */
 export function fanoutOffset(
   index: number,
   total: number,
@@ -44,10 +32,6 @@ export function fanoutOffset(
   }
 }
 
-/**
- * Raio mínimo do círculo de fanout pra evitar sobreposição entre N pins.
- * Garante distância mínima de (pinSize + gap) entre centros adjacentes.
- */
 export function fanoutRadius(
   total: number,
   pinSize: number,

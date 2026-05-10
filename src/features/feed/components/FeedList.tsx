@@ -8,6 +8,7 @@ import {
 import { useRouter } from 'expo-router'
 import { useFeed } from '../hooks/useFeed'
 import { EventCard } from '@/features/events/components/EventCard'
+import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import type { FeedEvent } from '@/shared/types'
 
 export function FeedList() {
@@ -20,8 +21,8 @@ export function FeedList() {
     hasNextPage,
     fetchNextPage,
     refetch,
-    isRefetching,
   } = useFeed()
+  const { refreshing, onRefresh } = usePullRefresh(refetch)
 
   if (isLoading) {
     return (
@@ -69,8 +70,8 @@ export function FeedList() {
       )}
       refreshControl={
         <RefreshControl
-          refreshing={isRefetching}
-          onRefresh={refetch}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
           tintColor="#8b5cf6"
         />
       }

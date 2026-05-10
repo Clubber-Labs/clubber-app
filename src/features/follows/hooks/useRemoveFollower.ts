@@ -12,11 +12,7 @@ import type {
 
 type FollowersCache = InfiniteData<CursorPaginatedResponse<FeedAuthor>>
 
-/**
- * Remove um seguidor do próprio perfil (`DELETE /users/me/followers/:id`).
- * Otimista: tira o item da lista de followers e decrementa `followersCount`
- * do perfil do viewer. Em erro, o snapshot restaura ambos.
- */
+// Optimistic remove + revert — ver CLAUDE.md → "Tratamento de erros e feedback".
 export function useRemoveFollower(viewerId: string) {
   const queryClient = useQueryClient()
   const listKey = followListKeys.followers(viewerId)

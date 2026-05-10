@@ -57,8 +57,7 @@ export default function MapScreen() {
     try {
       const expansionZoom = await source.getClusterExpansionZoom(feature)
       setSelectedEvent(null)
-      // expansionZoom acima do nível de cluster = eventos coincidentes —
-      // o fanout em EventMarkers cuida da separação visual
+      // expansionZoom > nível de cluster = coincidentes; fanout separa visual
       const targetZoom =
         expansionZoom > CLUSTER_MAX_ZOOM
           ? COINCIDENT_FOCUS_ZOOM

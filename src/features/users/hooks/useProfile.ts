@@ -18,9 +18,8 @@ export function useUserProfile(id: string) {
   })
 }
 
-/** Mescla a resposta parcial do backend com o cache atual — preserva campos
- * (ex: eventsCount, followersCount) que algumas rotas não retornam.
- */
+// Algumas rotas (ex: PATCH /users/me/avatar) retornam só os campos
+// alterados — o spread preserva o resto (eventsCount, followersCount, etc).
 function mergeProfileCache(
   queryClient: ReturnType<typeof useQueryClient>,
   updated: UserProfile,

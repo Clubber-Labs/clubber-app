@@ -8,6 +8,7 @@ import {
 import { usePosts } from '../hooks/usePosts'
 import { PostItem } from './PostItem'
 import { CreatePostInput } from './CreatePostInput'
+import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import type { AttendanceType, EventPost } from '@/shared/types'
 import type { ReactElement } from 'react'
 
@@ -29,8 +30,8 @@ export function EventPostsFeed({
     hasNextPage,
     fetchNextPage,
     refetch,
-    isRefetching,
   } = usePosts(eventId)
+  const { refreshing, onRefresh } = usePullRefresh(refetch)
 
   const posts = data?.pages.flatMap(page => page.data) ?? []
   const canPost =
@@ -55,8 +56,8 @@ export function EventPostsFeed({
       ItemSeparatorComponent={() => <View className="h-2" />}
       refreshControl={
         <RefreshControl
-          refreshing={isRefetching}
-          onRefresh={refetch}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
           tintColor="#8b5cf6"
         />
       }
