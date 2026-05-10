@@ -45,6 +45,10 @@ export default function MapScreen() {
   const [heatmapMode, setHeatmapMode] = useState(false)
   const [heatmapBbox, setHeatmapBbox] = useState<Bbox | null>(null)
   const bboxTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Token incrementado a cada toggle/unmount; captureBbox descarta resultado
+  // se a versão mudou enquanto getVisibleBounds estava resolvendo (evita
+  // setState com bbox stale após desativar modo heatmap ou desmontar).
+  const heatmapVersionRef = useRef(0)
 
   const shapeSourceRef = useRef<Mapbox.ShapeSource>(null)
   const { categories, filteredEvents, eventsGeoJson, isLoading, error } =
@@ -68,10 +72,12 @@ export default function MapScreen() {
     }
   }
 
-  async function captureBbox() {
+  async function captureBbox(token: number) {
     try {
       const bounds = await mapRef.current?.getVisibleBounds()
       if (!bounds) return
+      // Descarta se o token expirou (toggle off, unmount, novo toggle on)
+      if (heatmapVersionRef.current !== token) return
       const [[east, north], [west, south]] = bounds
       setHeatmapBbox({
         bboxNorth: north,
@@ -89,18 +95,23 @@ export default function MapScreen() {
   function scheduleBboxUpdate() {
     if (!heatmapMode) return
     clearBboxTimer()
-    bboxTimerRef.current = setTimeout(captureBbox, HEATMAP_BBOX_DEBOUNCE_MS)
+    const token = heatmapVersionRef.current
+    bboxTimerRef.current = setTimeout(
+      () => captureBbox(token),
+      HEATMAP_BBOX_DEBOUNCE_MS,
+    )
   }
 
   function toggleHeatmap() {
     setHeatmapMode(prev => {
       const next = !prev
+      // Invalida qualquer captureBbox em voo (resolverá fora do token atual)
+      heatmapVersionRef.current++
       if (next) {
         // Ativando: captura imediata sem debounce
-        captureBbox()
+        captureBbox(heatmapVersionRef.current)
       } else {
-        // Desativando: cancela qualquer fetch pendente pra não disparar
-        // setState após o user já ter saído do modo heatmap
+        // Desativando: cancela timer pendente e zera bbox
         clearBboxTimer()
         setHeatmapBbox(null)
       }
@@ -108,8 +119,14 @@ export default function MapScreen() {
     })
   }
 
-  // Garante limpeza do timer no unmount
-  useEffect(() => clearBboxTimer, [])
+  // Limpa timer e invalida promises pendentes no unmount
+  useEffect(
+    () => () => {
+      heatmapVersionRef.current++
+      clearBboxTimer()
+    },
+    [],
+  )
 
   useEffect(() => {
     if (userCoords) flyTo(userCoords, USER_ZOOM, 800)

@@ -1,5 +1,7 @@
+import { useMemo } from 'react'
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { mapService, type Bbox, type HeatmapParams } from '../services/mapService'
+import { normalizeFilters } from '@/shared/utils/normalizeFilters'
 
 type Filters = Omit<HeatmapParams, keyof Bbox>
 
@@ -11,9 +13,12 @@ export function useHeatmap(
   filters: Filters,
   enabled: boolean,
 ) {
+  // Normaliza pra que {category: undefined} e {} compartilhem cache
+  const normalized = useMemo(() => normalizeFilters(filters), [filters])
+
   return useQuery({
-    queryKey: ['heatmap', bbox, filters],
-    queryFn: () => mapService.getHeatmap({ ...bbox!, ...filters }),
+    queryKey: ['heatmap', bbox, normalized],
+    queryFn: () => mapService.getHeatmap({ ...bbox!, ...normalized }),
     enabled: enabled && !!bbox,
     staleTime: 1000 * 30,
     placeholderData: keepPreviousData,

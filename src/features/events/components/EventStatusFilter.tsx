@@ -22,11 +22,12 @@ type Props = {
 
 export function EventStatusFilter({ value, onChange }: Props) {
   function toggle(status: EventStatus) {
-    if (value.includes(status)) {
-      onChange(value.filter(s => s !== status))
-    } else {
-      onChange([...value, status])
-    }
+    const next = value.includes(status)
+      ? value.filter(s => s !== status)
+      : [...value, status]
+    // Ordena pela ordem canônica do OPTIONS pra evitar queryKeys duplicadas
+    // (ex: [SOON, ONGOING] ≠ [ONGOING, SOON] no hash do react-query).
+    onChange(OPTIONS.map(o => o.value).filter(s => next.includes(s)))
   }
 
   return (
@@ -41,6 +42,9 @@ export function EventStatusFilter({ value, onChange }: Props) {
           <Pressable
             key={option.value}
             onPress={() => toggle(option.value)}
+            accessibilityRole="button"
+            accessibilityLabel={`Filtrar por ${option.label}`}
+            accessibilityState={{ selected: active }}
             className={`px-4 py-2 rounded-full ${active ? 'bg-violet-600' : 'bg-zinc-900 border border-zinc-800'}`}
           >
             <Text

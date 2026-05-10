@@ -17,8 +17,8 @@ import type { FeedEvent } from '@/shared/types'
 type Props = {
   event: FeedEvent
   onPress: () => void
-  // Banner de "amigo X" só faz sentido em contexto personalizado (feed).
-  // Em listagens genéricas (Explorar), passe false.
+  // Banner de "amigo X" só faz sentido em contexto personalizado (/feed).
+  // Em listagens genéricas (sem dado de amizade), passe false.
   showReason?: boolean
 }
 
