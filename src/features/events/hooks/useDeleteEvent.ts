@@ -2,6 +2,7 @@ import {
   useMutation,
   useQueryClient,
   type InfiniteData,
+  type QueryKey,
 } from '@tanstack/react-query'
 import { eventsService } from '../services/eventsService'
 import { eventKeys, feedKey } from './cacheKeys'
@@ -16,6 +17,9 @@ import type {
 
 type FeedCache = InfiniteData<CursorPaginatedResponse<FeedEvent>>
 type UserEventsCache = InfiniteData<CursorPaginatedResponse<UserEventSummary>>
+// Feed pode ter múltiplas variações cacheadas (por filtro). Operamos em todas
+// via setQueriesData/getQueriesData em vez de cache exato.
+type FeedSnapshot = Array<[QueryKey, FeedCache | undefined]>
 
 // Optimistic remove em feed + lista do autor pra evitar flash do evento ainda
 // presente após o delete (e clique em item já inexistente). Padrão canônico:
@@ -30,8 +34,10 @@ export function useDeleteEvent(id: string) {
       const authorId = event?.authorId
 
       await queryClient.cancelQueries({ queryKey: feedKey })
-      const prevFeed = queryClient.getQueryData<FeedCache>(feedKey)
-      queryClient.setQueryData<FeedCache>(feedKey, old =>
+      const prevFeeds: FeedSnapshot = queryClient.getQueriesData<FeedCache>({
+        queryKey: feedKey,
+      })
+      queryClient.setQueriesData<FeedCache>({ queryKey: feedKey }, old =>
         removeFromInfiniteList(old, id),
       )
 
@@ -45,10 +51,12 @@ export function useDeleteEvent(id: string) {
         )
       }
 
-      return { authorId, prevFeed, prevUserEvents }
+      return { authorId, prevFeeds, prevUserEvents }
     },
     onError: (_err, _vars, ctx) => {
-      if (ctx?.prevFeed) queryClient.setQueryData(feedKey, ctx.prevFeed)
+      ctx?.prevFeeds.forEach(([key, data]) =>
+        queryClient.setQueryData(key, data),
+      )
       if (ctx?.authorId && ctx.prevUserEvents) {
         queryClient.setQueryData(
           userKeys.events(ctx.authorId),

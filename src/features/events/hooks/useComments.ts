@@ -37,7 +37,7 @@ export function useAddComment(eventId: string) {
       queryClient.invalidateQueries({ queryKey: commentsKey(eventId) })
       queryClient.invalidateQueries({ queryKey: ['events', eventId] })
 
-      queryClient.setQueryData<FeedCache>(['feed'], old => {
+      queryClient.setQueriesData<FeedCache>({ queryKey: ['feed'] }, old => {
         if (!old) return old
         return {
           ...old,

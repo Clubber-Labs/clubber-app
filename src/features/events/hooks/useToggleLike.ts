@@ -7,9 +7,12 @@ import type {
   FeedEvent,
   ReactionType,
 } from '@/shared/types'
-import type { InfiniteData } from '@tanstack/react-query'
+import type { InfiniteData, QueryKey } from '@tanstack/react-query'
 
 type FeedCache = InfiniteData<CursorPaginatedResponse<FeedEvent>>
+// Feed pode ter múltiplas variações cacheadas (por filtro). Operamos em todas
+// via setQueriesData/getQueriesData em vez de cache exato.
+type FeedSnapshot = Array<[QueryKey, FeedCache | undefined]>
 
 function patchFeedEvent(
   cache: FeedCache | undefined,
@@ -53,14 +56,16 @@ export function useToggleLike(eventId: string) {
       await queryClient.cancelQueries({ queryKey: feedKey })
       await queryClient.cancelQueries({ queryKey: detailKey })
 
-      const prevFeed = queryClient.getQueryData<FeedCache>(feedKey)
+      const prevFeeds: FeedSnapshot = queryClient.getQueriesData<FeedCache>({
+        queryKey: feedKey,
+      })
       const prevDetail = queryClient.getQueryData<EventDetail>(detailKey)
 
       const willLike = currentReaction !== 'LIKE'
       const reactionDelta = willLike ? 1 : -1
       const nextReaction: ReactionType | null = willLike ? 'LIKE' : null
 
-      queryClient.setQueryData<FeedCache>(feedKey, old =>
+      queryClient.setQueriesData<FeedCache>({ queryKey: feedKey }, old =>
         patchFeedEvent(old, eventId, event => ({
           ...event,
           userReaction: nextReaction,
@@ -81,10 +86,12 @@ export function useToggleLike(eventId: string) {
         })),
       )
 
-      return { prevFeed, prevDetail }
+      return { prevFeeds, prevDetail }
     },
     onError: (_err, _vars, context) => {
-      if (context?.prevFeed) queryClient.setQueryData(feedKey, context.prevFeed)
+      context?.prevFeeds.forEach(([key, data]) =>
+        queryClient.setQueryData(key, data),
+      )
       if (context?.prevDetail)
         queryClient.setQueryData(detailKey, context.prevDetail)
     },

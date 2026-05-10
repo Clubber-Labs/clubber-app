@@ -1,6 +1,6 @@
 // Padrão otimista canônico — ver CLAUDE.md → "Tratamento de erros e feedback".
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import type { InfiniteData } from '@tanstack/react-query'
+import type { InfiniteData, QueryKey } from '@tanstack/react-query'
 import { eventsService } from '../services/eventsService'
 import { invalidateEventViews } from './cacheKeys'
 import type {
@@ -11,8 +11,11 @@ import type {
 } from '@/shared/types'
 
 type FeedCache = InfiniteData<CursorPaginatedResponse<FeedEvent>>
+// Feed pode ter múltiplas variações cacheadas (por filtro). Operamos em todas
+// via setQueriesData/getQueriesData em vez de cache exato.
+type FeedSnapshot = Array<[QueryKey, FeedCache | undefined]>
 type Snapshot = {
-  prevFeed: FeedCache | undefined
+  prevFeeds: FeedSnapshot
   prevDetail: EventDetail | undefined
 }
 
@@ -47,13 +50,15 @@ function patchEventInFeed(
   }
 }
 
-function findInFeed(
-  cache: FeedCache | undefined,
+function findInFeeds(
+  feeds: FeedSnapshot,
   eventId: string,
 ): FeedEvent | undefined {
-  return cache?.pages
-    .flatMap(p => p.data)
-    .find(e => e.id === eventId)
+  for (const [, cache] of feeds) {
+    const found = cache?.pages.flatMap(p => p.data).find(e => e.id === eventId)
+    if (found) return found
+  }
+  return undefined
 }
 
 function applyAttendance(
@@ -62,7 +67,7 @@ function applyAttendance(
   next: AttendanceType | null,
   delta: number,
 ) {
-  queryClient.setQueryData<FeedCache>(feedKey, old =>
+  queryClient.setQueriesData<FeedCache>({ queryKey: feedKey }, old =>
     patchEventInFeed(old, eventId, e => ({
       ...e,
       userAttendance: next,
@@ -88,7 +93,9 @@ function restore(
   eventId: string,
   snapshot: Snapshot,
 ) {
-  if (snapshot.prevFeed) queryClient.setQueryData(feedKey, snapshot.prevFeed)
+  snapshot.prevFeeds.forEach(([key, data]) =>
+    queryClient.setQueryData(key, data),
+  )
   if (snapshot.prevDetail)
     queryClient.setQueryData(['events', eventId], snapshot.prevDetail)
 }
@@ -103,13 +110,15 @@ function useAttendanceSnapshot(eventId: string) {
   }> {
     await queryClient.cancelQueries({ queryKey: feedKey })
     await queryClient.cancelQueries({ queryKey: detailKey })
-    const prevFeed = queryClient.getQueryData<FeedCache>(feedKey)
+    const prevFeeds: FeedSnapshot = queryClient.getQueriesData<FeedCache>({
+      queryKey: feedKey,
+    })
     const prevDetail = queryClient.getQueryData<EventDetail>(detailKey)
     const current =
       prevDetail?.userAttendance ??
-      findInFeed(prevFeed, eventId)?.userAttendance ??
+      findInFeeds(prevFeeds, eventId)?.userAttendance ??
       null
-    return { snap: { prevFeed, prevDetail }, current }
+    return { snap: { prevFeeds, prevDetail }, current }
   }
 
   return { snapshot, queryClient }

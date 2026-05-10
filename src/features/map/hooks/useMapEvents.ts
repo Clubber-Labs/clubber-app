@@ -1,10 +1,15 @@
 import { useMemo } from 'react'
 import { useEventsList } from '@/features/events/hooks/useEvents'
-import type { FeedEvent } from '@/shared/types'
+import type { EventStatus, FeedEvent } from '@/shared/types'
 import { ALL_CATEGORIES } from '../constants'
 
-export function useMapEvents(activeCategory: string) {
-  const { data, isLoading, error } = useEventsList(50)
+export function useMapEvents(
+  activeCategory: string,
+  statusFilter: EventStatus[] = [],
+) {
+  const { data, isLoading, error } = useEventsList(50, {
+    status: statusFilter.length ? statusFilter : undefined,
+  })
 
   const events = useMemo(
     () =>

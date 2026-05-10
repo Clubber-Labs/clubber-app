@@ -2,6 +2,7 @@ import { api } from '@/shared/lib/api'
 import type {
   CursorPaginatedResponse,
   EventDetail,
+  EventStatus,
   Attendance,
   AttendanceType,
   Reaction,
@@ -14,6 +15,13 @@ import type { CreateEventPayload } from '../schemas/createEventSchema'
 
 type ListParams = { limit?: number; cursor?: string }
 
+type ListEventsParams = ListParams & {
+  status?: EventStatus[]
+  category?: string[]
+  dateFrom?: string
+  dateTo?: string
+}
+
 const buildParams = ({ limit = 20, cursor }: ListParams) => ({
   limit,
   ...(cursor ? { cursor } : {}),
@@ -21,9 +29,23 @@ const buildParams = ({ limit = 20, cursor }: ListParams) => ({
 
 export const eventsService = {
   list: (
-    params: ListParams = {},
-  ): Promise<CursorPaginatedResponse<FeedEvent>> =>
-    api.get('/events', { params: buildParams(params) }).then(r => r.data),
+    params: ListEventsParams = {},
+  ): Promise<CursorPaginatedResponse<FeedEvent>> => {
+    const { status, category, dateFrom, dateTo, ...pagination } = params
+    return api
+      .get('/events', {
+        params: {
+          ...buildParams(pagination),
+          ...(status?.length ? { status } : {}),
+          ...(category?.length ? { category } : {}),
+          ...(dateFrom ? { dateFrom } : {}),
+          ...(dateTo ? { dateTo } : {}),
+        },
+        // Backend espera array repetido (status=A&status=B), não brackets.
+        paramsSerializer: { indexes: null },
+      })
+      .then(r => r.data)
+  },
 
   getById: (id: string): Promise<EventDetail> =>
     api.get(`/events/${id}`).then(r => r.data),

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { View, ActivityIndicator } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
 import { useRouter } from 'expo-router'
-import type { FeedEvent } from '@/shared/types'
+import type { EventStatus, FeedEvent } from '@/shared/types'
 import {
   ALL_CATEGORIES,
   BRAZIL_CENTER,
@@ -24,6 +24,7 @@ import { EventMarkers } from '@/features/map/components/EventMarkers'
 import { EventPreviewCard } from '@/features/map/components/EventPreviewCard'
 import { MapStatusBanner } from '@/features/map/components/MapStatusBanner'
 import { FloatingCreateButton } from '@/features/events/components/FloatingCreateButton'
+import { EventStatusFilter } from '@/features/events/components/EventStatusFilter'
 
 const COINCIDENT_FOCUS_ZOOM = 20
 
@@ -34,11 +35,12 @@ export default function MapScreen() {
   const { showMarkers, onCameraZoomChange } = useMapZoomState()
 
   const [activeCategory, setActiveCategory] = useState<string>(ALL_CATEGORIES)
+  const [statusFilter, setStatusFilter] = useState<EventStatus[]>([])
   const [selectedEvent, setSelectedEvent] = useState<FeedEvent | null>(null)
 
   const shapeSourceRef = useRef<Mapbox.ShapeSource>(null)
   const { categories, filteredEvents, eventsGeoJson, isLoading, error } =
-    useMapEvents(activeCategory)
+    useMapEvents(activeCategory, statusFilter)
 
   useEffect(() => {
     if (userCoords) flyTo(userCoords, USER_ZOOM, 800)
@@ -117,16 +119,17 @@ export default function MapScreen() {
         )}
       </Mapbox.MapView>
 
-      <View className="absolute top-3 left-0 right-0">
+      <View className="absolute top-3 left-0 right-0 gap-2">
         <EventCategoriesFilter
           categories={categories}
           active={activeCategory}
           onChange={setActiveCategory}
         />
+        <EventStatusFilter value={statusFilter} onChange={setStatusFilter} />
       </View>
 
       {isLoading && !error && (
-        <View className="absolute top-16 self-center bg-zinc-900/90 px-3 py-1.5 rounded-full border border-zinc-800">
+        <View className="absolute top-28 self-center bg-zinc-900/90 px-3 py-1.5 rounded-full border border-zinc-800">
           <ActivityIndicator size="small" color="#8b5cf6" />
         </View>
       )}

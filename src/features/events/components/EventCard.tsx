@@ -17,18 +17,19 @@ import type { FeedEvent } from '@/shared/types'
 type Props = {
   event: FeedEvent
   onPress: () => void
+  // Banner de "amigo X" só faz sentido em contexto personalizado (/feed).
+  // Em listagens genéricas (sem dado de amizade), passe false.
+  showReason?: boolean
 }
 
-export function EventCard({ event, onPress }: Props) {
+export function EventCard({ event, onPress, showReason = true }: Props) {
   const [expanded, setExpanded] = useState(false)
   const toggleLike = useToggleLike(event.id)
   const userId = useAuthStore(s => s.userId)
   const navigateToProfile = useNavigateToProfile()
 
   const liked = event.userReaction === 'LIKE'
-  const reason = computeFeedReason(event, userId)
-  // self_created duplica o autor já exibido no card
-  const showReason = !!reason && reason.kind !== 'self_created'
+  const reason = showReason ? computeFeedReason(event, userId) : null
 
   function handleLike() {
     toggleLike.mutate(event.userReaction)
@@ -36,7 +37,10 @@ export function EventCard({ event, onPress }: Props) {
 
   return (
     <View className="bg-zinc-900 rounded-2xl mb-3 border border-zinc-800 overflow-hidden">
-      {showReason && <FeedReasonBanner reason={reason} />}
+      {/* self_created duplica o autor já exibido logo abaixo */}
+      {reason && reason.kind !== 'self_created' && (
+        <FeedReasonBanner reason={reason} />
+      )}
       <Pressable onPress={onPress}>
         <View className="flex-row items-center justify-between px-4 pt-4">
           <Pressable
@@ -100,7 +104,7 @@ export function EventCard({ event, onPress }: Props) {
           </View>
         </View>
 
-        {event.friendAttendances.length > 0 && (
+        {event.friendAttendances && event.friendAttendances.length > 0 && (
           <View className="px-4 pt-2">
             <FriendAttendancesStack
               attendances={event.friendAttendances}

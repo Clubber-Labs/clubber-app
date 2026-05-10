@@ -14,7 +14,7 @@ export function computeFeedReason(
     return { kind: 'self_created' }
   }
 
-  if (event.friendAttendances.length > 0) {
+  if (event.friendAttendances && event.friendAttendances.length > 0) {
     const [first, ...rest] = event.friendAttendances
     return {
       kind: 'friend_attending',

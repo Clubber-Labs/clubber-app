@@ -68,7 +68,9 @@ export type FeedEvent = {
   address?: string
   category: string
   author: FeedAuthor
-  friendAttendances: FriendAttendance[]
+  // /feed inclui friendAttendances (personalizado); /events não retorna esse
+  // campo. Mantido optional pra refletir o contrato real da API.
+  friendAttendances?: FriendAttendance[]
   recentComments: EventComment[]
   userReaction: ReactionType | null
   userAttendance: AttendanceType | null
