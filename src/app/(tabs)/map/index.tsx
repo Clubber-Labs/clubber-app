@@ -17,14 +17,19 @@ import { useMapEvents } from '@/features/map/hooks/useMapEvents'
 import { useMapCamera } from '@/features/map/hooks/useMapCamera'
 import { useUserLocation } from '@/features/map/hooks/useUserLocation'
 import { useMapZoomState } from '@/features/map/hooks/useMapZoomState'
+import { useHeatmap } from '@/features/map/hooks/useHeatmap'
+import type { Bbox } from '@/features/map/services/mapService'
 import { EventCategoriesFilter } from '@/features/map/components/EventCategoriesFilter'
 import { MapZoomControls } from '@/features/map/components/MapZoomControls'
 import { EventClustersLayer } from '@/features/map/components/EventClustersLayer'
+import { EventHeatmapLayer } from '@/features/map/components/EventHeatmapLayer'
 import { EventMarkers } from '@/features/map/components/EventMarkers'
 import { EventPreviewCard } from '@/features/map/components/EventPreviewCard'
 import { MapStatusBanner } from '@/features/map/components/MapStatusBanner'
 import { FloatingCreateButton } from '@/features/events/components/FloatingCreateButton'
 import { EventStatusFilter } from '@/features/events/components/EventStatusFilter'
+
+const HEATMAP_BBOX_DEBOUNCE_MS = 300
 
 const COINCIDENT_FOCUS_ZOOM = 20
 
@@ -37,10 +42,62 @@ export default function MapScreen() {
   const [activeCategory, setActiveCategory] = useState<string>(ALL_CATEGORIES)
   const [statusFilter, setStatusFilter] = useState<EventStatus[]>([])
   const [selectedEvent, setSelectedEvent] = useState<FeedEvent | null>(null)
+  const [heatmapMode, setHeatmapMode] = useState(false)
+  const [heatmapBbox, setHeatmapBbox] = useState<Bbox | null>(null)
+  const bboxTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const shapeSourceRef = useRef<Mapbox.ShapeSource>(null)
   const { categories, filteredEvents, eventsGeoJson, isLoading, error } =
     useMapEvents(activeCategory, statusFilter)
+
+  const heatmapFilters = {
+    status: statusFilter.length ? statusFilter : undefined,
+    category:
+      activeCategory !== ALL_CATEGORIES ? [activeCategory] : undefined,
+  }
+  const { data: heatmapPoints = [] } = useHeatmap(
+    heatmapBbox,
+    heatmapFilters,
+    heatmapMode,
+  )
+
+  // Debounce do bbox: arrastar o mapa não pode floodar o backend. Quando o
+  // user para de mover por 300ms, atualiza o bbox e a queryKey muda.
+  async function scheduleBboxUpdate() {
+    if (!heatmapMode) return
+    if (bboxTimerRef.current) clearTimeout(bboxTimerRef.current)
+    bboxTimerRef.current = setTimeout(async () => {
+      const bounds = await mapRef.current?.getVisibleBounds()
+      if (!bounds) return
+      const [[east, north], [west, south]] = bounds
+      setHeatmapBbox({
+        bboxNorth: north,
+        bboxSouth: south,
+        bboxEast: east,
+        bboxWest: west,
+      })
+    }, HEATMAP_BBOX_DEBOUNCE_MS)
+  }
+
+  function toggleHeatmap() {
+    setHeatmapMode(prev => {
+      const next = !prev
+      if (next) {
+        // Ativando: dispara captura imediata do bbox atual (sem debounce)
+        mapRef.current?.getVisibleBounds().then(bounds => {
+          if (!bounds) return
+          const [[east, north], [west, south]] = bounds
+          setHeatmapBbox({
+            bboxNorth: north,
+            bboxSouth: south,
+            bboxEast: east,
+            bboxWest: west,
+          })
+        })
+      }
+      return next
+    })
+  }
 
   useEffect(() => {
     if (userCoords) flyTo(userCoords, USER_ZOOM, 800)
@@ -95,7 +152,10 @@ export default function MapScreen() {
         logoEnabled={false}
         attributionEnabled={false}
         onPress={() => setSelectedEvent(null)}
-        onCameraChanged={state => onCameraZoomChange(state.properties.zoom)}
+        onCameraChanged={state => {
+          onCameraZoomChange(state.properties.zoom)
+          scheduleBboxUpdate()
+        }}
       >
         <Mapbox.Camera
           ref={cameraRef}
@@ -103,14 +163,15 @@ export default function MapScreen() {
           centerCoordinate={BRAZIL_CENTER}
           animationMode="flyTo"
         />
-        {!showMarkers && (
+        {heatmapMode ? (
+          <EventHeatmapLayer points={heatmapPoints} />
+        ) : !showMarkers ? (
           <EventClustersLayer
             ref={shapeSourceRef}
             shape={eventsGeoJson}
             onPress={handleClusterShapePress}
           />
-        )}
-        {showMarkers && (
+        ) : (
           <EventMarkers
             events={filteredEvents}
             selectedId={selectedEvent?.id}
@@ -146,6 +207,8 @@ export default function MapScreen() {
         onZoomOut={() => adjustZoom(-ZOOM_STEP)}
         onRecenter={() => userCoords && flyTo(userCoords, USER_ZOOM, 600)}
         showRecenter={!!userCoords}
+        heatmapActive={heatmapMode}
+        onToggleHeatmap={toggleHeatmap}
       />
 
       {!selectedEvent && <FloatingCreateButton />}
