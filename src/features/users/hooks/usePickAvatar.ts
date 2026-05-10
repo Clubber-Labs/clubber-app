@@ -14,8 +14,7 @@ export function usePickAvatar(onPicked: (uri: string) => void) {
         onPicked(result.assets[0].uri)
       }
     } catch {
-      // falha silenciosa — o sistema já mostra prompt de permissão quando
-      // necessário e o usuário pode tentar de novo
+      // sistema já mostra prompt de permissão quando necessário
     }
   }, [onPicked])
 }

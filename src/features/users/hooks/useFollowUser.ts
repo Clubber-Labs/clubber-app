@@ -1,3 +1,4 @@
+// Padrão otimista canônico — ver CLAUDE.md → "Tratamento de erros e feedback".
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { followsService } from '@/features/follows/services/followsService'
 import type { UserProfile, FollowStatus } from '@/shared/types'

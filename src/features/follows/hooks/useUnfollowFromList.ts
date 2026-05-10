@@ -18,16 +18,7 @@ type Snapshot = {
   prevTargetProfile: UserProfile | undefined
 }
 
-/**
- * Deixa de seguir um usuário a partir da lista "Seguindo" do próprio perfil.
- * Otimismo abrange todos os caches afetados pela ação:
- * - remove o item da lista de following do viewer
- * - decrementa `followingCount` do perfil do viewer (`users.me`)
- * - decrementa `followersCount` do perfil do alvo (se em cache) e zera seu followStatus
- *
- * Difere de `useFollowUser.unfollow` porque sabe sobre a lista — o hook do
- * profile screen não, já que é genérico.
- */
+// Optimistic remove + revert — ver CLAUDE.md → "Tratamento de erros e feedback".
 export function useUnfollowFromList(viewerId: string) {
   const queryClient = useQueryClient()
   const listKey = followListKeys.following(viewerId)

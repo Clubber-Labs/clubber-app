@@ -4,13 +4,8 @@ import type { CursorPaginatedResponse } from '@/shared/types'
 type Identified = { id: string }
 type InfiniteCache<T> = InfiniteData<CursorPaginatedResponse<T>>
 
-/**
- * Remove um item de um cache de `useInfiniteQuery` cursor-paginated.
- * Pura, type-safe — usar em `onMutate` de mutations de delete pra optimistic
- * remove (item some na hora; restaura via snapshot se backend falhar).
- *
- * Ver CLAUDE.md → "Tratamento de erros e feedback ao usuário".
- */
+// Helper pra optimistic remove em listas paginadas — ver CLAUDE.md →
+// "Tratamento de erros e feedback ao usuário".
 export function removeFromInfiniteList<T extends Identified>(
   cache: InfiniteCache<T> | undefined,
   itemId: string,

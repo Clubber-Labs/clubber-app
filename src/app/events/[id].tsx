@@ -19,8 +19,6 @@ type HeaderProps = {
 }
 
 function DetailHeader({ event }: HeaderProps) {
-  // PAST e CANCELED não permitem novas presenças (regra de ciclo de vida do
-  // backend). Quando o backend ainda não popular `status`, mostra normal.
   const allowAttendance =
     event.status !== 'PAST' && event.status !== 'CANCELED'
 

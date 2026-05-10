@@ -26,7 +26,6 @@ export function EventMarkers({ events, selectedId, onPress }: Props) {
     <>
       {groups.map(group => {
         const anchor = group[0]
-        // raio dinâmico cresce com o tamanho do grupo pra evitar sobreposição
         const radius = fanoutRadius(
           group.length,
           PIN_SIZE_SELECTED,

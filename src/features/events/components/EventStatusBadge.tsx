@@ -25,7 +25,6 @@ function buildLabel(status: EventStatus, date?: string): string {
   if (status === 'SOON') return 'Em breve'
   if (status === 'PAST') return 'Encerrado'
   if (status === 'CANCELED') return 'Cancelado'
-  // UPCOMING: usa o `date` pra dar contexto temporal quando disponível
   if (!date) return 'Em breve'
   const days = daysUntil(date)
   if (days <= 0) return 'Em breve'
@@ -39,14 +38,11 @@ function daysUntil(iso: string): number {
   return Math.ceil((target - now) / (1000 * 60 * 60 * 24))
 }
 
-/**
- * Badge visual do ciclo de vida do evento. `status` vem sempre do backend —
- * mobile NUNCA computa. Quando ausente (backend ainda não populou ou status
- * desconhecido), o componente não renderiza nada — comportamento neutro
- * preserva forward compat enquanto o backend implementa o campo.
- */
+// `status` vem sempre do backend — mobile não computa. Quando ausente ou
+// desconhecido, não renderiza (forward-compat enquanto o backend popula).
 export function EventStatusBadge({ status, date }: Props) {
-  if (!status || !(status in STYLES)) return null
+  // hasOwn evita match em chaves herdadas (ex: 'toString')
+  if (!status || !Object.hasOwn(STYLES, status)) return null
   const style = STYLES[status]
   return (
     <View className={`px-2.5 py-1 rounded-full ${style.bg}`}>

@@ -1,3 +1,4 @@
+// Padrão otimista canônico — ver CLAUDE.md → "Tratamento de erros e feedback".
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { InfiniteData } from '@tanstack/react-query'
 import { eventsService } from '../services/eventsService'
@@ -17,7 +18,7 @@ type Snapshot = {
 
 const feedKey = ['feed'] as const
 
-/** Conta como "presença" apenas CONFIRMED e INTERESTED (NOT_INTERESTED não conta). */
+// CONFIRMED e INTERESTED contam como presença; NOT_INTERESTED não.
 function countDelta(
   prev: AttendanceType | null,
   next: AttendanceType | null,

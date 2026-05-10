@@ -1,3 +1,4 @@
+// Padrão otimista canônico — ver CLAUDE.md → "Tratamento de erros e feedback".
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { eventsService } from '../services/eventsService'
 import type {

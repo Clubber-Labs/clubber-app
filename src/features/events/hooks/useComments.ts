@@ -65,6 +65,7 @@ export function useAddComment(eventId: string) {
   })
 }
 
+// Optimistic remove — ver CLAUDE.md → "Tratamento de erros e feedback".
 export function useDeleteComment(eventId: string) {
   const queryClient = useQueryClient()
   const key = commentsKey(eventId)
@@ -73,7 +74,6 @@ export function useDeleteComment(eventId: string) {
     mutationFn: (commentId: string) =>
       eventsService.deleteComment(eventId, commentId),
     onMutate: async commentId => {
-      // optimistic remove: comentário some imediatamente, reaparece se falhar
       await queryClient.cancelQueries({ queryKey: key })
       const prev = queryClient.getQueryData<CommentsCache>(key)
       queryClient.setQueryData<CommentsCache>(key, old =>

@@ -34,6 +34,7 @@ export function useAddPost(eventId: string) {
   })
 }
 
+// Optimistic remove — ver CLAUDE.md → "Tratamento de erros e feedback".
 export function useDeletePost(eventId: string) {
   const queryClient = useQueryClient()
   const key = postsKey(eventId)
@@ -41,7 +42,6 @@ export function useDeletePost(eventId: string) {
   return useMutation({
     mutationFn: (postId: string) => eventsService.deletePost(eventId, postId),
     onMutate: async postId => {
-      // optimistic remove: post some imediatamente, reaparece se falhar
       await queryClient.cancelQueries({ queryKey: key })
       const prev = queryClient.getQueryData<PostsCache>(key)
       queryClient.setQueryData<PostsCache>(key, old =>

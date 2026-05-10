@@ -31,7 +31,5 @@ export function useLogin() {
     onSuccess: ({ userId }) => {
       setUser(userId)
     },
-    // erros (incluindo 401) ficam disponíveis em `mutation.error` —
-    // o LoginForm exibe a mensagem inline pra credenciais inválidas
   })
 }

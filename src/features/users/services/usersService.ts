@@ -19,9 +19,7 @@ export type UpdateMePayload = {
 
 type ReactNativeFile = { uri: string; name: string; type: string }
 
-// O `FormData` do React Native aceita `{ uri, name, type }` nativamente como
-// valor de campo de arquivo, mas as tipagens DOM padrão só permitem
-// `string | Blob`. Adicionamos um overload pra refletir o runtime do RN.
+// RN aceita { uri, name, type } em FormData.append; tipagens DOM não.
 declare global {
   interface FormData {
     append(name: string, value: ReactNativeFile): void
@@ -41,9 +39,8 @@ export const usersService = {
   getById: (id: string): Promise<UserProfile> =>
     api.get(`/users/${id}`).then(r => r.data),
 
-  // Workaround: a rota PUT /users/me existe no backend, mas é registrada DEPOIS
-  // de PUT /users/:id no Fastify, então "me" cai no handler de :id e falha na
-  // validação UUID (400). Passamos o id real até o backend reordenar as rotas.
+  // PUT /users/me cai no handler de /users/:id no Fastify (ordem de registro
+  // das rotas no backend). Passar o id real evita o 400 de validação UUID.
   update: (id: string, data: UpdateMePayload): Promise<UserProfile> =>
     api.put(`/users/${id}`, data).then(r => r.data),
 

@@ -48,8 +48,7 @@ export function useMapCamera() {
     async (coords: Coords) => {
       const map = mapRef.current
       const current = map ? await map.getZoom() : 0
-      // mantém o zoom atual se já estiver acima do limiar — ao tocar num pin
-      // já visível em zoom alto não devemos zoom out
+      // não zoom out quando o pin já está visível
       const target = Math.max(current, FOCUS_ZOOM)
       flyTo(coords, target, 500)
     },
@@ -75,8 +74,7 @@ export function useMapCamera() {
       const lngSpan = maxLng - minLng
       const latSpan = maxLat - minLat
 
-      // pontos coincidentes ou muito próximos: fitBounds zoomaria pro infinito,
-      // então caímos para flyTo com FOCUS_ZOOM
+      // pontos coincidentes: fitBounds zoomaria pro infinito
       if (lngSpan < COINCIDENT_THRESHOLD && latSpan < COINCIDENT_THRESHOLD) {
         const center: Coords = [(minLng + maxLng) / 2, (minLat + maxLat) / 2]
         flyTo(center, FOCUS_ZOOM, duration)

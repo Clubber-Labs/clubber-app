@@ -10,11 +10,6 @@ export const eventKeys = {
 
 export const feedKey = ['feed'] as const
 
-/**
- * Invalida todos os caches que mostram eventos no app: feed, lista do mapa
- * e detalhes de um evento específico. Use após mutações que afetam shape
- * compartilhado (presença, reação, criar/deletar evento, comentar).
- */
 export function invalidateEventViews(
   queryClient: QueryClient,
   eventId?: string,
