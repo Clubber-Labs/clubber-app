@@ -31,8 +31,11 @@ export default function EditProfileScreen() {
   const update = useUpdateProfile(profile?.id ?? '')
   const uploadAvatar = useUploadAvatar()
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [avatarChanged, setAvatarChanged] = useState(false)
 
-  const handlePickAvatar = usePickAvatar(uri => uploadAvatar.mutate(uri))
+  const handlePickAvatar = usePickAvatar(uri =>
+    uploadAvatar.mutate(uri, { onSuccess: () => setAvatarChanged(true) }),
+  )
 
   if (isLoading || !profile) {
     return (
@@ -123,6 +126,7 @@ export default function EditProfileScreen() {
           profile={profile}
           saving={update.isPending}
           inlineError={submitError}
+          avatarChanged={avatarChanged}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
         />

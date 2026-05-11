@@ -16,6 +16,7 @@ type Props = {
   profile: UserProfile
   saving: boolean
   inlineError: string | null
+  avatarChanged?: boolean
   onSubmit: (values: EditProfileInput) => void
   onCancel: () => void
 }
@@ -41,6 +42,7 @@ export function EditProfileForm({
   profile,
   saving,
   inlineError,
+  avatarChanged = false,
   onSubmit,
   onCancel,
 }: Props) {
@@ -198,7 +200,7 @@ export function EditProfileForm({
             label={saving ? 'Salvando...' : 'Salvar'}
             onPress={handleSubmit(onSubmit)}
             loading={saving}
-            disabled={!isDirty || saving}
+            disabled={(!isDirty && !avatarChanged) || saving}
           />
         </View>
       </View>
