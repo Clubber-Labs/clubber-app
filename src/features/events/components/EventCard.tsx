@@ -7,7 +7,6 @@ import { FriendAttendancesStack } from './FriendAttendancesStack'
 import { AttendanceStatusBadge } from './AttendanceStatusBadge'
 import { EventStatusBadge } from './EventStatusBadge'
 import { FeedReasonBanner } from './FeedReasonBanner'
-import { useAuthStore } from '@/features/auth/store/authStore'
 import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { formatRelative } from '@/shared/utils/dateFormat'
@@ -24,7 +23,6 @@ type Props = {
 export function EventCard({ event, onPress, showReason = true }: Props) {
   const [expanded, setExpanded] = useState(false)
   const toggleLike = useToggleLike(event.id)
-  const userId = useAuthStore(s => s.userId)
   const navigateToProfile = useNavigateToProfile()
 
   const liked = event.userLiked
