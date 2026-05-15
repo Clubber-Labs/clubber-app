@@ -7,31 +7,40 @@ import {
   ActivityIndicator,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
+import { useAuthStore } from '@/features/auth/store/authStore'
 import { useEvent } from '@/features/events/hooks/useEvents'
 import { useFollowers } from '@/features/follows/hooks/useFollowList'
 import { useInviteUsers } from '@/features/events/hooks/useInvites'
-import { UserListItem } from '@/features/users/components/UserListItem'
+import { UserAvatar } from '@/shared/components/UserAvatar'
 import { Button } from '@/shared/components/Button'
+import { FormError } from '@/shared/components/FormError'
+import type { FeedAuthor } from '@/shared/types'
+
+type PendingAction = 'selected' | 'all' | null
 
 export default function InvitesScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
+  const viewerId = useAuthStore(s => s.userId)
   const {
     data: event,
     isLoading: eventLoading,
     error: eventError,
   } = useEvent(id)
   const authorId = event?.authorId ?? ''
+  const canInvite =
+    !!event && !event.isPublic && !!viewerId && event.authorId === viewerId
   const {
     data,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     isLoading: followersLoading,
-  } = useFollowers(authorId)
+  } = useFollowers(canInvite ? authorId : '')
   const invite = useInviteUsers(id)
   const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [pendingAction, setPendingAction] = useState<PendingAction>(null)
 
   const followers = useMemo(
     () => data?.pages.flatMap(p => p.data) ?? [],
@@ -49,18 +58,22 @@ export default function InvitesScreen() {
 
   function handleInviteSelected() {
     if (selected.size === 0) return
+    setPendingAction('selected')
     invite.mutate(Array.from(selected), {
       onSuccess: () => router.replace(`/events/${id}/invited`),
+      onSettled: () => setPendingAction(null),
     })
   }
 
   function handleInviteAll() {
+    setPendingAction('all')
     invite.mutate(undefined, {
       onSuccess: () => router.replace(`/events/${id}/invited`),
+      onSettled: () => setPendingAction(null),
     })
   }
 
-  if (eventLoading || (event && followersLoading)) {
+  if (eventLoading) {
     return (
       <View className="flex-1 bg-black items-center justify-center">
         <ActivityIndicator color="#7c3aed" />
@@ -78,28 +91,36 @@ export default function InvitesScreen() {
     )
   }
 
+  // Gate em render: convite só faz sentido pra autor em evento privado.
+  // Backend já bloqueia o POST, mas evitamos a UI inconsistente.
+  if (!canInvite) {
+    return <Redirect href={`/events/${id}`} />
+  }
+
+  if (followersLoading) {
+    return (
+      <View className="flex-1 bg-black items-center justify-center">
+        <ActivityIndicator color="#7c3aed" />
+      </View>
+    )
+  }
+
+  const submitError = invite.error
+    ? 'Não foi possível convidar. Tente novamente.'
+    : null
+
   return (
     <View className="flex-1 bg-black">
       <FlatList
         data={followers}
         keyExtractor={u => u.id}
-        renderItem={({ item }) => {
-          const checked = selected.has(item.id)
-          return (
-            <Pressable onPress={() => toggle(item.id)}>
-              <UserListItem
-                user={item}
-                trailing={
-                  <Ionicons
-                    name={checked ? 'checkbox' : 'square-outline'}
-                    size={22}
-                    color={checked ? '#7c3aed' : '#71717a'}
-                  />
-                }
-              />
-            </Pressable>
-          )
-        }}
+        renderItem={({ item }) => (
+          <FollowerRow
+            user={item}
+            checked={selected.has(item.id)}
+            onToggle={() => toggle(item.id)}
+          />
+        )}
         ItemSeparatorComponent={() => (
           <View className="h-px bg-zinc-900 ml-16" />
         )}
@@ -121,6 +142,7 @@ export default function InvitesScreen() {
 
       {followers.length > 0 && (
         <View className="border-t border-zinc-900 px-4 py-3 gap-2 bg-black">
+          <FormError message={submitError} />
           <Button
             label={
               selected.size > 0
@@ -129,13 +151,16 @@ export default function InvitesScreen() {
             }
             onPress={handleInviteSelected}
             disabled={selected.size === 0 || invite.isPending}
-            loading={invite.isPending && selected.size > 0}
+            loading={pendingAction === 'selected'}
           />
           <Pressable
             onPress={handleInviteAll}
             disabled={invite.isPending}
-            className="py-2 items-center"
+            className="py-2 items-center flex-row justify-center gap-2"
           >
+            {pendingAction === 'all' && (
+              <ActivityIndicator color="#a78bfa" size="small" />
+            )}
             <Text className="text-violet-400 text-sm font-medium">
               Convidar todos os seguidores
             </Text>
@@ -143,5 +168,35 @@ export default function InvitesScreen() {
         </View>
       )}
     </View>
+  )
+}
+
+type RowProps = {
+  user: FeedAuthor
+  checked: boolean
+  onToggle: () => void
+}
+
+function FollowerRow({ user, checked, onToggle }: RowProps) {
+  const fullName = `${user.name} ${user.lastname}`.trim()
+  return (
+    <Pressable
+      onPress={onToggle}
+      className="flex-row items-center gap-3 px-4 py-3"
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked }}
+      accessibilityLabel={fullName}
+    >
+      <UserAvatar name={fullName} avatarUrl={user.avatarUrl} size={44} />
+      <View className="flex-1">
+        <Text className="text-white font-semibold text-sm">{fullName}</Text>
+        <Text className="text-zinc-400 text-xs">@{user.username}</Text>
+      </View>
+      <Ionicons
+        name={checked ? 'checkbox' : 'square-outline'}
+        size={22}
+        color={checked ? '#7c3aed' : '#71717a'}
+      />
+    </Pressable>
   )
 }
