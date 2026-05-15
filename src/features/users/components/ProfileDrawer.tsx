@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   Animated,
   Dimensions,
@@ -16,7 +16,7 @@ type IconName = ComponentProps<typeof Ionicons>['name']
 export type DrawerItem = {
   label: string
   icon: IconName
-  badge?: number
+  badge?: string | number
   onPress: () => void
   destructive?: boolean
 }
@@ -34,20 +34,41 @@ export function ProfileDrawer({ items, header }: Props) {
   const { open, setOpen } = useProfileDrawer()
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current
   const backdropOpacity = useRef(new Animated.Value(0)).current
+  // Modal só desmonta após a animação de saída terminar; senão o drawer
+  // "pisca" sem mostrar o slide-out.
+  const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
+    if (open) {
+      setIsVisible(true)
+      Animated.parallel([
+        Animated.timing(translateX, {
+          toValue: 0,
+          duration: ANIMATION_MS,
+          useNativeDriver: true,
+        }),
+        Animated.timing(backdropOpacity, {
+          toValue: 1,
+          duration: ANIMATION_MS,
+          useNativeDriver: true,
+        }),
+      ]).start()
+      return
+    }
     Animated.parallel([
       Animated.timing(translateX, {
-        toValue: open ? 0 : -DRAWER_WIDTH,
+        toValue: -DRAWER_WIDTH,
         duration: ANIMATION_MS,
         useNativeDriver: true,
       }),
       Animated.timing(backdropOpacity, {
-        toValue: open ? 1 : 0,
+        toValue: 0,
         duration: ANIMATION_MS,
         useNativeDriver: true,
       }),
-    ]).start()
+    ]).start(({ finished }) => {
+      if (finished) setIsVisible(false)
+    })
   }, [open, translateX, backdropOpacity])
 
   function close() {
@@ -59,9 +80,14 @@ export function ProfileDrawer({ items, header }: Props) {
     item.onPress()
   }
 
+  function shouldShowBadge(badge: DrawerItem['badge']): boolean {
+    if (typeof badge === 'number') return badge > 0
+    return typeof badge === 'string' && badge.length > 0
+  }
+
   return (
     <Modal
-      visible={open}
+      visible={isVisible}
       transparent
       animationType="none"
       onRequestClose={close}
@@ -95,7 +121,7 @@ export function ProfileDrawer({ items, header }: Props) {
                     {item.label}
                   </Text>
                 </View>
-                {item.badge !== undefined && item.badge > 0 && (
+                {shouldShowBadge(item.badge) && (
                   <View className="bg-violet-600 rounded-full min-w-5 h-5 px-1.5 items-center justify-center">
                     <Text className="text-white text-xs font-bold">
                       {item.badge}

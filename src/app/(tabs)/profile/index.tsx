@@ -35,7 +35,16 @@ export default function ProfileScreen() {
   const performLogout = useLogout()
   const confirm = useConfirm()
   const { data: requestsData } = useFollowRequests(profile?.isPrivate === true)
-  const pendingRequestsCount = requestsData?.pages?.[0]?.data.length ?? 0
+  const firstRequestsPage = requestsData?.pages?.[0]
+  const pendingFirstPageCount = firstRequestsPage?.data.length ?? 0
+  // Backend não retorna total; quando há próxima página, mostramos "N+" pra
+  // não passar contagem enganosa ao usuário.
+  const pendingRequestsBadge =
+    pendingFirstPageCount > 0
+      ? firstRequestsPage?.nextCursor
+        ? `${pendingFirstPageCount}+`
+        : pendingFirstPageCount
+      : 0
 
   const events = useMemo(
     () => eventsData?.pages.flatMap(p => p.data) ?? [],
@@ -64,7 +73,7 @@ export default function ProfileScreen() {
           {
             label: 'Solicitações de follow',
             icon: 'person-add-outline' as const,
-            badge: pendingRequestsCount,
+            badge: pendingRequestsBadge,
             onPress: () => router.push('/profile/follow-requests'),
           },
         ]
