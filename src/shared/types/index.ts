@@ -40,7 +40,17 @@ export type EventStatus =
   | 'PAST'
   | 'CANCELED'
 
-export type ReactionType = 'LIKE' | 'LOVE' | 'HAHA' | 'WOW' | 'SAD' | 'ANGRY'
+export type FeedReason =
+  | { kind: 'self_created' }
+  | { kind: 'self_interaction' }
+  | { kind: 'friend_created'; user: FeedAuthor }
+  | {
+      kind: 'friend_attending'
+      user: FeedAuthor
+      type: 'CONFIRMED' | 'INTERESTED'
+    }
+  | { kind: 'friend_reacted'; user: FeedAuthor }
+  | { kind: 'friend_commented'; user: FeedAuthor; preview: string }
 
 export type CommentAuthor = FeedAuthor
 
@@ -50,6 +60,8 @@ export type EventComment = {
   createdAt: string
   authorId: string
   author: CommentAuthor
+  reactionsCount: number
+  userLiked: boolean
 }
 
 export type EventImage = {
@@ -76,11 +88,12 @@ export type FeedEvent = {
   address?: string
   category: string
   author: FeedAuthor
-  // /feed inclui friendAttendances (personalizado); /events não retorna esse
-  // campo. Mantido optional pra refletir o contrato real da API.
+  // /feed inclui friendAttendances e reason (personalizados); /events não
+  // retorna esses campos. Optional pra refletir o contrato real da API.
   friendAttendances?: FriendAttendance[]
+  reason?: FeedReason
   recentComments: EventComment[]
-  userReaction: ReactionType | null
+  userLiked: boolean
   userAttendance: AttendanceType | null
   _count: {
     attendances: number
@@ -108,7 +121,7 @@ export type EventDetail = {
   updatedAt: string
   authorId: string
   author: FeedAuthor
-  userReaction: ReactionType | null
+  userLiked: boolean
   userAttendance: AttendanceType | null
   _count: {
     attendances: number
@@ -119,13 +132,6 @@ export type EventDetail = {
 
 export type Attendance = {
   type: AttendanceType
-  userId: string
-  eventId: string
-  createdAt: string
-}
-
-export type Reaction = {
-  type: ReactionType
   userId: string
   eventId: string
   createdAt: string

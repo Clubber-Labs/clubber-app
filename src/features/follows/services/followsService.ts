@@ -33,4 +33,21 @@ export const followsService = {
     api
       .get(`/users/${userId}/following`, { params: buildParams(params) })
       .then(r => r.data),
+
+  listFollowRequests: (
+    params: ListParams = {},
+  ): Promise<CursorPaginatedResponse<FeedAuthor>> =>
+    api
+      .get('/users/me/follow-requests', { params: buildParams(params) })
+      .then(r => r.data),
+
+  acceptFollowRequest: (followerId: string): Promise<void> =>
+    api
+      .post(`/users/me/follow-requests/${followerId}/accept`)
+      .then(() => undefined),
+
+  rejectFollowRequest: (followerId: string): Promise<void> =>
+    api
+      .delete(`/users/me/follow-requests/${followerId}`)
+      .then(() => undefined),
 }

@@ -10,6 +10,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import type { EventDetail } from '@/shared/types'
 import { useEvent } from '@/features/events/hooks/useEvents'
 import { useAuthStore } from '@/features/auth/store/authStore'
+import { isForbiddenError } from '@/shared/lib/apiError'
 import { EventHeader } from '@/features/events/components/EventHeader'
 import { EventMap } from '@/features/events/components/EventMap'
 import { EventAttendanceButton } from '@/features/events/components/EventAttendanceButton'
@@ -31,7 +32,7 @@ function DetailHeader({ event, isAuthor }: HeaderProps) {
         <EventHeader event={event} />
         {isAuthor && (
           <View className="absolute top-3 right-3">
-            <EventActionsButton eventId={event.id} />
+            <EventActionsButton eventId={event.id} isPublic={event.isPublic} />
           </View>
         )}
       </View>
@@ -53,12 +54,28 @@ export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const userId = useAuthStore(state => state.userId)
-  const { data: event, isLoading, isError } = useEvent(id)
+  const { data: event, isLoading, isError, error } = useEvent(id)
 
   if (isLoading) {
     return (
       <View className="flex-1 bg-black items-center justify-center">
         <ActivityIndicator size="large" color="#8b5cf6" />
+      </View>
+    )
+  }
+
+  if (isForbiddenError(error)) {
+    return (
+      <View className="flex-1 bg-black items-center justify-center px-6 gap-3">
+        <Text className="text-white font-semibold text-base text-center">
+          Evento indisponível
+        </Text>
+        <Text className="text-zinc-400 text-center text-sm">
+          Este evento é de um perfil privado. Siga o autor para ver.
+        </Text>
+        <Pressable onPress={() => router.back()}>
+          <Text className="text-violet-400 font-semibold mt-2">Voltar</Text>
+        </Pressable>
       </View>
     )
   }

@@ -8,9 +8,10 @@ import { EventActionsMenu, type EventAction } from './EventActionsMenu'
 
 type Props = {
   eventId: string
+  isPublic: boolean
 }
 
-export function EventActionsButton({ eventId }: Props) {
+export function EventActionsButton({ eventId, isPublic }: Props) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
   const confirm = useConfirm()
@@ -35,6 +36,18 @@ export function EventActionsButton({ eventId }: Props) {
       label: 'Editar',
       onPress: () => router.push(`/events/${eventId}/edit`),
     },
+    ...(!isPublic
+      ? [
+          {
+            label: 'Convidar',
+            onPress: () => router.push(`/events/${eventId}/invites`),
+          },
+          {
+            label: 'Convidados',
+            onPress: () => router.push(`/events/${eventId}/invited`),
+          },
+        ]
+      : []),
     {
       label: 'Excluir evento',
       onPress: handleDelete,

@@ -11,7 +11,6 @@ import { FollowButton } from '@/features/users/components/FollowButton'
 import { ProfileEventsList } from '@/features/users/components/ProfileEventsList'
 import { ProfileLoading } from '@/features/users/components/ProfileLoading'
 import { ProfileEmpty } from '@/features/users/components/ProfileEmpty'
-import { isForbiddenError } from '@/shared/lib/apiError'
 
 export default function UserProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -25,7 +24,11 @@ export default function UserProfileScreen() {
   }, [isOwnProfile, router])
 
   const { data: profile, isLoading: profileLoading } = useUserProfile(id)
-  const eventsQuery = useUserEvents(id)
+  const canSeeContent =
+    isOwnProfile ||
+    !profile?.isPrivate ||
+    profile?.followStatus === 'ACCEPTED'
+  const eventsQuery = useUserEvents(id, canSeeContent)
   const { follow, unfollow } = useFollowUser(id)
 
   const events = useMemo(
@@ -36,8 +39,6 @@ export default function UserProfileScreen() {
   if (profileLoading) return <ProfileLoading />
   if (!profile) return <ProfileEmpty message="Usuário não encontrado." />
 
-  const eventsBlocked = isForbiddenError(eventsQuery.error)
-
   return (
     <View className="flex-1 bg-black">
       <ProfileEventsList
@@ -46,7 +47,7 @@ export default function UserProfileScreen() {
         isFetchingNextPage={eventsQuery.isFetchingNextPage}
         onLoadMore={eventsQuery.fetchNextPage}
         emptyMessage={
-          eventsBlocked
+          !canSeeContent
             ? 'Este perfil é privado. Siga para ver os eventos.'
             : 'Nenhum evento ainda.'
         }

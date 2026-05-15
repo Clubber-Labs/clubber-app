@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter, useSegments } from 'expo-router'
+import { useProfileDrawer } from '@/features/users/store/profileDrawerStore'
 
 type Props = {
   showNotifications?: boolean
@@ -21,8 +22,10 @@ export function GlobalHeader({
 }: Props) {
   const router = useRouter()
   const segments = useSegments()
+  const setDrawerOpen = useProfileDrawer(s => s.setOpen)
 
   const isTabsRoot = segments[0] === '(tabs)' && segments.length <= 2
+  const isProfileTab = segments.includes('profile') && isTabsRoot
   const canGoBack = showBack && !isTabsRoot
 
   function handleBack() {
@@ -39,6 +42,15 @@ export function GlobalHeader({
             className="w-9 h-9 items-center justify-center"
           >
             <Ionicons name="chevron-back" size={26} color="#f4f4f5" />
+          </Pressable>
+        )}
+        {isProfileTab && (
+          <Pressable
+            onPress={() => setDrawerOpen(true)}
+            className="w-9 h-9 items-center justify-center"
+            accessibilityLabel="Abrir menu"
+          >
+            <Ionicons name="menu" size={26} color="#f4f4f5" />
           </Pressable>
         )}
       </View>

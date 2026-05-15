@@ -6,10 +6,9 @@ import type {
   EventStatus,
   Attendance,
   AttendanceType,
-  Reaction,
-  ReactionType,
   EventComment,
   EventPost,
+  FeedAuthor,
   FeedEvent,
 } from '@/shared/types'
 import type { CreateEventPayload } from '../schemas/createEventSchema'
@@ -74,17 +73,23 @@ export const eventsService = {
   cancelAttendance: (eventId: string): Promise<void> =>
     api.delete(`/events/${eventId}/attendances`).then(() => undefined),
 
-  getMyReaction: (eventId: string): Promise<Reaction | null> =>
-    api
-      .get(`/events/${eventId}/reactions`)
-      .then(r => r.data)
-      .catch(() => null),
+  likeEvent: (eventId: string): Promise<void> =>
+    api.post(`/events/${eventId}/reactions`).then(() => undefined),
 
-  setReaction: (eventId: string, type: ReactionType): Promise<Reaction> =>
-    api.post(`/events/${eventId}/reactions`, { type }).then(r => r.data),
-
-  removeReaction: (eventId: string): Promise<void> =>
+  unlikeEvent: (eventId: string): Promise<void> =>
     api.delete(`/events/${eventId}/reactions`).then(() => undefined),
+
+  likeComment: (commentId: string): Promise<void> =>
+    api.post(`/comments/${commentId}/reactions`).then(() => undefined),
+
+  unlikeComment: (commentId: string): Promise<void> =>
+    api.delete(`/comments/${commentId}/reactions`).then(() => undefined),
+
+  likePost: (postId: string): Promise<void> =>
+    api.post(`/posts/${postId}/reactions`).then(() => undefined),
+
+  unlikePost: (postId: string): Promise<void> =>
+    api.delete(`/posts/${postId}/reactions`).then(() => undefined),
 
   listComments: (
     eventId: string,
@@ -127,4 +132,15 @@ export const eventsService = {
       })
       .then(r => r.data)
   },
+
+  inviteUsers: (eventId: string, invitedIds?: string[]): Promise<void> =>
+    api
+      .post(
+        `/events/${eventId}/invites`,
+        invitedIds ? { invitedIds } : undefined,
+      )
+      .then(() => undefined),
+
+  listInvites: (eventId: string): Promise<FeedAuthor[]> =>
+    api.get(`/events/${eventId}/invites`).then(r => r.data),
 }

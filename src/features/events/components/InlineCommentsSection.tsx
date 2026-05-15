@@ -42,7 +42,11 @@ export function InlineCommentsSection({ eventId }: Props) {
             </Text>
           ) : (
             comments.map(comment => (
-              <CommentItem key={comment.id} comment={comment} />
+              <CommentItem
+                key={comment.id}
+                comment={comment}
+                eventId={eventId}
+              />
             ))
           )}
 

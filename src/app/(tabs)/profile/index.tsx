@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
-import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { View, Text } from 'react-native'
 import { useRouter } from 'expo-router'
 import {
   useMyProfile,
@@ -9,12 +8,17 @@ import {
 import { useUserEvents } from '@/features/users/hooks/useUserEvents'
 import { usePickAvatar } from '@/features/users/hooks/usePickAvatar'
 import { useLogout } from '@/features/auth/hooks/useLogout'
+import { useFollowRequests } from '@/features/follows/hooks/useFollowRequests'
 import { useConfirm } from '@/shared/lib/confirm'
 import { ProfileHeader } from '@/features/users/components/ProfileHeader'
 import { ProfileStats } from '@/features/users/components/ProfileStats'
 import { ProfileEventsList } from '@/features/users/components/ProfileEventsList'
 import { ProfileLoading } from '@/features/users/components/ProfileLoading'
 import { ProfileEmpty } from '@/features/users/components/ProfileEmpty'
+import {
+  ProfileDrawer,
+  type DrawerItem,
+} from '@/features/users/components/ProfileDrawer'
 
 export default function ProfileScreen() {
   const router = useRouter()
@@ -30,6 +34,17 @@ export default function ProfileScreen() {
   const uploadAvatar = useUploadAvatar()
   const performLogout = useLogout()
   const confirm = useConfirm()
+  const { data: requestsData } = useFollowRequests(profile?.isPrivate === true)
+  const firstRequestsPage = requestsData?.pages?.[0]
+  const pendingFirstPageCount = firstRequestsPage?.data.length ?? 0
+  // Backend não retorna total; quando há próxima página, mostramos "N+" pra
+  // não passar contagem enganosa ao usuário.
+  const pendingRequestsBadge =
+    pendingFirstPageCount > 0
+      ? firstRequestsPage?.nextCursor
+        ? `${pendingFirstPageCount}+`
+        : pendingFirstPageCount
+      : 0
 
   const events = useMemo(
     () => eventsData?.pages.flatMap(p => p.data) ?? [],
@@ -51,6 +66,39 @@ export default function ProfileScreen() {
   if (profileLoading) return <ProfileLoading />
   if (!profile)
     return <ProfileEmpty message="Não foi possível carregar o perfil." />
+
+  const drawerItems: DrawerItem[] = [
+    ...(profile.isPrivate
+      ? [
+          {
+            label: 'Solicitações de follow',
+            icon: 'person-add-outline' as const,
+            badge: pendingRequestsBadge,
+            onPress: () => router.push('/profile/follow-requests'),
+          },
+        ]
+      : []),
+    {
+      label: 'Sobre o app',
+      icon: 'information-circle-outline',
+      onPress: () => router.push('/about'),
+    },
+    {
+      label: 'Sair',
+      icon: 'log-out-outline',
+      onPress: handleLogout,
+      destructive: true,
+    },
+  ]
+
+  const drawerHeader = (
+    <View className="pt-12 pb-4 px-5 border-b border-zinc-900">
+      <Text className="text-white font-bold text-lg">
+        {profile.name} {profile.lastname}
+      </Text>
+      <Text className="text-zinc-400 text-sm mt-0.5">@{profile.username}</Text>
+    </View>
+  )
 
   return (
     <View className="flex-1 bg-black">
@@ -79,38 +127,15 @@ export default function ProfileScreen() {
                 router.push(`/users/${profile.id}/following`)
               }
             />
-            <View className="flex-row items-center justify-between mt-4 mb-3">
+            <View className="mt-4 mb-3">
               <Text className="text-zinc-400 text-xs font-semibold uppercase tracking-wider">
                 Eventos
               </Text>
-              <View className="flex-row items-center gap-4">
-                <Pressable
-                  onPress={() => router.push('/about')}
-                  className="flex-row items-center gap-1 py-1"
-                  accessibilityLabel="Sobre o app"
-                >
-                  <Ionicons
-                    name="information-circle-outline"
-                    size={16}
-                    color="#a1a1aa"
-                  />
-                  <Text className="text-zinc-400 text-xs font-medium">
-                    Sobre
-                  </Text>
-                </Pressable>
-                <Pressable
-                  onPress={handleLogout}
-                  className="flex-row items-center gap-1 py-1"
-                  accessibilityLabel="Sair da conta"
-                >
-                  <Ionicons name="log-out-outline" size={16} color="#a1a1aa" />
-                  <Text className="text-zinc-400 text-xs font-medium">Sair</Text>
-                </Pressable>
-              </View>
             </View>
           </>
         }
       />
+      <ProfileDrawer items={drawerItems} header={drawerHeader} />
     </View>
   )
 }
