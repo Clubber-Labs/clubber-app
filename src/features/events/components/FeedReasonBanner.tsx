@@ -1,6 +1,9 @@
 import { View, Text } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import type { FeedReason } from '../utils/feedReason'
+import type { ComponentProps } from 'react'
+import type { FeedReason } from '@/shared/types'
+
+type IconName = ComponentProps<typeof Ionicons>['name']
 
 type Props = {
   reason: FeedReason
@@ -18,24 +21,34 @@ export function FeedReasonBanner({ reason }: Props) {
   )
 }
 
-function render(reason: FeedReason): {
-  icon: 'sparkles' | 'star' | 'chatbubble' | 'create'
-  text: string
-} {
+function render(reason: FeedReason): { icon: IconName; text: string } {
   switch (reason.kind) {
     case 'self_created':
       return { icon: 'create', text: 'Você criou este evento' }
+    case 'self_interaction':
+      return { icon: 'sync', text: 'Você interagiu com este evento' }
     case 'friend_created':
-      return { icon: 'sparkles', text: `${reason.name} criou um evento` }
-    case 'friend_attending':
-      if (reason.others === 0) {
-        return { icon: 'star', text: `${reason.name} vai a este evento` }
+      return {
+        icon: 'sparkles',
+        text: `${reason.user.name} criou um evento`,
       }
+    case 'friend_attending':
       return {
         icon: 'star',
-        text: `${reason.name} e mais ${reason.others} ${reason.others === 1 ? 'amigo' : 'amigos'} vão`,
+        text:
+          reason.type === 'CONFIRMED'
+            ? `${reason.user.name} vai a este evento`
+            : `${reason.user.name} tem interesse neste evento`,
+      }
+    case 'friend_reacted':
+      return {
+        icon: 'heart',
+        text: `${reason.user.name} curtiu este evento`,
       }
     case 'friend_commented':
-      return { icon: 'chatbubble', text: `${reason.name} comentou neste evento` }
+      return {
+        icon: 'chatbubble',
+        text: `${reason.user.name} comentou: "${reason.preview}"`,
+      }
   }
 }

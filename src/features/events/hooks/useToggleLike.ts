@@ -1,17 +1,13 @@
-// Padrão otimista canônico — ver CLAUDE.md → "Tratamento de erros e feedback".
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { eventsService } from '../services/eventsService'
 import type {
   CursorPaginatedResponse,
   EventDetail,
   FeedEvent,
-  ReactionType,
 } from '@/shared/types'
 import type { InfiniteData, QueryKey } from '@tanstack/react-query'
 
 type FeedCache = InfiniteData<CursorPaginatedResponse<FeedEvent>>
-// Feed pode ter múltiplas variações cacheadas (por filtro). Operamos em todas
-// via setQueriesData/getQueriesData em vez de cache exato.
 type FeedSnapshot = Array<[QueryKey, FeedCache | undefined]>
 
 function patchFeedEvent(
@@ -44,15 +40,15 @@ export function useToggleLike(eventId: string) {
   const detailKey = ['events', eventId]
 
   return useMutation({
-    mutationFn: async (currentReaction: ReactionType | null) => {
-      if (currentReaction === 'LIKE') {
-        await eventsService.removeReaction(eventId)
-        return null
+    mutationFn: async (currentlyLiked: boolean) => {
+      if (currentlyLiked) {
+        await eventsService.unlikeEvent(eventId)
+        return false
       }
-      await eventsService.setReaction(eventId, 'LIKE')
-      return 'LIKE' as const
+      await eventsService.likeEvent(eventId)
+      return true
     },
-    onMutate: async currentReaction => {
+    onMutate: async currentlyLiked => {
       await queryClient.cancelQueries({ queryKey: feedKey })
       await queryClient.cancelQueries({ queryKey: detailKey })
 
@@ -61,14 +57,13 @@ export function useToggleLike(eventId: string) {
       })
       const prevDetail = queryClient.getQueryData<EventDetail>(detailKey)
 
-      const willLike = currentReaction !== 'LIKE'
-      const reactionDelta = willLike ? 1 : -1
-      const nextReaction: ReactionType | null = willLike ? 'LIKE' : null
+      const nextLiked = !currentlyLiked
+      const reactionDelta = nextLiked ? 1 : -1
 
       queryClient.setQueriesData<FeedCache>({ queryKey: feedKey }, old =>
         patchFeedEvent(old, eventId, event => ({
           ...event,
-          userReaction: nextReaction,
+          userLiked: nextLiked,
           _count: {
             ...event._count,
             reactions: event._count.reactions + reactionDelta,
@@ -78,7 +73,7 @@ export function useToggleLike(eventId: string) {
       queryClient.setQueryData<EventDetail>(detailKey, old =>
         patchDetail(old, event => ({
           ...event,
-          userReaction: nextReaction,
+          userLiked: nextLiked,
           _count: {
             ...event._count,
             reactions: event._count.reactions + reactionDelta,

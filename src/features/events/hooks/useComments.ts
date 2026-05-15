@@ -65,7 +65,63 @@ export function useAddComment(eventId: string) {
   })
 }
 
-// Optimistic remove — ver CLAUDE.md → "Tratamento de erros e feedback".
+export function useToggleCommentLike(eventId: string) {
+  const queryClient = useQueryClient()
+  const key = commentsKey(eventId)
+
+  function patch(
+    cache: CommentsCache | undefined,
+    commentId: string,
+    nextLiked: boolean,
+  ): CommentsCache | undefined {
+    if (!cache) return cache
+    return {
+      ...cache,
+      pages: cache.pages.map(page => ({
+        ...page,
+        data: page.data.map(comment =>
+          comment.id === commentId
+            ? {
+                ...comment,
+                userLiked: nextLiked,
+                reactionsCount: comment.reactionsCount + (nextLiked ? 1 : -1),
+              }
+            : comment,
+        ),
+      })),
+    }
+  }
+
+  return useMutation({
+    mutationFn: async ({
+      commentId,
+      currentlyLiked,
+    }: {
+      commentId: string
+      currentlyLiked: boolean
+    }) => {
+      if (currentlyLiked) {
+        await eventsService.unlikeComment(commentId)
+        return false
+      }
+      await eventsService.likeComment(commentId)
+      return true
+    },
+    onMutate: async ({ commentId, currentlyLiked }) => {
+      await queryClient.cancelQueries({ queryKey: key })
+      const prev = queryClient.getQueryData<CommentsCache>(key)
+      queryClient.setQueryData<CommentsCache>(key, old =>
+        patch(old, commentId, !currentlyLiked),
+      )
+      return { prev }
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.prev) queryClient.setQueryData(key, ctx.prev)
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
+  })
+}
+
 export function useDeleteComment(eventId: string) {
   const queryClient = useQueryClient()
   const key = commentsKey(eventId)
