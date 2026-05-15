@@ -32,7 +32,7 @@ function DetailHeader({ event, isAuthor }: HeaderProps) {
         <EventHeader event={event} />
         {isAuthor && (
           <View className="absolute top-3 right-3">
-            <EventActionsButton eventId={event.id} />
+            <EventActionsButton eventId={event.id} isPublic={event.isPublic} />
           </View>
         )}
       </View>
