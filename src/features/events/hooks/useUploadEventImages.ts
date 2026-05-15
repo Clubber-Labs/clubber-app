@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { eventsService } from '../services/eventsService'
-import { eventKeys } from './cacheKeys'
+import { invalidateEventViews } from './cacheKeys'
 
 type Args = { eventId: string; uris: string[] }
 
@@ -17,8 +17,7 @@ export function useUploadEventImages() {
     },
     onSettled: (data, _err, vars) => {
       const id = data?.eventId ?? vars.eventId
-      queryClient.invalidateQueries({ queryKey: eventKeys.detail(id) })
-      queryClient.invalidateQueries({ queryKey: eventKeys.list })
+      invalidateEventViews(queryClient, id)
     },
   })
 }

@@ -15,9 +15,10 @@ type Props = {
 }
 
 export function EventImagePicker({ uris, onChange, maxCount = 5 }: Props) {
+  const remaining = Math.max(1, maxCount - uris.length)
   const pick = usePickImages(
     picked => onChange([...uris, ...picked].slice(0, maxCount)),
-    { maxCount },
+    { maxCount: remaining },
   )
 
   function remove(index: number) {
