@@ -21,9 +21,9 @@ export function UserEventCard({ event, onPress }: Props) {
       onPress={onPress}
       className="flex-row bg-zinc-900 rounded-xl overflow-hidden mb-3"
     >
-      {event.imageUrl ? (
+      {event.images[0] ? (
         <Image
-          source={{ uri: event.imageUrl }}
+          source={{ uri: event.images[0].url }}
           className="w-24 h-24"
           resizeMode="cover"
         />

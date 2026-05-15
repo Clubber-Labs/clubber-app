@@ -1,4 +1,5 @@
 import { api } from '@/shared/lib/api'
+import { buildImageFile } from '@/shared/utils/imageUpload'
 import type {
   CursorPaginatedResponse,
   EventDetail,
@@ -121,6 +122,16 @@ export const eventsService = {
 
   deletePost: (eventId: string, postId: string): Promise<void> =>
     api.delete(`/events/${eventId}/posts/${postId}`).then(() => undefined),
+
+  uploadEventImage: (eventId: string, uri: string): Promise<EventDetail> => {
+    const form = new FormData()
+    form.append('file', buildImageFile(uri, 'event.jpg'))
+    return api
+      .post(`/events/${eventId}/images`, form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .then(r => r.data)
+  },
 
   inviteUsers: (eventId: string, invitedIds?: string[]): Promise<void> =>
     api

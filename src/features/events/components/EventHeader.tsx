@@ -1,7 +1,8 @@
-import { View, Text, Image } from 'react-native'
+import { View, Text } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { formatEventDate } from '@/shared/utils/dateFormat'
 import { EventStatusBadge } from './EventStatusBadge'
+import { EventImagesCarousel } from './EventImagesCarousel'
 import type { EventDetail } from '@/shared/types'
 
 type Props = {
@@ -11,16 +12,7 @@ type Props = {
 export function EventHeader({ event }: Props) {
   return (
     <View>
-      {event.imageUrl ? (
-        <Image
-          source={{ uri: event.imageUrl }}
-          className="w-full h-56 bg-zinc-800"
-        />
-      ) : (
-        <View className="w-full h-56 bg-violet-700 items-center justify-center">
-          <Ionicons name="calendar" size={56} color="#ffffff" />
-        </View>
-      )}
+      <EventImagesCarousel images={event.images} />
 
       <View className="pt-4 gap-3">
         <View className="flex-row items-center gap-2 flex-wrap">
