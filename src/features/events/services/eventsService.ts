@@ -9,6 +9,7 @@ import type {
   ReactionType,
   EventComment,
   EventPost,
+  FeedAuthor,
   FeedEvent,
 } from '@/shared/types'
 import type { CreateEventPayload } from '../schemas/createEventSchema'
@@ -116,4 +117,15 @@ export const eventsService = {
 
   deletePost: (eventId: string, postId: string): Promise<void> =>
     api.delete(`/events/${eventId}/posts/${postId}`).then(() => undefined),
+
+  inviteUsers: (eventId: string, invitedIds?: string[]): Promise<void> =>
+    api
+      .post(
+        `/events/${eventId}/invites`,
+        invitedIds ? { invitedIds } : undefined,
+      )
+      .then(() => undefined),
+
+  listInvites: (eventId: string): Promise<FeedAuthor[]> =>
+    api.get(`/events/${eventId}/invites`).then(r => r.data),
 }
