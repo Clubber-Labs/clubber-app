@@ -78,9 +78,9 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
           )}
         </View>
 
-        {event.imageUrl && (
+        {event.images[0] && (
           <Image
-            source={{ uri: event.imageUrl }}
+            source={{ uri: event.images[0].url }}
             className="w-full h-48 mt-3 bg-zinc-800"
             resizeMode="cover"
           />

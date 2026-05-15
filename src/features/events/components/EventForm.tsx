@@ -13,6 +13,7 @@ import {
   createEventSchema,
   type CreateEventInput,
 } from '../schemas/createEventSchema'
+import type { ReactNode } from 'react'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { DatePicker } from '@/shared/components/DatePicker'
@@ -44,6 +45,7 @@ type Props = {
   submitLabel: string
   submittingLabel: string
   errorMessage: string
+  imagesSection?: ReactNode
 }
 
 export function EventForm({
@@ -54,6 +56,7 @@ export function EventForm({
   submitLabel,
   submittingLabel,
   errorMessage,
+  imagesSection,
 }: Props) {
   const {
     control,
@@ -278,6 +281,8 @@ export function EventForm({
             )}
           />
         </View>
+
+        {imagesSection}
 
         <FormError message={submitError ? errorMessage : null} />
 

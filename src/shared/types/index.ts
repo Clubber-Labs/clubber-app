@@ -52,11 +52,19 @@ export type EventComment = {
   author: CommentAuthor
 }
 
+export type EventImage = {
+  id: string
+  url: string
+  format?: string
+  size?: number
+  order: number
+}
+
 export type FeedEvent = {
   id: string
   title: string
   description?: string
-  imageUrl?: string
+  images: EventImage[]
   isPublic: boolean
   createdAt: string
   date: string
@@ -93,7 +101,7 @@ export type EventDetail = {
   address?: string
   category: string
   isPublic: boolean
-  imageUrl?: string
+  images: EventImage[]
   maxCapacity?: number
   canceledAt?: string | null
   createdAt: string
@@ -161,7 +169,7 @@ export type UserEventSummary = {
   title: string
   date: string
   category: string
-  imageUrl?: string | null
+  images: EventImage[]
   address?: string | null
   isPublic: boolean
   attendancesCount?: number

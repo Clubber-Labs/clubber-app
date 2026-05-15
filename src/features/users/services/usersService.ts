@@ -1,4 +1,5 @@
 import { api } from '@/shared/lib/api'
+import { buildImageFile } from '@/shared/utils/imageUpload'
 import type {
   CursorPaginatedResponse,
   UserProfile,
@@ -17,22 +18,6 @@ export type UpdateMePayload = {
   birthdate?: string
 }
 
-type ReactNativeFile = { uri: string; name: string; type: string }
-
-// RN aceita { uri, name, type } em FormData.append; tipagens DOM não.
-declare global {
-  interface FormData {
-    append(name: string, value: ReactNativeFile): void
-  }
-}
-
-function buildAvatarFile(uri: string): ReactNativeFile {
-  const filename = uri.split('/').pop() ?? 'avatar.jpg'
-  const ext = filename.split('.').pop()?.toLowerCase() ?? 'jpg'
-  const type = ext === 'png' ? 'image/png' : 'image/jpeg'
-  return { uri, name: filename, type }
-}
-
 export const usersService = {
   getMe: (): Promise<UserProfile> => api.get('/users/me').then(r => r.data),
 
@@ -46,7 +31,7 @@ export const usersService = {
 
   uploadAvatar: (uri: string): Promise<UserProfile> => {
     const form = new FormData()
-    form.append('avatar', buildAvatarFile(uri))
+    form.append('avatar', buildImageFile(uri, 'avatar.jpg'))
     return api
       .patch('/users/me/avatar', form, {
         headers: { 'Content-Type': 'multipart/form-data' },
