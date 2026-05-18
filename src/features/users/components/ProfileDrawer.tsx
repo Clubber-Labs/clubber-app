@@ -34,9 +34,8 @@ export function ProfileDrawer({ items, header }: Props) {
   const { open, setOpen } = useProfileDrawer()
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current
   const backdropOpacity = useRef(new Animated.Value(0)).current
-  // Modal só desmonta após a animação de saída terminar; senão o drawer
-  // "pisca" sem mostrar o slide-out.
   const [isVisible, setIsVisible] = useState(false)
+  const pendingActionRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
     if (open) {
@@ -67,7 +66,14 @@ export function ProfileDrawer({ items, header }: Props) {
         useNativeDriver: true,
       }),
     ]).start(({ finished }) => {
-      if (finished) setIsVisible(false)
+      if (finished) {
+        setIsVisible(false)
+        const action = pendingActionRef.current
+        if (action) {
+          pendingActionRef.current = null
+          action()
+        }
+      }
     })
   }, [open, translateX, backdropOpacity])
 
@@ -76,8 +82,8 @@ export function ProfileDrawer({ items, header }: Props) {
   }
 
   function handleItemPress(item: DrawerItem) {
+    pendingActionRef.current = item.onPress
     close()
-    item.onPress()
   }
 
   function shouldShowBadge(badge: DrawerItem['badge']): boolean {
