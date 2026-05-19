@@ -104,6 +104,18 @@ Cenários a testar (mesmos do iOS):
 3. Adicionar o **key hash de release** ao Facebook (mesmo lugar do debug — também aceita múltiplos).
 4. Submeter o app Facebook pra **App Review** (sair do Development mode) — sem isso, só usuários listados em "App roles" conseguem logar.
 
+## Sobre o `ios/Info.plist` versionado
+
+**Contexto:** `ios/` é commitado (bare workflow), incluindo `Info.plist` com URL schemes (`fb<APP_ID>`, `com.googleusercontent.apps.<IOS_CLIENT_ID>`) e chaves `FacebookAppID`/`FacebookClientToken`. Esses valores vêm do `.env.local` no momento em que `expo prebuild --clean` foi rodado.
+
+**Importante:**
+- A **fonte de verdade** é o `app.config.js` + `.env.local`. O `Info.plist` é só o output do último prebuild local.
+- Pra mudar credenciais (trocar de app Facebook, rotacionar Client ID), edita o `.env.local` e roda `pnpm exec expo prebuild --platform ios --clean` — o `Info.plist` é regenerado.
+- `FACEBOOK_CLIENT_TOKEN` **não é secret** ([doc oficial do Facebook](https://developers.facebook.com/docs/facebook-login/security#client_token)): vai no app binário publicado. App ID e Client IDs do Google também são "públicos" por design.
+- Em produção via EAS Build, o prebuild roda com `eas secret:create` no servidor — o `Info.plist` do repo não vai pra build de produção.
+
+**Quando o `Info.plist` do repo deve ser commitado de novo:** sempre que algum plugin nativo for adicionado/removido OU credenciais sociais forem trocadas E você quer que o próximo dev consiga buildar sem rodar prebuild local. Caso contrário, deixa o último estado vencer.
+
 ## Antes de cada release
 
 - [ ] Bump `version` em `app.config.js`

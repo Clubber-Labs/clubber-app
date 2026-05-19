@@ -52,6 +52,14 @@ export function useRestoreSession() {
       if (session.kind === 'authenticated') {
         if (session.profile) {
           setProfileIncomplete(isProfileIncomplete(session.profile))
+        } else {
+          // me() falhou (offline/500). Não queremos travar a UI esperando,
+          // mas tampouco liberar o feed se o perfil estiver incompleto.
+          // Retry em background — quando resolver, AuthGuard reage.
+          authService
+            .me()
+            .then(profile => setProfileIncomplete(isProfileIncomplete(profile)))
+            .catch(() => {})
         }
         setUser(session.userId)
       }

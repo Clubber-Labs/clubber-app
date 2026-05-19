@@ -55,6 +55,11 @@ export default {
     userInterfaceStyle: "automatic",
     ios: {
       bundleIdentifier: 'com.netobonato.connectaimobile',
+      // Team ID da Apple Developer (Team ID é público, vai no binário publicado).
+      // O prebuild --clean reseta o DEVELOPMENT_TEAM no project.pbxproj se essa
+      // chave não estiver no config — quebrava code sign local no Xcode.
+      // Override via APPLE_TEAM_ID pra CI/ambientes alternativos.
+      appleTeamId: process.env.APPLE_TEAM_ID || 'K238P4B9K4',
     },
     android: {
       package: 'com.netobonato.connectaimobile',

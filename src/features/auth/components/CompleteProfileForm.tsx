@@ -9,6 +9,7 @@ import {
 import { Button } from '@/shared/components/Button'
 import { DatePicker } from '@/shared/components/DatePicker'
 import { parseLocalDate } from '@/shared/utils/dateFormat'
+import { formatPhone } from '@/shared/utils/masks'
 import type { UserProfile } from '@/shared/types'
 
 type Props = {
@@ -114,12 +115,12 @@ export function CompleteProfileForm({
           render={({ field: { onChange, value, onBlur } }) => (
             <TextInput
               className={`${inputBase} ${errors.phone ? inputErr : inputOk}`}
-              placeholder="DDD + número"
+              placeholder="(11) 99999-9999"
               placeholderTextColor="#71717a"
-              keyboardType="number-pad"
-              onChangeText={onChange}
+              keyboardType="phone-pad"
+              onChangeText={text => onChange(text.replace(/\D/g, ''))}
               onBlur={onBlur}
-              value={value}
+              value={formatPhone(value ?? '')}
             />
           )}
         />
