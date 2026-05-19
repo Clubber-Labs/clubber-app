@@ -26,7 +26,7 @@ export function StepPassword({ control, errors }: Props) {
             name="password"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.password ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                className={`border ${errors.password ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                 placeholder="Mínimo 8 caracteres"
                 placeholderTextColor="#71717a"
                 onChangeText={onChange}
@@ -36,7 +36,7 @@ export function StepPassword({ control, errors }: Props) {
             )}
           />
           {errors.password && (
-            <Text className="text-red-500 text-xs">
+            <Text className="text-white text-xs">
               {errors.password.message}
             </Text>
           )}
@@ -51,7 +51,7 @@ export function StepPassword({ control, errors }: Props) {
             name="confirmPassword"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.confirmPassword ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                className={`border ${errors.confirmPassword ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                 placeholder="Repita a senha"
                 placeholderTextColor="#71717a"
                 onChangeText={onChange}
@@ -61,7 +61,7 @@ export function StepPassword({ control, errors }: Props) {
             )}
           />
           {errors.confirmPassword && (
-            <Text className="text-red-500 text-xs">
+            <Text className="text-white text-xs">
               {errors.confirmPassword.message}
             </Text>
           )}

@@ -24,7 +24,7 @@ export function LoginForm() {
         name="email"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            className={`border ${errors.email ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+            className={`border ${errors.email ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
             placeholder="E-mail"
             placeholderTextColor="#71717a"
             onChangeText={onChange}
@@ -35,7 +35,7 @@ export function LoginForm() {
         )}
       />
       {errors.email && (
-        <Text className="text-red-500 text-sm">{errors.email.message}</Text>
+        <Text className="text-white text-sm">{errors.email.message}</Text>
       )}
 
       <Controller
@@ -43,7 +43,7 @@ export function LoginForm() {
         name="password"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            className={`border ${errors.password ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+            className={`border ${errors.password ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
             placeholder="Senha"
             placeholderTextColor="#71717a"
             onChangeText={onChange}
@@ -53,7 +53,7 @@ export function LoginForm() {
         )}
       />
       {errors.password && (
-        <Text className="text-red-500 text-sm">{errors.password.message}</Text>
+        <Text className="text-white text-sm">{errors.password.message}</Text>
       )}
 
       <FormError

@@ -9,6 +9,6 @@ type Props = {
 export function FormError({ message }: Props) {
   if (!message) return null
   return (
-    <Text className="text-red-500 text-sm text-center">{message}</Text>
+    <Text className="text-white text-sm text-center">{message}</Text>
   )
 }

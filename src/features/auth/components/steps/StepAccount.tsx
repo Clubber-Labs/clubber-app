@@ -27,7 +27,7 @@ export function StepAccount({ control, errors }: Props) {
             name="username"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.username ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                className={`border ${errors.username ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                 placeholder="joaosilva"
                 placeholderTextColor="#71717a"
                 onChangeText={onChange}
@@ -37,7 +37,7 @@ export function StepAccount({ control, errors }: Props) {
             )}
           />
           {errors.username && (
-            <Text className="text-red-500 text-xs">
+            <Text className="text-white text-xs">
               {errors.username.message}
             </Text>
           )}
@@ -50,7 +50,7 @@ export function StepAccount({ control, errors }: Props) {
             name="email"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.email ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                className={`border ${errors.email ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                 placeholder="joao@email.com"
                 placeholderTextColor="#71717a"
                 onChangeText={onChange}
@@ -61,7 +61,7 @@ export function StepAccount({ control, errors }: Props) {
             )}
           />
           {errors.email && (
-            <Text className="text-red-500 text-xs">{errors.email.message}</Text>
+            <Text className="text-white text-xs">{errors.email.message}</Text>
           )}
         </View>
 
@@ -72,7 +72,7 @@ export function StepAccount({ control, errors }: Props) {
             name="phone"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.phone ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                className={`border ${errors.phone ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                 placeholder="(11) 99999-9999"
                 placeholderTextColor="#71717a"
                 onChangeText={text => onChange(text.replace(/\D/g, ''))}
@@ -82,7 +82,7 @@ export function StepAccount({ control, errors }: Props) {
             )}
           />
           {errors.phone && (
-            <Text className="text-red-500 text-xs">{errors.phone.message}</Text>
+            <Text className="text-white text-xs">{errors.phone.message}</Text>
           )}
         </View>
       </View>

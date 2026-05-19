@@ -1,5 +1,51 @@
 import 'dotenv/config'
 
+// Reverse-DNS do iOS Client ID = URL scheme que o Google Sign-In registra no
+// Info.plist. Ex: 1234-abc.apps.googleusercontent.com → com.googleusercontent.apps.1234-abc
+function reversedGoogleIosClientId() {
+  const id = process.env.GOOGLE_IOS_CLIENT_ID
+  if (!id || !id.endsWith('.apps.googleusercontent.com')) return null
+  return `com.googleusercontent.apps.${id.replace('.apps.googleusercontent.com', '')}`
+}
+
+// Plugins de login social só entram se as credenciais estão preenchidas com
+// valores plausíveis. Sem isso o build trava com erro críptico antes de chegar
+// nas telas — e o user perde o caminho do login tradicional.
+function socialAuthPlugins() {
+  const plugins = []
+  const iosUrlScheme = reversedGoogleIosClientId()
+  if (iosUrlScheme) {
+    plugins.push(['@react-native-google-signin/google-signin', { iosUrlScheme }])
+  } else {
+    console.warn(
+      '[app.config] GOOGLE_IOS_CLIENT_ID ausente ou inválido — Google Sign-In desabilitado neste build.',
+    )
+  }
+
+  const fbAppId = process.env.FACEBOOK_APP_ID
+  const fbToken = process.env.FACEBOOK_CLIENT_TOKEN
+  if (fbAppId && /^\d{10,}$/.test(fbAppId) && fbToken && fbToken.length >= 20) {
+    plugins.push([
+      'react-native-fbsdk-next',
+      {
+        appID: fbAppId,
+        clientToken: fbToken,
+        displayName: 'ConnectAI',
+        scheme: `fb${fbAppId}`,
+        advertiserIDCollectionEnabled: false,
+        autoLogAppEventsEnabled: false,
+        isAutoInitEnabled: true,
+      },
+    ])
+  } else {
+    console.warn(
+      '[app.config] FACEBOOK_APP_ID/CLIENT_TOKEN ausentes ou inválidos — Facebook Login desabilitado neste build.',
+    )
+  }
+
+  return plugins
+}
+
 export default {
   expo: {
     name: "connectai-mobile",
@@ -38,11 +84,15 @@ export default {
         cameraPermission: "Precisamos da câmera para fotos de perfil e eventos",
         // Não usamos áudio em nenhum lugar; remove NSMicrophoneUsageDescription.
         microphonePermission: false
-      }]
+      }],
+      ...socialAuthPlugins()
     ],
     extra: {
       apiUrl: process.env.API_URL,
       mapboxAccessToken: process.env.MAPBOX_ACCESS_TOKEN,
+      googleWebClientId: process.env.GOOGLE_WEB_CLIENT_ID,
+      googleIosClientId: process.env.GOOGLE_IOS_CLIENT_ID,
+      facebookAppId: process.env.FACEBOOK_APP_ID,
       eas: {
         projectId: "89ff5c01-195a-42ea-a8d0-94425a85a89d"
       }

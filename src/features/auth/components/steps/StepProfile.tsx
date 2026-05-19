@@ -26,7 +26,7 @@ export function StepProfile({ control, errors }: Props) {
             name="bio"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.bio ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                className={`border ${errors.bio ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                 placeholder="Conte algo sobre você..."
                 placeholderTextColor="#71717a"
                 onChangeText={onChange}
@@ -37,7 +37,7 @@ export function StepProfile({ control, errors }: Props) {
             )}
           />
           {errors.bio && (
-            <Text className="text-red-500 text-xs">{errors.bio.message}</Text>
+            <Text className="text-white text-xs">{errors.bio.message}</Text>
           )}
         </View>
 

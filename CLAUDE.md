@@ -15,7 +15,7 @@
 - **Mapas:** @rnmapbox/maps
 - **Push notifications:** expo-notifications
 - **Build / CI:** EAS (Expo Application Services)
-- **Package manager:** npm
+- **Package manager:** pnpm
 
 ---
 
@@ -23,12 +23,12 @@
 
 ```bash
 # Desenvolvimento
-npx expo start              # inicia o Metro bundler
-npx expo run:ios            # compila e roda no simulador iOS
-npx expo run:android        # compila e roda no emulador Android
+pnpm exec expo start          # inicia o Metro bundler
+pnpm exec expo run:ios        # compila e roda no simulador iOS
+pnpm exec expo run:android    # compila e roda no emulador Android
 
 # Build
-npx expo prebuild           # gera as pastas ios/ e android/ (necessário após mudar plugins)
+pnpm exec expo prebuild       # gera as pastas ios/ e android/ (necessário após mudar plugins)
 eas build --profile development   # build de desenvolvimento via EAS
 eas build --profile preview       # build de preview (TestFlight / APK interno)
 eas build --profile production    # build de produção (App Store / Play Store)
@@ -39,7 +39,7 @@ eas whoami                  # verificar conta logada
 eas secret:create           # adicionar variável de ambiente segura no EAS
 
 # Qualidade de código
-npx tsc --noEmit            # verificação de tipos
+pnpm exec tsc --noEmit      # verificação de tipos
 ```
 
 ---
@@ -763,11 +763,11 @@ eas secret:create --scope project --name NOME --value VALOR
 ### Scripts
 
 ```bash
-npm run lint          # reporta erros de lint
-npm run lint:fix      # corrige automaticamente o que for possível
-npm run format        # formata todos os arquivos em src/
-npm run format:check  # verifica formatação sem modificar (uso em CI)
-npm run typecheck     # verificação de tipos TypeScript (tsc --noEmit)
+pnpm lint          # reporta erros de lint
+pnpm lint:fix      # corrige automaticamente o que for possível
+pnpm format        # formata todos os arquivos em src/
+pnpm format:check  # verifica formatação sem modificar (uso em CI)
+pnpm typecheck     # verificação de tipos TypeScript (tsc --noEmit)
 ```
 
 ### Regras ativas

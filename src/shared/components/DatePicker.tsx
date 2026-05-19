@@ -46,7 +46,7 @@ export function DatePicker({
     <>
       <Pressable
         onPress={() => setOpen(true)}
-        className={`border ${hasError ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5`}
+        className={`border ${hasError ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5`}
       >
         <Text
           className={

@@ -28,7 +28,7 @@ export function StepPersonal({ control, errors }: Props) {
               name="name"
               render={({ field: { onChange, value } }) => (
                 <TextInput
-                  className={`border ${errors.name ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                  className={`border ${errors.name ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                   placeholder="João"
                   placeholderTextColor="#71717a"
                   onChangeText={onChange}
@@ -38,7 +38,7 @@ export function StepPersonal({ control, errors }: Props) {
               )}
             />
             {errors.name && (
-              <Text className="text-red-500 text-xs">
+              <Text className="text-white text-xs">
                 {errors.name.message}
               </Text>
             )}
@@ -51,7 +51,7 @@ export function StepPersonal({ control, errors }: Props) {
               name="lastname"
               render={({ field: { onChange, value } }) => (
                 <TextInput
-                  className={`border ${errors.lastname ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                  className={`border ${errors.lastname ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                   placeholder="Silva"
                   placeholderTextColor="#71717a"
                   onChangeText={onChange}
@@ -61,7 +61,7 @@ export function StepPersonal({ control, errors }: Props) {
               )}
             />
             {errors.lastname && (
-              <Text className="text-red-500 text-xs">
+              <Text className="text-white text-xs">
                 {errors.lastname.message}
               </Text>
             )}
@@ -86,7 +86,7 @@ export function StepPersonal({ control, errors }: Props) {
             )}
           />
           {errors.birthdate && (
-            <Text className="text-red-500 text-xs">
+            <Text className="text-white text-xs">
               {errors.birthdate.message}
             </Text>
           )}

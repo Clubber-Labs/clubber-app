@@ -33,11 +33,83 @@ Pendências e configurações que precisam ser revisadas antes do primeiro build
 5. Rodar `npx expo prebuild --platform ios` pra regenerar entitlements com `aps-environment`
 6. **Resolver o item acima** (`aps-environment` Debug vs Release) ANTES do primeiro build de produção, senão push falha em release
 
+## Android
+
+### Login social (Google + Facebook) — habilitar pra Android
+
+**Contexto:** o login social foi implementado e validado em iOS primeiro. O código (`useSocialLogin`, wrappers de SDK, etc.) é o mesmo em ambas as plataformas — o que falta é a parte de config nativa do Android. Sem isso, os botões Google/Facebook na tela de login crasham em device Android.
+
+**Pré-requisitos pra extrair credenciais:**
+
+1. Instalar JDK no macOS (não vem por padrão — o `keytool` do macOS é só um stub que aponta pra Java.com):
+   ```bash
+   brew install --cask temurin@17
+   ```
+   Configurar `JAVA_HOME` no `~/.config/fish/config.fish`:
+   ```fish
+   set -gx JAVA_HOME (/usr/libexec/java_home -v 17)
+   set -gx PATH $JAVA_HOME/bin $PATH
+   ```
+
+2. Garantir que `~/.android/debug.keystore` existe (criado automaticamente no 1º `expo run:android`, ou manualmente via `keytool -genkey` — senha padrão `android`).
+
+**Extrair SHA-1 (Google OAuth Android Client):**
+
+```bash
+keytool -keystore ~/.android/debug.keystore -list -v -alias androiddebugkey -storepass android | grep SHA1:
+```
+
+Formato esperado: `SHA1: AB:CD:EF:01:23:...` (hex com `:`).
+
+**Extrair Key Hash (Facebook Android platform):**
+
+```bash
+keytool -exportcert -alias androiddebugkey -keystore ~/.android/debug.keystore -storepass android | openssl sha1 -binary | openssl base64
+```
+
+Formato esperado: string base64 de ~28 chars terminando em `=`.
+
+**Registros a fazer nos painéis:**
+
+1. **Google Cloud Console** → APIs & Services → Credentials → criar **OAuth Client ID** tipo **Android**:
+   - Package name: `com.netobonato.connectaimobile`
+   - SHA-1 fingerprint: o valor do passo anterior
+   - Não precisa adicionar nada no `.env.local` — o SDK Android usa o `GOOGLE_WEB_CLIENT_ID` como `serverClientId` e descobre o Android Client pelo SHA-1.
+
+2. **Facebook Developer Portal** → App → Settings → Basic → **+ Add Platform → Android**:
+   - Google Play Package Name: `com.netobonato.connectaimobile`
+   - Class Name: vazio
+   - Key Hashes: o valor base64 do passo anterior
+
+3. Em **Products → Facebook Login → Quick Start → Android**: clicar Next até o fim (não precisa copiar nenhum código — o plugin `react-native-fbsdk-next` já cobre o `AndroidManifest.xml`).
+
+**Validar:**
+
+```bash
+pnpm exec expo run:android   # build dev
+```
+
+Cenários a testar (mesmos do iOS):
+- Cancelar popup Google/Facebook → volta silencioso, sem banner
+- Login com conta nova → vai pra `/complete-profile` → completar → feed
+- Modo avião + tap → banner de erro de rede
+- Login tradicional continua funcionando
+
+### Login social — SHA-1 da keystore de **release**
+
+**Quando for buildar release (Play Store):** o SHA-1 da debug keystore **não vale** pra build de produção — EAS Build/Play Store usa outra keystore. Pra release funcionar:
+
+1. Pegar SHA-1 da keystore de produção via `eas credentials` (`eas credentials --platform android`) — ele mostra o fingerprint da keystore que o EAS gerencia.
+2. Adicionar esse SHA-1 ao mesmo **Android OAuth Client** no Google Cloud (campo aceita múltiplos SHA-1 — um pra debug, um pra release).
+3. Adicionar o **key hash de release** ao Facebook (mesmo lugar do debug — também aceita múltiplos).
+4. Submeter o app Facebook pra **App Review** (sair do Development mode) — sem isso, só usuários listados em "App roles" conseguem logar.
+
 ## Antes de cada release
 
 - [ ] Bump `version` em `app.config.js`
 - [ ] Verificar que todos os secrets estão configurados no EAS (`eas secret:list`)
 - [ ] Confirmar `API_URL` apontando pra produção
-- [ ] Rodar `npx tsc --noEmit` e `npm run lint` localmente
+- [ ] Rodar `pnpm typecheck` e `pnpm lint` localmente
 - [ ] Smoke test no simulador iOS e device físico Android
 - [ ] Atribuição da Mapbox/OpenStreetMap acessível na tela "Sobre" (perfil → Sobre)
+- [ ] Login social validado em Android (ver seção "Android" acima) — se ainda não foi feito

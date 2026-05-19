@@ -38,7 +38,7 @@ export function LocationPicker({
   return (
     <View className="gap-2">
       <View
-        className={`rounded-2xl overflow-hidden border ${hasError ? 'border-red-400' : 'border-zinc-800'}`}
+        className={`rounded-2xl overflow-hidden border ${hasError ? 'border-white' : 'border-zinc-800'}`}
         style={{ height: 240 }}
       >
         <Mapbox.MapView

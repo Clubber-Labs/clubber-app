@@ -1,24 +1,20 @@
-import { useEffect, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import { View, Text, TextInput, Switch, Pressable } from 'react-native'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
-  editProfileSchema,
-  type EditProfileInput,
-} from '../schemas/editProfileSchema'
+  completeProfileSchema,
+  type CompleteProfileInput,
+} from '../schemas/completeProfileSchema'
 import { Button } from '@/shared/components/Button'
 import { DatePicker } from '@/shared/components/DatePicker'
-import { FormError } from '@/shared/components/FormError'
 import { parseLocalDate } from '@/shared/utils/dateFormat'
 import type { UserProfile } from '@/shared/types'
 
 type Props = {
   profile: UserProfile
   saving: boolean
-  inlineError: string | null
-  avatarChanged?: boolean
-  onSubmit: (values: EditProfileInput) => void
-  onCancel: () => void
+  onSubmit: (values: CompleteProfileInput) => void
 }
 
 const inputBase =
@@ -26,7 +22,7 @@ const inputBase =
 const inputOk = 'border-zinc-800'
 const inputErr = 'border-white'
 
-function defaultsFromProfile(profile: UserProfile): EditProfileInput {
+function defaultsFromProfile(profile: UserProfile): Partial<CompleteProfileInput> {
   return {
     name: profile.name,
     lastname: profile.lastname,
@@ -38,30 +34,30 @@ function defaultsFromProfile(profile: UserProfile): EditProfileInput {
   }
 }
 
-export function EditProfileForm({
+export function CompleteProfileForm({
   profile,
   saving,
-  inlineError,
-  avatarChanged = false,
   onSubmit,
-  onCancel,
 }: Props) {
   const {
     control,
     handleSubmit,
-    reset,
-    formState: { errors, isDirty },
-  } = useForm<EditProfileInput>({
-    resolver: zodResolver(editProfileSchema),
+    formState: { errors },
+  } = useForm<CompleteProfileInput>({
+    resolver: zodResolver(completeProfileSchema),
     defaultValues: defaultsFromProfile(profile),
   })
 
-  useEffect(() => {
-    reset(defaultsFromProfile(profile))
-  }, [profile, reset])
-
   return (
     <View className="gap-4">
+      {!!profile.email && (
+        <Field label="E-mail">
+          <View className={`${inputBase} ${inputOk} opacity-70`}>
+            <Text className="text-base text-zinc-300">{profile.email}</Text>
+          </View>
+        </Field>
+      )}
+
       <Field label="Nome" error={errors.name?.message}>
         <Controller
           control={control}
@@ -118,6 +114,7 @@ export function EditProfileForm({
           render={({ field: { onChange, value, onBlur } }) => (
             <TextInput
               className={`${inputBase} ${errors.phone ? inputErr : inputOk}`}
+              placeholder="DDD + número"
               placeholderTextColor="#71717a"
               keyboardType="number-pad"
               onChangeText={onChange}
@@ -189,21 +186,11 @@ export function EditProfileForm({
         )}
       />
 
-      <FormError message={inlineError} />
-
-      <View className="flex-row gap-3 mt-2">
-        <View className="flex-1">
-          <Button label="Cancelar" onPress={onCancel} variant="secondary" />
-        </View>
-        <View className="flex-1">
-          <Button
-            label={saving ? 'Salvando...' : 'Salvar'}
-            onPress={handleSubmit(onSubmit)}
-            loading={saving}
-            disabled={(!isDirty && !avatarChanged) || saving}
-          />
-        </View>
-      </View>
+      <Button
+        label={saving ? 'Salvando...' : 'Concluir'}
+        onPress={handleSubmit(onSubmit)}
+        loading={saving}
+      />
     </View>
   )
 }

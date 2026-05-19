@@ -87,7 +87,7 @@ export function EventForm({
             name="title"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.title ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                className={`border ${errors.title ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
                 placeholder="Festival de música no parque"
                 placeholderTextColor="#71717a"
                 value={value}
@@ -96,7 +96,7 @@ export function EventForm({
             )}
           />
           {errors.title && (
-            <Text className="text-red-500 text-xs">{errors.title.message}</Text>
+            <Text className="text-white text-xs">{errors.title.message}</Text>
           )}
         </View>
 
@@ -107,7 +107,7 @@ export function EventForm({
             name="description"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.description ? 'border-red-400' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white min-h-[96px]`}
+                className={`border ${errors.description ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white min-h-[96px]`}
                 placeholder="Conte mais sobre o evento..."
                 placeholderTextColor="#71717a"
                 value={value ?? ''}
@@ -118,7 +118,7 @@ export function EventForm({
             )}
           />
           {errors.description && (
-            <Text className="text-red-500 text-xs">
+            <Text className="text-white text-xs">
               {errors.description.message}
             </Text>
           )}
@@ -141,7 +141,7 @@ export function EventForm({
             )}
           />
           {errors.date && (
-            <Text className="text-red-500 text-xs">{errors.date.message}</Text>
+            <Text className="text-white text-xs">{errors.date.message}</Text>
           )}
         </View>
 
@@ -165,7 +165,7 @@ export function EventForm({
             )}
           />
           {errors.endDate && (
-            <Text className="text-red-500 text-xs">
+            <Text className="text-white text-xs">
               {errors.endDate.message}
             </Text>
           )}
@@ -194,7 +194,7 @@ export function EventForm({
             )}
           />
           {errors.category && (
-            <Text className="text-red-500 text-xs">
+            <Text className="text-white text-xs">
               {errors.category.message}
             </Text>
           )}
@@ -223,7 +223,7 @@ export function EventForm({
             )}
           />
           {errors.address && (
-            <Text className="text-red-500 text-xs">
+            <Text className="text-white text-xs">
               {errors.address.message}
             </Text>
           )}
@@ -258,7 +258,7 @@ export function EventForm({
             )}
           />
           {(errors.latitude || errors.longitude) && (
-            <Text className="text-red-500 text-xs">
+            <Text className="text-white text-xs">
               Toque no mapa para escolher o local
             </Text>
           )}
