@@ -434,7 +434,6 @@
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 				DEVELOPMENT_TEAM = "K238P4B9K4";
-				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 			};
 			name = Release;

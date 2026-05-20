@@ -104,6 +104,16 @@ Cenários a testar (mesmos do iOS):
 3. Adicionar o **key hash de release** ao Facebook (mesmo lugar do debug — também aceita múltiplos).
 4. Submeter o app Facebook pra **App Review** (sair do Development mode) — sem isso, só usuários listados em "App roles" conseguem logar.
 
+### `CODE_SIGN_IDENTITY = "Apple Development"` na config Release (cuidado pós-prebuild)
+
+**Problema:** com `appleTeamId` setado em `app.config.js`, o `expo prebuild --clean` aplica `CODE_SIGN_IDENTITY = "Apple Development"` **em ambas** as configs (Debug e Release) do target principal no `project.pbxproj`. Isso pode quebrar archive/IPA local de produção via Xcode — Release deveria usar Automatic Signing (vazio) ou `"Apple Distribution"`.
+
+**Fix manual após cada `prebuild --clean`:** remover a linha `CODE_SIGN_IDENTITY = "Apple Development";` apenas do bloco `13B07F95... /* Release */` no `ios/connectaimobile.xcodeproj/project.pbxproj` (manter no Debug). Manter `DEVELOPMENT_TEAM` e `CODE_SIGN_STYLE = Automatic` — o Xcode escolhe a identity correta.
+
+**Quando isso importa:** apenas pra archive local via Xcode (TestFlight manual). **EAS Build não é afetado** — ele tem seu próprio fluxo de assinatura com credenciais armazenadas no servidor; o pbxproj local é sobrescrito.
+
+**Solução permanente (TODO):** mover `CODE_SIGN_IDENTITY` pra `ios/Config/Local.xcconfig` (já gitignored) ou criar um post-prebuild script. Por enquanto, ajustar manualmente é mais simples e o EAS dispensa pra prod.
+
 ## Sobre o `ios/Info.plist` versionado
 
 **Contexto:** `ios/` é commitado (bare workflow), incluindo `Info.plist` com URL schemes (`fb<APP_ID>`, `com.googleusercontent.apps.<IOS_CLIENT_ID>`) e chaves `FacebookAppID`/`FacebookClientToken`. Esses valores vêm do `.env.local` no momento em que `expo prebuild --clean` foi rodado.

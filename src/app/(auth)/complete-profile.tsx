@@ -5,6 +5,7 @@ import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { useCompleteProfile } from '@/features/auth/hooks/useCompleteProfile'
 import { useLogout } from '@/features/auth/hooks/useLogout'
 import { CompleteProfileForm } from '@/features/auth/components/CompleteProfileForm'
+import { Button } from '@/shared/components/Button'
 import { useBanner } from '@/shared/lib/banner'
 import { useConfirm } from '@/shared/lib/confirm'
 import { getConflictMessage } from '@/shared/utils/conflictMessage'
@@ -12,7 +13,7 @@ import { toLocalIsoDate } from '@/shared/utils/dateFormat'
 import type { CompleteProfileInput } from '@/features/auth/schemas/completeProfileSchema'
 
 export default function CompleteProfileScreen() {
-  const { data: profile, isLoading } = useMyProfile()
+  const { data: profile, isLoading, isError, refetch } = useMyProfile()
   const { mutate: complete, isPending } = useCompleteProfile(profile?.id ?? '')
   const logout = useLogout()
   const confirm = useConfirm()
@@ -75,9 +76,20 @@ export default function CompleteProfileScreen() {
             Faltam algumas informações pra você começar a usar o ConnectAI.
           </Text>
 
-          {isLoading || !profile ? (
+          {isLoading ? (
             <View className="items-center py-12">
               <ActivityIndicator color="#a78bfa" />
+            </View>
+          ) : isError || !profile ? (
+            <View className="items-center py-12 gap-4">
+              <Text className="text-white text-base text-center">
+                Não conseguimos carregar seu perfil. Verifique sua conexão.
+              </Text>
+              <Button
+                label="Tentar novamente"
+                onPress={() => refetch()}
+                variant="secondary"
+              />
             </View>
           ) : (
             <CompleteProfileForm
