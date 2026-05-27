@@ -18,6 +18,12 @@ const TABS: TabConfig[] = [
     icon: 'home-outline',
     iconFocused: 'home',
   },
+  {
+    name: 'search/index',
+    title: 'Buscar',
+    icon: 'search-outline',
+    iconFocused: 'search',
+  },
   { name: 'map/index', title: 'Mapa', icon: 'map-outline', iconFocused: 'map' },
   {
     name: 'profile/index',

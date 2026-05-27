@@ -2,6 +2,7 @@ import { View, Text, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter, useSegments } from 'expo-router'
 import { useProfileDrawer } from '@/features/users/store/profileDrawerStore'
+import { useFollowRequests } from '@/features/follows/hooks/useFollowRequests'
 
 type Props = {
   showNotifications?: boolean
@@ -28,6 +29,11 @@ export function GlobalHeader({
   const isProfileTab = segments.includes('profile') && isTabsRoot
   const canGoBack = showBack && !isTabsRoot
 
+  // Habilita só quando o hambúrguer aparece — evita request extra nas outras
+  // tabs. Cache do TanStack Query absorve o custo entre visitas.
+  const { data: requestsData } = useFollowRequests(isProfileTab)
+  const hasPendingRequests = (requestsData?.pages[0]?.data.length ?? 0) > 0
+
   function handleBack() {
     if (onBackPress) return onBackPress()
     router.back()
@@ -48,9 +54,16 @@ export function GlobalHeader({
           <Pressable
             onPress={() => setDrawerOpen(true)}
             className="w-9 h-9 items-center justify-center"
-            accessibilityLabel="Abrir menu"
+            accessibilityLabel={
+              hasPendingRequests
+                ? 'Abrir menu (solicitações pendentes)'
+                : 'Abrir menu'
+            }
           >
             <Ionicons name="menu" size={26} color="#f4f4f5" />
+            {hasPendingRequests && (
+              <View className="absolute top-1.5 right-1 w-2 h-2 bg-red-500 rounded-full" />
+            )}
           </Pressable>
         )}
       </View>

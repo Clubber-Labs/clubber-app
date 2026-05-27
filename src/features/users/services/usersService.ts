@@ -5,6 +5,7 @@ import type {
   UserProfile,
   UserEventSummary,
 } from '@/shared/types'
+import type { SearchUserItem } from '../schemas/searchUserSchema'
 
 type ListParams = { limit?: number; cursor?: string }
 
@@ -46,6 +47,22 @@ export const usersService = {
     api
       .get(`/users/${userId}/events`, {
         params: { limit, ...(cursor ? { cursor } : {}) },
+      })
+      .then(r => r.data),
+
+  searchUsers: ({
+    q,
+    cursor,
+    signal,
+  }: {
+    q: string
+    cursor?: string
+    signal?: AbortSignal
+  }): Promise<CursorPaginatedResponse<SearchUserItem>> =>
+    api
+      .get('/users/search', {
+        params: { q, ...(cursor ? { cursor } : {}) },
+        signal,
       })
       .then(r => r.data),
 }
