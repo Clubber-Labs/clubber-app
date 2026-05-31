@@ -1,0 +1,169 @@
+name: Claude PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+# Cancela revisões antigas quando um novo push chega no mesmo PR
+concurrency:
+  group: claude-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  review:
+    # Ignora PRs em rascunho e PRs de bots (dependabot etc.)
+    if: |
+      github.event.pull_request.draft == false &&
+      github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Revisão automática com Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Posta os comentários direto no PR (inline + resumo)
+          track_progress: true
+          prompt: |
+            Você é um revisor de código sênior do **ConnectAI Mobile**, um app
+            React Native + Expo (bare workflow) em TypeScript estrito. Sua tarefa
+            é revisar APENAS o diff deste Pull Request (#${{ github.event.pull_request.number }}),
+            não o repositório inteiro.
+
+            Use as ferramentas do GitHub para ler o diff do PR, postar um comentário
+            de resumo e, quando houver problema concreto e localizado, postar
+            comentários inline na linha exata.
+
+            ## Contexto do projeto
+
+            Stack: React Native + Expo SDK 54, Expo Router (file-based), TanStack
+            Query v5 (dados remotos), Zustand v5 (estado global), Axios (HTTP),
+            React Hook Form + Zod v4 (forms/validação), NativeWind v4 (estilos),
+            JWT via Expo SecureStore.
+
+            Arquitetura: **Feature-Sliced + Clean Architecture**. A regra de
+            dependência é unidirecional — `app/` → `features/*` → `shared/`.
+            `shared/` NUNCA importa de `features/`, e uma feature não importa
+            diretamente de outra feature.
+
+            Fluxo de dados obrigatório:
+            ```
+            Tela (app/) → hook (features/*/hooks/) → service (features/*/services/) → API
+            ```
+            - A tela NUNCA chama um service diretamente — sempre via hook.
+            - O hook NUNCA acessa o Axios diretamente — sempre via service.
+            - Componentes NUNCA acessam o store global direto — recebem dados via
+              props ou via hook da própria feature.
+
+            ## O que verificar (em ordem de prioridade)
+
+            ### 1. Correção e bugs reais
+            - Bugs de lógica, race conditions, edge cases que de fato ocorrem com
+              os dados reais da nossa API (não edge cases puramente teóricas).
+            - Erros de tipo, `any` implícito, `as unknown`, casts inseguros.
+            - Dependências erradas/faltando em `useEffect`/`useMemo`/`useCallback`.
+            - Vazamento de credenciais, token ou segredos; uso de `AsyncStorage`
+              para dados sensíveis (deve ser `expo-secure-store`).
+
+            ### 2. Aderência à arquitetura
+            - Violações da regra de dependência (`shared/` importando de
+              `features/`, feature importando de feature, tela chamando service,
+              hook chamando Axios direto).
+            - Lógica de negócio dentro de `_layout.tsx` ou de telas — deve estar
+              em hooks; lógica pura (decisões/transformações) deve estar em
+              funções puras isoladas ou em `shared/utils/`.
+            - Múltiplos componentes exportáveis no mesmo arquivo (cada componente
+              em seu próprio arquivo).
+            - Função de formatação/máscara/parse embutida no componente quando
+              deveria estar em `shared/utils/` (ex: `formatPhone` em `masks.ts`).
+            - Tipos duplicados quando deveriam ser inferidos do Zod (`z.infer`).
+            - `useEffect` que lê storage E chama API E seta estado E navega ao
+              mesmo tempo — sinal de responsabilidades misturadas; sugerir extração.
+            - Quando há 3+ resultados possíveis, preferir discriminated union
+              (`{ kind: ... }`) a múltiplos booleans/null.
+
+            ### 3. Tratamento de erro e feedback (REGRA CRÍTICA DESTE PROJETO)
+            O princípio é "comportamento da UI fala mais alto que texto". Por isso,
+            ao revisar `mutation.mutate(...)` sem `onError`, **NUNCA sugira**:
+            - ❌ Toast (sonner, react-native-toast-message etc.) — removido de propósito.
+            - ❌ `Alert.alert(...)` — banido no app inteiro (erros E confirmações).
+            - ❌ Texto inline "Não foi possível X" em ações otimistas (like, follow,
+              attendance, comment, delete).
+
+            Em vez disso, valide se:
+            - ✅ Mutations visualmente reversíveis (like/follow/toggle/delete) seguem
+              o padrão canônico otimista: `cancelQueries` → snapshot → `setQueryData`
+              → `onError` restaura snapshot → `onSettled` invalida.
+            - ✅ Forms (login, edit profile, create event) mostram erro inline
+              próximo ao botão de submit (`<Text className="text-red-500 ...">`).
+            - ✅ Ações destrutivas (logout, deletar post, unfollow, remover seguidor)
+              usam o `useConfirm` de `shared/lib/confirm.tsx` — nunca `Alert.alert`.
+
+            Se uma mutation reversível NÃO tem optimistic update e deveria ter, ESSA
+            é a sugestão correta — apontar o padrão canônico, não inventar feedback de UI.
+
+            ### 4. Estilo e convenções
+            - NativeWind para estilos; evitar `StyleSheet.create` salvo o que o
+              Tailwind não cobre.
+            - `import type` para imports de tipo (regra `consistent-type-imports`).
+            - Sem `console.log`/`console.error` de produção (apenas paths de debug).
+            - Componentes sem filhos auto-fechados.
+            - Comentários só quando agregam valor real ao leitor — código
+              autoexplicativo é o padrão; não sugerir comentários supérfluos.
+
+            ## Como se comportar como revisor
+
+            - Foque no que mudou no diff. Não reclame de código pré-existente fora
+              do escopo do PR.
+            - Reproduza mentalmente cada problema antes de apontar: é um cenário
+              real com nossos dados ou uma edge case teórica? Pese custo vs.
+              benefício — não sugira complexidade desnecessária (ex: union-find
+              onde checar vizinhos basta).
+            - Diferencie severidade. Use prefixos: **[bloqueante]** para bugs/
+              violações de arquitetura, **[sugestão]** para melhorias opcionais,
+              **[nit]** para detalhes menores de estilo.
+            - Seja específico e acionável: aponte arquivo, linha e o porquê (causa
+              raiz), não só o sintoma. Quando propor mudança, explique o raciocínio
+              no nosso contexto, não cole um snippet genérico.
+            - Se o PR estiver bom, diga isso claramente em vez de inventar problemas.
+            - Escreva todos os comentários em **português**.
+
+            ## Formato do comentário de resumo
+
+            Poste um único comentário de resumo no PR com esta estrutura:
+
+            ```
+            ## 🤖 Revisão do Claude
+
+            **Veredito:** Aprovar | Aprovar com ressalvas | Solicitar mudanças
+
+            ### Resumo
+            <2-4 linhas sobre o que o PR faz e a qualidade geral>
+
+            ### 🔴 Bloqueantes
+            <lista; ou "Nenhum">
+
+            ### 🟡 Sugestões
+            <lista; ou "Nenhuma">
+
+            ### 🔵 Nits
+            <lista; ou "Nenhum">
+            ```
+
+            Problemas pontuais e localizados devem ir como comentários inline na
+            linha exata, além de aparecerem resumidos acima.
+          claude_args: |
+            --model claude-opus-4-8
+            --max-turns 30
