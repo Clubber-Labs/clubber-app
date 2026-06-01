@@ -22,7 +22,7 @@ const STEPS: (keyof RegisterInput)[][] = [
   ['name', 'lastname', 'birthdate'],
   ['username', 'email', 'phone'],
   ['password', 'confirmPassword'],
-  ['bio', 'isPrivate'],
+  ['bio', 'isPrivate', 'preferredCategories'],
 ]
 
 const FIELD_TO_STEP: Partial<Record<keyof RegisterInput, number>> = {
@@ -36,6 +36,7 @@ const FIELD_TO_STEP: Partial<Record<keyof RegisterInput, number>> = {
   confirmPassword: 2,
   bio: 3,
   isPrivate: 3,
+  preferredCategories: 3,
 }
 
 const CONFLICT_FIELD_MAP: {
@@ -80,7 +81,7 @@ export function RegisterForm() {
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
     mode: 'onTouched',
-    defaultValues: { isPrivate: false },
+    defaultValues: { isPrivate: false, preferredCategories: [] },
   })
 
   const totalSteps = STEPS.length

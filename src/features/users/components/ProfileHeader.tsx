@@ -1,6 +1,7 @@
 import { View, Text, Pressable, ActivityIndicator } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { UserAvatar } from '@/shared/components/UserAvatar'
+import { ProfilePreferredCategories } from './ProfilePreferredCategories'
 import type { UserProfile } from '@/shared/types'
 
 type Props = {
@@ -64,6 +65,8 @@ export function ProfileHeader({
           {profile.bio}
         </Text>
       )}
+
+      <ProfilePreferredCategories values={profile.preferredCategories ?? []} />
 
       {isOwnProfile && onEditPress && (
         <Pressable

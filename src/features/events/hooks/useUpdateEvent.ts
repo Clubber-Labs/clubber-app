@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { eventsService } from '../services/eventsService'
 import { eventKeys, invalidateEventViews } from './cacheKeys'
 import {
-  toEventPayload,
+  toUpdateEventPayload,
   type CreateEventInput,
 } from '../schemas/createEventSchema'
 import type { EventDetail } from '@/shared/types'
@@ -13,10 +13,12 @@ export function useUpdateEvent(id: string) {
 
   return useMutation({
     mutationFn: (data: CreateEventInput) =>
-      eventsService.update(id, toEventPayload(data)),
+      eventsService.update(id, toUpdateEventPayload(data)),
     onMutate: async data => {
       // Optimistic na detail pra refletir edição na tela ao voltar.
       // Padrão canônico: ver CLAUDE.md → "Tratamento de erros e feedback".
+      // `address` fica de fora: o PUT não atualiza endereço, então não
+      // mostramos uma mudança que o backend vai descartar.
       await queryClient.cancelQueries({ queryKey: detailKey })
       const prev = queryClient.getQueryData<EventDetail>(detailKey)
       if (prev) {
@@ -26,7 +28,6 @@ export function useUpdateEvent(id: string) {
           description: data.description?.trim() ?? '',
           date: data.date.toISOString(),
           endDate: data.endDate ? data.endDate.toISOString() : null,
-          address: data.address,
           latitude: data.latitude,
           longitude: data.longitude,
           category: data.category,

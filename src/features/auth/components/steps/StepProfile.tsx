@@ -1,6 +1,7 @@
 import { View, Text, TextInput, Switch } from 'react-native'
 import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
+import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import type { RegisterInput } from '../../schemas/registerSchema'
 
 type Props = {
@@ -62,6 +63,27 @@ export function StepProfile({ control, errors }: Props) {
               />
             )}
           />
+        </View>
+
+        <View className="gap-2">
+          <Text className="text-sm font-medium text-zinc-300">
+            Categorias de interesse
+          </Text>
+          <Text className="text-xs text-zinc-500">
+            Ajuda a personalizar seu feed com eventos que combinam com você.
+          </Text>
+          <Controller
+            control={control}
+            name="preferredCategories"
+            render={({ field: { onChange, value } }) => (
+              <CategoryMultiSelect value={value ?? []} onChange={onChange} />
+            )}
+          />
+          {errors.preferredCategories && (
+            <Text className="text-white text-xs">
+              {errors.preferredCategories.message}
+            </Text>
+          )}
         </View>
       </View>
     </View>

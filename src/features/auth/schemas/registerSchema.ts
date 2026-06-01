@@ -27,6 +27,10 @@ export const registerSchema = z
     birthdate: z.date({ error: 'Data de nascimento é obrigatória' }),
     bio: z.string().max(255, 'Máximo 255 caracteres').optional(),
     isPrivate: z.boolean(),
+    preferredCategories: z
+      .array(z.string())
+      .max(10, 'No máximo 10 categorias')
+      .optional(),
   })
   .refine(data => data.password === data.confirmPassword, {
     message: 'As senhas não coincidem',

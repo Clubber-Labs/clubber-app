@@ -51,6 +51,24 @@ export type FeedReason =
     }
   | { kind: 'friend_reacted'; user: FeedAuthor }
   | { kind: 'friend_commented'; user: FeedAuthor; preview: string }
+  // Sem laço social: veio da descoberta (categoria preferida e/ou proximidade).
+  | { kind: 'discovery' }
+
+/**
+ * Categoria de evento servida por GET /categories. `value` é o identificador
+ * canônico do enum (MAIÚSCULAS, estável) que vai/volta da API; `label` é o
+ * rótulo traduzido apenas para exibição. Fonte única de rótulos — nunca
+ * hardcodar labels no app.
+ */
+export type Category = {
+  value: string
+  label: string
+}
+
+export type CategoriesResponse = {
+  locale: string
+  data: Category[]
+}
 
 export type CommentAuthor = FeedAuthor
 
@@ -168,6 +186,9 @@ export type UserProfile = {
   eventsCount: number
   followersCount: number
   followingCount: number
+  // Values do enum EventCategory (MAIÚSCULAS). Sempre array; vazio = []. Não
+  // incluído nos selects reduzidos (/users e /users/search), por isso opcional.
+  preferredCategories?: string[]
 }
 
 export type UserEventSummary = {

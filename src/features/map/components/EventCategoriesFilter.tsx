@@ -1,12 +1,18 @@
 import { ScrollView, Pressable, Text } from 'react-native'
+import { useCategories } from '@/shared/hooks/useCategories'
+import { ALL_CATEGORIES } from '../constants'
 
 type Props = {
+  // Values do enum (mais o sentinel ALL_CATEGORIES). A seleção continua por
+  // value; só a exibição usa o rótulo localizado de /categories.
   categories: string[]
   active: string
   onChange: (category: string) => void
 }
 
 export function EventCategoriesFilter({ categories, active, onChange }: Props) {
+  const { labelFor } = useCategories()
+
   return (
     <ScrollView
       horizontal
@@ -15,6 +21,8 @@ export function EventCategoriesFilter({ categories, active, onChange }: Props) {
     >
       {categories.map(category => {
         const isActive = active === category
+        const label =
+          category === ALL_CATEGORIES ? 'Todas' : labelFor(category)
         return (
           <Pressable
             key={category}
@@ -28,7 +36,7 @@ export function EventCategoriesFilter({ categories, active, onChange }: Props) {
             <Text
               className={`text-xs font-semibold ${isActive ? 'text-white' : 'text-zinc-200'}`}
             >
-              {category}
+              {label}
             </Text>
           </Pressable>
         )

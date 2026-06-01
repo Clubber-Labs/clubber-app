@@ -17,17 +17,9 @@ import type { ReactNode } from 'react'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { DatePicker } from '@/shared/components/DatePicker'
+import { CategorySingleSelect } from '@/shared/components/CategorySingleSelect'
 import { LocationPicker } from './LocationPicker'
 import { AddressAutocomplete } from './AddressAutocomplete'
-
-const CATEGORIES = [
-  'Música',
-  'Esporte',
-  'Tecnologia',
-  'Festa',
-  'Educação',
-  'Outro',
-]
 
 const DEFAULTS: Partial<CreateEventInput> = {
   title: '',
@@ -177,20 +169,7 @@ export function EventForm({
             control={control}
             name="category"
             render={({ field: { onChange, value } }) => (
-              <View className="flex-row flex-wrap gap-2">
-                {CATEGORIES.map(category => {
-                  const active = value === category
-                  return (
-                    <Text
-                      key={category}
-                      onPress={() => onChange(category)}
-                      className={`px-4 py-2 rounded-full text-sm ${active ? 'bg-violet-600 text-white' : 'bg-zinc-800 text-zinc-200'}`}
-                    >
-                      {category}
-                    </Text>
-                  )
-                })}
-              </View>
+              <CategorySingleSelect value={value} onChange={onChange} />
             )}
           />
           {errors.category && (

@@ -15,7 +15,7 @@ import {
 } from '@/features/map/constants'
 import { useMapEvents } from '@/features/map/hooks/useMapEvents'
 import { useMapCamera } from '@/features/map/hooks/useMapCamera'
-import { useUserLocation } from '@/features/map/hooks/useUserLocation'
+import { useUserLocation } from '@/shared/hooks/useUserLocation'
 import { useMapZoomState } from '@/features/map/hooks/useMapZoomState'
 import { useHeatmap } from '@/features/map/hooks/useHeatmap'
 import type { Bbox } from '@/features/map/services/mapService'

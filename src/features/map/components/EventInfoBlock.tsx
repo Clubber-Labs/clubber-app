@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { formatEventDate } from '@/shared/utils/dateFormat'
+import { CategoryBadge } from '@/shared/components/CategoryBadge'
 import { EventStatusBadge } from '@/features/events/components/EventStatusBadge'
 import type { FeedEvent } from '@/shared/types'
 
@@ -13,11 +14,7 @@ export function EventInfoBlock({ event }: Props) {
     <View className="gap-2">
       <View className="flex-row items-center gap-1.5 flex-wrap">
         <EventStatusBadge status={event.status} date={event.date} />
-        <View className="bg-violet-950 px-2 py-0.5 rounded-full">
-          <Text className="text-violet-300 text-[11px] font-semibold">
-            {event.category}
-          </Text>
-        </View>
+        <CategoryBadge value={event.category} />
         {!event.isPublic && (
           <View className="bg-zinc-800 px-2 py-0.5 rounded-full">
             <Text className="text-zinc-300 text-[11px] font-semibold">

@@ -11,11 +11,20 @@ import { useFeed } from '../hooks/useFeed'
 import { EventCard } from '@/features/events/components/EventCard'
 import { EventStatusFilter } from '@/features/events/components/EventStatusFilter'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
+import { useUserLocation } from '@/shared/hooks/useUserLocation'
 import type { EventStatus, FeedEvent } from '@/shared/types'
 
 export function FeedList() {
   const router = useRouter()
   const [statusFilter, setStatusFilter] = useState<EventStatus[]>([])
+  // coords vêm como [lng, lat] (convenção Mapbox). Só envia near com permissão
+  // concedida; negado/erro → feed sem proximidade (descoberta só por categoria).
+  const { coords, status: locationStatus } = useUserLocation()
+  const locationResolved = locationStatus !== 'loading'
+  const near =
+    locationStatus === 'ready' && coords
+      ? { nearLat: coords[1], nearLng: coords[0] }
+      : {}
   const {
     data,
     isLoading,
@@ -24,9 +33,15 @@ export function FeedList() {
     hasNextPage,
     fetchNextPage,
     refetch,
-  } = useFeed({
-    status: statusFilter.length ? statusFilter : undefined,
-  })
+  } = useFeed(
+    {
+      status: statusFilter.length ? statusFilter : undefined,
+      ...near,
+    },
+    // Espera a localização resolver antes do 1º fetch: evita um fetch sem near
+    // seguido de outro com near (reiniciaria a paginação).
+    { enabled: locationResolved },
+  )
   const { refreshing, onRefresh } = usePullRefresh(refetch)
 
   const events = data?.pages.flatMap(page => page.data) ?? []
@@ -38,7 +53,7 @@ export function FeedList() {
         <EventStatusFilter value={statusFilter} onChange={setStatusFilter} />
       </View>
 
-      {isLoading ? (
+      {!locationResolved || isLoading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#8b5cf6" />
         </View>

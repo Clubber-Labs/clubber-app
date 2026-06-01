@@ -19,6 +19,10 @@ function toPayload(data: RegisterInput): RegisterPayload {
     birthdate: data.birthdate.toISOString(),
     bio: data.bio,
     isPrivate: data.isPrivate,
+    // Campo opcional: só envia quando há seleção (vazio → omite).
+    ...(data.preferredCategories?.length
+      ? { preferredCategories: data.preferredCategories }
+      : {}),
   }
 }
 

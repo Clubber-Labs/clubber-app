@@ -49,3 +49,14 @@ export function toEventPayload(data: CreateEventInput): CreateEventPayload {
     ...(endDate ? { endDate: endDate.toISOString() } : {}),
   }
 }
+
+export type UpdateEventPayload = Omit<CreateEventPayload, 'address'>
+
+// PUT /events/:id não aceita `address` (nem `maxCapacity`) — campos extras são
+// ignorados pelo backend. Omitimos `address` para refletir o contrato.
+export function toUpdateEventPayload(
+  data: CreateEventInput,
+): UpdateEventPayload {
+  const { address: _address, ...rest } = toEventPayload(data)
+  return rest
+}
