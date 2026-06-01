@@ -12,6 +12,7 @@ import {
   saveProfileIncomplete,
 } from '@/shared/lib/secureStore'
 import { isUnauthorizedError, isNotFoundError } from '@/shared/lib/apiError'
+import { setUnauthorizedHandler } from '@/shared/lib/api'
 import type { UserProfile } from '@/shared/types'
 
 type SessionResult =
@@ -61,6 +62,15 @@ export function useRestoreSession() {
       setOffline()
     }
   }, [setUser, setProfileIncomplete, setUnauthenticated, setOffline])
+
+  // A reação global a 401 vive na auth (shared/api só sinaliza). Registra antes
+  // do boot (este efeito roda antes do de validação) e limpa no unmount.
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      endSession({ expired: true })
+    })
+    return () => setUnauthorizedHandler(null)
+  }, [])
 
   // Boot: valida antes de entrar nas telas autenticadas.
   useEffect(() => {
