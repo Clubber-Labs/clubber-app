@@ -1,10 +1,25 @@
+import { useEffect } from 'react'
 import { View, Text, ScrollView } from 'react-native'
 import { Link } from 'expo-router'
 import { LoginForm } from '@/features/auth/components/LoginForm'
 import { AuthDivider } from '@/features/auth/components/AuthDivider'
 import { SocialLoginButtons } from '@/features/auth/components/SocialLoginButtons'
+import { useAuthStore } from '@/features/auth/store/authStore'
+import { useBanner } from '@/shared/lib/banner'
 
 export default function LoginScreen() {
+  const sessionExpired = useAuthStore(s => s.sessionExpired)
+  const acknowledgeExpired = useAuthStore(s => s.acknowledgeExpired)
+  const showBanner = useBanner()
+
+  // Sessão caiu por 401 → avisa uma vez e zera o flag (não repete ao revisitar).
+  useEffect(() => {
+    if (sessionExpired) {
+      showBanner('Sua sessão expirou. Entre novamente.')
+      acknowledgeExpired()
+    }
+  }, [sessionExpired, showBanner, acknowledgeExpired])
+
   return (
     <ScrollView
       className="flex-1 bg-black"

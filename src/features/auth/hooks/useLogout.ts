@@ -1,17 +1,14 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'expo-router'
-import { useAuthStore } from '../store/authStore'
-import { clearAuthSession } from '@/shared/lib/secureStore'
+import { endSession } from '../lib/session'
 
+// Logout centralizado: endSession limpa token + caches + estado (e o socket de
+// chat fecha reativamente). A navegação explícita deixa a transição imediata —
+// o AuthGuard também redirecionaria ao ver status 'unauthenticated'.
 export function useLogout() {
-  const queryClient = useQueryClient()
-  const logout = useAuthStore(s => s.logout)
   const router = useRouter()
 
   return async function performLogout() {
-    await clearAuthSession()
-    queryClient.clear()
-    logout()
+    await endSession()
     router.replace('/(auth)/login')
   }
 }

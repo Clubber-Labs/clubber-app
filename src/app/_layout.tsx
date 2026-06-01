@@ -13,47 +13,52 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { queryClient } from '@/shared/lib/queryClient'
 import { ConfirmProvider } from '@/shared/lib/confirm'
 import { BannerProvider } from '@/shared/lib/banner'
-import { clearAuthSession } from '@/shared/lib/secureStore'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useRestoreSession } from '@/features/auth/hooks/useRestoreSession'
+import { endSession } from '@/features/auth/lib/session'
 import { initFacebookSDK } from '@/features/auth/lib/facebookLogin'
+import { SessionUnavailable } from '@/features/auth/components/SessionUnavailable'
 import { ChatRealtimeMount } from '@/features/chat/components/ChatRealtimeMount'
 import { GlobalHeader } from '@/shared/components/GlobalHeader'
 
+// Redirecionamentos por status. 'loading'/'offline' são tratados pelos overlays
+// no RootLayout (não navega), pra não jogar o usuário no login enquanto valida
+// ou está offline no boot.
 function AuthGuard() {
-  useRestoreSession()
-
-  const isAuthenticated = useAuthStore(s => s.isAuthenticated)
-  const hydrated = useAuthStore(s => s.hydrated)
+  const status = useAuthStore(s => s.status)
   const profileIncomplete = useAuthStore(s => s.profileIncomplete)
   const segments = useSegments()
   const router = useRouter()
 
   useEffect(() => {
-    if (!hydrated) return
+    if (status === 'loading' || status === 'offline') return
 
     const inAuthGroup = segments[0] === '(auth)'
     const onCompleteProfile =
       inAuthGroup && (segments as string[])[1] === 'complete-profile'
 
-    if (!isAuthenticated && !inAuthGroup) {
+    if (status === 'unauthenticated' && !inAuthGroup) {
       router.replace('/(auth)/login')
-    } else if (isAuthenticated && profileIncomplete && !onCompleteProfile) {
+    } else if (
+      status === 'authenticated' &&
+      profileIncomplete &&
+      !onCompleteProfile
+    ) {
       router.replace('/(auth)/complete-profile')
-    } else if (isAuthenticated && !profileIncomplete && inAuthGroup) {
+    } else if (status === 'authenticated' && !profileIncomplete && inAuthGroup) {
       router.replace('/(tabs)/feed')
     }
-  }, [hydrated, isAuthenticated, profileIncomplete, segments, router])
+  }, [status, profileIncomplete, segments, router])
 
   return null
 }
 
 export default function RootLayout() {
+  const { retry } = useRestoreSession()
+  const status = useAuthStore(s => s.status)
   const isAuthenticated = useAuthStore(s => s.isAuthenticated)
-  const hydrated = useAuthStore(s => s.hydrated)
   const profileIncomplete = useAuthStore(s => s.profileIncomplete)
   const userId = useAuthStore(s => s.userId)
-  const logout = useAuthStore(s => s.logout)
   useFonts(Ionicons.font)
 
   useEffect(() => {
@@ -63,15 +68,14 @@ export default function RootLayout() {
   }, [])
 
   // 4401 no socket = token inválido e sem rota de refresh → encerra a sessão
-  // (mesmo efeito do interceptor REST 401). O AuthGuard redireciona pro login.
-  const handleChatAuthError = useCallback(async () => {
-    await clearAuthSession()
-    logout()
-  }, [logout])
+  // (mesmo caminho do interceptor REST 401).
+  const handleChatAuthError = useCallback(() => {
+    endSession({ expired: true })
+  }, [])
 
   // Esconde GlobalHeader durante o fluxo de completar perfil — a tela
   // ainda está em (auth), mas isAuthenticated já é true.
-  const showHeader = hydrated && isAuthenticated && !profileIncomplete
+  const showHeader = isAuthenticated && !profileIncomplete
   const chatActive = isAuthenticated && !profileIncomplete && !!userId
 
   return (
@@ -93,6 +97,13 @@ export default function RootLayout() {
                       contentStyle: { backgroundColor: '#000000' },
                     }}
                   />
+                  {/* Gate de sessão: bloqueia as telas até /me validar. */}
+                  {status === 'loading' && (
+                    <View className="absolute inset-0 bg-black" />
+                  )}
+                  {status === 'offline' && (
+                    <SessionUnavailable onRetry={retry} />
+                  )}
                 </View>
               </SafeAreaView>
               <AuthGuard />
