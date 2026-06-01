@@ -1,6 +1,7 @@
 import { Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import type { ComponentProps } from 'react'
+import { useInbox } from '@/features/chat/hooks/useInbox'
 
 type IconName = ComponentProps<typeof Ionicons>['name']
 
@@ -26,6 +27,12 @@ const TABS: TabConfig[] = [
   },
   { name: 'map/index', title: 'Mapa', icon: 'map-outline', iconFocused: 'map' },
   {
+    name: 'messages/index',
+    title: 'Mensagens',
+    icon: 'chatbubble-outline',
+    iconFocused: 'chatbubble',
+  },
+  {
     name: 'profile/index',
     title: 'Perfil',
     icon: 'person-outline',
@@ -34,6 +41,10 @@ const TABS: TabConfig[] = [
 ]
 
 export default function TabsLayout() {
+  // Mantém o badge de não-lidas vivo enquanto a shell autenticada está montada;
+  // o cache é atualizado em tempo real pelo socket (useChatRealtime).
+  const { unreadTotal } = useInbox()
+
   return (
     <Tabs
       screenOptions={{
@@ -52,6 +63,10 @@ export default function TabsLayout() {
           fontSize: 11,
           fontWeight: '500',
         },
+        tabBarBadgeStyle: {
+          backgroundColor: '#7c3aed',
+          fontSize: 10,
+        },
       }}
     >
       {TABS.map(tab => (
@@ -67,6 +82,9 @@ export default function TabsLayout() {
                 color={color}
               />
             ),
+            ...(tab.name === 'messages/index' && unreadTotal > 0
+              ? { tabBarBadge: unreadTotal > 99 ? '99+' : unreadTotal }
+              : {}),
           }}
         />
       ))}

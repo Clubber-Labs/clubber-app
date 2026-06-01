@@ -23,6 +23,16 @@ export type FeedAuthor = {
   avatarUrl?: string | null
 }
 
+// Shape mínimo de usuário usado pelo chat (sender, participants[].user, blocked).
+// Idêntico ao FeedAuthor; nome canônico do contrato de mensageria.
+export type UserMini = {
+  id: string
+  name: string
+  lastname: string
+  username: string
+  avatarUrl?: string | null
+}
+
 export type FriendAttendance = {
   user: FeedAuthor
 }

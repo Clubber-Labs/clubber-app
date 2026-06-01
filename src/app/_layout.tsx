@@ -1,7 +1,7 @@
 import '@/global.css'
 import '@/shared/lib/reactotron'
 import '@/shared/lib/mapbox'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { View } from 'react-native'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useRouter, useSegments } from 'expo-router'
@@ -13,9 +13,11 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { queryClient } from '@/shared/lib/queryClient'
 import { ConfirmProvider } from '@/shared/lib/confirm'
 import { BannerProvider } from '@/shared/lib/banner'
+import { clearAuthSession } from '@/shared/lib/secureStore'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useRestoreSession } from '@/features/auth/hooks/useRestoreSession'
 import { initFacebookSDK } from '@/features/auth/lib/facebookLogin'
+import { ChatRealtimeMount } from '@/features/chat/components/ChatRealtimeMount'
 import { GlobalHeader } from '@/shared/components/GlobalHeader'
 
 function AuthGuard() {
@@ -50,6 +52,8 @@ export default function RootLayout() {
   const isAuthenticated = useAuthStore(s => s.isAuthenticated)
   const hydrated = useAuthStore(s => s.hydrated)
   const profileIncomplete = useAuthStore(s => s.profileIncomplete)
+  const userId = useAuthStore(s => s.userId)
+  const logout = useAuthStore(s => s.logout)
   useFonts(Ionicons.font)
 
   useEffect(() => {
@@ -58,9 +62,17 @@ export default function RootLayout() {
     initFacebookSDK()
   }, [])
 
+  // 4401 no socket = token inválido e sem rota de refresh → encerra a sessão
+  // (mesmo efeito do interceptor REST 401). O AuthGuard redireciona pro login.
+  const handleChatAuthError = useCallback(async () => {
+    await clearAuthSession()
+    logout()
+  }, [logout])
+
   // Esconde GlobalHeader durante o fluxo de completar perfil — a tela
   // ainda está em (auth), mas isAuthenticated já é true.
   const showHeader = hydrated && isAuthenticated && !profileIncomplete
+  const chatActive = isAuthenticated && !profileIncomplete && !!userId
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -84,6 +96,12 @@ export default function RootLayout() {
                 </View>
               </SafeAreaView>
               <AuthGuard />
+              {chatActive && userId && (
+                <ChatRealtimeMount
+                  myId={userId}
+                  onAuthError={handleChatAuthError}
+                />
+              )}
             </BannerProvider>
           </ConfirmProvider>
         </QueryClientProvider>
