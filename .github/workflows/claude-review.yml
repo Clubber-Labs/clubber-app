@@ -133,6 +133,13 @@ jobs:
 
             - Foque no que mudou no diff. Não reclame de código pré-existente fora
               do escopo do PR.
+            - Não gaste turnos lendo arquivos não-revisáveis. **Pule** lockfiles
+              (`pnpm-lock.yaml`, `package-lock.json`, `Podfile.lock`), pastas
+              nativas geradas (`ios/`, `android/`) e qualquer conteúdo gerado/
+              vendorizado. Revise apenas o que está em `src/**` (e config relevante
+              como `.github/`, `app.config.js`, schemas). Em PRs grandes, priorize
+              os arquivos de maior risco (services, hooks, stores, lógica) em vez de
+              ler tudo linearmente — o objetivo é uma revisão útil dentro do orçamento.
             - Reproduza mentalmente cada problema antes de apontar: é um cenário
               real com nossos dados ou uma edge case teórica? Pese custo vs.
               benefício — não sugira complexidade desnecessária (ex: union-find
@@ -172,4 +179,4 @@ jobs:
             linha exata, além de aparecerem resumidos acima.
           claude_args: |
             --model claude-opus-4-8
-            --max-turns 30
+            --max-turns 60
