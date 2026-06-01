@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   FlatList,
   View,
@@ -12,6 +12,7 @@ import { EventCard } from '@/features/events/components/EventCard'
 import { EventStatusFilter } from '@/features/events/components/EventStatusFilter'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import { useUserLocation } from '@/shared/hooks/useUserLocation'
+import { flattenInfiniteList } from '@/shared/utils/infiniteList'
 import type { EventStatus, FeedEvent } from '@/shared/types'
 
 export function FeedList() {
@@ -44,7 +45,10 @@ export function FeedList() {
   )
   const { refreshing, onRefresh } = usePullRefresh(refetch)
 
-  const events = data?.pages.flatMap(page => page.data) ?? []
+  // Dedup defensivo por id: o mesmo evento pode reaparecer entre páginas
+  // (empates de ranking ou re-surface por sinais sociais entre sessões).
+  // Memoiza pra não reconstruir o Set a cada render não relacionado.
+  const events = useMemo(() => flattenInfiniteList(data), [data])
   const filtering = statusFilter.length > 0
 
   return (
