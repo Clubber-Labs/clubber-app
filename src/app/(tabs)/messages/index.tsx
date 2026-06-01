@@ -17,12 +17,7 @@ export default function InboxScreen() {
     <View className="flex-1 bg-black">
       <View className="flex-row items-center justify-between px-4 pt-3 pb-2">
         <Text className="text-white text-2xl font-bold">Mensagens</Text>
-        <View className="flex-row items-center gap-3">
-          <ConnectionIndicator />
-          <Pressable onPress={goNew} accessibilityLabel="Nova conversa">
-            <Ionicons name="create-outline" size={24} color="#8b5cf6" />
-          </Pressable>
-        </View>
+        <ConnectionIndicator />
       </View>
 
       <InboxList

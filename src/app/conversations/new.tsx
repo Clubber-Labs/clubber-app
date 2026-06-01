@@ -11,7 +11,9 @@ import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import { useBanner } from '@/shared/lib/banner'
 import { getApiError, isForbiddenError } from '@/shared/lib/apiError'
+import { useAuthStore } from '@/features/auth/store/authStore'
 import { useChatUserSearch } from '@/features/chat/hooks/useChatUserSearch'
+import { useChatSuggestions } from '@/features/chat/hooks/useChatSuggestions'
 import { useCreateConversation } from '@/features/chat/hooks/useCreateConversation'
 import { UserPickRow } from '@/features/chat/components/UserPickRow'
 import { SelectedUserChips } from '@/features/chat/components/SelectedUserChips'
@@ -22,6 +24,7 @@ export default function NewConversationScreen() {
   const router = useRouter()
   const showBanner = useBanner()
   const create = useCreateConversation()
+  const myId = useAuthStore(s => s.userId)
 
   const [query, setQuery] = useState('')
   const [selected, setSelected] = useState<UserMini[]>([])
@@ -29,6 +32,13 @@ export default function NewConversationScreen() {
 
   const { users, trimmed, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
     useChatUserSearch(query)
+  const { people: suggestions, isLoading: suggestionsLoading } = useChatSuggestions(
+    myId ?? '',
+  )
+
+  const isSearching = trimmed.length >= 2
+  const listData = isSearching ? users : suggestions
+  const loading = isSearching ? isLoading : suggestionsLoading
 
   const selectedIds = new Set(selected.map(u => u.id))
 
@@ -81,14 +91,7 @@ export default function NewConversationScreen() {
 
   return (
     <View className="flex-1 bg-black">
-      <View className="flex-row items-center gap-2 px-3 py-2 border-b border-zinc-900">
-        <Pressable
-          onPress={() => router.back()}
-          className="w-9 h-9 items-center justify-center"
-          accessibilityLabel="Voltar"
-        >
-          <Ionicons name="chevron-back" size={26} color="#e4e4e7" />
-        </Pressable>
+      <View className="px-4 py-2.5 border-b border-zinc-900">
         <Text className="text-white font-semibold text-lg">Nova conversa</Text>
       </View>
 
@@ -111,11 +114,11 @@ export default function NewConversationScreen() {
         onRemove={id => setSelected(prev => prev.filter(s => s.id !== id))}
       />
 
-      {isLoading ? (
+      {loading ? (
         <ActivityIndicator className="mt-6" color="#8b5cf6" />
       ) : (
         <FlatList
-          data={users}
+          data={listData}
           keyExtractor={(item: UserMini) => item.id}
           keyboardShouldPersistTaps="handled"
           renderItem={({ item }) => (
@@ -125,18 +128,25 @@ export default function NewConversationScreen() {
               onToggle={() => toggle(item)}
             />
           )}
+          ListHeaderComponent={
+            !isSearching && suggestions.length > 0 ? (
+              <Text className="text-zinc-500 text-xs font-semibold uppercase px-4 pt-4 pb-2">
+                Sugestões
+              </Text>
+            ) : null
+          }
           onEndReached={() => {
-            if (hasNextPage && !isFetchingNextPage) fetchNextPage()
+            if (isSearching && hasNextPage && !isFetchingNextPage) fetchNextPage()
           }}
           onEndReachedThreshold={0.4}
           ListEmptyComponent={
-            trimmed.length >= 2 ? (
+            isSearching ? (
               <Text className="text-zinc-500 text-center mt-6">
                 Ninguém encontrado.
               </Text>
             ) : (
               <Text className="text-zinc-600 text-center mt-6">
-                Busque por nome ou @usuário.
+                Siga pessoas para vê-las aqui ou busque por nome.
               </Text>
             )
           }

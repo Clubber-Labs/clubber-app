@@ -6,19 +6,15 @@ import { useFollowRequests } from '@/features/follows/hooks/useFollowRequests'
 
 type Props = {
   showNotifications?: boolean
-  showMessages?: boolean
   showBack?: boolean
   onNotificationsPress?: () => void
-  onMessagesPress?: () => void
   onBackPress?: () => void
 }
 
 export function GlobalHeader({
   showNotifications = true,
-  showMessages = true,
   showBack = true,
   onNotificationsPress,
-  onMessagesPress,
   onBackPress,
 }: Props) {
   const router = useRouter()
@@ -83,15 +79,6 @@ export function GlobalHeader({
           >
             <Ionicons name="notifications-outline" size={24} color="#e5e7eb" />
             <View className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-          </Pressable>
-        )}
-
-        {showMessages && (
-          <Pressable
-            onPress={onMessagesPress}
-            className="w-9 h-9 items-center justify-center"
-          >
-            <Ionicons name="mail-outline" size={24} color="#e5e7eb" />
           </Pressable>
         )}
       </View>
