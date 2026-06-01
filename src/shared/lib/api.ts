@@ -1,11 +1,19 @@
 import axios from 'axios'
 import Constants from 'expo-constants'
 import { getToken } from './secureStore'
-import { endSession } from '@/features/auth/lib/session'
 
 export const api = axios.create({
   baseURL: Constants.expoConfig?.extra?.apiUrl,
 })
+
+// Reação a 401 registrada pela feature de auth (useRestoreSession). Mantém
+// shared/ agnóstico a features: o interceptor só SINALIZA o 401; quem encerra a
+// sessão (endSession) é a auth. Dependência fica unidirecional (features→shared).
+let unauthorizedHandler: (() => void) | null = null
+
+export function setUnauthorizedHandler(handler: (() => void) | null) {
+  unauthorizedHandler = handler
+}
 
 api.interceptors.request.use(async config => {
   const token = await getToken()
@@ -15,14 +23,11 @@ api.interceptors.request.use(async config => {
 
 api.interceptors.response.use(
   res => res,
-  async err => {
-    // 401 = token inválido/expirado → encerra a sessão de forma centralizada
-    // (limpa storage + caches + estado; o AuthGuard redireciona pro login e o
-    // socket de chat fecha reativamente). 404 NÃO é global — só o 404 de
-    // /users/me conta como sessão inválida (tratado no boot/resume).
-    if (err.response?.status === 401) {
-      await endSession({ expired: true })
-    }
+  err => {
+    // 401 = token inválido/expirado → a auth encerra a sessão (limpa storage +
+    // caches + estado; AuthGuard redireciona e o socket fecha reativo). 404 NÃO
+    // é global — só o 404 de /users/me conta (tratado no boot/resume).
+    if (err.response?.status === 401) unauthorizedHandler?.()
     return Promise.reject(err)
   },
 )
