@@ -1,44 +1,24 @@
-import { View, Text, ScrollView, ActivityIndicator, Pressable } from 'react-native'
+import {
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  Pressable,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native'
 import { Stack } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
-import { useCompleteProfile } from '@/features/auth/hooks/useCompleteProfile'
 import { useLogout } from '@/features/auth/hooks/useLogout'
 import { CompleteProfileForm } from '@/features/auth/components/CompleteProfileForm'
 import { Button } from '@/shared/components/Button'
-import { useBanner } from '@/shared/lib/banner'
 import { useConfirm } from '@/shared/lib/confirm'
-import { getConflictMessage } from '@/shared/utils/conflictMessage'
-import { toLocalIsoDate } from '@/shared/utils/dateFormat'
-import type { CompleteProfileInput } from '@/features/auth/schemas/completeProfileSchema'
 
 export default function CompleteProfileScreen() {
   const { data: profile, isLoading, isError, refetch } = useMyProfile()
-  const { mutate: complete, isPending } = useCompleteProfile(profile?.id ?? '')
   const logout = useLogout()
   const confirm = useConfirm()
-  const showBanner = useBanner()
-
-  function handleSubmit(values: CompleteProfileInput) {
-    const payload = {
-      name: values.name,
-      lastname: values.lastname,
-      username: values.username,
-      phone: values.phone,
-      bio: values.bio,
-      isPrivate: values.isPrivate,
-      birthdate: toLocalIsoDate(values.birthdate),
-    }
-    complete(payload, {
-      onError: error => {
-        const conflictMessage = getConflictMessage(error)
-        showBanner(
-          conflictMessage ??
-            'Não foi possível salvar suas informações. Verifique sua conexão e tente de novo.',
-        )
-      },
-    })
-  }
 
   async function handleExit() {
     const ok = await confirm({
@@ -55,7 +35,10 @@ export default function CompleteProfileScreen() {
   return (
     <>
       <Stack.Screen options={{ headerShown: false, gestureEnabled: false }} />
-      <View className="flex-1 bg-black">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={{ flex: 1, backgroundColor: '#000000' }}
+      >
         <Pressable
           onPress={handleExit}
           hitSlop={12}
@@ -92,14 +75,10 @@ export default function CompleteProfileScreen() {
               />
             </View>
           ) : (
-            <CompleteProfileForm
-              profile={profile}
-              saving={isPending}
-              onSubmit={handleSubmit}
-            />
+            <CompleteProfileForm profile={profile} />
           )}
         </ScrollView>
-      </View>
+      </KeyboardAvoidingView>
     </>
   )
 }
