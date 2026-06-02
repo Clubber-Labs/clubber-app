@@ -1,5 +1,6 @@
 import { api } from '@/shared/lib/api'
-import type { EventStatus } from '@/shared/types'
+import type { FeedEvent } from '@/shared/types'
+import type { MapFilterParams } from '../types'
 
 export type Bbox = {
   bboxNorth: number
@@ -15,11 +16,21 @@ export type HeatmapPoint = {
   weight: number
 }
 
-export type HeatmapParams = Bbox & {
-  category?: string[]
-  status?: EventStatus[]
-  dateFrom?: string
-  dateTo?: string
+// Eventos completos por viewport — o backend cappeia e devolve `truncated`.
+export type ViewportResponse = {
+  data: FeedEvent[]
+  truncated: boolean
+}
+
+type HeatmapParams = Bbox & MapFilterParams
+type ViewportParams = Bbox & MapFilterParams & { limit?: number }
+
+function mapFilterQuery({ category, status, friendsOnly }: MapFilterParams) {
+  return {
+    ...(category?.length ? { category } : {}),
+    ...(status?.length ? { status } : {}),
+    ...(friendsOnly ? { friendsOnly: true } : {}),
+  }
 }
 
 export const mapService = {
@@ -28,10 +39,7 @@ export const mapService = {
     bboxSouth,
     bboxEast,
     bboxWest,
-    category,
-    status,
-    dateFrom,
-    dateTo,
+    ...filters
   }: HeatmapParams): Promise<HeatmapPoint[]> =>
     api
       .get('/events/map', {
@@ -40,12 +48,31 @@ export const mapService = {
           bboxSouth,
           bboxEast,
           bboxWest,
-          ...(category?.length ? { category } : {}),
-          ...(status?.length ? { status } : {}),
-          ...(dateFrom ? { dateFrom } : {}),
-          ...(dateTo ? { dateTo } : {}),
+          ...mapFilterQuery(filters),
         },
         // Backend espera array repetido (status=A&status=B), não brackets.
+        paramsSerializer: { indexes: null },
+      })
+      .then(r => r.data),
+
+  getViewportEvents: ({
+    bboxNorth,
+    bboxSouth,
+    bboxEast,
+    bboxWest,
+    limit,
+    ...filters
+  }: ViewportParams): Promise<ViewportResponse> =>
+    api
+      .get('/events/map/events', {
+        params: {
+          bboxNorth,
+          bboxSouth,
+          bboxEast,
+          bboxWest,
+          ...mapFilterQuery(filters),
+          ...(limit ? { limit } : {}),
+        },
         paramsSerializer: { indexes: null },
       })
       .then(r => r.data),

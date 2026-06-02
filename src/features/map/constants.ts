@@ -12,3 +12,8 @@ export const ALL_CATEGORIES = 'Todas'
 export const VIOLET_500 = '#8b5cf6'
 export const VIOLET_600 = '#7c3aed'
 export const VIOLET_400 = '#a78bfa'
+
+// Debounce da captura de bbox ao arrastar o mapa (carga por viewport).
+export const BBOX_DEBOUNCE_MS = 300
+// Teto de eventos carregados por viewport (o backend também limita).
+export const VIEWPORT_LIMIT = 200

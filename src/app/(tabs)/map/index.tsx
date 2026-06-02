@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { View, ActivityIndicator } from 'react-native'
+import { View, Text, ActivityIndicator, Keyboard, Linking } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
 import { useRouter } from 'expo-router'
-import type { EventStatus, FeedEvent } from '@/shared/types'
+import type { FeedEvent } from '@/shared/types'
 import {
-  ALL_CATEGORIES,
   BRAZIL_CENTER,
   BRAZIL_ZOOM,
   CLUSTER_MAX_ZOOM,
@@ -16,125 +15,72 @@ import {
 import { useMapEvents } from '@/features/map/hooks/useMapEvents'
 import { useMapCamera } from '@/features/map/hooks/useMapCamera'
 import { useUserLocation } from '@/shared/hooks/useUserLocation'
+import { useUserLiveLocation } from '@/shared/hooks/useUserLiveLocation'
+import { useBanner } from '@/shared/lib/banner'
+import { useMyProfile } from '@/features/users/hooks/useProfile'
+import { UserLocationMarker } from '@/features/map/components/UserLocationMarker'
 import { useMapZoomState } from '@/features/map/hooks/useMapZoomState'
 import { useHeatmap } from '@/features/map/hooks/useHeatmap'
-import type { Bbox } from '@/features/map/services/mapService'
-import { EventCategoriesFilter } from '@/features/map/components/EventCategoriesFilter'
+import { useViewportBbox } from '@/features/map/hooks/useViewportBbox'
+import { useMapUiStore } from '@/features/map/store/mapUiStore'
 import { MapZoomControls } from '@/features/map/components/MapZoomControls'
 import { EventClustersLayer } from '@/features/map/components/EventClustersLayer'
 import { EventHeatmapLayer } from '@/features/map/components/EventHeatmapLayer'
 import { EventMarkers } from '@/features/map/components/EventMarkers'
 import { EventPreviewCard } from '@/features/map/components/EventPreviewCard'
 import { MapStatusBanner } from '@/features/map/components/MapStatusBanner'
+import { MapSearchBar } from '@/features/map/components/MapSearchBar'
+import { MapFiltersSheet } from '@/features/map/components/MapFiltersSheet'
 import { FloatingCreateButton } from '@/features/events/components/FloatingCreateButton'
-import { EventStatusFilter } from '@/features/events/components/EventStatusFilter'
-
-const HEATMAP_BBOX_DEBOUNCE_MS = 300
 
 const COINCIDENT_FOCUS_ZOOM = 20
 
 export default function MapScreen() {
   const router = useRouter()
-  const { coords: userCoords } = useUserLocation()
+  const { coords: userCoords, status: locationStatus } = useUserLocation()
+  const livePos = useUserLiveLocation(locationStatus === 'ready')
+  const myPos = livePos ?? userCoords
+  const profile = useMyProfile()
   const { cameraRef, mapRef, flyTo, adjustZoom, focusOnEvent } = useMapCamera()
   const { showMarkers, onCameraZoomChange } = useMapZoomState()
+  const { bbox, onRegionChange } = useViewportBbox(mapRef)
 
-  const [activeCategory, setActiveCategory] = useState<string>(ALL_CATEGORIES)
-  const [statusFilter, setStatusFilter] = useState<EventStatus[]>([])
+  const filters = useMapUiStore(s => s.filters)
+  const showBanner = useBanner()
+
   const [selectedEvent, setSelectedEvent] = useState<FeedEvent | null>(null)
-  const [heatmapMode, setHeatmapMode] = useState(false)
-  const [heatmapBbox, setHeatmapBbox] = useState<Bbox | null>(null)
-  const bboxTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  // Token incrementado a cada toggle/unmount; captureBbox descarta resultado
-  // se a versão mudou enquanto getVisibleBounds estava resolvendo (evita
-  // setState com bbox stale após desativar modo heatmap ou desmontar).
-  const heatmapVersionRef = useRef(0)
+  const [densityVisible, setDensityVisible] = useState(false)
 
   const shapeSourceRef = useRef<Mapbox.ShapeSource>(null)
-  const { categories, filteredEvents, eventsGeoJson, isLoading, error } =
-    useMapEvents(activeCategory, statusFilter)
 
-  const heatmapFilters = {
-    status: statusFilter.length ? statusFilter : undefined,
-    category:
-      activeCategory !== ALL_CATEGORIES ? [activeCategory] : undefined,
-  }
-  const { data: heatmapPoints = [] } = useHeatmap(
-    heatmapBbox,
-    heatmapFilters,
-    heatmapMode,
+  const { events, eventsGeoJson, truncated, isLoading, error } = useMapEvents(
+    bbox,
+    filters,
   )
-
-  function clearBboxTimer() {
-    if (bboxTimerRef.current) {
-      clearTimeout(bboxTimerRef.current)
-      bboxTimerRef.current = null
-    }
-  }
-
-  async function captureBbox(token: number) {
-    try {
-      const bounds = await mapRef.current?.getVisibleBounds()
-      if (!bounds) return
-      // Descarta se o token expirou (toggle off, unmount, novo toggle on)
-      if (heatmapVersionRef.current !== token) return
-      const [[east, north], [west, south]] = bounds
-      setHeatmapBbox({
-        bboxNorth: north,
-        bboxSouth: south,
-        bboxEast: east,
-        bboxWest: west,
-      })
-    } catch {
-      // MapView ainda não montou ou falha nativa — ignora silenciosamente
-    }
-  }
-
-  // Debounce do bbox: arrastar o mapa não pode floodar o backend. Quando o
-  // user para de mover por 300ms, atualiza o bbox e a queryKey muda.
-  function scheduleBboxUpdate() {
-    if (!heatmapMode) return
-    clearBboxTimer()
-    const token = heatmapVersionRef.current
-    bboxTimerRef.current = setTimeout(
-      () => captureBbox(token),
-      HEATMAP_BBOX_DEBOUNCE_MS,
-    )
-  }
-
-  function toggleHeatmap() {
-    setHeatmapMode(prev => {
-      const next = !prev
-      // Invalida qualquer captureBbox em voo (resolverá fora do token atual)
-      heatmapVersionRef.current++
-      if (next) {
-        // Ativando: captura imediata sem debounce
-        captureBbox(heatmapVersionRef.current)
-      } else {
-        // Desativando: cancela timer pendente e zera bbox
-        clearBboxTimer()
-        setHeatmapBbox(null)
-      }
-      return next
-    })
-  }
-
-  // Limpa timer e invalida promises pendentes no unmount
-  useEffect(
-    () => () => {
-      heatmapVersionRef.current++
-      clearBboxTimer()
-    },
-    [],
-  )
+  const { data: heatmapPoints = [] } = useHeatmap(bbox, filters, densityVisible)
 
   useEffect(() => {
     if (userCoords) flyTo(userCoords, USER_ZOOM, 800)
   }, [userCoords, flyTo])
 
-  function handleMarkerPress(event: FeedEvent) {
+  // Abre o preview e aproxima — vale pra tap no pin e pra resultado de busca
+  // (que pode estar fora do viewport; o flyTo dispara o refetch por bbox).
+  function openEvent(event: FeedEvent) {
     setSelectedEvent(event)
     focusOnEvent([event.longitude, event.latitude])
+  }
+
+  // Centraliza na posição ATUAL (live), com fallback pro fix inicial; sem coords,
+  // orienta conforme o estado da permissão.
+  function recenter() {
+    if (myPos) {
+      flyTo(myPos, USER_ZOOM, 600)
+    } else if (locationStatus === 'denied') {
+      showBanner('Ative a localização nos ajustes para ver você no mapa.')
+      Linking.openSettings()
+    } else if (locationStatus === 'error') {
+      showBanner('Não foi possível obter sua localização.')
+    }
   }
 
   async function expandCluster(feature: GeoJSON.Feature) {
@@ -146,7 +92,6 @@ export default function MapScreen() {
     try {
       const expansionZoom = await source.getClusterExpansionZoom(feature)
       setSelectedEvent(null)
-      // expansionZoom > nível de cluster = coincidentes; fanout separa visual
       const targetZoom =
         expansionZoom > CLUSTER_MAX_ZOOM
           ? COINCIDENT_FOCUS_ZOOM
@@ -166,8 +111,8 @@ export default function MapScreen() {
       return
     }
     const eventId = props?.eventId as string | undefined
-    const found = filteredEvents.find(e => e.id === eventId)
-    if (found) handleMarkerPress(found)
+    const found = events.find(e => e.id === eventId)
+    if (found) openEvent(found)
   }
 
   return (
@@ -180,10 +125,19 @@ export default function MapScreen() {
         compassEnabled={false}
         logoEnabled={false}
         attributionEnabled={false}
-        onPress={() => setSelectedEvent(null)}
+        onPress={() => {
+          Keyboard.dismiss()
+          setSelectedEvent(null)
+        }}
+        // onMapIdle dispara quando o mapa estabiliza (load inicial + fim de cada
+        // movimento) — captura confiável do bbox. onCameraChanged reforça (e
+        // mantém o threshold de zoom). Ambos passam pelo mesmo debounce.
+        onMapIdle={onRegionChange}
         onCameraChanged={state => {
+          // Qualquer movimento (pan/zoom/botões) fecha o teclado da busca.
+          Keyboard.dismiss()
           onCameraZoomChange(state.properties.zoom)
-          scheduleBboxUpdate()
+          onRegionChange()
         }}
       >
         <Mapbox.Camera
@@ -192,35 +146,55 @@ export default function MapScreen() {
           centerCoordinate={BRAZIL_CENTER}
           animationMode="flyTo"
         />
-        {heatmapMode ? (
-          <EventHeatmapLayer points={heatmapPoints} />
-        ) : !showMarkers ? (
+        {/* Posição do usuário: avatar (em vez da bolinha) seguindo o GPS ao vivo.
+            A posição alimenta só o marcador — a busca de eventos segue por bbox. */}
+        {locationStatus === 'ready' && myPos && profile.data && (
+          <Mapbox.MarkerView
+            id="user-location"
+            coordinate={myPos}
+            anchor={{ x: 0.5, y: 0.5 }}
+            allowOverlap
+          >
+            <UserLocationMarker
+              name={`${profile.data.name} ${profile.data.lastname}`.trim()}
+              avatarUrl={profile.data.avatarUrl}
+            />
+          </Mapbox.MarkerView>
+        )}
+        {/* Densidade ao fundo (declarada antes) + pins/clusters por cima. */}
+        {densityVisible && <EventHeatmapLayer points={heatmapPoints} />}
+        {!showMarkers ? (
           <EventClustersLayer
             ref={shapeSourceRef}
             shape={eventsGeoJson}
             onPress={handleClusterShapePress}
+            dimmed={densityVisible}
           />
         ) : (
           <EventMarkers
-            events={filteredEvents}
+            events={events}
             selectedId={selectedEvent?.id}
-            onPress={handleMarkerPress}
+            onPress={openEvent}
+            dimmed={densityVisible}
           />
         )}
       </Mapbox.MapView>
 
-      <View className="absolute top-3 left-0 right-0 gap-2">
-        <EventCategoriesFilter
-          categories={categories}
-          active={activeCategory}
-          onChange={setActiveCategory}
-        />
-        <EventStatusFilter value={statusFilter} onChange={setStatusFilter} />
+      <View className="absolute top-3 left-3 right-3">
+        <MapSearchBar onSelect={openEvent} />
       </View>
 
       {isLoading && !error && (
-        <View className="absolute top-28 self-center bg-zinc-900/90 px-3 py-1.5 rounded-full border border-zinc-800">
+        <View className="absolute top-24 self-center bg-zinc-900/90 px-3 py-1.5 rounded-full border border-zinc-800">
           <ActivityIndicator size="small" color="#8b5cf6" />
+        </View>
+      )}
+
+      {!isLoading && truncated && !error && (
+        <View className="absolute top-24 self-center bg-zinc-900/90 px-3 py-1.5 rounded-full border border-zinc-800">
+          <Text className="text-zinc-300 text-xs">
+            Aproxime para ver mais eventos
+          </Text>
         </View>
       )}
 
@@ -234,10 +208,10 @@ export default function MapScreen() {
       <MapZoomControls
         onZoomIn={() => adjustZoom(ZOOM_STEP)}
         onZoomOut={() => adjustZoom(-ZOOM_STEP)}
-        onRecenter={() => userCoords && flyTo(userCoords, USER_ZOOM, 600)}
-        showRecenter={!!userCoords}
-        heatmapActive={heatmapMode}
-        onToggleHeatmap={toggleHeatmap}
+        onRecenter={recenter}
+        showRecenter
+        densityActive={densityVisible}
+        onToggleDensity={() => setDensityVisible(v => !v)}
       />
 
       {!selectedEvent && <FloatingCreateButton />}
@@ -249,6 +223,8 @@ export default function MapScreen() {
           onSeeDetails={() => router.push(`/events/${selectedEvent.id}`)}
         />
       )}
+
+      <MapFiltersSheet />
     </View>
   )
 }

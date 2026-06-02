@@ -50,18 +50,19 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: '#8b5cf6',
-        tabBarInactiveTintColor: '#71717a',
+        tabBarInactiveTintColor: '#ffffff',
         tabBarStyle: {
           backgroundColor: '#000000',
           borderTopColor: '#27272a',
           borderTopWidth: 1,
           paddingBottom: 8,
           paddingTop: 8,
-          height: 64,
+          height: 72,
         },
         tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '500',
+          display: 'none',
+          fontSize: 12,
+          fontWeight: '400',
         },
         tabBarBadgeStyle: {
           backgroundColor: '#7c3aed',

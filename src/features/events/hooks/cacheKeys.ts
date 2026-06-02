@@ -16,6 +16,8 @@ export function invalidateEventViews(
 ) {
   queryClient.invalidateQueries({ queryKey: feedKey })
   queryClient.invalidateQueries({ queryKey: eventKeys.list })
+  queryClient.invalidateQueries({ queryKey: ['map-events'] })
+  queryClient.invalidateQueries({ queryKey: ['heatmap'] })
   if (eventId) {
     queryClient.invalidateQueries({ queryKey: eventKeys.detail(eventId) })
   }

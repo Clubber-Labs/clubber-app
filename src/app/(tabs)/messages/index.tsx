@@ -3,7 +3,6 @@ import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { InboxList } from '@/features/chat/components/InboxList'
-import { ConnectionIndicator } from '@/features/chat/components/ConnectionIndicator'
 
 export default function InboxScreen() {
   const router = useRouter()
@@ -17,7 +16,6 @@ export default function InboxScreen() {
     <View className="flex-1 bg-black">
       <View className="flex-row items-center justify-between px-4 pt-3 pb-2">
         <Text className="text-white text-2xl font-bold">Mensagens</Text>
-        <ConnectionIndicator />
       </View>
 
       <InboxList

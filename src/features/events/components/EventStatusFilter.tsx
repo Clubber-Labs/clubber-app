@@ -12,7 +12,6 @@ const OPTIONS: Option[] = [
   { value: 'SOON', label: 'Em breve' },
   { value: 'UPCOMING', label: 'Futuros' },
   { value: 'PAST', label: 'Encerrados' },
-  { value: 'CANCELED', label: 'Cancelados' },
 ]
 
 type Props = {

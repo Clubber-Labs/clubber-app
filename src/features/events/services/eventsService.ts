@@ -47,6 +47,22 @@ export const eventsService = {
       .then(r => r.data)
   },
 
+  search: (params: {
+    q: string
+    cursor?: string
+    signal?: AbortSignal
+  }): Promise<CursorPaginatedResponse<FeedEvent>> =>
+    api
+      .get('/events/search', {
+        params: {
+          q: params.q,
+          limit: 20,
+          ...(params.cursor ? { cursor: params.cursor } : {}),
+        },
+        signal: params.signal,
+      })
+      .then(r => r.data),
+
   getById: (id: string): Promise<EventDetail> =>
     api.get(`/events/${id}`).then(r => r.data),
 

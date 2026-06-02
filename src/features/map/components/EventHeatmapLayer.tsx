@@ -43,24 +43,36 @@ export function EventHeatmapLayer({ points }: Props) {
           // Raio cresce com zoom pra blobs ficarem proporcionais
           heatmapRadius: ['interpolate', ['linear'], ['zoom'], 0, 12, 16, 50],
           heatmapIntensity: ['interpolate', ['linear'], ['zoom'], 0, 1, 16, 3],
+          // Quente / fogo: amarelo → laranja → vermelho → vermelho escuro.
+          // Vívido e bem visível — os pins ficam semi-transparentes por cima.
+          // Inferno (viridis): colormap perceptualmente uniforme, com luminosidade
+          // monotônica (o brilho cresce com a densidade) — ótimo no fundo escuro e
+          // grayscale-safe. Esparso some no escuro; denso brilha. Preto → roxo →
+          // magenta → vermelho → laranja → amarelo. Alpha cresce pro fade nas bordas.
           heatmapColor: [
             'interpolate',
             ['linear'],
             ['heatmap-density'],
             0,
-            'rgba(0, 0, 0, 0)',
-            0.2,
-            'rgba(34, 197, 94, 0.6)',
-            0.4,
-            'rgba(234, 179, 8, 0.75)',
-            0.6,
-            'rgba(249, 115, 22, 0.85)',
-            0.8,
-            'rgba(239, 68, 68, 0.95)',
+            'rgba(0, 0, 4, 0)',
+            0.13,
+            'rgba(27, 12, 66, 0.35)',
+            0.25,
+            'rgba(75, 12, 107, 0.5)',
+            0.38,
+            'rgba(120, 28, 109, 0.64)',
+            0.5,
+            'rgba(165, 44, 96, 0.75)',
+            0.63,
+            'rgba(207, 68, 70, 0.84)',
+            0.75,
+            'rgba(237, 105, 37, 0.9)',
+            0.88,
+            'rgba(251, 154, 6, 0.96)',
             1,
-            'rgba(220, 38, 38, 1)',
+            'rgba(252, 255, 164, 1)',
           ],
-          heatmapOpacity: 0.75,
+          heatmapOpacity: 0.8,
         }}
       />
     </Mapbox.ShapeSource>

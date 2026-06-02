@@ -119,6 +119,9 @@ export type FeedEvent = {
   // /feed inclui friendAttendances e reason (personalizados); /events não
   // retorna esses campos. Optional pra refletir o contrato real da API.
   friendAttendances?: FriendAttendance[]
+  // Participantes em destaque no mapa: amigos primeiro, depois não-amigos.
+  // Quando ausente, o front usa friendAttendances.
+  topAttendances?: FriendAttendance[]
   reason?: FeedReason
   recentComments: EventComment[]
   userLiked: boolean
