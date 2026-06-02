@@ -23,7 +23,9 @@ export function MessageInputBar({
   const [text, setText] = useState('')
   const trimmed = text.trim()
   const isEditing = !!editing
-  const canSend = trimmed.length > 0 && !disabled
+  // O cooldown é do rate-limit de ENVIAR mensagem nova; editar é outra ação
+  // (PATCH) e não deve ser bloqueada por ele.
+  const canSend = trimmed.length > 0 && (isEditing || !disabled)
   const nearLimit = text.length > 1800
 
   // Deps primitivas: o pai recria o objeto `editing` a cada render, então
@@ -82,7 +84,7 @@ export function MessageInputBar({
           <TextInput
             value={text}
             onChangeText={setText}
-            editable={!disabled}
+            editable={isEditing || !disabled}
             placeholder="Mensagem…"
             placeholderTextColor="#71717a"
             multiline
