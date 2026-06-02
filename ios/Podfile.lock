@@ -49,11 +49,15 @@ PODS:
     - React-Core
   - ExpoAsset (12.0.12):
     - ExpoModulesCore
+  - ExpoClipboard (8.0.8):
+    - ExpoModulesCore
   - ExpoDevice (8.0.10):
     - ExpoModulesCore
   - ExpoFileSystem (19.0.21):
     - ExpoModulesCore
   - ExpoFont (14.0.11):
+    - ExpoModulesCore
+  - ExpoHaptics (15.0.8):
     - ExpoModulesCore
   - ExpoHead (6.0.23):
     - ExpoModulesCore
@@ -2194,9 +2198,11 @@ DEPENDENCIES:
   - "ExpoAdapterFBSDKNext (from `../node_modules/.pnpm/react-native-fbsdk-next@13.4.3_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@rea_32f9c31ec70f41a7326d1db7b350e285/node_modules/react-native-fbsdk-next/ios`)"
   - "ExpoAdapterGoogleSignIn (from `../node_modules/.pnpm/@react-native-google-signin+google-signin@16.1.2_expo@54.0.33_react-native@0.81.5_@babe_a64371635bb26f785a095d5fa8bb7b50/node_modules/@react-native-google-signin/google-signin/expo/ios`)"
   - "ExpoAsset (from `../node_modules/.pnpm/expo-asset@12.0.12_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-native+me_ce435df7bede1fa66645a5c80ffc481c/node_modules/expo-asset/ios`)"
+  - "ExpoClipboard (from `../node_modules/.pnpm/expo-clipboard@8.0.8_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-native+_f84681c33fe42312fa6a2fd61bd4135f/node_modules/expo-clipboard/ios`)"
   - "ExpoDevice (from `../node_modules/.pnpm/expo-device@8.0.10_expo@54.0.33/node_modules/expo-device/ios`)"
   - "ExpoFileSystem (from `../node_modules/.pnpm/expo-file-system@19.0.21_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-nat_738652d89fdbb8663cd41e92b977818a/node_modules/expo-file-system/ios`)"
   - "ExpoFont (from `../node_modules/.pnpm/expo-font@14.0.11_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-native+met_16d29965f1b0a9508c8f90ad14bc3a9f/node_modules/expo-font/ios`)"
+  - "ExpoHaptics (from `../node_modules/.pnpm/expo-haptics@15.0.8_expo@54.0.33/node_modules/expo-haptics/ios`)"
   - "ExpoHead (from `../node_modules/.pnpm/expo-router@6.0.23_3f8542a2d8f8d182f997401c464a7d48/node_modules/expo-router/ios`)"
   - "ExpoImagePicker (from `../node_modules/.pnpm/expo-image-picker@17.0.11_expo@54.0.33/node_modules/expo-image-picker/ios`)"
   - "ExpoKeepAwake (from `../node_modules/.pnpm/expo-keep-awake@15.0.8_expo@54.0.33_react@19.1.0/node_modules/expo-keep-awake/ios`)"
@@ -2317,12 +2323,16 @@ EXTERNAL SOURCES:
     :path: "../node_modules/.pnpm/@react-native-google-signin+google-signin@16.1.2_expo@54.0.33_react-native@0.81.5_@babe_a64371635bb26f785a095d5fa8bb7b50/node_modules/@react-native-google-signin/google-signin/expo/ios"
   ExpoAsset:
     :path: "../node_modules/.pnpm/expo-asset@12.0.12_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-native+me_ce435df7bede1fa66645a5c80ffc481c/node_modules/expo-asset/ios"
+  ExpoClipboard:
+    :path: "../node_modules/.pnpm/expo-clipboard@8.0.8_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-native+_f84681c33fe42312fa6a2fd61bd4135f/node_modules/expo-clipboard/ios"
   ExpoDevice:
     :path: "../node_modules/.pnpm/expo-device@8.0.10_expo@54.0.33/node_modules/expo-device/ios"
   ExpoFileSystem:
     :path: "../node_modules/.pnpm/expo-file-system@19.0.21_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-nat_738652d89fdbb8663cd41e92b977818a/node_modules/expo-file-system/ios"
   ExpoFont:
     :path: "../node_modules/.pnpm/expo-font@14.0.11_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-native+met_16d29965f1b0a9508c8f90ad14bc3a9f/node_modules/expo-font/ios"
+  ExpoHaptics:
+    :path: "../node_modules/.pnpm/expo-haptics@15.0.8_expo@54.0.33/node_modules/expo-haptics/ios"
   ExpoHead:
     :path: "../node_modules/.pnpm/expo-router@6.0.23_3f8542a2d8f8d182f997401c464a7d48/node_modules/expo-router/ios"
   ExpoImagePicker:
@@ -2504,9 +2514,11 @@ SPEC CHECKSUMS:
   ExpoAdapterFBSDKNext: 49ecf2414e4787250b0ed1faae99d1295dee674e
   ExpoAdapterGoogleSignIn: ab4d9fc38cb91077a4138d178395525ec65d0c2e
   ExpoAsset: f867e55ceb428aab99e1e8c082b5aee7c159ea18
+  ExpoClipboard: b36b287d8356887844bb08ed5c84b5979bb4dd1e
   ExpoDevice: 6327c3c200816795708885adf540d26ecab83d1a
   ExpoFileSystem: 858a44267a3e6e9057e0888ad7c7cfbf55d52063
   ExpoFont: f543ce20a228dd702813668b1a07b46f51878d47
+  ExpoHaptics: d3a6375d8dcc3a1083d003bc2298ff654fafb536
   ExpoHead: 7e19b2272edf492262acf8afb391a295198a6b23
   ExpoImagePicker: ade85e148f735fc7e6f27dfe3eef28eb3887e90a
   ExpoKeepAwake: 55f75eca6499bb9e4231ebad6f3e9cb8f99c0296

@@ -23,7 +23,7 @@
 		5B973819C9CD9720330845DB /* libPods-connectaimobile.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-connectaimobile.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5BDCA06318A76FD94A9DF8EA /* Pods-connectaimobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-connectaimobile.release.xcconfig"; path = "Target Support Files/Pods-connectaimobile/Pods-connectaimobile.release.xcconfig"; sourceTree = "<group>"; };
 		7F27E866E5A87FD17C6985D4 /* Pods-connectaimobile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-connectaimobile.debug.xcconfig"; path = "Target Support Files/Pods-connectaimobile/Pods-connectaimobile.debug.xcconfig"; sourceTree = "<group>"; };
-		9841C032F6867907683A0845 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = connectaimobile/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		9841C032F6867907683A0845 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = connectaimobile/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A1C40935A2CE71B83FBEC7E1 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-connectaimobile/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = connectaimobile/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
@@ -119,7 +119,6 @@
 				7F27E866E5A87FD17C6985D4 /* Pods-connectaimobile.debug.xcconfig */,
 				5BDCA06318A76FD94A9DF8EA /* Pods-connectaimobile.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -167,7 +166,6 @@
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1250;
-						DevelopmentTeam = "K238P4B9K4";
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -374,7 +372,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = connectaimobile/connectaimobile.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = K238P4B9K4;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
@@ -400,9 +401,6 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
-				DEVELOPMENT_TEAM = "K238P4B9K4";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 			};
 			name = Debug;
 		};
@@ -413,7 +411,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = connectaimobile/connectaimobile.entitlements;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = K238P4B9K4;
 				INFOPLIST_FILE = connectaimobile/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -433,8 +433,6 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
-				DEVELOPMENT_TEAM = "K238P4B9K4";
-				CODE_SIGN_STYLE = Automatic;
 			};
 			name = Release;
 		};
