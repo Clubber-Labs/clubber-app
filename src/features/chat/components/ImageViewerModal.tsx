@@ -1,13 +1,13 @@
 import { useEffect } from 'react'
-import { Modal, View, Pressable, Dimensions } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import { Dimensions } from 'react-native'
+import { Gesture } from 'react-native-gesture-handler'
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
+import { MediaViewerModal } from '@/shared/components/MediaViewerModal'
+import { useSwipeToDismiss } from '@/shared/hooks/useSwipeToDismiss'
 
 type Props = {
   url: string | null
@@ -15,31 +15,32 @@ type Props = {
 }
 
 const { width, height } = Dimensions.get('window')
-// Distância vertical pra confirmar o "arrastar pra fechar".
-const CLOSE_THRESHOLD = 120
-// Distância de arraste em que o fundo chega à opacidade 0.
-const FADE_DISTANCE = height * 0.6
 
 export function ImageViewerModal({ url, onClose }: Props) {
+  // translateY/bgOpacity e o dismiss vertical vêm do hook compartilhado; o resto
+  // (pinch/zoom + pan dentro do enquadramento) é específico da imagem.
+  const {
+    translateY: ty,
+    reset: resetDismiss,
+    applyDrag,
+    release,
+    bgStyle,
+  } = useSwipeToDismiss()
   const scale = useSharedValue(1)
   const savedScale = useSharedValue(1)
   const tx = useSharedValue(0)
-  const ty = useSharedValue(0)
   const savedTx = useSharedValue(0)
   const savedTy = useSharedValue(0)
-  // Opacidade do fundo preto — some conforme arrasta pra fechar.
-  const bgOpacity = useSharedValue(1)
 
-  // Reseta o transform a cada imagem aberta.
+  // Reseta zoom e dismiss a cada imagem aberta.
   useEffect(() => {
     scale.value = 1
     savedScale.value = 1
     tx.value = 0
-    ty.value = 0
     savedTx.value = 0
     savedTy.value = 0
-    bgOpacity.value = 1
-  }, [url, scale, savedScale, tx, ty, savedTx, savedTy, bgOpacity])
+    resetDismiss()
+  }, [url, scale, savedScale, tx, savedTx, savedTy, resetDismiss])
 
   const pinch = Gesture.Pinch()
     .onUpdate(e => {
@@ -57,10 +58,9 @@ export function ImageViewerModal({ url, onClose }: Props) {
         ty.value = savedTy.value + e.translationY
       } else {
         // Sem zoom: dismiss vertical. Trava o eixo X (gesto previsível) e só o
-        // Y arrasta a imagem / esmaece o fundo.
+        // Y arrasta a imagem / esmaece o fundo (useSwipeToDismiss).
         tx.value = 0
-        ty.value = e.translationY
-        bgOpacity.value = Math.max(0, 1 - Math.abs(e.translationY) / FADE_DISTANCE)
+        applyDrag(e.translationY)
       }
     })
     .onEnd(e => {
@@ -69,15 +69,10 @@ export function ImageViewerModal({ url, onClose }: Props) {
         savedTy.value = ty.value
         return
       }
-      if (Math.abs(e.translationY) > CLOSE_THRESHOLD) {
-        // Passou do limiar → fecha (o Modal faz o fade de saída).
-        runOnJS(onClose)()
-      } else {
-        // Não passou → volta ao centro e restaura o fundo.
-        tx.value = withTiming(0)
-        ty.value = withTiming(0)
-        bgOpacity.value = withTiming(1)
-      }
+      // Sem zoom o X fica travado em 0 — devolve junto e deixa o hook decidir
+      // entre fechar e voltar ao centro.
+      tx.value = withTiming(0)
+      release(e.translationY, onClose)
     })
 
   const doubleTap = Gesture.Tap()
@@ -101,35 +96,22 @@ export function ImageViewerModal({ url, onClose }: Props) {
     ],
   }))
 
-  const bgStyle = useAnimatedStyle(() => ({ opacity: bgOpacity.value }))
-
   if (!url) return null
 
   return (
-    <Modal visible transparent animationType="fade" onRequestClose={onClose}>
-      <View className="flex-1">
-        <Animated.View
-          className="absolute inset-0 bg-black"
-          style={bgStyle}
-          pointerEvents="none"
+    <MediaViewerModal
+      gesture={composed}
+      bgStyle={bgStyle}
+      closeLabel="Fechar imagem"
+      onClose={onClose}
+    >
+      <Animated.View className="flex-1 items-center justify-center">
+        <Animated.Image
+          source={{ uri: url }}
+          style={[{ width, height: height * 0.82 }, animatedStyle]}
+          resizeMode="contain"
         />
-        <GestureDetector gesture={composed}>
-          <Animated.View className="flex-1 items-center justify-center">
-            <Animated.Image
-              source={{ uri: url }}
-              style={[{ width, height: height * 0.82 }, animatedStyle]}
-              resizeMode="contain"
-            />
-          </Animated.View>
-        </GestureDetector>
-        <Pressable
-          onPress={onClose}
-          className="absolute top-12 right-5 w-10 h-10 items-center justify-center bg-black/50 rounded-full"
-          accessibilityLabel="Fechar imagem"
-        >
-          <Ionicons name="close" size={24} color="#ffffff" />
-        </Pressable>
-      </View>
-    </Modal>
+      </Animated.View>
+    </MediaViewerModal>
   )
 }

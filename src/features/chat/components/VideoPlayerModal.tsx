@@ -1,30 +1,53 @@
-import { Modal, View, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { useEffect } from 'react'
 import { useVideoPlayer, VideoView } from 'expo-video'
+import { Gesture } from 'react-native-gesture-handler'
+import Animated, { useAnimatedStyle } from 'react-native-reanimated'
+import { MediaViewerModal } from '@/shared/components/MediaViewerModal'
+import { useSwipeToDismiss } from '@/shared/hooks/useSwipeToDismiss'
 
 type Props = {
   url: string | null
   onClose: () => void
 }
 
-// Player full-screen, espelhando o ImageViewerModal. O corpo (que chama
-// useVideoPlayer) fica num componente-filho montado só quando há url — assim o
-// hook nunca roda atrás de um early-return, mantendo a ordem de hooks estável.
+// Player full-screen: arrastar na vertical fecha (useSwipeToDismiss), espelhando
+// o ImageViewerModal. Os hooks de dismiss ficam antes do early-return pra manter
+// a ordem estável; o corpo que chama useVideoPlayer fica num filho montado só
+// quando há url.
 export function VideoPlayerModal({ url, onClose }: Props) {
+  const { translateY, reset, applyDrag, release, bgStyle } = useSwipeToDismiss()
+
+  // Reseta o transform a cada vídeo aberto.
+  useEffect(() => {
+    reset()
+  }, [url, reset])
+
+  // activeOffsetY: só dispara após um arraste vertical claro — tap (play/pause)
+  // passa pros controles nativos. failOffsetX: arraste horizontal (seek) cancela
+  // o dismiss e fica pro nativo.
+  const pan = Gesture.Pan()
+    .activeOffsetY([-15, 15])
+    .failOffsetX([-15, 15])
+    .onUpdate(e => applyDrag(e.translationY))
+    .onEnd(e => release(e.translationY, onClose))
+
+  const contentStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: translateY.value }],
+  }))
+
   if (!url) return null
+
   return (
-    <Modal visible transparent animationType="fade" onRequestClose={onClose}>
-      <View className="flex-1 bg-black">
+    <MediaViewerModal
+      gesture={pan}
+      bgStyle={bgStyle}
+      closeLabel="Fechar vídeo"
+      onClose={onClose}
+    >
+      <Animated.View className="flex-1" style={contentStyle}>
         <PlayerBody url={url} />
-        <Pressable
-          onPress={onClose}
-          className="absolute top-12 right-5 w-10 h-10 items-center justify-center bg-black/50 rounded-full"
-          accessibilityLabel="Fechar vídeo"
-        >
-          <Ionicons name="close" size={24} color="#ffffff" />
-        </Pressable>
-      </View>
-    </Modal>
+      </Animated.View>
+    </MediaViewerModal>
   )
 }
 
