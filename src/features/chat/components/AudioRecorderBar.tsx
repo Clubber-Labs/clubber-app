@@ -53,6 +53,15 @@ export function AudioRecorderBar({ onSend, onCancel }: Props) {
     if (durationMs >= MAX_AUDIO_DURATION_MS) handleSend()
   }, [durationMs, handleSend])
 
+  // Desmontou no meio da gravação (ex.: usuário volta a tela) sem enviar nem
+  // cancelar → aborta: para o recorder e restaura o modo de áudio. `cancel` é
+  // estável, então a cleanup só roda no unmount real.
+  useEffect(() => {
+    return () => {
+      if (!closingRef.current) cancel()
+    }
+  }, [cancel])
+
   const liveValues = samples
     .slice(-LIVE_BARS)
     .map(db => Math.round(meterToAmplitude(db) * 255))

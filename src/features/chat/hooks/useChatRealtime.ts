@@ -16,6 +16,22 @@ import { useChatRealtimeStore } from '../store/chatRealtimeStore'
 import { chatKeys } from './cacheKeys'
 import type { MessageFrame, MessageUpdateFrame, ReceiptFrame } from '../types'
 
+// Ack de entrega é best-effort: o backend já marca "delivered" server-side ao
+// entregar a mensagem no socket (e emite o frame de volta), então este POST é só
+// fallback. Um throttle por conversa evita N requests redundantes numa rajada de
+// mensagens recebidas com a conversa fechada — sem efeito visível, já que o status
+// real chega pelo caminho server-side.
+const DELIVERED_ACK_THROTTLE_MS = 3000
+const lastDeliveredAck = new Map<string, number>()
+
+function ackDelivered(conversationId: string) {
+  const now = Date.now()
+  const last = lastDeliveredAck.get(conversationId) ?? 0
+  if (now - last < DELIVERED_ACK_THROTTLE_MS) return
+  lastDeliveredAck.set(conversationId, now)
+  conversationsService.markDelivered(conversationId).catch(() => {})
+}
+
 // Liga o socket ao ciclo de vida (foreground/background) e roteia os frames
 // recebidos para o cache do TanStack Query. `myId` e `onAuthError` vêm da camada
 // app (que lê o authStore) — chat não importa de outra feature.
@@ -49,7 +65,7 @@ export function useChatRealtime(myId: string, onAuthError: () => void) {
             conversationsService.markRead(conversationId).catch(() => {})
             resetInboxUnread(queryClient, conversationId)
           } else {
-            conversationsService.markDelivered(conversationId).catch(() => {})
+            ackDelivered(conversationId)
           }
         }
       },
