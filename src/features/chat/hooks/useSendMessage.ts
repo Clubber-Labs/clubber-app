@@ -9,7 +9,7 @@ import {
   type MsgCache,
 } from '../lib/realtimeCache'
 import { chatKeys } from './cacheKeys'
-import type { ChatMessage } from '../types'
+import type { ChatMessage, ReplyPreview } from '../types'
 
 let counter = 0
 export function newClientId(): string {
@@ -17,7 +17,11 @@ export function newClientId(): string {
   return `temp-${Date.now()}-${counter}`
 }
 
-type SendVars = { content: string; clientId: string }
+type SendVars = {
+  content: string
+  clientId: string
+  replyTo?: ReplyPreview | null
+}
 
 // Envio otimista de texto. A bolha aparece na hora (clientStatus 'sending'); no
 // 201 vira o Message real; em erro vira 'failed' (retry reusa o mesmo clientId).
@@ -26,9 +30,9 @@ export function useSendMessage(conversationId: string, me: UserMini) {
   const key = chatKeys.messages(conversationId)
 
   return useMutation({
-    mutationFn: ({ content }: SendVars) =>
-      conversationsService.sendMessage(conversationId, content),
-    onMutate: ({ content, clientId }: SendVars) => {
+    mutationFn: ({ content, replyTo }: SendVars) =>
+      conversationsService.sendMessage(conversationId, content, replyTo?.id),
+    onMutate: ({ content, clientId, replyTo }: SendVars) => {
       const optimistic: ChatMessage = {
         id: clientId,
         clientId,
@@ -40,6 +44,7 @@ export function useSendMessage(conversationId: string, me: UserMini) {
         attachments: [],
         createdAt: new Date().toISOString(),
         deletedAt: null,
+        replyTo: replyTo ?? null,
       }
       queryClient.setQueryData<MsgCache>(key, prev =>
         upsertOptimistic(prev, optimistic),

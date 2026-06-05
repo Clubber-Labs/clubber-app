@@ -92,7 +92,7 @@ export default function ProfileScreen() {
   ]
 
   const drawerHeader = (
-    <View className="pt-24 pb-4 px-5 border-b border-zinc-900">
+    <View className="pt-5 pb-4 px-5 border-b border-zinc-900">
       <Text className="text-white font-bold text-lg">
         {profile.name} {profile.lastname}
       </Text>

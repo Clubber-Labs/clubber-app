@@ -21,6 +21,17 @@ export type Participant = {
   lastReadAt?: string | null
 }
 
+// Prévia da mensagem citada numa resposta — subconjunto de Message que o backend
+// devolve em `replyTo` quando a mensagem é uma resposta. (Nome do campo assumido
+// como `replyTo`; ajustar aqui se o contrato usar outro.)
+export type ReplyPreview = {
+  id: string
+  content: string | null
+  sender: UserMini
+  attachments?: Attachment[]
+  deletedAt?: string | null
+}
+
 export type Message = {
   id: string
   conversationId: string
@@ -34,13 +45,16 @@ export type Message = {
   // mostra "editada" quando presente (degrada se ausente).
   editedAt?: string | null
   deletedAt: string | null
+  // Presente quando esta mensagem é resposta a outra — a citada (preview).
+  replyTo?: ReplyPreview | null
 }
 
 // Estado só-do-cliente para o envio otimista. `clientId` identifica a bolha
 // otimista até o 201 trazer o `id` real; `clientStatus` controla spinner/falha.
+// Ausente = persistida (confirmada pelo servidor) → editável/apagável.
 export type ChatMessage = Message & {
   clientId?: string
-  clientStatus?: 'sending' | 'sent' | 'failed'
+  clientStatus?: 'sending' | 'failed'
 }
 
 export type Conversation = {

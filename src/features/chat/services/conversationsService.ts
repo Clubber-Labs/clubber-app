@@ -40,8 +40,17 @@ export const conversationsService = {
       .get(`/conversations/${id}/messages`, { params: buildParams(params) })
       .then(r => r.data),
 
-  sendMessage: (id: string, content: string): Promise<Message> =>
-    api.post(`/conversations/${id}/messages`, { content }).then(r => r.data),
+  sendMessage: (
+    id: string,
+    content: string,
+    replyToId?: string,
+  ): Promise<Message> =>
+    api
+      .post(`/conversations/${id}/messages`, {
+        content,
+        ...(replyToId ? { replyToId } : {}),
+      })
+      .then(r => r.data),
 
   editMessage: (
     id: string,
@@ -52,9 +61,10 @@ export const conversationsService = {
       .patch(`/conversations/${id}/messages/${messageId}`, { content })
       .then(r => r.data),
 
-  sendImage: (id: string, uri: string): Promise<Message> => {
+  sendImage: (id: string, uri: string, replyToId?: string): Promise<Message> => {
     const form = new FormData()
     form.append('file', buildImageFile(uri, 'message.jpg'))
+    if (replyToId) form.append('replyToId', replyToId)
     return api
       .post(`/conversations/${id}/messages/images`, form, {
         headers: { 'Content-Type': 'multipart/form-data' },

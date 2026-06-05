@@ -36,7 +36,9 @@ export function upsertMessage(
       if (idx === -1) return page
       replaced = true
       const data = [...page.data]
-      data[idx] = { ...message, clientStatus: 'sent' }
+      // Persistida: sem clientStatus (o servidor confirmou). Manter um status
+      // truthy aqui travaria editar/apagar/"Visto" da própria mensagem.
+      data[idx] = { ...message }
       return { ...page, data }
     })
     if (replaced) return { ...cache, pages }
@@ -198,7 +200,8 @@ export function reconcileSent(
     for (const m of page.data) {
       if (m.clientId === clientId) {
         if (!realExists && !inserted) {
-          data.push({ ...real, clientStatus: 'sent' })
+          // Sem clientStatus: vira mensagem persistida (editável/apagável).
+          data.push({ ...real })
           inserted = true
         }
         continue

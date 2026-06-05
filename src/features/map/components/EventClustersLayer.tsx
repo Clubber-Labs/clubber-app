@@ -38,6 +38,8 @@ export const EventClustersLayer = forwardRef<Mapbox.ShapeSource, Props>(
             textFont: ['DIN Pro Bold', 'Arial Unicode MS Bold'],
             textIgnorePlacement: true,
             textAllowOverlap: true,
+            // Ignora a iluminação do tema (lightPreset 'night') → cor fiel.
+            textEmissiveStrength: 1,
           }}
         />
         <Mapbox.CircleLayer
@@ -51,6 +53,7 @@ export const EventClustersLayer = forwardRef<Mapbox.ShapeSource, Props>(
             circleOpacity: opacity,
             circleStrokeOpacity: opacity,
             circleRadius: ['step', ['get', 'point_count'], 16, 10, 20, 30, 24],
+            circleEmissiveStrength: 1,
           }}
         />
         <Mapbox.CircleLayer
@@ -63,6 +66,7 @@ export const EventClustersLayer = forwardRef<Mapbox.ShapeSource, Props>(
             circleOpacity: opacity,
             circleStrokeOpacity: opacity,
             circleRadius: 10,
+            circleEmissiveStrength: 1,
           }}
         />
       </Mapbox.ShapeSource>

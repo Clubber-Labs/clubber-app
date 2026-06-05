@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   View,
   ActivityIndicator,
@@ -19,6 +19,7 @@ import {
 } from '@/shared/lib/apiError'
 import { hapticLight } from '@/shared/lib/haptics'
 import { useConversation } from '@/features/chat/hooks/useConversation'
+import { useMessages } from '@/features/chat/hooks/useMessages'
 import { useMessagesMutations } from '@/features/chat/hooks/useMessagesMutations'
 import { useReadConversation } from '@/features/chat/hooks/useReadConversation'
 import { useBlocks } from '@/features/chat/hooks/useBlocks'
@@ -34,7 +35,11 @@ import { MessageActionsSheet } from '@/features/chat/components/MessageActionsSh
 import { ReportReasonPicker } from '@/features/chat/components/ReportReasonPicker'
 import { ImageViewerModal } from '@/features/chat/components/ImageViewerModal'
 import type { UserMini } from '@/shared/types'
-import type { ChatMessage, ReportReason } from '@/features/chat/types'
+import type {
+  ChatMessage,
+  ReplyPreview,
+  ReportReason,
+} from '@/features/chat/types'
 
 const COOLDOWN_MS = 5000
 
@@ -46,6 +51,7 @@ export default function ConversationScreen() {
   const confirm = useConfirm()
 
   const { data: conversation, isLoading } = useConversation(id)
+  const { messages } = useMessages(id)
   const setActive = useChatRealtimeStore(s => s.setActiveConversation)
   const read = useReadConversation()
   const report = useReportMessage()
@@ -57,19 +63,21 @@ export default function ConversationScreen() {
   const other = !isGroup
     ? conversation?.participants.find(p => p.userId !== myId)
     : undefined
-  const me: UserMini =
-    conversation?.participants.find(p => p.userId === myId)?.user ?? {
-      id: myId,
-      name: '',
-      lastname: '',
-      username: '',
-      avatarUrl: null,
-    }
+  const me: UserMini = conversation?.participants.find(p => p.userId === myId)
+    ?.user ?? {
+    id: myId,
+    name: '',
+    lastname: '',
+    username: '',
+    avatarUrl: null,
+  }
 
   const { send, sendImage, deleteMessage, edit } = useMessagesMutations(id, me)
 
   const [blockedByServer, setBlockedByServer] = useState(false)
-  const iBlocked = other ? blocks.some(b => b.blocked.id === other.user.id) : false
+  const iBlocked = other
+    ? blocks.some(b => b.blocked.id === other.user.id)
+    : false
   const isBlocked = !isGroup && (iBlocked || blockedByServer)
 
   const [cooldown, setCooldown] = useState(false)
@@ -78,6 +86,20 @@ export default function ConversationScreen() {
   const [reportFor, setReportFor] = useState<ChatMessage | null>(null)
   const [viewerUrl, setViewerUrl] = useState<string | null>(null)
   const [editing, setEditing] = useState<ChatMessage | null>(null)
+  const [replyingToId, setReplyingToId] = useState<string | null>(null)
+
+  // Mensagem citada derivada do cache vivo (não um snapshot): se for apagada ou
+  // sumir com a barra aberta, vira null e a barra fecha sozinha — evita citar e
+  // enviar replyTo de uma mensagem que não existe mais.
+  const replyingTo = useMemo(() => {
+    if (!replyingToId) return null
+    const m = messages.find(msg => msg.id === replyingToId)
+    return m && !m.deletedAt ? m : null
+  }, [messages, replyingToId])
+
+  useEffect(() => {
+    if (replyingToId && !replyingTo) setReplyingToId(null)
+  }, [replyingToId, replyingTo])
 
   // Marca a conversa como ativa (controla unread/read) e a marca lida ao focar.
   const readRef = useRef(read)
@@ -100,14 +122,47 @@ export default function ConversationScreen() {
     if (isForbiddenError(e) && !isGroup) setBlockedByServer(true)
   }
 
+  function toReplyPreview(m: ChatMessage): ReplyPreview {
+    return {
+      id: m.id,
+      content: m.content,
+      sender: m.sender,
+      attachments: m.attachments,
+      deletedAt: m.deletedAt,
+    }
+  }
+
+  function setReply(message: ChatMessage) {
+    // Só responde a mensagens persistidas e não removidas.
+    if (message.deletedAt || message.clientStatus) return
+    setEditing(null)
+    setReplyingToId(message.id)
+  }
+
   function sendText(text: string) {
     hapticLight()
-    send.mutate({ content: text, clientId: newClientId() }, { onError: handleSendError })
+    send.mutate(
+      {
+        content: text,
+        clientId: newClientId(),
+        replyTo: replyingTo ? toReplyPreview(replyingTo) : null,
+      },
+      { onError: handleSendError },
+    )
+    setReplyingToId(null)
   }
 
   function sendImageUri(uri: string) {
     hapticLight()
-    sendImage.mutate({ uri, clientId: newClientId() }, { onError: handleSendError })
+    sendImage.mutate(
+      {
+        uri,
+        clientId: newClientId(),
+        replyTo: replyingTo ? toReplyPreview(replyingTo) : null,
+      },
+      { onError: handleSendError },
+    )
+    setReplyingToId(null)
   }
 
   async function pickFromGallery() {
@@ -130,14 +185,20 @@ export default function ConversationScreen() {
 
   function onRetry(message: ChatMessage) {
     if (!message.clientId) return
+    // Preserva a resposta original ao reenviar.
+    const replyTo = message.replyTo ?? null
     if (message.attachments.length > 0) {
       sendImage.mutate(
-        { uri: message.attachments[0].url, clientId: message.clientId },
+        {
+          uri: message.attachments[0].url,
+          clientId: message.clientId,
+          replyTo,
+        },
         { onError: handleSendError },
       )
     } else if (message.content) {
       send.mutate(
-        { content: message.content, clientId: message.clientId },
+        { content: message.content, clientId: message.clientId, replyTo },
         { onError: handleSendError },
       )
     }
@@ -149,6 +210,7 @@ export default function ConversationScreen() {
   }
 
   const isMineMessage = actionsFor?.senderId === myId
+  const canEdit = !!actionsFor && isMineMessage && !!actionsFor.content
   const canDelete = !!actionsFor && (isMineMessage || (!!isGroup && !!amAdmin))
   const canReport = !!actionsFor && !isMineMessage
 
@@ -159,7 +221,7 @@ export default function ConversationScreen() {
   async function confirmDelete(message: ChatMessage) {
     const ok = await confirm({
       title: 'Apagar mensagem',
-      message: 'Esta mensagem será removida para todos.',
+      message: 'Esta mensagem será apagada para todos.',
       confirmLabel: 'Apagar',
       destructive: true,
     })
@@ -172,6 +234,7 @@ export default function ConversationScreen() {
 
   function startEdit(message: ChatMessage) {
     setActionsFor(null)
+    setReplyingToId(null)
     setEditing(message)
   }
 
@@ -230,8 +293,7 @@ export default function ConversationScreen() {
           onLongPressMessage={openActions}
           onPressImage={setViewerUrl}
           onRetry={onRetry}
-          onEditMessage={startEdit}
-          onDeleteMessage={confirmDelete}
+          onReplyMessage={setReply}
         />
       </View>
 
@@ -253,6 +315,21 @@ export default function ConversationScreen() {
           }
           onSubmitEdit={submitEdit}
           onCancelEdit={() => setEditing(null)}
+          replyingTo={
+            replyingTo
+              ? {
+                  senderName:
+                    replyingTo.senderId === myId
+                      ? 'Você'
+                      : `${replyingTo.sender.name} ${replyingTo.sender.lastname}`.trim(),
+                  preview: replyingTo.deletedAt
+                    ? 'Mensagem removida'
+                    : (replyingTo.content ??
+                      (replyingTo.attachments.length ? 'Imagem' : '')),
+                }
+              : null
+          }
+          onCancelReply={() => setReplyingToId(null)}
         />
       )}
 
@@ -265,10 +342,12 @@ export default function ConversationScreen() {
       <MessageActionsSheet
         visible={!!actionsFor}
         message={actionsFor}
+        canEdit={canEdit}
         canDelete={canDelete}
         canReport={canReport}
         onClose={() => setActionsFor(null)}
         onCopy={doCopy}
+        onEdit={() => actionsFor && startEdit(actionsFor)}
         onReport={() => setReportFor(actionsFor)}
         onDelete={doDelete}
       />

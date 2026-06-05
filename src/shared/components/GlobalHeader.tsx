@@ -21,7 +21,7 @@ export function GlobalHeader({
 }: Props) {
   const router = useRouter()
   const segments = useSegments()
-  const setDrawerOpen = useProfileDrawer(s => s.setOpen)
+  const toggleDrawer = useProfileDrawer(s => s.toggle)
 
   const isTabsRoot = segments[0] === '(tabs)' && segments.length <= 2
   const isProfileTab = segments.includes('profile') && isTabsRoot
@@ -54,7 +54,7 @@ export function GlobalHeader({
         )}
         {isProfileTab && (
           <Pressable
-            onPress={() => setDrawerOpen(true)}
+            onPress={toggleDrawer}
             className="w-9 h-9 items-center justify-center"
             accessibilityLabel={
               hasPendingRequests

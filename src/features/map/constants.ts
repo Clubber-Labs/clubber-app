@@ -12,6 +12,8 @@ export const ALL_CATEGORIES = 'Todas'
 export const VIOLET_500 = '#8b5cf6'
 export const VIOLET_600 = '#7c3aed'
 export const VIOLET_400 = '#a78bfa'
+// Azul padrão do "blue dot" de localização (iOS system blue).
+export const LOCATION_BLUE = '#007AFF'
 
 // Debounce da captura de bbox ao arrastar o mapa (carga por viewport).
 export const BBOX_DEBOUNCE_MS = 300

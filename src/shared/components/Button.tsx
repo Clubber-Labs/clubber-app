@@ -25,7 +25,7 @@ export function Button({
     <Pressable
       onPress={onPress}
       disabled={disabled || loading}
-      className={styles}
+      className={`${styles} ${disabled && !loading ? 'opacity-40' : ''}`}
     >
       {loading && (
         <ActivityIndicator

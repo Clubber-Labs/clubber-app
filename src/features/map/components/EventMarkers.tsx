@@ -1,8 +1,8 @@
-import { View, Pressable, Text } from 'react-native'
+import { View, Pressable, Text, Image } from 'react-native'
+import { Ionicons } from '@expo/vector-icons'
 import Mapbox from '@rnmapbox/maps'
 import type { FeedEvent, FriendAttendance } from '@/shared/types'
 import { UserAvatar } from '@/shared/components/UserAvatar'
-import { VIOLET_400, VIOLET_600 } from '../constants'
 import {
   groupCoincidentEvents,
   fanoutOffset,
@@ -24,7 +24,9 @@ const FANOUT_GAP = 10
 const MAX_FRIENDS = 3
 const DIMMED_OPACITY = 0.5
 
-function AuthorPin({
+// Pin do evento: capa do banner (images[0]). Sem capa, cai no ícone de
+// calendário — mesma convenção de "evento sem imagem" do EventCard.
+function EventPin({
   event,
   size,
   selected,
@@ -33,7 +35,8 @@ function AuthorPin({
   size: number
   selected: boolean
 }) {
-  const fullName = `${event.author.name} ${event.author.lastname}`.trim()
+  const cover = event.images[0]?.url
+  const inner = size - 6
   return (
     <View
       style={{
@@ -41,14 +44,29 @@ function AuthorPin({
         height: size,
         borderRadius: size / 2,
         borderWidth: 3,
-        borderColor: selected ? VIOLET_400 : VIOLET_600,
+        borderColor: selected ? '#ffffff' : '#ffffff',
         backgroundColor: '#ffffff',
         overflow: 'hidden',
+        alignItems: 'center',
+        justifyContent: 'center',
         // Encerrados ficam esmaecidos (status vem do backend).
         opacity: event.status === 'PAST' ? 0.55 : 1,
       }}
     >
-      <UserAvatar name={fullName} avatarUrl={event.author.avatarUrl} size={size - 6} />
+      {cover ? (
+        <Image
+          source={{ uri: cover }}
+          style={{ width: inner, height: inner, borderRadius: inner / 2 }}
+          resizeMode="cover"
+        />
+      ) : (
+        <View
+          style={{ width: inner, height: inner, borderRadius: inner / 2 }}
+          className="bg-zinc-800 items-center justify-center"
+        >
+          <Ionicons name="calendar-outline" size={Math.round(inner * 0.45)} color="#52525b" />
+        </View>
+      )}
     </View>
   )
 }
@@ -87,7 +105,7 @@ function SingleMarker({
       accessibilityLabel={`Ver evento ${event.title}`}
       hitSlop={6}
     >
-      <AuthorPin event={event} size={size} selected={selected} />
+      <EventPin event={event} size={size} selected={selected} />
     </Pressable>
   )
 
@@ -133,11 +151,9 @@ function SingleMarker({
         style={{ width: layout.frameWidth, height: layout.frameHeight, opacity }}
         pointerEvents="box-none"
       >
-        {/* Criador atrás; os avatares ficam por cima do pin (z-order na frente). */}
+
         <View style={{ position: 'absolute', left: 0, top: 0 }}>{pin}</View>
 
-        {/* Render reverso pra o avatar mais à esquerda ficar por cima (face-pile).
-            pointerEvents none: os avatares não capturam toque — o pin segue clicável. */}
         {[...items].reverse().map(item => {
           const base = {
             position: 'absolute' as const,
@@ -228,7 +244,7 @@ function CoincidentMarker({
                 top: frame / 2 - size / 2 + offset.y,
               }}
             >
-              <AuthorPin event={event} size={size} selected={selected} />
+              <EventPin event={event} size={size} selected={selected} />
             </Pressable>
           )
         })}

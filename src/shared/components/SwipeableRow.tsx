@@ -10,6 +10,7 @@ import Animated, {
 import { Ionicons } from '@expo/vector-icons'
 import ReanimatedSwipeable, {
   type SwipeableMethods,
+  SwipeDirection,
 } from 'react-native-gesture-handler/ReanimatedSwipeable'
 
 export type SwipeAction = {
@@ -18,9 +19,20 @@ export type SwipeAction = {
   onPress: () => void
 }
 
+export type SwipeTrigger = {
+  icon: keyof typeof Ionicons.glyphMap
+  onTrigger: () => void
+}
+
 type Props = {
   children: ReactNode
-  rightActions: SwipeAction[]
+  // Botões revelados ao arrastar para a esquerda (persistem até toque).
+  rightActions?: SwipeAction[]
+  // Gatilho "responder" ao arrastar para a ESQUERDA — dispara passando o limiar
+  // e volta sozinho (sem revelar botões). Tem precedência sobre rightActions.
+  rightTrigger?: SwipeTrigger
+  // Gatilho "responder" ao arrastar para a DIREITA (mesma ideia, lado oposto).
+  leftTrigger?: SwipeTrigger
 }
 
 function RightActions({
@@ -43,20 +55,56 @@ function RightActions({
         <Pressable
           key={action.label}
           onPress={() => onRun(action)}
-          style={{ width: 60 }}
+          style={{ width: 32 }}
           className="items-center justify-center"
           accessibilityLabel={action.label}
         >
-          <Ionicons name={action.icon} size={22} color="#ffffff" />
+          <Ionicons name={action.icon} size={24} color="#ffffff" />
         </Pressable>
       ))}
     </Animated.View>
   )
 }
 
-// Arraste a linha para a esquerda para revelar as ações — só os ícones, que
-// surgem apenas no fim do gesto. Fecha o swipe antes de disparar a ação.
-export function SwipeableRow({ children, rightActions }: Props) {
+// Ícone único que surge ao arrastar (responder): aparece já no começo do gesto
+// e cresce; a ação dispara ao soltar passando o limiar (ver onSwipeableOpen).
+function TriggerIcon({
+  progress,
+  icon,
+}: {
+  progress: SharedValue<number>
+  icon: keyof typeof Ionicons.glyphMap
+}) {
+  const style = useAnimatedStyle(() => ({
+    opacity: interpolate(progress.value, [0.2, 1], [0, 1], Extrapolation.CLAMP),
+    transform: [
+      {
+        scale: interpolate(
+          progress.value,
+          [0.2, 1],
+          [0.6, 1],
+          Extrapolation.CLAMP,
+        ),
+      },
+    ],
+  }))
+
+  return (
+    <Animated.View style={style} className="items-center justify-center px-5">
+      <Ionicons name={icon} size={22} color="#8b5cf6" />
+    </Animated.View>
+  )
+}
+
+// Arraste a linha para a esquerda para revelar as ações (botões que persistem
+// até o toque) ou — com `rightTrigger` — para disparar uma ação única que volta
+// sozinha. Fecha o swipe antes de disparar.
+export function SwipeableRow({
+  children,
+  rightActions,
+  rightTrigger,
+  leftTrigger,
+}: Props) {
   const ref = useRef<SwipeableMethods>(null)
 
   function run(action: SwipeAction) {
@@ -64,15 +112,49 @@ export function SwipeableRow({ children, rightActions }: Props) {
     action.onPress()
   }
 
+  const renderRight = rightTrigger
+    ? (progress: SharedValue<number>) => (
+        <TriggerIcon progress={progress} icon={rightTrigger.icon} />
+      )
+    : rightActions
+      ? (progress: SharedValue<number>) => (
+          <RightActions
+            progress={progress}
+            actions={rightActions}
+            onRun={run}
+          />
+        )
+      : undefined
+
+  const renderLeft = leftTrigger
+    ? (progress: SharedValue<number>) => (
+        <TriggerIcon progress={progress} icon={leftTrigger.icon} />
+      )
+    : undefined
+
+  const hasTrigger = !!rightTrigger || !!leftTrigger
+
   return (
     <ReanimatedSwipeable
       ref={ref}
       friction={2}
-      rightThreshold={48}
+      leftThreshold={leftTrigger ? 40 : undefined}
+      rightThreshold={rightTrigger ? 40 : 48}
+      overshootLeft={false}
       overshootRight={false}
-      renderRightActions={progress => (
-        <RightActions progress={progress} actions={rightActions} onRun={run} />
-      )}
+      onSwipeableOpen={
+        hasTrigger
+          ? direction => {
+              // `direction` é o sentido do ARRASTE: RIGHT (arrastou p/ direita,
+              // abre o lado esquerdo) → leftTrigger; LEFT → rightTrigger.
+              ref.current?.close()
+              if (direction === SwipeDirection.RIGHT) leftTrigger?.onTrigger()
+              else rightTrigger?.onTrigger()
+            }
+          : undefined
+      }
+      renderLeftActions={renderLeft}
+      renderRightActions={renderRight}
     >
       {children}
     </ReanimatedSwipeable>

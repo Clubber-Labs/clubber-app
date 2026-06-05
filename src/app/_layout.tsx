@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { queryClient } from '@/shared/lib/queryClient'
 import { ConfirmProvider } from '@/shared/lib/confirm'
+import { OpenInMapsProvider } from '@/shared/lib/openInMaps'
 import { BannerProvider } from '@/shared/lib/banner'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useRestoreSession } from '@/features/auth/hooks/useRestoreSession'
@@ -83,37 +84,39 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <ConfirmProvider>
-            <BannerProvider>
-              <StatusBar style="light" />
-              <SafeAreaView
-                style={{ flex: 1, backgroundColor: '#000000' }}
-                edges={['top']}
-              >
-                {showHeader && <GlobalHeader />}
-                <View className="flex-1 bg-black">
-                  <Stack
-                    screenOptions={{
-                      headerShown: false,
-                      contentStyle: { backgroundColor: '#000000' },
-                    }}
+            <OpenInMapsProvider>
+              <BannerProvider>
+                <StatusBar style="light" />
+                <SafeAreaView
+                  style={{ flex: 1, backgroundColor: '#000000' }}
+                  edges={['top']}
+                >
+                  {showHeader && <GlobalHeader />}
+                  <View className="flex-1 bg-black">
+                    <Stack
+                      screenOptions={{
+                        headerShown: false,
+                        contentStyle: { backgroundColor: '#000000' },
+                      }}
+                    />
+                    {/* Gate de sessão: bloqueia as telas até /me validar. */}
+                    {status === 'loading' && (
+                      <View className="absolute inset-0 bg-black" />
+                    )}
+                    {status === 'offline' && (
+                      <SessionUnavailable onRetry={retry} />
+                    )}
+                  </View>
+                </SafeAreaView>
+                <AuthGuard />
+                {chatActive && userId && (
+                  <ChatRealtimeMount
+                    myId={userId}
+                    onAuthError={handleChatAuthError}
                   />
-                  {/* Gate de sessão: bloqueia as telas até /me validar. */}
-                  {status === 'loading' && (
-                    <View className="absolute inset-0 bg-black" />
-                  )}
-                  {status === 'offline' && (
-                    <SessionUnavailable onRetry={retry} />
-                  )}
-                </View>
-              </SafeAreaView>
-              <AuthGuard />
-              {chatActive && userId && (
-                <ChatRealtimeMount
-                  myId={userId}
-                  onAuthError={handleChatAuthError}
-                />
-              )}
-            </BannerProvider>
+                )}
+              </BannerProvider>
+            </OpenInMapsProvider>
           </ConfirmProvider>
         </QueryClientProvider>
       </SafeAreaProvider>

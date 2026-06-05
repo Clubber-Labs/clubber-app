@@ -10,6 +10,9 @@ type Props = {
   editing?: { id: string; content: string } | null
   onSubmitEdit?: (text: string) => void
   onCancelEdit?: () => void
+  // Quando presente, mostra a barra "Respondendo a…" acima do input.
+  replyingTo?: { senderName: string; preview: string } | null
+  onCancelReply?: () => void
 }
 
 export function MessageInputBar({
@@ -19,6 +22,8 @@ export function MessageInputBar({
   editing,
   onSubmitEdit,
   onCancelEdit,
+  replyingTo,
+  onCancelReply,
 }: Props) {
   const [text, setText] = useState('')
   const trimmed = text.trim()
@@ -51,7 +56,7 @@ export function MessageInputBar({
   }
 
   return (
-    <View className="border-t border-zinc-900 bg-black">
+    <View className="border-t pb-7 px-2 pt-2 border-zinc-900 bg-black">
       {isEditing && (
         <View className="flex-row items-center justify-between px-4 py-1.5 bg-zinc-950">
           <View className="flex-row items-center gap-2">
@@ -59,6 +64,31 @@ export function MessageInputBar({
             <Text className="text-zinc-300 text-sm">Editando mensagem</Text>
           </View>
           <Pressable onPress={cancelEdit} accessibilityLabel="Cancelar edição">
+            <Ionicons name="close" size={18} color="#a1a1aa" />
+          </Pressable>
+        </View>
+      )}
+
+      {replyingTo && !isEditing && (
+        <View className="flex-row items-center justify-between px-4 py-1.5 bg-zinc-950">
+          <View className="flex-row items-center gap-2 flex-1">
+            <Ionicons name="arrow-undo-outline" size={14} color="#8b5cf6" />
+            <View className="flex-1">
+              <Text
+                className="text-violet-300 text-[12px] font-semibold"
+                numberOfLines={1}
+              >
+                Respondendo a {replyingTo.senderName}
+              </Text>
+              <Text className="text-zinc-400 text-[12px]" numberOfLines={1}>
+                {replyingTo.preview}
+              </Text>
+            </View>
+          </View>
+          <Pressable
+            onPress={onCancelReply}
+            accessibilityLabel="Cancelar resposta"
+          >
             <Ionicons name="close" size={18} color="#a1a1aa" />
           </Pressable>
         </View>

@@ -23,8 +23,7 @@ type Props = {
   onLongPressMessage: (message: ChatMessage) => void
   onPressImage: (url: string) => void
   onRetry: (message: ChatMessage) => void
-  onEditMessage: (message: ChatMessage) => void
-  onDeleteMessage: (message: ChatMessage) => void
+  onReplyMessage: (message: ChatMessage) => void
 }
 
 export function MessageList({
@@ -35,11 +34,15 @@ export function MessageList({
   onLongPressMessage,
   onPressImage,
   onRetry,
-  onEditMessage,
-  onDeleteMessage,
+  onReplyMessage,
 }: Props) {
-  const { messages, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useMessages(conversationId)
+  const {
+    messages,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useMessages(conversationId)
 
   const meta = useMemo(
     () => buildMessageMeta(messages, myId, isGroup),
@@ -78,6 +81,19 @@ export function MessageList({
     atBottomRef.current = e.nativeEvent.contentOffset.y <= 40
   }
 
+  // Rola até a mensagem citada ao tocar na citação — só se já estiver carregada
+  // (páginas mais antigas podem não estar; aí é no-op).
+  function scrollToMessage(messageId: string) {
+    const index = messages.findIndex(m => m.id === messageId)
+    if (index >= 0) {
+      listRef.current?.scrollToIndex({
+        index,
+        animated: true,
+        viewPosition: 0.5,
+      })
+    }
+  }
+
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
@@ -106,6 +122,7 @@ export function MessageList({
           item.id === seenMessageId && otherReadAt
             ? `Visto ${formatMessageTime(otherReadAt)}`
             : null
+        const replyId = item.replyTo?.id
         return (
           <View>
             {m.showDateSeparator && <DateSeparator iso={item.createdAt} />}
@@ -117,11 +134,28 @@ export function MessageList({
               onLongPress={() => onLongPressMessage(item)}
               onPressImage={onPressImage}
               onRetry={() => onRetry(item)}
-              onEdit={() => onEditMessage(item)}
-              onDelete={() => onDeleteMessage(item)}
+              onReply={() => onReplyMessage(item)}
+              onPressReply={
+                replyId ? () => scrollToMessage(replyId) : undefined
+              }
             />
           </View>
         )
+      }}
+      onScrollToIndexFailed={info => {
+        // Item carregado mas fora da janela montada do FlatList: aproxima via
+        // offset estimado e re-tenta o scroll exato no próximo frame.
+        listRef.current?.scrollToOffset({
+          offset: info.averageItemLength * info.index,
+          animated: true,
+        })
+        setTimeout(() => {
+          listRef.current?.scrollToIndex({
+            index: info.index,
+            viewPosition: 0.5,
+            animated: true,
+          })
+        }, 60)
       }}
       onEndReached={() => {
         if (hasNextPage && !isFetchingNextPage) fetchNextPage()

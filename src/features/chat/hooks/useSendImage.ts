@@ -9,9 +9,13 @@ import {
   type MsgCache,
 } from '../lib/realtimeCache'
 import { chatKeys } from './cacheKeys'
-import type { ChatMessage } from '../types'
+import type { ChatMessage, ReplyPreview } from '../types'
 
-type SendImageVars = { uri: string; clientId: string }
+type SendImageVars = {
+  uri: string
+  clientId: string
+  replyTo?: ReplyPreview | null
+}
 
 // Upload otimista de imagem. A bolha aparece com a imagem local + spinner; no
 // 201 vira o Message real (com a url do servidor); em erro vira 'failed'.
@@ -20,9 +24,9 @@ export function useSendImage(conversationId: string, me: UserMini) {
   const key = chatKeys.messages(conversationId)
 
   return useMutation({
-    mutationFn: ({ uri }: SendImageVars) =>
-      conversationsService.sendImage(conversationId, uri),
-    onMutate: ({ uri, clientId }: SendImageVars) => {
+    mutationFn: ({ uri, replyTo }: SendImageVars) =>
+      conversationsService.sendImage(conversationId, uri, replyTo?.id),
+    onMutate: ({ uri, clientId, replyTo }: SendImageVars) => {
       const optimistic: ChatMessage = {
         id: clientId,
         clientId,
@@ -34,6 +38,7 @@ export function useSendImage(conversationId: string, me: UserMini) {
         attachments: [{ id: clientId, url: uri, format: '', size: 0, order: 0 }],
         createdAt: new Date().toISOString(),
         deletedAt: null,
+        replyTo: replyTo ?? null,
       }
       queryClient.setQueryData<MsgCache>(key, prev =>
         upsertOptimistic(prev, optimistic),

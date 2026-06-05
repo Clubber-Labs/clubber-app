@@ -13,8 +13,13 @@ export const feedKey = ['feed'] as const
 export function invalidateEventViews(
   queryClient: QueryClient,
   eventId?: string,
+  // Em mutations otimistas in-place (presença) o card já reflete a mudança;
+  // refetch ativo do feed só reordenaria o item na hora. 'none' marca stale →
+  // reordena no próximo refresh/fetch. Edição/upload usam 'active' (conteúdo
+  // mudou e não está refletido no cache do feed).
+  feedRefetch: 'active' | 'none' = 'active',
 ) {
-  queryClient.invalidateQueries({ queryKey: feedKey })
+  queryClient.invalidateQueries({ queryKey: feedKey, refetchType: feedRefetch })
   queryClient.invalidateQueries({ queryKey: eventKeys.list })
   queryClient.invalidateQueries({ queryKey: ['map-events'] })
   queryClient.invalidateQueries({ queryKey: ['heatmap'] })

@@ -1,11 +1,12 @@
 import { useEffect, type ReactNode } from 'react'
 import { View, Text, TextInput, Switch, Pressable } from 'react-native'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, useWatch, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   editProfileSchema,
   type EditProfileInput,
 } from '../schemas/editProfileSchema'
+import { buildProfilePatch, isPatchEmpty } from '../utils/profilePatch'
 import { Button } from '@/shared/components/Button'
 import { DatePicker } from '@/shared/components/DatePicker'
 import { FormError } from '@/shared/components/FormError'
@@ -52,7 +53,7 @@ export function EditProfileForm({
     control,
     handleSubmit,
     reset,
-    formState: { errors, isDirty },
+    formState: { errors },
   } = useForm<EditProfileInput>({
     resolver: zodResolver(editProfileSchema),
     defaultValues: defaultsFromProfile(profile),
@@ -61,6 +62,15 @@ export function EditProfileForm({
   useEffect(() => {
     reset(defaultsFromProfile(profile))
   }, [profile, reset])
+
+  // `isDirty` do RHF compara identidade bruta (Date com horário, recriação de
+  // array) e diverge do que o submit considera mudança. Usamos a mesma fonte de
+  // verdade do submit — buildProfilePatch — para o botão refletir exatamente se
+  // salvar faria algo.
+  const hasChanges = useWatch({
+    control,
+    compute: values => !isPatchEmpty(buildProfilePatch(profile, values)),
+  })
 
   return (
     <View className="gap-4">
@@ -215,7 +225,7 @@ export function EditProfileForm({
             label={saving ? 'Salvando...' : 'Salvar'}
             onPress={handleSubmit(onSubmit)}
             loading={saving}
-            disabled={(!isDirty && !avatarChanged) || saving}
+            disabled={(!hasChanges && !avatarChanged) || saving}
           />
         </View>
       </View>

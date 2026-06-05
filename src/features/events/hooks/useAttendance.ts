@@ -211,7 +211,7 @@ export function useSetAttendance(eventId: string) {
       return snap
     },
     onError: (_err, _vars, ctx) => ctx && restore(queryClient, eventId, ctx),
-    onSettled: () => invalidateEventViews(queryClient, eventId),
+    onSettled: () => invalidateEventViews(queryClient, eventId, 'none'),
   })
 }
 
@@ -226,6 +226,6 @@ export function useCancelAttendance(eventId: string) {
       return snap
     },
     onError: (_err, _vars, ctx) => ctx && restore(queryClient, eventId, ctx),
-    onSettled: () => invalidateEventViews(queryClient, eventId),
+    onSettled: () => invalidateEventViews(queryClient, eventId, 'none'),
   })
 }

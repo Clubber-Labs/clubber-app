@@ -57,6 +57,7 @@ export function AddParticipantsModal({
               placeholder="Buscar pessoas…"
               placeholderTextColor="#71717a"
               autoCapitalize="none"
+              textAlignVertical="center"
               className="flex-1 py-3 text-base text-white"
             />
           </View>
