@@ -79,6 +79,11 @@ export default function ProfileScreen() {
         ]
       : []),
     {
+      label: 'Privacidade',
+      icon: 'shield-checkmark-outline' as const,
+      onPress: () => router.push('/profile/privacy'),
+    },
+    {
       label: 'Sobre o app',
       icon: 'information-circle-outline',
       onPress: () => router.push('/about'),

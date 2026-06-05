@@ -15,6 +15,13 @@ import { ConfirmProvider } from '@/shared/lib/confirm'
 import { OpenInMapsProvider } from '@/shared/lib/openInMaps'
 import { BannerProvider } from '@/shared/lib/banner'
 import { useAuthStore } from '@/features/auth/store/authStore'
+import {
+  useConsentStore,
+  selectNeedsConsent,
+  selectNeedsVersionBump,
+  selectConsentHydrated,
+} from '@/features/privacy/store/consentStore'
+import { CONSENT_VERSION } from '@/features/privacy/services/consentService'
 import { useRestoreSession } from '@/features/auth/hooks/useRestoreSession'
 import { endSession } from '@/features/auth/lib/session'
 import { initFacebookSDK } from '@/features/auth/lib/facebookLogin'
@@ -31,25 +38,60 @@ function AuthGuard() {
   const segments = useSegments()
   const router = useRouter()
 
+  const needsConsent = useConsentStore(selectNeedsConsent)
+  const needsVersionBump = useConsentStore(s =>
+    selectNeedsVersionBump(s, CONSENT_VERSION),
+  )
+
   useEffect(() => {
     if (status === 'loading' || status === 'offline') return
 
     const inAuthGroup = segments[0] === '(auth)'
     const onCompleteProfile =
       inAuthGroup && (segments as string[])[1] === 'complete-profile'
+    const onConsentScreen =
+      inAuthGroup && (segments as string[])[1] === 'consent'
 
     if (status === 'unauthenticated' && !inAuthGroup) {
       router.replace('/(auth)/login')
-    } else if (
-      status === 'authenticated' &&
-      profileIncomplete &&
-      !onCompleteProfile
-    ) {
+      return
+    }
+
+    if (status === 'authenticated' && profileIncomplete && !onCompleteProfile) {
       router.replace('/(auth)/complete-profile')
-    } else if (status === 'authenticated' && !profileIncomplete && inAuthGroup) {
+      return
+    }
+
+    // Gate de consentimento: usuário autenticado com perfil completo mas sem consentimento
+    // (novo usuário) ou com versão desatualizada (version bump) → tela de consent.
+    if (
+      status === 'authenticated' &&
+      !profileIncomplete &&
+      (needsConsent || needsVersionBump) &&
+      !onConsentScreen
+    ) {
+      router.replace('/(auth)/consent')
+      return
+    }
+
+    // Autenticado, com perfil e consentimento OK → sai do grupo auth
+    if (
+      status === 'authenticated' &&
+      !profileIncomplete &&
+      !needsConsent &&
+      !needsVersionBump &&
+      inAuthGroup
+    ) {
       router.replace('/(tabs)/feed')
     }
-  }, [status, profileIncomplete, segments, router])
+  }, [
+    status,
+    profileIncomplete,
+    needsConsent,
+    needsVersionBump,
+    segments,
+    router,
+  ])
 
   return null
 }
@@ -76,7 +118,14 @@ export default function RootLayout() {
 
   // Esconde GlobalHeader durante o fluxo de completar perfil — a tela
   // ainda está em (auth), mas isAuthenticated já é true.
-  const showHeader = isAuthenticated && !profileIncomplete
+  const consentHydrated = useConsentStore(selectConsentHydrated)
+  const needsConsentRoot = useConsentStore(selectNeedsConsent)
+  const needsVersionBumpRoot = useConsentStore(s =>
+    selectNeedsVersionBump(s, CONSENT_VERSION),
+  )
+  const onConsentFlow =
+    !consentHydrated || needsConsentRoot || needsVersionBumpRoot
+  const showHeader = isAuthenticated && !profileIncomplete && !onConsentFlow
   const chatActive = isAuthenticated && !profileIncomplete && !!userId
 
   return (

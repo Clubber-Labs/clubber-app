@@ -8,7 +8,11 @@ import {
 } from 'react-native'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { registerSchema, type RegisterInput } from '../schemas/registerSchema'
+import {
+  DEFAULT_REGISTER_CONSENTS,
+  registerSchema,
+  type RegisterInput,
+} from '../schemas/registerSchema'
 import { useRegister } from '../hooks/useRegister'
 import { Button } from '@/shared/components/Button'
 import { RegisterProgressBar } from './RegisterProgressBar'
@@ -16,6 +20,7 @@ import { StepPersonal } from './steps/StepPersonal'
 import { StepAccount } from './steps/StepAccount'
 import { StepPassword } from './steps/StepPassword'
 import { StepProfile } from './steps/StepProfile'
+import { StepPrivacy } from './steps/StepPrivacy'
 import { getApiError, isConflictError } from '@/shared/lib/apiError'
 
 const STEPS: (keyof RegisterInput)[][] = [
@@ -23,6 +28,7 @@ const STEPS: (keyof RegisterInput)[][] = [
   ['username', 'email', 'phone'],
   ['password', 'confirmPassword'],
   ['bio', 'isPrivate', 'preferredCategories'],
+  ['termsAccepted', 'consents'],
 ]
 
 const FIELD_TO_STEP: Partial<Record<keyof RegisterInput, number>> = {
@@ -37,6 +43,8 @@ const FIELD_TO_STEP: Partial<Record<keyof RegisterInput, number>> = {
   bio: 3,
   isPrivate: 3,
   preferredCategories: 3,
+  termsAccepted: 4,
+  consents: 4,
 }
 
 const CONFLICT_FIELD_MAP: {
@@ -81,7 +89,12 @@ export function RegisterForm() {
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
     mode: 'onTouched',
-    defaultValues: { isPrivate: false, preferredCategories: [] },
+    defaultValues: {
+      isPrivate: false,
+      preferredCategories: [],
+      termsAccepted: false,
+      consents: { ...DEFAULT_REGISTER_CONSENTS },
+    },
   })
 
   const totalSteps = STEPS.length
@@ -143,6 +156,7 @@ export function RegisterForm() {
     <StepAccount control={control} errors={errors} />,
     <StepPassword control={control} errors={errors} />,
     <StepProfile control={control} errors={errors} />,
+    <StepPrivacy control={control} errors={errors} />,
   ]
 
   return (
