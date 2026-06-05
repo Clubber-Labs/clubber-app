@@ -5,38 +5,16 @@ import type { Control, FieldErrors } from 'react-hook-form'
 import { Ionicons } from '@expo/vector-icons'
 import type { RegisterInput } from '../../schemas/registerSchema'
 import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
-import {
-  CATEGORY_LABELS,
-  CONSENT_ITEMS,
-  CONSENT_VERSION,
-} from '@/features/privacy/services/consentService'
+import { CATEGORY_LABELS, CONSENT_VERSION } from '@/features/privacy/services/consentService'
+import { ORDERED_CATEGORIES, groupItemsByCategory } from '@/features/privacy/constants'
 
 type Props = {
   control: Control<RegisterInput>
   errors: FieldErrors<RegisterInput>
 }
 
-const ORDERED_CATEGORIES = [
-  'location',
-  'social',
-  'notifications',
-  'marketing',
-  'analytics',
-  'research',
-] as const
-
 export function StepPrivacy({ control, errors }: Props) {
-  const itemsByCategory = useMemo(
-    () =>
-      ORDERED_CATEGORIES.reduce<Record<string, typeof CONSENT_ITEMS>>(
-        (acc, cat) => {
-          acc[cat] = CONSENT_ITEMS.filter(item => item.category === cat)
-          return acc
-        },
-        {},
-      ),
-    [],
-  )
+  const itemsByCategory = useMemo(() => groupItemsByCategory(), [])
 
   return (
     <View className="gap-5">

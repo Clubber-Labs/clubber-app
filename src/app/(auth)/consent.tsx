@@ -12,50 +12,23 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
 import { useConsent } from '@/features/privacy/hooks/useConsent'
+import { CATEGORY_LABELS, type ConsentFields } from '@/features/privacy/services/consentService'
 import {
-  CATEGORY_LABELS,
-  CONSENT_ITEMS,
-  type ConsentFields,
-} from '@/features/privacy/services/consentService'
-
-const ORDERED_CATEGORIES = [
-  'location',
-  'social',
-  'notifications',
-  'marketing',
-  'analytics',
-  'research',
-] as const
-
-const EMPTY_CONSENT: ConsentFields = {
-  locationPrecise:   false,
-  socialFeed:        false,
-  socialVisibility:  false,
-  pushNotifications: false,
-  marketing:         false,
-  analytics:         false,
-  surveys:           false,
-}
+  DEFAULT_CONSENT_FIELDS,
+  ORDERED_CATEGORIES,
+  groupItemsByCategory,
+} from '@/features/privacy/constants'
 
 export default function ConsentScreen() {
-  const router  = useRouter()
-  const insets  = useSafeAreaInsets()
+  const router = useRouter()
+  const insets = useSafeAreaInsets()
   const { grantConsent } = useConsent()
 
-  const [fields,           setFields]           = useState<ConsentFields>(EMPTY_CONSENT)
-  const [loading,          setLoading]          = useState(false)
+  const [fields, setFields] = useState<ConsentFields>(DEFAULT_CONSENT_FIELDS)
+  const [loading, setLoading] = useState(false)
   const [expandedCategory, setExpandedCategory] = useState<string | null>('location')
 
-  // Memoizado: só recalcula se CONSENT_ITEMS mudar (nunca em runtime)
-  const itemsByCategory = useMemo(() =>
-    ORDERED_CATEGORIES.reduce<Record<string, typeof CONSENT_ITEMS>>(
-      (acc, cat) => {
-        acc[cat] = CONSENT_ITEMS.filter(i => i.category === cat)
-        return acc
-      },
-      {},
-    ),
-  [])
+  const itemsByCategory = useMemo(() => groupItemsByCategory(), [])
 
   function toggleField(key: keyof ConsentFields, value: boolean) {
     setFields(prev => ({ ...prev, [key]: value }))
@@ -74,7 +47,7 @@ export default function ConsentScreen() {
 
   function handleAcceptAll() {
     const all = Object.fromEntries(
-      Object.keys(EMPTY_CONSENT).map(k => [k, true]),
+      Object.keys(DEFAULT_CONSENT_FIELDS).map(k => [k, true]),
     ) as ConsentFields
     handleSubmit(all)
   }
@@ -197,7 +170,7 @@ export default function ConsentScreen() {
           </Pressable>
 
           <Pressable
-            onPress={() => handleSubmit(EMPTY_CONSENT)}
+            onPress={() => handleSubmit(DEFAULT_CONSENT_FIELDS)}
             disabled={loading}
             className="py-3 items-center"
           >

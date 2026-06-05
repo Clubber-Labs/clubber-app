@@ -1,6 +1,7 @@
 import { queryClient } from '@/shared/lib/queryClient'
 import { clearAuthSession } from '@/shared/lib/secureStore'
 import { useAuthStore } from '../store/authStore'
+import { useConsentStore } from '@/features/privacy/store/consentStore'
 
 // Encerramento centralizado da sessão — reusado pelo interceptor 401 e pelo
 // botão Sair. Limpa secure storage + caches + estado em memória. A navegação
@@ -12,5 +13,6 @@ export async function endSession({
 }: { expired?: boolean } = {}) {
   await clearAuthSession()
   queryClient.clear()
+  useConsentStore.getState().reset()
   useAuthStore.getState().logout(expired)
 }
