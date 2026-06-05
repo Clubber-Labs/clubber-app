@@ -11,15 +11,16 @@ import { useMessages } from '../hooks/useMessages'
 import { MessageBubble } from './MessageBubble'
 import { DateSeparator } from './DateSeparator'
 import { buildMessageMeta } from '../utils/groupMessages'
-import { formatMessageTime } from '../utils/messageTime'
-import type { ChatMessage } from '../types'
+import { messageStatus } from '../utils/messageStatus'
+import type { ChatMessage, Participant } from '../types'
 
 type Props = {
   conversationId: string
   myId: string
   isGroup: boolean
-  // lastReadAt do outro participante (DM) → "Visto" na última mensagem minha lida.
-  otherReadAt?: string | null
+  // Participantes (com watermarks lastReadAt/lastDeliveredAt) → status (check)
+  // de cada mensagem minha.
+  participants: Participant[]
   onLongPressMessage: (message: ChatMessage) => void
   onPressImage: (url: string) => void
   onRetry: (message: ChatMessage) => void
@@ -30,7 +31,7 @@ export function MessageList({
   conversationId,
   myId,
   isGroup,
-  otherReadAt,
+  participants,
   onLongPressMessage,
   onPressImage,
   onRetry,
@@ -49,21 +50,11 @@ export function MessageList({
     [messages, myId, isGroup],
   )
 
-  // Última (mais nova) mensagem minha já lida pelo outro — recebe o "Visto".
-  const seenMessageId = useMemo(() => {
-    if (!otherReadAt) return null
-    const readTime = new Date(otherReadAt).getTime()
-    for (const m of messages) {
-      if (
-        m.senderId === myId &&
-        !m.clientStatus &&
-        new Date(m.createdAt).getTime() <= readTime
-      ) {
-        return m.id
-      }
-    }
-    return null
-  }, [messages, otherReadAt, myId])
+  // Outros participantes (sem mim) — base pro status (entregue/lido) das minhas msgs.
+  const others = useMemo(
+    () => participants.filter(p => p.userId !== myId),
+    [participants, myId],
+  )
 
   const listRef = useRef<FlatList<ChatMessage>>(null)
   const atBottomRef = useRef(true)
@@ -118,10 +109,7 @@ export function MessageList({
       }
       renderItem={({ item, index }) => {
         const m = meta[index]
-        const seen =
-          item.id === seenMessageId && otherReadAt
-            ? `Visto ${formatMessageTime(otherReadAt)}`
-            : null
+        const status = messageStatus(item, myId, others)
         const replyId = item.replyTo?.id
         return (
           <View>
@@ -130,7 +118,7 @@ export function MessageList({
               message={item}
               meta={m}
               isGroup={isGroup}
-              seenLabel={seen}
+              status={status}
               onLongPress={() => onLongPressMessage(item)}
               onPressImage={onPressImage}
               onRetry={() => onRetry(item)}

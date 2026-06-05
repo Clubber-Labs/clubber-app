@@ -1,7 +1,13 @@
 import type { InfiniteData, QueryClient } from '@tanstack/react-query'
 import type { CursorPaginatedResponse } from '@/shared/types'
 import { chatKeys } from '../hooks/cacheKeys'
-import type { ChatMessage, InboxItem, Message } from '../types'
+import type {
+  ChatMessage,
+  Conversation,
+  InboxItem,
+  Message,
+  ReceiptFrame,
+} from '../types'
 
 export type MsgCache = InfiniteData<CursorPaginatedResponse<ChatMessage>>
 export type InboxCache = InfiniteData<CursorPaginatedResponse<InboxItem>>
@@ -69,9 +75,7 @@ export function inboxHasConversation(
 ): boolean {
   const cache = queryClient.getQueryData<InboxCache>(chatKeys.inbox)
   if (!cache) return false
-  return cache.pages.some(page =>
-    page.data.some(c => c.id === conversationId),
-  )
+  return cache.pages.some(page => page.data.some(c => c.id === conversationId))
 }
 
 // Move a conversa pro topo, atualiza lastMessage e incrementa unread (exceto se
@@ -223,12 +227,33 @@ export function markFailed(
     pages: cache.pages.map(page => ({
       ...page,
       data: page.data.map(m =>
-        m.clientId === clientId
-          ? { ...m, clientStatus: 'failed' as const }
-          : m,
+        m.clientId === clientId ? { ...m, clientStatus: 'failed' as const } : m,
       ),
     })),
   }
+}
+
+// Recibo de entrega/leitura vindo do socket: avança o watermark do participante
+// na conversa em cache. Monotônico — nunca retrocede. A tela relê o status das
+// mensagens a partir desses watermarks, então os checks atualizam ao vivo.
+export function applyReceipt(queryClient: QueryClient, frame: ReceiptFrame) {
+  const field = frame.type === 'read' ? 'lastReadAt' : 'lastDeliveredAt'
+  const atMs = new Date(frame.at).getTime()
+  queryClient.setQueryData<Conversation>(
+    chatKeys.conversation(frame.conversationId),
+    prev => {
+      if (!prev) return prev
+      let changed = false
+      const participants = prev.participants.map(p => {
+        if (p.userId !== frame.userId) return p
+        const current = p[field]
+        if (current && new Date(current).getTime() >= atMs) return p
+        changed = true
+        return { ...p, [field]: frame.at }
+      })
+      return changed ? { ...prev, participants } : prev
+    },
+  )
 }
 
 export function resetInboxUnread(

@@ -5,6 +5,8 @@ import { Ionicons } from '@expo/vector-icons'
 type Props = {
   onSendText: (text: string) => void
   onAttach: () => void
+  // Quando presente, o botão de envio vira microfone enquanto o campo está vazio.
+  onStartRecording?: () => void
   disabled?: boolean
   // Quando presente, a barra entra em modo edição: pré-preenche e o envio salva.
   editing?: { id: string; content: string } | null
@@ -18,6 +20,7 @@ type Props = {
 export function MessageInputBar({
   onSendText,
   onAttach,
+  onStartRecording,
   disabled,
   editing,
   onSubmitEdit,
@@ -32,6 +35,8 @@ export function MessageInputBar({
   // (PATCH) e não deve ser bloqueada por ele.
   const canSend = trimmed.length > 0 && (isEditing || !disabled)
   const nearLimit = text.length > 1800
+  // Campo vazio (e não editando) → botão de microfone pra gravar nota de voz.
+  const showMic = !isEditing && trimmed.length === 0 && !!onStartRecording
 
   // Deps primitivas: o pai recria o objeto `editing` a cada render, então
   // keyamos por id/conteúdo (por valor) pra prefixar só ao entrar em edição —
@@ -129,18 +134,33 @@ export function MessageInputBar({
           )}
         </View>
 
-        <Pressable
-          onPress={handleSend}
-          disabled={!canSend}
-          className={`w-10 h-10 items-center justify-center rounded-full ${canSend ? 'bg-violet-600' : 'bg-zinc-800'}`}
-          accessibilityLabel={isEditing ? 'Salvar edição' : 'Enviar mensagem'}
-        >
-          <Ionicons
-            name={isEditing ? 'checkmark' : 'send'}
-            size={18}
-            color={canSend ? '#ffffff' : '#52525b'}
-          />
-        </Pressable>
+        {showMic ? (
+          <Pressable
+            onPress={onStartRecording}
+            disabled={disabled}
+            className="w-10 h-10 items-center justify-center rounded-full bg-zinc-800"
+            accessibilityLabel="Gravar áudio"
+          >
+            <Ionicons
+              name="mic"
+              size={20}
+              color={disabled ? '#52525b' : '#8b5cf6'}
+            />
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={handleSend}
+            disabled={!canSend}
+            className={`w-10 h-10 items-center justify-center rounded-full ${canSend ? 'bg-violet-600' : 'bg-zinc-800'}`}
+            accessibilityLabel={isEditing ? 'Salvar edição' : 'Enviar mensagem'}
+          >
+            <Ionicons
+              name={isEditing ? 'checkmark' : 'send'}
+              size={18}
+              color={canSend ? '#ffffff' : '#52525b'}
+            />
+          </Pressable>
+        )}
       </View>
     </View>
   )

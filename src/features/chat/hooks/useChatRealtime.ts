@@ -7,13 +7,14 @@ import {
   applyIncomingMessage,
   applyMessageToInbox,
   applyMessageUpdate,
+  applyReceipt,
   inboxHasConversation,
   resetInboxUnread,
 } from '../lib/realtimeCache'
 import { conversationsService } from '../services/conversationsService'
 import { useChatRealtimeStore } from '../store/chatRealtimeStore'
 import { chatKeys } from './cacheKeys'
-import type { MessageFrame, MessageUpdateFrame } from '../types'
+import type { MessageFrame, MessageUpdateFrame, ReceiptFrame } from '../types'
 
 // Liga o socket ao ciclo de vida (foreground/background) e roteia os frames
 // recebidos para o cache do TanStack Query. `myId` e `onAuthError` vêm da camada
@@ -41,15 +42,24 @@ export function useChatRealtime(myId: string, onAuthError: () => void) {
           queryClient.invalidateQueries({ queryKey: chatKeys.inbox })
         }
 
-        // Tela aberta + mensagem de outro → marca lida.
-        if (isActive && message.senderId !== myId) {
-          conversationsService.markRead(conversationId).catch(() => {})
-          resetInboxUnread(queryClient, conversationId)
+        // Mensagem de outro: tela aberta → marca LIDA; fechada → confirma só a
+        // ENTREGA. (markRead no backend também avança o watermark de entrega.)
+        if (message.senderId !== myId) {
+          if (isActive) {
+            conversationsService.markRead(conversationId).catch(() => {})
+            resetInboxUnread(queryClient, conversationId)
+          } else {
+            conversationsService.markDelivered(conversationId).catch(() => {})
+          }
         }
       },
       onMessageUpdate: ({ message }: MessageUpdateFrame) => {
         // Edição/deleção de mensagem já existente — atualiza in-place por id.
         applyMessageUpdate(queryClient, message)
+      },
+      onReceipt: (frame: ReceiptFrame) => {
+        // Entrega/leitura de um participante → avança watermark na conversa.
+        applyReceipt(queryClient, frame)
       },
       onReconnect: () => {
         // Sem replay no socket — rebusca inbox e a conversa ativa.

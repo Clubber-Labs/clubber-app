@@ -86,6 +86,8 @@
     <string>Usamos sua localização para mostrar eventos próximos no mapa.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Usamos sua localização para mostrar eventos próximos no mapa.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Precisamos do microfone para gravar mensagens de voz.</string>
     <key>NSPhotoLibraryUsageDescription</key>
     <string>Precisamos de acesso às suas fotos para alterar a foto de perfil.</string>
     <key>NSUserActivityTypes</key>

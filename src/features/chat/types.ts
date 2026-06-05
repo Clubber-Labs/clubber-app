@@ -3,22 +3,34 @@ import type { UserMini } from '@/shared/types'
 export type ConversationType = 'DIRECT' | 'GROUP'
 export type Role = 'MEMBER' | 'ADMIN'
 
+export type AttachmentKind = 'IMAGE' | 'AUDIO'
+
 export type Attachment = {
   id: string
+  // Ausente em anexos de imagem (o backend não envia `kind` pra imagem). Quando
+  // 'AUDIO', a bolha renderiza o player de voz em vez de <Image>. Tratar como
+  // imagem quando ausente mantém compatível o que já existe.
+  kind?: AttachmentKind
   url: string
   format: string
   size: number
   order: number
+  // Presentes só em anexos de áudio (kind 'AUDIO'). `waveform`: inteiros 0..255.
+  durationMs?: number
+  waveform?: number[]
 }
 
 export type Participant = {
   userId: string
   role: Role
   user: UserMini
-  // Fora da lista canônica de tipos do contrato, mas a tela de conversa usa
-  // pra read receipts ("Visto") via GET /conversations/:id. Opcional — a UI
-  // degrada (sem "Visto") quando vier ausente.
+  // Watermarks de recibo (entrega/leitura) deste participante, vindos do
+  // GET /conversations/:id e atualizados ao vivo pelos frames 'delivered'/'read'.
+  // Uma mensagem é "lida"/"entregue" por ele quando createdAt <= watermark.
+  // Opcionais — a UI degrada (status cai pra "enviado") quando ausentes, então
+  // o app funciona mesmo antes do backend expor lastDeliveredAt/os frames.
   lastReadAt?: string | null
+  lastDeliveredAt?: string | null
 }
 
 // Prévia da mensagem citada numa resposta — subconjunto de Message que o backend
@@ -127,5 +139,26 @@ export function isMessageUpdateFrame(
     typeof frame.conversationId === 'string' &&
     typeof frame.message === 'object' &&
     frame.message !== null
+  )
+}
+
+// Recibo de entrega/leitura: `userId` avançou seu watermark até `at` na conversa.
+// O backend emite isso pra os OUTROS participantes quando alguém recebe (delivered)
+// ou abre (read) — é o que faz os checks atualizarem ao vivo. `at` é ISO 8601.
+export type ReceiptFrame = {
+  type: 'delivered' | 'read'
+  conversationId: string
+  userId: string
+  at: string
+}
+
+export function isReceiptFrame(value: unknown): value is ReceiptFrame {
+  if (typeof value !== 'object' || value === null) return false
+  const frame = value as Record<string, unknown>
+  return (
+    (frame.type === 'delivered' || frame.type === 'read') &&
+    typeof frame.conversationId === 'string' &&
+    typeof frame.userId === 'string' &&
+    typeof frame.at === 'string'
   )
 }

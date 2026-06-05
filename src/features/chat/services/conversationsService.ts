@@ -1,7 +1,14 @@
 import { api } from '@/shared/lib/api'
 import { buildImageFile } from '@/shared/utils/imageUpload'
+import { buildAudioFile } from '@/shared/utils/audioUpload'
 import type { CursorPaginatedResponse } from '@/shared/types'
 import type { Conversation, InboxItem, Message, Role } from '../types'
+
+export type SendAudioInput = {
+  uri: string
+  durationMs: number
+  waveform?: number[]
+}
 
 type ListParams = { limit?: number; cursor?: string }
 
@@ -18,7 +25,9 @@ export const conversationsService = {
   list: (
     params: ListParams = {},
   ): Promise<CursorPaginatedResponse<InboxItem>> =>
-    api.get('/conversations', { params: buildParams(params) }).then(r => r.data),
+    api
+      .get('/conversations', { params: buildParams(params) })
+      .then(r => r.data),
 
   getById: (id: string): Promise<Conversation> =>
     api.get(`/conversations/${id}`).then(r => r.data),
@@ -61,7 +70,11 @@ export const conversationsService = {
       .patch(`/conversations/${id}/messages/${messageId}`, { content })
       .then(r => r.data),
 
-  sendImage: (id: string, uri: string, replyToId?: string): Promise<Message> => {
+  sendImage: (
+    id: string,
+    uri: string,
+    replyToId?: string,
+  ): Promise<Message> => {
     const form = new FormData()
     form.append('file', buildImageFile(uri, 'message.jpg'))
     if (replyToId) form.append('replyToId', replyToId)
@@ -72,8 +85,34 @@ export const conversationsService = {
       .then(r => r.data)
   },
 
+  // Nota de voz (m4a/AAC). Ordem do multipart importa: os campos de texto
+  // (durationMs, waveform) precisam vir ANTES do arquivo, porque o backend lê os
+  // fields no momento em que o `audio` chega. Por isso o `audio` é o último part.
+  // Content-Type setado igual ao sendImage: no RN + axios deste app o boundary é
+  // (re)gerado pela camada nativa a partir do FormData mesmo com o header presente;
+  // OMITIR fazia o axios mandar como application/json e o backend não parseava.
+  sendAudio: (id: string, input: SendAudioInput): Promise<Message> => {
+    const form = new FormData()
+    form.append('durationMs', String(Math.round(input.durationMs)))
+    if (input.waveform && input.waveform.length > 0) {
+      form.append('waveform', JSON.stringify(input.waveform))
+    }
+    form.append('audio', buildAudioFile(input.uri))
+    return api
+      .post(`/conversations/${id}/messages/audio`, form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .then(r => r.data)
+  },
+
   markRead: (id: string): Promise<void> =>
     api.post(`/conversations/${id}/read`).then(() => undefined),
+
+  // Confirma ENTREGA (recebi no aparelho, sem necessariamente abrir). Chamado ao
+  // receber uma mensagem de outro pelo WS. Degrada: se o endpoint ainda não
+  // existir no backend, o caller ignora o erro.
+  markDelivered: (id: string): Promise<void> =>
+    api.post(`/conversations/${id}/delivered`).then(() => undefined),
 
   deleteMessage: (id: string, messageId: string): Promise<void> =>
     api
@@ -84,9 +123,7 @@ export const conversationsService = {
     api.post(`/conversations/${id}/leave`).then(() => undefined),
 
   addParticipant: (id: string, userId: string): Promise<Conversation> =>
-    api
-      .post(`/conversations/${id}/participants`, { userId })
-      .then(r => r.data),
+    api.post(`/conversations/${id}/participants`, { userId }).then(r => r.data),
 
   removeParticipant: (id: string, userId: string): Promise<void> =>
     api

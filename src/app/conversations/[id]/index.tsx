@@ -26,9 +26,13 @@ import { useBlocks } from '@/features/chat/hooks/useBlocks'
 import { useReportMessage } from '@/features/chat/hooks/useReportMessage'
 import { newClientId } from '@/features/chat/hooks/useSendMessage'
 import { useChatRealtimeStore } from '@/features/chat/store/chatRealtimeStore'
+import { ensureRecordingPermission } from '@/features/chat/lib/audioRecording'
+import type { VoiceNote } from '@/features/chat/hooks/useVoiceRecorder'
+import { attachmentReplyLabel } from '@/features/chat/utils/attachmentPreview'
 import { ConversationHeader } from '@/features/chat/components/ConversationHeader'
 import { MessageList } from '@/features/chat/components/MessageList'
 import { MessageInputBar } from '@/features/chat/components/MessageInputBar'
+import { AudioRecorderBar } from '@/features/chat/components/AudioRecorderBar'
 import { BlockedBanner } from '@/features/chat/components/BlockedBanner'
 import { AttachmentMenu } from '@/features/chat/components/AttachmentMenu'
 import { MessageActionsSheet } from '@/features/chat/components/MessageActionsSheet'
@@ -72,7 +76,8 @@ export default function ConversationScreen() {
     avatarUrl: null,
   }
 
-  const { send, sendImage, deleteMessage, edit } = useMessagesMutations(id, me)
+  const { send, sendImage, sendAudio, deleteMessage, edit } =
+    useMessagesMutations(id, me)
 
   const [blockedByServer, setBlockedByServer] = useState(false)
   const iBlocked = other
@@ -81,6 +86,7 @@ export default function ConversationScreen() {
   const isBlocked = !isGroup && (iBlocked || blockedByServer)
 
   const [cooldown, setCooldown] = useState(false)
+  const [recording, setRecording] = useState(false)
   const [attachOpen, setAttachOpen] = useState(false)
   const [actionsFor, setActionsFor] = useState<ChatMessage | null>(null)
   const [reportFor, setReportFor] = useState<ChatMessage | null>(null)
@@ -165,6 +171,31 @@ export default function ConversationScreen() {
     setReplyingToId(null)
   }
 
+  function sendAudioNote(note: VoiceNote) {
+    hapticLight()
+    sendAudio.mutate(
+      {
+        uri: note.uri,
+        durationMs: note.durationMs,
+        waveform: note.waveform,
+        clientId: newClientId(),
+      },
+      { onError: handleSendError },
+    )
+    // Áudio não carrega replyTo; encerra a citação se houver.
+    setReplyingToId(null)
+  }
+
+  async function startRecording() {
+    const granted = await ensureRecordingPermission()
+    if (!granted) {
+      showBanner('Permissão de microfone negada.')
+      return
+    }
+    setEditing(null)
+    setRecording(true)
+  }
+
   async function pickFromGallery() {
     const res = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -185,12 +216,25 @@ export default function ConversationScreen() {
 
   function onRetry(message: ChatMessage) {
     if (!message.clientId) return
+    const attachment = message.attachments[0]
+    if (attachment?.kind === 'AUDIO') {
+      sendAudio.mutate(
+        {
+          uri: attachment.url,
+          durationMs: attachment.durationMs ?? 0,
+          waveform: attachment.waveform ?? [],
+          clientId: message.clientId,
+        },
+        { onError: handleSendError },
+      )
+      return
+    }
     // Preserva a resposta original ao reenviar.
     const replyTo = message.replyTo ?? null
-    if (message.attachments.length > 0) {
+    if (attachment) {
       sendImage.mutate(
         {
-          uri: message.attachments[0].url,
+          uri: attachment.url,
           clientId: message.clientId,
           replyTo,
         },
@@ -289,7 +333,7 @@ export default function ConversationScreen() {
           conversationId={id}
           myId={myId}
           isGroup={!!isGroup}
-          otherReadAt={other?.lastReadAt}
+          participants={conversation.participants}
           onLongPressMessage={openActions}
           onPressImage={setViewerUrl}
           onRetry={onRetry}
@@ -305,10 +349,19 @@ export default function ConversationScreen() {
               : 'Você não pode mais enviar mensagens nesta conversa.'
           }
         />
+      ) : recording ? (
+        <AudioRecorderBar
+          onSend={note => {
+            setRecording(false)
+            sendAudioNote(note)
+          }}
+          onCancel={() => setRecording(false)}
+        />
       ) : (
         <MessageInputBar
           onSendText={sendText}
           onAttach={() => setAttachOpen(true)}
+          onStartRecording={startRecording}
           disabled={cooldown}
           editing={
             editing ? { id: editing.id, content: editing.content ?? '' } : null
@@ -325,7 +378,7 @@ export default function ConversationScreen() {
                   preview: replyingTo.deletedAt
                     ? 'Mensagem removida'
                     : (replyingTo.content ??
-                      (replyingTo.attachments.length ? 'Imagem' : '')),
+                      attachmentReplyLabel(replyingTo.attachments)),
                 }
               : null
           }

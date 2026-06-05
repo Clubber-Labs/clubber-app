@@ -1,4 +1,4 @@
-type ReactNativeFile = { uri: string; name: string; type: string }
+export type ReactNativeFile = { uri: string; name: string; type: string }
 
 declare global {
   interface FormData {
@@ -6,7 +6,10 @@ declare global {
   }
 }
 
-export function buildImageFile(uri: string, fallback = 'image.jpg'): ReactNativeFile {
+export function buildImageFile(
+  uri: string,
+  fallback = 'image.jpg',
+): ReactNativeFile {
   const filename = uri.split('/').pop() ?? fallback
   const ext = filename.split('.').pop()?.toLowerCase() ?? 'jpg'
   const type = ext === 'png' ? 'image/png' : 'image/jpeg'

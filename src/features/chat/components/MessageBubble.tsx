@@ -1,19 +1,24 @@
-import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { SwipeableRow } from '@/shared/components/SwipeableRow'
 import { SenderLabel } from './SenderLabel'
 import { ImageMessage } from './ImageMessage'
+import { VoiceMessage } from './VoiceMessage'
+import { MessageStatusIcon } from './MessageStatusIcon'
+import { attachmentReplyLabel } from '../utils/attachmentPreview'
 import { formatMessageTime } from '../utils/messageTime'
 import type { MessageMeta } from '../utils/groupMessages'
+import type { MessageStatus } from '../utils/messageStatus'
 import type { ChatMessage } from '../types'
 
 type Props = {
   message: ChatMessage
   meta: MessageMeta
   isGroup: boolean
-  // Texto "Visto HH:MM" (só na última mensagem minha já lida pelo outro, em DM).
-  seenLabel?: string | null
+  // Status da mensagem (só nas minhas): enviando/enviado/entregue/lido. null = não
+  // é minha. Renderiza o check ao lado do horário.
+  status: MessageStatus | null
   onLongPress: () => void
   onPressImage: (url: string) => void
   onRetry: () => void
@@ -27,7 +32,7 @@ export function MessageBubble({
   message,
   meta,
   isGroup,
-  seenLabel,
+  status,
   onLongPress,
   onPressImage,
   onRetry,
@@ -51,7 +56,9 @@ export function MessageBubble({
     )
   }
 
-  const image = message.attachments[0]
+  const attachment = message.attachments[0]
+  const audio = attachment?.kind === 'AUDIO' ? attachment : undefined
+  const image = attachment && !audio ? attachment : undefined
   const imageOnly = !!image && !message.content
   const sending = message.clientStatus === 'sending'
   const failed = message.clientStatus === 'failed'
@@ -60,7 +67,7 @@ export function MessageBubble({
   const replyText = reply
     ? reply.deletedAt
       ? 'Mensagem removida'
-      : (reply.content ?? (reply.attachments?.length ? 'Imagem' : ''))
+      : (reply.content ?? attachmentReplyLabel(reply.attachments))
     : ''
 
   const bubble = (
@@ -91,6 +98,7 @@ export function MessageBubble({
             </Text>
           </Pressable>
         )}
+        {audio && <VoiceMessage attachment={audio} isMine={isMine} />}
         {image && (
           <ImageMessage
             attachment={image}
@@ -109,18 +117,13 @@ export function MessageBubble({
           <View
             className={`flex-row items-center justify-end gap-1 mt-0.5 ${imageOnly ? 'px-1 pb-0.5' : ''}`}
           >
-            {sending && (
-              <ActivityIndicator
-                size="small"
-                color={isMine ? '#ddd6fe' : '#a1a1aa'}
-              />
-            )}
             <Text
               className={`text-[11px] ${isMine ? 'text-violet-200' : 'text-zinc-500'}`}
             >
               {edited ? 'editada · ' : ''}
               {formatMessageTime(message.createdAt)}
             </Text>
+            <MessageStatusIcon status={status} />
           </View>
         )}
       </View>
@@ -135,11 +138,6 @@ export function MessageBubble({
             Falhou · Tentar de novo
           </Text>
         </Pressable>
-      )}
-      {isMine && seenLabel && (
-        <Text className="text-[11px] text-zinc-500 self-end mt-0.5">
-          {seenLabel}
-        </Text>
       )}
     </Pressable>
   )

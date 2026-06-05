@@ -87,8 +87,12 @@ export default {
         // sem isso, sobrescreveria o texto do vision-camera com placeholder
         // genérico em inglês.
         cameraPermission: "Precisamos da câmera para fotos de perfil e eventos",
-        // Não usamos áudio em nenhum lugar; remove NSMicrophoneUsageDescription.
-        microphonePermission: false
+        // Usamos o microfone nas notas de voz do chat (via expo-audio). Texto
+        // PT-BR específico pra não cair no placeholder em inglês do plugin.
+        microphonePermission: "Precisamos do microfone para gravar mensagens de voz."
+      }],
+      ["expo-audio", {
+        microphonePermission: "Precisamos do microfone para gravar mensagens de voz."
       }],
       ...socialAuthPlugins()
     ],
