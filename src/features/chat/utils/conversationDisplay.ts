@@ -42,14 +42,17 @@ export function lastMessagePreview(item: InboxItem, myId: string): string {
   if (!msg) return 'Iniciar conversa'
   if (msg.deletedAt) return 'Mensagem removida'
 
+  const kind = firstAttachmentKind(msg.attachments)
   const body =
     msg.content && msg.content.length > 0
       ? msg.content
-      : firstAttachmentKind(msg.attachments) === 'AUDIO'
+      : kind === 'AUDIO'
         ? '🎤 Áudio'
-        : msg.attachments.length > 0
-          ? '📷 Imagem'
-          : ''
+        : kind === 'VIDEO'
+          ? '🎥 Vídeo'
+          : kind === 'IMAGE'
+            ? '📷 Imagem'
+            : ''
 
   if (msg.senderId === myId) return `Você: ${body}`
   if (item.type === 'GROUP') return `${firstName(msg.sender)}: ${body}`

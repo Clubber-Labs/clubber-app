@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Pressable, Image, View, ActivityIndicator } from 'react-native'
+import { mediaBoxSize } from '../utils/mediaBox'
 import type { Attachment } from '../types'
 
 type Props = {
@@ -10,6 +11,14 @@ type Props = {
 
 export function ImageMessage({ attachment, onPress, sending }: Props) {
   const [loaded, setLoaded] = useState(false)
+  // Caixa pelo aspect-ratio real (quando o backend manda width/height) reservada
+  // antes da imagem carregar — evita o "pulo" de layout. Fallback 220×220 quando
+  // ausente (imagem local otimista, sem dimensões).
+  const { width, height } = mediaBoxSize(attachment.width, attachment.height, {
+    maxWidth: 240,
+    maxHeight: 320,
+    fallback: 220,
+  })
   return (
     <Pressable
       onPress={onPress}
@@ -18,7 +27,7 @@ export function ImageMessage({ attachment, onPress, sending }: Props) {
     >
       <Image
         source={{ uri: attachment.url }}
-        style={{ width: 220, height: 220 }}
+        style={{ width, height }}
         className="bg-zinc-700"
         resizeMode="cover"
         onLoad={() => setLoaded(true)}

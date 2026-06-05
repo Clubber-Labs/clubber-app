@@ -2,6 +2,7 @@ import { api } from '@/shared/lib/api'
 import { buildImageFile } from '@/shared/utils/imageUpload'
 import { buildAudioFile } from '@/shared/utils/audioUpload'
 import type { CursorPaginatedResponse } from '@/shared/types'
+import type { SignedUpload } from '../lib/cloudinaryUpload'
 import type { Conversation, InboxItem, Message, Role } from '../types'
 
 export type SendAudioInput = {
@@ -49,16 +50,23 @@ export const conversationsService = {
       .get(`/conversations/${id}/messages`, { params: buildParams(params) })
       .then(r => r.data),
 
+  // `idempotencyKey` (= clientId) vai no header em TODO envio: o backend exige a
+  // chave e a usa pra deduplicar reenvios (mesmo clientId no retry → não duplica).
   sendMessage: (
     id: string,
     content: string,
+    idempotencyKey: string,
     replyToId?: string,
   ): Promise<Message> =>
     api
-      .post(`/conversations/${id}/messages`, {
-        content,
-        ...(replyToId ? { replyToId } : {}),
-      })
+      .post(
+        `/conversations/${id}/messages`,
+        {
+          content,
+          ...(replyToId ? { replyToId } : {}),
+        },
+        { headers: { 'Idempotency-Key': idempotencyKey } },
+      )
       .then(r => r.data),
 
   editMessage: (
@@ -73,6 +81,7 @@ export const conversationsService = {
   sendImage: (
     id: string,
     uri: string,
+    idempotencyKey: string,
     replyToId?: string,
   ): Promise<Message> => {
     const form = new FormData()
@@ -80,7 +89,10 @@ export const conversationsService = {
     if (replyToId) form.append('replyToId', replyToId)
     return api
       .post(`/conversations/${id}/messages/images`, form, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Idempotency-Key': idempotencyKey,
+        },
       })
       .then(r => r.data)
   },
@@ -91,7 +103,11 @@ export const conversationsService = {
   // Content-Type setado igual ao sendImage: no RN + axios deste app o boundary é
   // (re)gerado pela camada nativa a partir do FormData mesmo com o header presente;
   // OMITIR fazia o axios mandar como application/json e o backend não parseava.
-  sendAudio: (id: string, input: SendAudioInput): Promise<Message> => {
+  sendAudio: (
+    id: string,
+    input: SendAudioInput,
+    idempotencyKey: string,
+  ): Promise<Message> => {
     const form = new FormData()
     form.append('durationMs', String(Math.round(input.durationMs)))
     if (input.waveform && input.waveform.length > 0) {
@@ -100,10 +116,34 @@ export const conversationsService = {
     form.append('audio', buildAudioFile(input.uri))
     return api
       .post(`/conversations/${id}/messages/audio`, form, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Idempotency-Key': idempotencyKey,
+        },
       })
       .then(r => r.data)
   },
+
+  // Fluxo de vídeo em 2 chamadas REST (o upload do arquivo vai direto ao
+  // Cloudinary, ver lib/cloudinaryUpload). 1) assina o upload; sem body —
+  // o backend deriva folder/limites do contexto da conversa.
+  videoSignature: (id: string): Promise<SignedUpload> =>
+    api.post(`/conversations/${id}/messages/video/signature`).then(r => r.data),
+
+  // 2) cria a mensagem a partir do `publicId` já enviado ao Cloudinary. Vídeo
+  // não carrega replyTo (igual ao áudio). Idempotency-Key dedup o reenvio.
+  sendVideoMessage: (
+    id: string,
+    publicId: string,
+    idempotencyKey: string,
+  ): Promise<Message> =>
+    api
+      .post(
+        `/conversations/${id}/messages/video`,
+        { publicId },
+        { headers: { 'Idempotency-Key': idempotencyKey } },
+      )
+      .then(r => r.data),
 
   markRead: (id: string): Promise<void> =>
     api.post(`/conversations/${id}/read`).then(() => undefined),

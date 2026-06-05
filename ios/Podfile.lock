@@ -97,6 +97,8 @@ PODS:
     - Yoga
   - ExpoSecureStore (15.0.8):
     - ExpoModulesCore
+  - ExpoVideo (3.0.16):
+    - ExpoModulesCore
   - FBAEMKit (18.0.3):
     - FBSDKCoreKit_Basics (= 18.0.3)
   - FBLazyVector (0.81.5)
@@ -2213,6 +2215,7 @@ DEPENDENCIES:
   - "ExpoLocation (from `../node_modules/.pnpm/expo-location@19.0.8_expo@54.0.33/node_modules/expo-location/ios`)"
   - "ExpoModulesCore (from `../node_modules/.pnpm/expo-modules-core@3.0.29_react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-con_735f2573dfa801783c6fe100d5e39a43/node_modules/expo-modules-core`)"
   - "ExpoSecureStore (from `../node_modules/.pnpm/expo-secure-store@15.0.8_expo@54.0.33/node_modules/expo-secure-store/ios`)"
+  - "ExpoVideo (from `../node_modules/.pnpm/expo-video@3.0.16_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-native+met_04aea779df110506006c0bb9807477f0/node_modules/expo-video/ios`)"
   - "FBLazyVector (from `../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel+core@7._a0df58fc1fe96c31423c9b72cceb7fec/node_modules/react-native/Libraries/FBLazyVector`)"
   - "hermes-engine (from `../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel+core@7._a0df58fc1fe96c31423c9b72cceb7fec/node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)"
   - "RCTDeprecation (from `../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel+core@7._a0df58fc1fe96c31423c9b72cceb7fec/node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)"
@@ -2352,6 +2355,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/.pnpm/expo-modules-core@3.0.29_react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-con_735f2573dfa801783c6fe100d5e39a43/node_modules/expo-modules-core"
   ExpoSecureStore:
     :path: "../node_modules/.pnpm/expo-secure-store@15.0.8_expo@54.0.33/node_modules/expo-secure-store/ios"
+  ExpoVideo:
+    :path: "../node_modules/.pnpm/expo-video@3.0.16_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-native+met_04aea779df110506006c0bb9807477f0/node_modules/expo-video/ios"
   FBLazyVector:
     :path: "../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel+core@7._a0df58fc1fe96c31423c9b72cceb7fec/node_modules/react-native/Libraries/FBLazyVector"
   hermes-engine:
@@ -2532,6 +2537,7 @@ SPEC CHECKSUMS:
   ExpoLocation: d5b61cb4970fa982e39ca94246a206a0c3b812ca
   ExpoModulesCore: f3da4f1ab5a8375d0beafab763739dbee8446583
   ExpoSecureStore: d32f751874a2ceb5aaeebeb3578e165c1ba2b24a
+  ExpoVideo: 8d9e8a1acd0c4c210e538b4355e34ae8ff5e04f7
   FBAEMKit: 2a6b529993713c185b02bc36f8c91129bf78dfb0
   FBLazyVector: e95a291ad2dadb88e42b06e0c5fb8262de53ec12
   FBSDKCoreKit: 65d7f7a7d6fcc3aa6eb6e093ec737a4184fc6049

@@ -94,6 +94,10 @@ export default {
       ["expo-audio", {
         microphonePermission: "Precisamos do microfone para gravar mensagens de voz."
       }],
+      ["expo-video", {
+        supportsBackgroundPlayback: false,
+        supportsPictureInPicture: false
+      }],
       ...socialAuthPlugins()
     ],
     extra: {

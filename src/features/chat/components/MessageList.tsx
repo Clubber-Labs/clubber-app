@@ -23,6 +23,7 @@ type Props = {
   participants: Participant[]
   onLongPressMessage: (message: ChatMessage) => void
   onPressImage: (url: string) => void
+  onPressVideo: (url: string) => void
   onRetry: (message: ChatMessage) => void
   onReplyMessage: (message: ChatMessage) => void
 }
@@ -34,6 +35,7 @@ export function MessageList({
   participants,
   onLongPressMessage,
   onPressImage,
+  onPressVideo,
   onRetry,
   onReplyMessage,
 }: Props) {
@@ -121,6 +123,7 @@ export function MessageList({
               status={status}
               onLongPress={() => onLongPressMessage(item)}
               onPressImage={onPressImage}
+              onPressVideo={onPressVideo}
               onRetry={() => onRetry(item)}
               onReply={() => onReplyMessage(item)}
               onPressReply={

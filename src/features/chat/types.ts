@@ -3,21 +3,34 @@ import type { UserMini } from '@/shared/types'
 export type ConversationType = 'DIRECT' | 'GROUP'
 export type Role = 'MEMBER' | 'ADMIN'
 
-export type AttachmentKind = 'IMAGE' | 'AUDIO'
+export type AttachmentKind = 'IMAGE' | 'AUDIO' | 'VIDEO'
 
 export type Attachment = {
   id: string
   // Ausente em anexos de imagem (o backend não envia `kind` pra imagem). Quando
-  // 'AUDIO', a bolha renderiza o player de voz em vez de <Image>. Tratar como
-  // imagem quando ausente mantém compatível o que já existe.
+  // 'AUDIO', a bolha renderiza o player de voz; quando 'VIDEO', o poster + play.
+  // Tratar como imagem quando ausente mantém compatível o que já existe.
   kind?: AttachmentKind
   url: string
   format: string
   size: number
   order: number
-  // Presentes só em anexos de áudio (kind 'AUDIO'). `waveform`: inteiros 0..255.
+  // Presentes só em anexos de áudio (kind 'AUDIO') e vídeo (kind 'VIDEO').
+  // `waveform`: inteiros 0..255 (só áudio).
   durationMs?: number
   waveform?: number[]
+  // Dimensões do mídia visual (imagem e vídeo) — usadas pra reservar o
+  // aspect-ratio da bolha e evitar "pulo" de layout ao carregar.
+  width?: number
+  height?: number
+  // Poster do vídeo (frame de capa). Em imagem o backend pode mandar uma versão
+  // reduzida; hoje só o vídeo consome.
+  thumbnailUrl?: string
+  // CLIENT-ONLY: só existe na bolha otimista de vídeo enquanto o upload ao
+  // Cloudinary já completou mas a criação da mensagem (201) ainda não. O retry
+  // lê isto pra reusar o upload em vez de re-subir o arquivo. Nunca vem do
+  // backend e some quando o `reconcileSent` troca a bolha pelo Message real.
+  publicId?: string
 }
 
 export type Participant = {

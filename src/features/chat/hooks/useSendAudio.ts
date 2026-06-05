@@ -27,12 +27,16 @@ export function useSendAudio(conversationId: string, me: UserMini) {
   const key = chatKeys.messages(conversationId)
 
   return useMutation({
-    mutationFn: ({ uri, durationMs, waveform }: SendAudioVars) =>
-      conversationsService.sendAudio(conversationId, {
-        uri,
-        durationMs,
-        waveform,
-      }),
+    mutationFn: ({ uri, durationMs, waveform, clientId }: SendAudioVars) =>
+      conversationsService.sendAudio(
+        conversationId,
+        {
+          uri,
+          durationMs,
+          waveform,
+        },
+        clientId,
+      ),
     onMutate: ({ uri, durationMs, waveform, clientId }: SendAudioVars) => {
       const optimistic: ChatMessage = {
         id: clientId,

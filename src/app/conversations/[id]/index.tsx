@@ -38,6 +38,7 @@ import { AttachmentMenu } from '@/features/chat/components/AttachmentMenu'
 import { MessageActionsSheet } from '@/features/chat/components/MessageActionsSheet'
 import { ReportReasonPicker } from '@/features/chat/components/ReportReasonPicker'
 import { ImageViewerModal } from '@/features/chat/components/ImageViewerModal'
+import { VideoPlayerModal } from '@/features/chat/components/VideoPlayerModal'
 import type { UserMini } from '@/shared/types'
 import type {
   ChatMessage,
@@ -46,6 +47,11 @@ import type {
 } from '@/features/chat/types'
 
 const COOLDOWN_MS = 5000
+// Guarda pré-upload (nicety) — o limite real é do backend (413). Pega só vídeos
+// absurdamente grandes antes de gastar banda subindo ao Cloudinary.
+const MAX_VIDEO_BYTES = 50 * 1024 * 1024
+// Teto de gravação na câmera (segundos).
+const VIDEO_MAX_DURATION_S = 60
 
 export default function ConversationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -76,7 +82,7 @@ export default function ConversationScreen() {
     avatarUrl: null,
   }
 
-  const { send, sendImage, sendAudio, deleteMessage, edit } =
+  const { send, sendImage, sendAudio, sendVideo, deleteMessage, edit } =
     useMessagesMutations(id, me)
 
   const [blockedByServer, setBlockedByServer] = useState(false)
@@ -91,6 +97,7 @@ export default function ConversationScreen() {
   const [actionsFor, setActionsFor] = useState<ChatMessage | null>(null)
   const [reportFor, setReportFor] = useState<ChatMessage | null>(null)
   const [viewerUrl, setViewerUrl] = useState<string | null>(null)
+  const [videoUrl, setVideoUrl] = useState<string | null>(null)
   const [editing, setEditing] = useState<ChatMessage | null>(null)
   const [replyingToId, setReplyingToId] = useState<string | null>(null)
 
@@ -125,7 +132,18 @@ export default function ConversationScreen() {
       setTimeout(() => setCooldown(false), COOLDOWN_MS)
       return
     }
-    if (isForbiddenError(e) && !isGroup) setBlockedByServer(true)
+    if (isForbiddenError(e) && !isGroup) {
+      setBlockedByServer(true)
+      return
+    }
+    // 400 (ex.: GIF não suportado), 413 (arquivo > limite OU cota de mídia) e 404
+    // saem com a mensagem do backend (PT) verbatim. Os dois 413 distintos vêm
+    // diferenciados no próprio {message}. O revert da bolha pra 'failed' continua
+    // no onError da mutation — os dois onError rodam (a bolha falha E o banner sai).
+    const status = isAxiosError(e) ? e.response?.status : undefined
+    if (status === 400 || status === 413 || status === 404) {
+      showBanner(getApiError(e).message)
+    }
   }
 
   function toReplyPreview(m: ChatMessage): ReplyPreview {
@@ -158,16 +176,40 @@ export default function ConversationScreen() {
     setReplyingToId(null)
   }
 
-  function sendImageUri(uri: string) {
+  function sendImageUri(uri: string, width?: number, height?: number) {
     hapticLight()
     sendImage.mutate(
       {
         uri,
         clientId: newClientId(),
+        width,
+        height,
         replyTo: replyingTo ? toReplyPreview(replyingTo) : null,
       },
       { onError: handleSendError },
     )
+    setReplyingToId(null)
+  }
+
+  function sendVideoUri(asset: ImagePicker.ImagePickerAsset) {
+    // fileSize é frequentemente undefined no Android — aí o 413 do backend é a
+    // guarda real. Quando presente, evita subir um arquivo gigante à toa.
+    if (asset.fileSize != null && asset.fileSize > MAX_VIDEO_BYTES) {
+      showBanner('Vídeo muito grande para enviar.')
+      return
+    }
+    hapticLight()
+    sendVideo.mutate(
+      {
+        uri: asset.uri,
+        clientId: newClientId(),
+        width: asset.width,
+        height: asset.height,
+        durationMs: asset.duration ?? undefined,
+      },
+      { onError: handleSendError },
+    )
+    // Vídeo não carrega replyTo; encerra a citação se houver.
     setReplyingToId(null)
   }
 
@@ -198,10 +240,13 @@ export default function ConversationScreen() {
 
   async function pickFromGallery() {
     const res = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
+      mediaTypes: ['images', 'videos'],
       quality: 0.8,
     })
-    if (!res.canceled && res.assets[0]) sendImageUri(res.assets[0].uri)
+    if (res.canceled || !res.assets[0]) return
+    const asset = res.assets[0]
+    if (asset.type === 'video') sendVideoUri(asset)
+    else sendImageUri(asset.uri, asset.width, asset.height)
   }
 
   async function pickFromCamera() {
@@ -210,8 +255,15 @@ export default function ConversationScreen() {
       showBanner('Permissão de câmera negada.')
       return
     }
-    const res = await ImagePicker.launchCameraAsync({ quality: 0.8 })
-    if (!res.canceled && res.assets[0]) sendImageUri(res.assets[0].uri)
+    const res = await ImagePicker.launchCameraAsync({
+      mediaTypes: ['images', 'videos'],
+      quality: 0.8,
+      videoMaxDuration: VIDEO_MAX_DURATION_S,
+    })
+    if (res.canceled || !res.assets[0]) return
+    const asset = res.assets[0]
+    if (asset.type === 'video') sendVideoUri(asset)
+    else sendImageUri(asset.uri, asset.width, asset.height)
   }
 
   function onRetry(message: ChatMessage) {
@@ -229,6 +281,22 @@ export default function ConversationScreen() {
       )
       return
     }
+    if (attachment?.kind === 'VIDEO') {
+      // publicId presente → o upload ao Cloudinary já tinha completado; reusa e
+      // pula direto pra criar a mensagem (mesmo clientId = mesma Idempotency-Key).
+      sendVideo.mutate(
+        {
+          uri: attachment.url,
+          clientId: message.clientId,
+          width: attachment.width,
+          height: attachment.height,
+          durationMs: attachment.durationMs,
+          publicId: attachment.publicId,
+        },
+        { onError: handleSendError },
+      )
+      return
+    }
     // Preserva a resposta original ao reenviar.
     const replyTo = message.replyTo ?? null
     if (attachment) {
@@ -236,6 +304,8 @@ export default function ConversationScreen() {
         {
           uri: attachment.url,
           clientId: message.clientId,
+          width: attachment.width,
+          height: attachment.height,
           replyTo,
         },
         { onError: handleSendError },
@@ -336,6 +406,7 @@ export default function ConversationScreen() {
           participants={conversation.participants}
           onLongPressMessage={openActions}
           onPressImage={setViewerUrl}
+          onPressVideo={setVideoUrl}
           onRetry={onRetry}
           onReplyMessage={setReply}
         />
@@ -410,6 +481,7 @@ export default function ConversationScreen() {
         onSubmit={submitReport}
       />
       <ImageViewerModal url={viewerUrl} onClose={() => setViewerUrl(null)} />
+      <VideoPlayerModal url={videoUrl} onClose={() => setVideoUrl(null)} />
     </KeyboardAvoidingView>
   )
 }

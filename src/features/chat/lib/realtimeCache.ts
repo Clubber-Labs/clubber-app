@@ -29,7 +29,13 @@ export function upsertMessage(
 ): MsgCache {
   if (messageExists(cache, message.id)) return cache
 
-  if (message.senderId === myId) {
+  // Só casa a bolha otimista por `content` quando a mensagem TEM texto. Mídia
+  // (content === null) não pode ser casada por content — casaria qualquer bolha
+  // de mídia 'sending', trocando a errada com dois envios simultâneos (provável
+  // no upload lento de vídeo). Pra mídia, deixa o `messageExists(id)` (dedup do
+  // eco) e o `reconcileSent` (por clientId, no 201) cuidarem; a janela de
+  // duplicata transitória é mínima e o reconcileSent a colapsa.
+  if (message.senderId === myId && message.content != null) {
     let replaced = false
     const pages = cache.pages.map(page => {
       if (replaced) return page
@@ -186,6 +192,34 @@ export function upsertOptimistic(
   return {
     ...base,
     pages: [{ ...first, data: [message, ...first.data] }, ...rest],
+  }
+}
+
+// Grava o `publicId` do Cloudinary na bolha otimista de vídeo (achada por
+// clientId), depois do upload e antes do 201. Fica stashado no próprio cache —
+// não num Map global — então limpa sozinho: some quando o reconcileSent troca a
+// bolha pelo Message real, ou some junto se a mensagem for descartada. O retry
+// lê este publicId pra reusar o upload em vez de re-subir o arquivo.
+export function setOptimisticPublicId(
+  cache: MsgCache | undefined,
+  clientId: string,
+  publicId: string,
+): MsgCache | undefined {
+  if (!cache) return cache
+  return {
+    ...cache,
+    pages: cache.pages.map(page => ({
+      ...page,
+      data: page.data.map(m => {
+        if (m.clientId !== clientId) return m
+        const [first, ...rest] = m.attachments
+        if (!first) return m
+        return {
+          ...m,
+          attachments: [{ ...first, publicId }, ...rest],
+        }
+      }),
+    })),
   }
 }
 

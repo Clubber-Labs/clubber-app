@@ -4,6 +4,7 @@ import { UserAvatar } from '@/shared/components/UserAvatar'
 import { SwipeableRow } from '@/shared/components/SwipeableRow'
 import { SenderLabel } from './SenderLabel'
 import { ImageMessage } from './ImageMessage'
+import { VideoMessage } from './VideoMessage'
 import { VoiceMessage } from './VoiceMessage'
 import { MessageStatusIcon } from './MessageStatusIcon'
 import { attachmentReplyLabel } from '../utils/attachmentPreview'
@@ -21,6 +22,7 @@ type Props = {
   status: MessageStatus | null
   onLongPress: () => void
   onPressImage: (url: string) => void
+  onPressVideo: (url: string) => void
   onRetry: () => void
   // Swipe para a esquerda → responder a esta mensagem.
   onReply: () => void
@@ -35,6 +37,7 @@ export function MessageBubble({
   status,
   onLongPress,
   onPressImage,
+  onPressVideo,
   onRetry,
   onReply,
   onPressReply,
@@ -58,8 +61,11 @@ export function MessageBubble({
 
   const attachment = message.attachments[0]
   const audio = attachment?.kind === 'AUDIO' ? attachment : undefined
-  const image = attachment && !audio ? attachment : undefined
-  const imageOnly = !!image && !message.content
+  const video = attachment?.kind === 'VIDEO' ? attachment : undefined
+  // Imagem é o fallback (backend não manda `kind` pra imagem): tudo que não é
+  // áudio nem vídeo.
+  const image = attachment && !audio && !video ? attachment : undefined
+  const mediaOnly = (!!image || !!video) && !message.content
   const sending = message.clientStatus === 'sending'
   const failed = message.clientStatus === 'failed'
   const edited = !!message.editedAt && !message.deletedAt
@@ -77,12 +83,12 @@ export function MessageBubble({
       className="max-w-[80%]"
     >
       <View
-        className={`rounded-2xl ${isMine ? 'bg-violet-600' : 'bg-zinc-800'} ${imageOnly ? 'p-1' : 'px-3 py-2'}`}
+        className={`rounded-2xl ${isMine ? 'bg-violet-600' : 'bg-zinc-800'} ${mediaOnly ? 'p-1' : 'px-3 py-2'}`}
       >
         {reply && (
           <Pressable
             onPress={onPressReply}
-            className={`mb-1 rounded border-l-2 pl-2 py-0.5 ${isMine ? 'border-violet-200 bg-violet-700/50' : 'border-violet-500 bg-black/25'} ${imageOnly ? 'mx-1 mt-1' : ''}`}
+            className={`mb-1 rounded border-l-2 pl-2 py-0.5 ${isMine ? 'border-violet-200 bg-violet-700/50' : 'border-violet-500 bg-black/25'} ${mediaOnly ? 'mx-1 mt-1' : ''}`}
           >
             <Text
               className={`text-[12px] font-semibold ${isMine ? 'text-violet-100' : 'text-violet-300'}`}
@@ -99,6 +105,13 @@ export function MessageBubble({
           </Pressable>
         )}
         {audio && <VoiceMessage attachment={audio} isMine={isMine} />}
+        {video && (
+          <VideoMessage
+            attachment={video}
+            sending={sending}
+            onPress={() => onPressVideo(video.url)}
+          />
+        )}
         {image && (
           <ImageMessage
             attachment={image}
@@ -108,14 +121,14 @@ export function MessageBubble({
         )}
         {message.content ? (
           <Text
-            className={`text-[15px] ${isMine ? 'text-white' : 'text-zinc-100'} ${image ? 'mt-1 px-1' : ''}`}
+            className={`text-[15px] ${isMine ? 'text-white' : 'text-zinc-100'} ${image || video ? 'mt-1 px-1' : ''}`}
           >
             {message.content}
           </Text>
         ) : null}
         {(meta.showTime || edited) && (
           <View
-            className={`flex-row items-center justify-end gap-1 mt-0.5 ${imageOnly ? 'px-1 pb-0.5' : ''}`}
+            className={`flex-row items-center justify-end gap-1 mt-0.5 ${mediaOnly ? 'px-1 pb-0.5' : ''}`}
           >
             <Text
               className={`text-[11px] ${isMine ? 'text-violet-200' : 'text-zinc-500'}`}
