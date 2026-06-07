@@ -1,16 +1,17 @@
 import { buildVideoFile } from '@/shared/utils/videoUpload'
 
-// Resposta (FLAT) do POST /messages/video/signature. O backend faz
-// api_sign_request({ folder, timestamp }, apiSecret) e devolve o objeto direto —
-// sem envelope. cloudName/apiKey/resourceType vêm em camelCase. NÃO há `type`:
-// o upload usa o tipo default ('upload') do Cloudinary.
+// Resposta (FLAT) do POST /messages/video/signature. Além de
+// signature/apiKey/cloudName/resourceType, o backend devolve TODOS os params que
+// entraram no api_sign_request (folder, timestamp, type, ...) — coletados aqui no
+// index signature. Encaminhamos exatamente o que vier no upload: um param assinado
+// a mais ou a menos quebra a assinatura (→ 401 "Invalid Signature" do Cloudinary).
 export type SignedUpload = {
   signature: string
-  timestamp: number
   apiKey: string
   cloudName: string
-  folder: string
-  resourceType: 'video'
+  resourceType: string
+  // Params assinados (folder, timestamp, type, ...).
+  [param: string]: string | number
 }
 
 type CloudinaryUploadResponse = {
@@ -28,18 +29,20 @@ export async function uploadVideoToCloudinary(
   signed: SignedUpload,
   uri: string,
 ): Promise<{ publicId: string }> {
+  const { signature, apiKey, cloudName, resourceType, ...signedParams } = signed
+
   const form = new FormData()
-  // EXATAMENTE os params assinados (folder, timestamp) + api_key + signature +
-  // file. Um param assinado a mais ou a menos quebra a assinatura (→ 400/401 do
-  // Cloudinary). cloudName vai na URL e resourceType no path — nenhum dos dois
-  // entra no form.
-  form.append('folder', signed.folder)
-  form.append('timestamp', String(signed.timestamp))
-  form.append('api_key', signed.apiKey)
-  form.append('signature', signed.signature)
+  // Encaminha exatamente os params assinados (folder, timestamp, type, ...) —
+  // programaticamente, pra não quebrar se o backend assinar params novos.
+  // cloudName vai na URL e resourceType no path; nenhum dos dois entra no form.
+  for (const [key, value] of Object.entries(signedParams)) {
+    form.append(key, String(value))
+  }
+  form.append('api_key', String(apiKey))
+  form.append('signature', String(signature))
   form.append('file', buildVideoFile(uri))
 
-  const url = `https://api.cloudinary.com/v1_1/${signed.cloudName}/${signed.resourceType}/upload`
+  const url = `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`
   const res = await fetch(url, { method: 'POST', body: form })
   if (!res.ok) {
     // O Cloudinary devolve { error: { message } } com o motivo real (ex.:
