@@ -1,4 +1,5 @@
 import { View, Text, TextInput } from 'react-native'
+import { Link } from 'expo-router'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginInput } from '../schemas/loginSchema'
@@ -7,7 +8,11 @@ import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { isUnauthorizedError } from '@/shared/lib/apiError'
 
-export function LoginForm() {
+type Props = {
+  defaultEmail?: string
+}
+
+export function LoginForm({ defaultEmail }: Props) {
   const { mutate: login, isPending, error } = useLogin()
   const {
     control,
@@ -15,6 +20,7 @@ export function LoginForm() {
     formState: { errors },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
+    defaultValues: { email: defaultEmail ?? '' },
   })
 
   return (
@@ -55,6 +61,14 @@ export function LoginForm() {
       {errors.password && (
         <Text className="text-white text-sm">{errors.password.message}</Text>
       )}
+
+      <View className="flex-row justify-end">
+        <Link href="/(auth)/forgot-password">
+          <Text className="text-violet-400 text-sm font-medium">
+            Esqueci minha senha
+          </Text>
+        </Link>
+      </View>
 
       <FormError
         message={
