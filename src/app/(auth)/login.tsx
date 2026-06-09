@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { View, Text, ScrollView } from 'react-native'
-import { Link } from 'expo-router'
+import { Link, useLocalSearchParams } from 'expo-router'
 import { LoginForm } from '@/features/auth/components/LoginForm'
 import { AuthDivider } from '@/features/auth/components/AuthDivider'
 import { SocialLoginButtons } from '@/features/auth/components/SocialLoginButtons'
@@ -8,6 +8,9 @@ import { useAuthStore } from '@/features/auth/store/authStore'
 import { useBanner } from '@/shared/lib/banner'
 
 export default function LoginScreen() {
+  const params = useLocalSearchParams<{ email?: string }>()
+  const defaultEmail =
+    typeof params.email === 'string' ? params.email : undefined
   const sessionExpired = useAuthStore(s => s.sessionExpired)
   const acknowledgeExpired = useAuthStore(s => s.acknowledgeExpired)
   const showBanner = useBanner()
@@ -23,7 +26,11 @@ export default function LoginScreen() {
   return (
     <ScrollView
       className="flex-1 bg-black"
-      contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24 }}
+      contentContainerStyle={{
+        flexGrow: 1,
+        justifyContent: 'center',
+        padding: 24,
+      }}
       keyboardShouldPersistTaps="handled"
     >
       <Text className="text-3xl font-bold text-white mb-2">
@@ -33,7 +40,7 @@ export default function LoginScreen() {
         Entre na sua conta para continuar
       </Text>
 
-      <LoginForm />
+      <LoginForm defaultEmail={defaultEmail} />
 
       <AuthDivider />
 

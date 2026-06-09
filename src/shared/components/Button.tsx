@@ -36,6 +36,8 @@ export function Button({
     <Pressable
       onPress={onPress}
       disabled={disabled || loading}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: disabled || loading, busy: loading }}
       className={`${base} ${containerStyles[variant]} ${disabled && !loading ? 'opacity-40' : ''}`}
     >
       {loading && (
