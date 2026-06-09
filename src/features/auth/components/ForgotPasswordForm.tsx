@@ -60,6 +60,10 @@ export function ForgotPasswordForm({ defaultEmail }: Props) {
         useNativeDriver: true,
       }),
     ]).start()
+    // Erros são transientes do step atual; toda transição começa limpa (ex.: voltar
+    // ao código e reentrar na senha não deve trazer o resetError antigo de volta).
+    setForgotError(null)
+    setResetError(null)
     setStep(next)
   }
 
