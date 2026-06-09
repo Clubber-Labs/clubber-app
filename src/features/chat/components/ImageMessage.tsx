@@ -1,15 +1,24 @@
 import { useState } from 'react'
 import { Pressable, Image, View, ActivityIndicator } from 'react-native'
 import { mediaBoxSize } from '../utils/mediaBox'
+import { LONG_PRESS_DELAY_MS } from '../utils/longPress'
 import type { Attachment } from '../types'
 
 type Props = {
   attachment: Attachment
   onPress: () => void
+  // Encaminhado da bolha: sem isto, este Pressable engole o gesto e o long-press
+  // (menu de ações / reagir) só dispara fora da imagem.
+  onLongPress?: () => void
   sending?: boolean
 }
 
-export function ImageMessage({ attachment, onPress, sending }: Props) {
+export function ImageMessage({
+  attachment,
+  onPress,
+  onLongPress,
+  sending,
+}: Props) {
   const [loaded, setLoaded] = useState(false)
   // Caixa pelo aspect-ratio real (quando o backend manda width/height) reservada
   // antes da imagem carregar — evita o "pulo" de layout. Fallback 220×220 quando
@@ -22,6 +31,8 @@ export function ImageMessage({ attachment, onPress, sending }: Props) {
   return (
     <Pressable
       onPress={onPress}
+      onLongPress={onLongPress}
+      delayLongPress={LONG_PRESS_DELAY_MS}
       className="rounded-xl overflow-hidden"
       accessibilityLabel="Imagem"
     >
