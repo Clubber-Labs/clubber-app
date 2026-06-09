@@ -159,6 +159,30 @@ export const conversationsService = {
       .delete(`/conversations/${id}/messages/${messageId}`)
       .then(() => undefined),
 
+  // Reações: ambos devolvem a Message INTEIRA atualizada. POST é upsert
+  // idempotente por (mensagem+usuário+emoji); DELETE é idempotente (funciona até
+  // se a reação não existir). O emoji do DELETE vai no corpo (`data`) — axios não
+  // serializa body em delete sem isso.
+  addReaction: (
+    id: string,
+    messageId: string,
+    emoji: string,
+  ): Promise<Message> =>
+    api
+      .post(`/conversations/${id}/messages/${messageId}/reactions`, { emoji })
+      .then(r => r.data),
+
+  removeReaction: (
+    id: string,
+    messageId: string,
+    emoji: string,
+  ): Promise<Message> =>
+    api
+      .delete(`/conversations/${id}/messages/${messageId}/reactions`, {
+        data: { emoji },
+      })
+      .then(r => r.data),
+
   leave: (id: string): Promise<void> =>
     api.post(`/conversations/${id}/leave`).then(() => undefined),
 

@@ -6,6 +6,7 @@ import type {
   Conversation,
   InboxItem,
   Message,
+  MessageReaction,
   ReceiptFrame,
 } from '../types'
 
@@ -288,6 +289,28 @@ export function applyReceipt(queryClient: QueryClient, frame: ReceiptFrame) {
       return changed ? { ...prev, participants } : prev
     },
   )
+}
+
+// Update otimista de reação: troca só a lista `reactions` da mensagem por id, no
+// cache da conversa. A reconciliação autoritativa (resposta REST + eco
+// `message_edited` via WS) substitui a Message inteira depois — ambos idempotentes.
+export function setMessageReactions(
+  cache: MsgCache,
+  conversationId: string,
+  messageId: string,
+  reactions: MessageReaction[],
+): MsgCache {
+  return {
+    ...cache,
+    pages: cache.pages.map(page => ({
+      ...page,
+      data: page.data.map(m =>
+        m.id === messageId && m.conversationId === conversationId
+          ? { ...m, reactions }
+          : m,
+      ),
+    })),
+  }
 }
 
 export function resetInboxUnread(

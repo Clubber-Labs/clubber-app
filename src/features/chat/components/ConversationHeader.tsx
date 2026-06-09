@@ -1,10 +1,13 @@
 import { View, Text, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { ConversationAvatar } from './ConversationAvatar'
+import { PresenceDot } from './PresenceDot'
+import { usePresence } from '../hooks/usePresence'
 import {
   conversationAvatarUsers,
   conversationTitle,
 } from '../utils/conversationDisplay'
+import { lastSeenLabel } from '../utils/presence'
 import type { Conversation } from '../types'
 
 type Props = {
@@ -20,14 +23,25 @@ export function ConversationHeader({
   myId,
   onPressDetails,
 }: Props) {
+  const isDirect = conversation.type === 'DIRECT'
   const title = conversationTitle(conversation, myId)
   const other = conversation.participants.find(p => p.userId !== myId)?.user
+  const presence = usePresence(isDirect ? other?.id : undefined)
+
+  // Grupo: nº de participantes. DM: presença quando conhecida (online / visto
+  // por último), senão cai pro @username.
   const subtitle =
     conversation.type === 'GROUP'
       ? `${conversation.participants.length} participantes`
-      : other
-        ? `@${other.username}`
-        : ''
+      : presence?.online
+        ? 'online'
+        : presence?.lastSeenAt
+          ? lastSeenLabel(presence.lastSeenAt)
+          : other
+            ? `@${other.username}`
+            : ''
+
+  const showOnlineDot = isDirect && !!presence?.online
 
   return (
     <View className="flex-row items-center gap-1 px-3 py-2 border-b border-zinc-900 bg-black">
@@ -36,17 +50,30 @@ export function ConversationHeader({
         className="flex-row items-center gap-2 flex-1"
         accessibilityLabel="Ver detalhes da conversa"
       >
-        <ConversationAvatar
-          users={conversationAvatarUsers(conversation, myId)}
-          type={conversation.type}
-          size={38}
-        />
+        <View>
+          <ConversationAvatar
+            users={conversationAvatarUsers(conversation, myId)}
+            type={conversation.type}
+            size={38}
+          />
+          {showOnlineDot && (
+            <View className="absolute bottom-0 right-0">
+              <PresenceDot online size={11} />
+            </View>
+          )}
+        </View>
         <View className="flex-1">
-          <Text numberOfLines={1} className="text-white font-semibold text-base">
+          <Text
+            numberOfLines={1}
+            className="text-white font-semibold text-base"
+          >
             {title}
           </Text>
           {!!subtitle && (
-            <Text numberOfLines={1} className="text-zinc-500 text-xs">
+            <Text
+              numberOfLines={1}
+              className={`text-xs ${showOnlineDot ? 'text-green-500' : 'text-zinc-500'}`}
+            >
               {subtitle}
             </Text>
           )}

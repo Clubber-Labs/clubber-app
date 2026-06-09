@@ -18,6 +18,9 @@ import { useConversation } from '@/features/chat/hooks/useConversation'
 import { useMessages } from '@/features/chat/hooks/useMessages'
 import { useMessagesMutations } from '@/features/chat/hooks/useMessagesMutations'
 import { useReadConversation } from '@/features/chat/hooks/useReadConversation'
+import { useToggleReaction } from '@/features/chat/hooks/useToggleReaction'
+import { useTypingSender } from '@/features/chat/hooks/useTypingSender'
+import { useTypingUsers } from '@/features/chat/hooks/useTypingUsers'
 import { useBlocks } from '@/features/chat/hooks/useBlocks'
 import { useReportFlow } from '@/features/reports/hooks/useReportFlow'
 import { newClientId } from '@/features/chat/hooks/useSendMessage'
@@ -25,6 +28,8 @@ import { useChatRealtimeStore } from '@/features/chat/store/chatRealtimeStore'
 import { ensureRecordingPermission } from '@/features/chat/lib/audioRecording'
 import type { VoiceNote } from '@/features/chat/hooks/useVoiceRecorder'
 import { attachmentReplyLabel } from '@/features/chat/utils/attachmentPreview'
+import { myReaction } from '@/features/chat/utils/reactions'
+import { typingLabel } from '@/features/chat/utils/typing'
 import { ConversationHeader } from '@/features/chat/components/ConversationHeader'
 import { MessageList } from '@/features/chat/components/MessageList'
 import { MessageInputBar } from '@/features/chat/components/MessageInputBar'
@@ -58,6 +63,9 @@ export default function ConversationScreen() {
   const read = useReadConversation()
   const report = useReportFlow()
   const { blocks } = useBlocks()
+  const toggleReaction = useToggleReaction(id, myId)
+  const typingSender = useTypingSender(id)
+  const typingUserIds = useTypingUsers(id)
 
   const isGroup = conversation?.type === 'GROUP'
   const amAdmin =
@@ -105,14 +113,34 @@ export default function ConversationScreen() {
     if (replyingToId && !replyingTo) setReplyingToId(null)
   }, [replyingToId, replyingTo])
 
+  // Quem está digitando, em primeiro nome. O servidor não devolve typing pro
+  // próprio autor, mas filtramos myId por garantia.
+  const typingMessage = useMemo(() => {
+    if (!conversation || typingUserIds.length === 0) return ''
+    const names = typingUserIds
+      .filter(uid => uid !== myId)
+      .map(
+        uid => conversation.participants.find(p => p.userId === uid)?.user.name,
+      )
+      .filter((name): name is string => !!name)
+    return typingLabel(names)
+  }, [conversation, typingUserIds, myId])
+
   // Marca a conversa como ativa (controla unread/read) e a marca lida ao focar.
+  // Ao sair (blur/unmount) encerra qualquer "digitando" pendente. Refs evitam
+  // re-rodar o efeito quando read/typingSender mudam de identidade.
   const readRef = useRef(read)
   readRef.current = read
+  const stopTypingRef = useRef(typingSender.stop)
+  stopTypingRef.current = typingSender.stop
   useFocusEffect(
     useCallback(() => {
       setActive(id)
       readRef.current.mutate(id)
-      return () => setActive(null)
+      return () => {
+        setActive(null)
+        stopTypingRef.current()
+      }
     }, [id, setActive]),
   )
 
@@ -318,6 +346,15 @@ export default function ConversationScreen() {
   const canEdit = !!actionsFor && isMineMessage && !!actionsFor.content
   const canDelete = !!actionsFor && (isMineMessage || (!!isGroup && !!amAdmin))
   const canReport = !!actionsFor && !isMineMessage
+  // Reagir não vale em mensagem de sistema nem apagada (o backend devolve 403).
+  const canReact =
+    !!actionsFor && !actionsFor.deletedAt && actionsFor.type !== 'SYSTEM'
+  const myEmoji = actionsFor ? myReaction(actionsFor.reactions, myId) : null
+
+  function reactTo(message: ChatMessage, emoji: string) {
+    hapticLight()
+    toggleReaction.mutate({ message, emoji })
+  }
 
   async function doCopy() {
     if (actionsFor?.content) await Clipboard.setStringAsync(actionsFor.content)
@@ -340,6 +377,9 @@ export default function ConversationScreen() {
   function startEdit(message: ChatMessage) {
     setActionsFor(null)
     setReplyingToId(null)
+    // Sai do modo "compondo": encerra qualquer "digitando" pendente (editar não
+    // dispara typing, então sem isto o indicador ficaria preso até o debounce).
+    typingSender.stop()
     setEditing(message)
   }
 
@@ -378,11 +418,13 @@ export default function ConversationScreen() {
           myId={myId}
           isGroup={!!isGroup}
           participants={conversation.participants}
+          typingLabel={typingMessage}
           onLongPressMessage={openActions}
           onPressImage={setViewerUrl}
           onPressVideo={setVideoUrl}
           onRetry={onRetry}
           onReplyMessage={setReply}
+          onToggleReaction={reactTo}
         />
       </View>
 
@@ -428,6 +470,8 @@ export default function ConversationScreen() {
               : null
           }
           onCancelReply={() => setReplyingToId(null)}
+          onTyping={typingSender.onType}
+          onStopTyping={typingSender.stop}
         />
       )}
 
@@ -443,7 +487,10 @@ export default function ConversationScreen() {
         canEdit={canEdit}
         canDelete={canDelete}
         canReport={canReport}
+        canReact={canReact}
+        myEmoji={myEmoji}
         onClose={() => setActionsFor(null)}
+        onReact={emoji => actionsFor && reactTo(actionsFor, emoji)}
         onCopy={doCopy}
         onEdit={() => actionsFor && startEdit(actionsFor)}
         onReport={() =>

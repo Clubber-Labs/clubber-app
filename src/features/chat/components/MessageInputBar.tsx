@@ -15,6 +15,10 @@ type Props = {
   // Quando presente, mostra a barra "Respondendo a…" acima do input.
   replyingTo?: { senderName: string; preview: string } | null
   onCancelReply?: () => void
+  // Sinais de "digitando" (só ao compor mensagem nova, não ao editar). O debounce
+  // mora no hook chamador (useTypingSender).
+  onTyping?: () => void
+  onStopTyping?: () => void
 }
 
 export function MessageInputBar({
@@ -27,6 +31,8 @@ export function MessageInputBar({
   onCancelEdit,
   replyingTo,
   onCancelReply,
+  onTyping,
+  onStopTyping,
 }: Props) {
   const [text, setText] = useState('')
   const trimmed = text.trim()
@@ -48,10 +54,22 @@ export function MessageInputBar({
     if (editingId) setText(editingContent)
   }, [editingId, editingContent])
 
+  // Dispara "digitando" só ao compor mensagem nova; some quando o campo esvazia.
+  function handleChangeText(value: string) {
+    setText(value)
+    if (isEditing) return
+    if (value.trim().length > 0) onTyping?.()
+    else onStopTyping?.()
+  }
+
   function handleSend() {
     if (!canSend) return
-    if (isEditing) onSubmitEdit?.(trimmed)
-    else onSendText(trimmed)
+    if (isEditing) {
+      onSubmitEdit?.(trimmed)
+    } else {
+      onSendText(trimmed)
+      onStopTyping?.()
+    }
     setText('')
   }
 
@@ -118,7 +136,7 @@ export function MessageInputBar({
         <View className="flex-1">
           <TextInput
             value={text}
-            onChangeText={setText}
+            onChangeText={handleChangeText}
             editable={isEditing || !disabled}
             placeholder="Mensagem…"
             placeholderTextColor="#71717a"

@@ -2,20 +2,36 @@ import Constants from 'expo-constants'
 import {
   isMessageFrame,
   isMessageUpdateFrame,
+  isPresenceFrame,
   isReceiptFrame,
+  isTypingFrame,
   type MessageFrame,
   type MessageUpdateFrame,
+  type PresenceFrame,
   type ReceiptFrame,
+  type TypingFrame,
 } from '../types'
 import type { ConnectionStatus } from '../store/chatRealtimeStore'
+
+// Único frame que o cliente ENVIA ao servidor (ver contrato): "digitando".
+export type OutboundFrame = {
+  type: 'typing'
+  conversationId: string
+  isTyping: boolean
+}
 
 type Handlers = {
   onStatus: (status: ConnectionStatus) => void
   onMessageFrame: (frame: MessageFrame) => void
-  // Edição/deleção de mensagem existente (atualiza in-place por id).
+  // Edição de mensagem existente OU reação adicionada/removida (atualiza in-place
+  // por id — o frame carrega a Message inteira).
   onMessageUpdate: (frame: MessageUpdateFrame) => void
   // Recibo de entrega/leitura de um participante (avança watermark).
   onReceipt: (frame: ReceiptFrame) => void
+  // Alguém começou/parou de digitar numa conversa.
+  onTyping: (frame: TypingFrame) => void
+  // Presença global (online/offline + visto por último) de um usuário.
+  onPresence: (frame: PresenceFrame) => void
   // Disparado após uma RECONEXÃO bem-sucedida (não na 1ª conexão) — o socket
   // não faz replay do que se perdeu offline, então o consumidor rebusca via REST.
   onReconnect: () => void
@@ -24,6 +40,8 @@ type Handlers = {
 }
 
 const MAX_BACKOFF_MS = 30_000
+// readyState OPEN (igual em todas as libs de WebSocket).
+const WS_OPEN = 1
 
 function buildWsUrl(token: string): string | null {
   const apiUrl = Constants.expoConfig?.extra?.apiUrl as string | undefined
@@ -40,6 +58,11 @@ class ChatSocket {
   private handlers: Handlers | null = null
   private getToken: (() => Promise<string | null>) | null = null
   private shouldRun = false
+  // "Já conectou ao menos uma vez nesta vida do singleton" — NÃO é zerado por
+  // stop(): assim, retomar após um stop (foreground voltando do background OU
+  // queda de rede) conta como RECONEXÃO e dispara onReconnect → re-sync via REST.
+  // Só a 1ª conexão fria (valor inicial false) não dispara, pois as telas já
+  // buscam dados frescos ao montar.
   private hadConnected = false
   private attempt = 0
   private timer: ReturnType<typeof setTimeout> | null = null
@@ -49,7 +72,6 @@ class ChatSocket {
     this.handlers = handlers
     if (this.shouldRun) return
     this.shouldRun = true
-    this.hadConnected = false
     this.attempt = 0
     void this.open()
   }
@@ -67,9 +89,22 @@ class ChatSocket {
       }
       this.ws = null
     }
-    this.hadConnected = false
+    // hadConnected NÃO é zerado aqui de propósito (ver campo) — o próximo open()
+    // após este stop deve ser tratado como reconexão e re-sincronizar via REST.
     this.attempt = 0
     this.handlers?.onStatus('offline')
+  }
+
+  // Envia um frame ao servidor (hoje só "digitando"). Best-effort: se o socket
+  // não está aberto, o frame é descartado — typing é efêmero e não vale enfileirar.
+  send(frame: OutboundFrame) {
+    const ws = this.ws
+    if (!ws || ws.readyState !== WS_OPEN) return
+    try {
+      ws.send(JSON.stringify(frame))
+    } catch {
+      // ignore
+    }
   }
 
   private clearTimer() {
@@ -123,11 +158,13 @@ class ChatSocket {
       } catch {
         return
       }
-      // Tipos desconhecidos (typing/presence futuros) são ignorados.
+      // Tipos desconhecidos são ignorados (tolerante a frames futuros do backend).
       if (isMessageFrame(parsed)) this.handlers?.onMessageFrame(parsed)
       else if (isMessageUpdateFrame(parsed))
         this.handlers?.onMessageUpdate(parsed)
       else if (isReceiptFrame(parsed)) this.handlers?.onReceipt(parsed)
+      else if (isTypingFrame(parsed)) this.handlers?.onTyping(parsed)
+      else if (isPresenceFrame(parsed)) this.handlers?.onPresence(parsed)
     }
 
     ws.onerror = () => {

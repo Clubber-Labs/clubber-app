@@ -3,6 +3,20 @@ import type { UserMini } from '@/shared/types'
 export type ConversationType = 'DIRECT' | 'GROUP'
 export type Role = 'MEMBER' | 'ADMIN'
 
+// Tipo da mensagem (vindo do backend). SYSTEM = aviso de grupo (entrou/saiu);
+// não pode receber reação. Opcional pra degradar em mensagens já em cache sem o
+// campo — a gate de reação trata `undefined` como reagível e o backend é a guarda
+// final (403 em SYSTEM/apagada).
+export type MessageType = 'TEXT' | 'IMAGE' | 'AUDIO' | 'VIDEO' | 'SYSTEM'
+
+// Reação CRUA, uma por (usuário + emoji), como o backend devolve em `reactions`.
+// O front agrega contagem e "minha" (ver utils/reactions). Este produto limita a
+// UMA reação por usuário — o controle é do cliente (toggleMyReaction).
+export type MessageReaction = {
+  userId: string
+  emoji: string
+}
+
 export type AttachmentKind = 'IMAGE' | 'AUDIO' | 'VIDEO'
 
 export type Attachment = {
@@ -62,9 +76,15 @@ export type Message = {
   conversationId: string
   senderId: string
   sender: UserMini
+  // Opcional pra degradar em bolhas otimistas e caches antigos sem o campo.
+  type?: MessageType
   // null quando é só imagem OU tombstone (deletedAt != null).
   content: string | null
   attachments: Attachment[]
+  // Lista crua de reações. Opcional (degrade-friendly): bolhas otimistas e caches
+  // antigos podem não ter — agregadores tratam ausente como []. O backend sempre
+  // envia (mesmo que vazio) no REST e no WS.
+  reactions?: MessageReaction[]
   createdAt: string
   // Preenchido quando a mensagem foi editada — opcional no backend; a UI só
   // mostra "editada" quando presente (degrada se ausente).
@@ -108,8 +128,7 @@ export type Block = {
   blocked: UserMini
 }
 
-// Frame de entrega ao vivo. Só `message` é tratado; outros tipos (typing,
-// presence) são tolerados e ignorados — ver isMessageFrame.
+// Frame de entrega ao vivo de uma mensagem NOVA.
 export type MessageFrame = {
   type: 'message'
   conversationId: string
@@ -127,10 +146,13 @@ export function isMessageFrame(value: unknown): value is MessageFrame {
   )
 }
 
-// Atualização de mensagem JÁ existente (edição ou deleção). Carrega o Message
-// atualizado — o consumidor substitui in-place por id, em vez de inserir.
+// Atualização de mensagem JÁ existente: edição de texto OU reação adicionada/
+// removida. O backend emite o evento `message_edited` (snake_case — é o literal do
+// contrato; NÃO usar camelCase) com a Message inteira atualizada, e o consumidor
+// reconcilia substituindo in-place por id. Não há evento de deleção no WS — o
+// soft-delete só reflete via refetch.
 export type MessageUpdateFrame = {
-  type: 'messageEdited' | 'messageDeleted'
+  type: 'message_edited'
   conversationId: string
   message: Message
 }
@@ -141,10 +163,51 @@ export function isMessageUpdateFrame(
   if (typeof value !== 'object' || value === null) return false
   const frame = value as Record<string, unknown>
   return (
-    (frame.type === 'messageEdited' || frame.type === 'messageDeleted') &&
+    frame.type === 'message_edited' &&
     typeof frame.conversationId === 'string' &&
     typeof frame.message === 'object' &&
     frame.message !== null
+  )
+}
+
+// "Fulano está/parou de digitar" numa conversa. Nunca volta para o próprio autor
+// (o servidor já filtra), então não precisa checar "sou eu". O servidor não
+// garante o `isTyping:false` — o cliente expira o indicador localmente (TTL).
+export type TypingFrame = {
+  type: 'typing'
+  conversationId: string
+  userId: string
+  isTyping: boolean
+}
+
+export function isTypingFrame(value: unknown): value is TypingFrame {
+  if (typeof value !== 'object' || value === null) return false
+  const frame = value as Record<string, unknown>
+  return (
+    frame.type === 'typing' &&
+    typeof frame.conversationId === 'string' &&
+    typeof frame.userId === 'string' &&
+    typeof frame.isTyping === 'boolean'
+  )
+}
+
+// Presença GLOBAL de um usuário (SEM conversationId — vale para todas as
+// conversas/inbox). `lastSeenAt` só vem preenchido quando `online: false`. Nunca
+// volta para o próprio autor.
+export type PresenceFrame = {
+  type: 'presence'
+  userId: string
+  online: boolean
+  lastSeenAt: string | null
+}
+
+export function isPresenceFrame(value: unknown): value is PresenceFrame {
+  if (typeof value !== 'object' || value === null) return false
+  const frame = value as Record<string, unknown>
+  return (
+    frame.type === 'presence' &&
+    typeof frame.userId === 'string' &&
+    typeof frame.online === 'boolean'
   )
 }
 
