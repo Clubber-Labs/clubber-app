@@ -7,8 +7,10 @@ import { ImageMessage } from './ImageMessage'
 import { VideoMessage } from './VideoMessage'
 import { VoiceMessage } from './VoiceMessage'
 import { MessageStatusIcon } from './MessageStatusIcon'
+import { MessageReactions } from './MessageReactions'
 import { attachmentReplyLabel } from '../utils/attachmentPreview'
 import { formatMessageTime } from '../utils/messageTime'
+import type { AggregatedReaction } from '../utils/reactions'
 import type { MessageMeta } from '../utils/groupMessages'
 import type { MessageStatus } from '../utils/messageStatus'
 import type { ChatMessage } from '../types'
@@ -20,6 +22,8 @@ type Props = {
   // Status da mensagem (só nas minhas): enviando/enviado/entregue/lido. null = não
   // é minha. Renderiza o check ao lado do horário.
   status: MessageStatus | null
+  // Reações já agregadas (chips); vazio = nenhuma.
+  reactions: AggregatedReaction[]
   onLongPress: () => void
   onPressImage: (url: string) => void
   onPressVideo: (url: string) => void
@@ -28,6 +32,8 @@ type Props = {
   onReply: () => void
   // Tocar na citação → rolar até a mensagem original (quando carregada).
   onPressReply?: () => void
+  // Tocar num chip de reação → toggle (remove a minha / troca pela nova).
+  onToggleReaction: (emoji: string) => void
 }
 
 export function MessageBubble({
@@ -35,12 +41,14 @@ export function MessageBubble({
   meta,
   isGroup,
   status,
+  reactions,
   onLongPress,
   onPressImage,
   onPressVideo,
   onRetry,
   onReply,
   onPressReply,
+  onToggleReaction,
 }: Props) {
   const { isMine } = meta
   const topMargin = meta.startsRun ? 'mt-3' : 'mt-0.5'
@@ -155,10 +163,22 @@ export function MessageBubble({
     </Pressable>
   )
 
+  const reactionsRow =
+    reactions.length > 0 ? (
+      <MessageReactions
+        reactions={reactions}
+        isMine={isMine}
+        onToggle={onToggleReaction}
+      />
+    ) : null
+
   // Mensagem de outro: gutter de avatar (grupo) + nome no topo do run.
   const showGutter = isGroup
   const content = isMine ? (
-    <View className={`px-3 ${topMargin} items-end bg-black`}>{bubble}</View>
+    <View className={`px-3 ${topMargin} items-end bg-black`}>
+      {bubble}
+      {reactionsRow}
+    </View>
   ) : (
     <View className={`px-3 ${topMargin} bg-black`}>
       {meta.showSenderLabel && (
@@ -181,6 +201,10 @@ export function MessageBubble({
           ))}
         {bubble}
       </View>
+      {/* Chips alinhados sob a bolha — recuados além do gutter do avatar em grupo. */}
+      {reactionsRow && (
+        <View className={showGutter ? 'ml-10' : ''}>{reactionsRow}</View>
+      )}
     </View>
   )
 

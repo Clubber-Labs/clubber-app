@@ -13,8 +13,16 @@ import {
 } from '../lib/realtimeCache'
 import { conversationsService } from '../services/conversationsService'
 import { useChatRealtimeStore } from '../store/chatRealtimeStore'
+import { usePresenceStore } from '../store/presenceStore'
+import { useTypingStore } from '../store/typingStore'
 import { chatKeys } from './cacheKeys'
-import type { MessageFrame, MessageUpdateFrame, ReceiptFrame } from '../types'
+import type {
+  MessageFrame,
+  MessageUpdateFrame,
+  PresenceFrame,
+  ReceiptFrame,
+  TypingFrame,
+} from '../types'
 
 // Ack de entrega é best-effort: o backend já marca "delivered" server-side ao
 // entregar a mensagem no socket (e emite o frame de volta), então este POST é só
@@ -58,6 +66,12 @@ export function useChatRealtime(myId: string, onAuthError: () => void) {
           queryClient.invalidateQueries({ queryKey: chatKeys.inbox })
         }
 
+        // Mensagem chegou → o autor parou de digitar (mesmo que o `false` não
+        // tenha vindo). Vale pra mim também (limpa eco do meu próprio typing).
+        useTypingStore
+          .getState()
+          .setTyping(conversationId, message.senderId, false)
+
         // Mensagem de outro: tela aberta → marca LIDA; fechada → confirma só a
         // ENTREGA. (markRead no backend também avança o watermark de entrega.)
         if (message.senderId !== myId) {
@@ -70,15 +84,26 @@ export function useChatRealtime(myId: string, onAuthError: () => void) {
         }
       },
       onMessageUpdate: ({ message }: MessageUpdateFrame) => {
-        // Edição/deleção de mensagem já existente — atualiza in-place por id.
+        // Edição de texto OU reação add/remove — reconcilia a Message inteira por
+        // id (idempotente com o update otimista e a resposta REST de reação).
         applyMessageUpdate(queryClient, message)
       },
       onReceipt: (frame: ReceiptFrame) => {
         // Entrega/leitura de um participante → avança watermark na conversa.
         applyReceipt(queryClient, frame)
       },
+      onTyping: ({ conversationId, userId, isTyping }: TypingFrame) => {
+        useTypingStore.getState().setTyping(conversationId, userId, isTyping)
+      },
+      onPresence: ({ userId, online, lastSeenAt }: PresenceFrame) => {
+        usePresenceStore.getState().setPresence(userId, online, lastSeenAt)
+        // Offline também encerra qualquer "digitando" pendente do usuário.
+        if (!online) useTypingStore.getState().clearUser(userId)
+      },
       onReconnect: () => {
-        // Sem replay no socket — rebusca inbox e a conversa ativa.
+        // Sem replay no socket — rebusca inbox e a conversa ativa via REST. Cobre
+        // também o retorno de background→foreground (o socket trata o próximo
+        // open após o stop como reconexão).
         queryClient.invalidateQueries({ queryKey: chatKeys.inbox })
         const active = useChatRealtimeStore.getState().activeConversationId
         if (active) {
@@ -87,6 +112,12 @@ export function useChatRealtime(myId: string, onAuthError: () => void) {
             queryKey: chatKeys.conversation(active),
           })
         }
+        // Presença NÃO é re-sincronizada aqui de propósito: não há snapshot no
+        // (re)connect e este onReconnect dispara a cada foreground — zerar faria a
+        // bolinha "online" sumir a cada troca de app (um parceiro que segue online
+        // não re-transiciona, então não voltaria). Manter o último estado conhecido
+        // é melhor no caso comum; a leve obsolescência se auto-corrige na próxima
+        // transição (ver nota em presenceStore).
       },
       onAuthError,
     }

@@ -10,8 +10,10 @@ import {
 import { useMessages } from '../hooks/useMessages'
 import { MessageBubble } from './MessageBubble'
 import { DateSeparator } from './DateSeparator'
+import { TypingIndicator } from './TypingIndicator'
 import { buildMessageMeta } from '../utils/groupMessages'
 import { messageStatus } from '../utils/messageStatus'
+import { aggregateReactions } from '../utils/reactions'
 import type { ChatMessage, Participant } from '../types'
 
 type Props = {
@@ -21,11 +23,14 @@ type Props = {
   // Participantes (com watermarks lastReadAt/lastDeliveredAt) → status (check)
   // de cada mensagem minha.
   participants: Participant[]
+  // Rótulo de "digitando…" já resolvido; vazio = ninguém digitando.
+  typingLabel: string
   onLongPressMessage: (message: ChatMessage) => void
   onPressImage: (url: string) => void
   onPressVideo: (url: string) => void
   onRetry: (message: ChatMessage) => void
   onReplyMessage: (message: ChatMessage) => void
+  onToggleReaction: (message: ChatMessage, emoji: string) => void
 }
 
 export function MessageList({
@@ -33,11 +38,13 @@ export function MessageList({
   myId,
   isGroup,
   participants,
+  typingLabel,
   onLongPressMessage,
   onPressImage,
   onPressVideo,
   onRetry,
   onReplyMessage,
+  onToggleReaction,
 }: Props) {
   const {
     messages,
@@ -109,10 +116,12 @@ export function MessageList({
           <Text className="text-zinc-400 text-center">Diga olá 👋</Text>
         </View>
       }
+      ListHeaderComponent={<TypingIndicator label={typingLabel} />}
       renderItem={({ item, index }) => {
         const m = meta[index]
         const status = messageStatus(item, myId, others)
         const replyId = item.replyTo?.id
+        const reactions = aggregateReactions(item.reactions, myId)
         return (
           <View>
             {m.showDateSeparator && <DateSeparator iso={item.createdAt} />}
@@ -121,6 +130,7 @@ export function MessageList({
               meta={m}
               isGroup={isGroup}
               status={status}
+              reactions={reactions}
               onLongPress={() => onLongPressMessage(item)}
               onPressImage={onPressImage}
               onPressVideo={onPressVideo}
@@ -129,6 +139,7 @@ export function MessageList({
               onPressReply={
                 replyId ? () => scrollToMessage(replyId) : undefined
               }
+              onToggleReaction={emoji => onToggleReaction(item, emoji)}
             />
           </View>
         )
