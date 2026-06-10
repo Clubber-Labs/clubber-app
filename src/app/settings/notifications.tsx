@@ -1,0 +1,142 @@
+import { useState } from 'react'
+import { ScrollView, Text, View } from 'react-native'
+import { useRouter } from 'expo-router'
+import * as Location from 'expo-location'
+import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
+import { useConsent } from '@/features/privacy/hooks/useConsent'
+import {
+  useMyProfile,
+  useUpdateProfile,
+} from '@/features/users/hooks/useProfile'
+import { useNotificationPrefs } from '@/features/notifications/hooks/useNotificationPrefs'
+import { useOsPermissions } from '@/features/notifications/hooks/useOsPermissions'
+import {
+  enablePush,
+  disablePush,
+} from '@/features/notifications/lib/pushRegistration'
+import { syncLocationOnce } from '@/features/notifications/lib/locationSync'
+import { RadiusSlider } from '@/features/notifications/components/RadiusSlider'
+import { OsPermissionWarning } from '@/features/notifications/components/OsPermissionWarning'
+import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
+import { SettingsRow } from '@/shared/components/SettingsRow'
+
+export default function NotificationSettingsScreen() {
+  const router = useRouter()
+  const { consent, updateConsent } = useConsent()
+  const osPermissions = useOsPermissions()
+  const { notifyRadiusKm, saveRadius } = useNotificationPrefs()
+  const { data: profile } = useMyProfile()
+  const updateProfile = useUpdateProfile(profile?.id ?? '')
+
+  // Otimista: o chip reflete o toque na hora; em erro volta pro estado do
+  // perfil (PUT substitui a lista completa — ver UpdateMePayload).
+  const [localCategories, setLocalCategories] = useState<string[] | null>(null)
+  const categories = localCategories ?? profile?.preferredCategories ?? []
+
+  // LGPD: o opt-in é registrado ANTES de qualquer prompt do SO; sem opt-in,
+  // nenhuma API de push/localização é chamada.
+  async function handlePushToggle(value: boolean) {
+    await updateConsent({ pushNotifications: value })
+    if (value) await enablePush()
+    else await disablePush()
+    await osPermissions.refresh()
+  }
+
+  async function handleLocationToggle(value: boolean) {
+    await updateConsent({ locationPrecise: value })
+    if (value) {
+      const permission = await Location.requestForegroundPermissionsAsync()
+      if (permission.granted) void syncLocationOnce()
+    }
+    await osPermissions.refresh()
+  }
+
+  function handleCategoriesChange(next: string[]) {
+    if (!profile) return
+    setLocalCategories(next)
+    updateProfile.mutate(
+      { preferredCategories: next },
+      {
+        onError: () => setLocalCategories(profile.preferredCategories ?? []),
+      },
+    )
+  }
+
+  return (
+    <ScrollView
+      className="flex-1 bg-black"
+      contentContainerStyle={{ paddingBottom: 40 }}
+      showsVerticalScrollIndicator={false}
+    >
+      <View className="px-4 pt-6 pb-4 border-b border-zinc-800">
+        <Text className="text-xl font-bold text-white">Notificações</Text>
+        <Text className="text-xs text-zinc-500 mt-1">
+          Tudo é opcional e desligado por padrão. Você pode mudar quando quiser.
+        </Text>
+      </View>
+
+      <View className="mx-4 mt-4 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden">
+        <ConsentToggleRow
+          label="Notificações push"
+          description="Enviar notificações push neste aparelho sobre convites, atividade da sua rede e eventos perto de você."
+          value={consent.pushNotifications}
+          onChange={v => void handlePushToggle(v)}
+        />
+        {consent.pushNotifications && osPermissions.push === 'denied' && (
+          <OsPermissionWarning message="A permissão de notificações está negada no sistema — o push não chega até você reativá-la." />
+        )}
+        <ConsentToggleRow
+          label="Eventos perto de você"
+          description="Usar sua localização aproximada (~1km, calculada no aparelho) para avisar de eventos próximos. A posição exata nunca sai do seu celular."
+          value={consent.locationPrecise}
+          onChange={v => void handleLocationToggle(v)}
+          isLast={
+            !(consent.locationPrecise && osPermissions.location === 'denied')
+          }
+        />
+        {consent.locationPrecise && osPermissions.location === 'denied' && (
+          <OsPermissionWarning message="A permissão de localização está negada no sistema — os avisos de proximidade não funcionam sem ela." />
+        )}
+      </View>
+
+      <View className="mx-4 mt-4 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-4">
+        <RadiusSlider
+          value={notifyRadiusKm}
+          onCommit={km => void saveRadius(km)}
+          disabled={!consent.locationPrecise}
+        />
+        <Text className="text-xs text-zinc-500 mt-1">
+          Distância máxima de um evento novo para você ser avisado.
+        </Text>
+      </View>
+
+      <View className="mx-4 mt-4 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-4 gap-2">
+        <Text className="text-sm font-semibold text-white">
+          Categorias preferidas
+        </Text>
+        <Text className="text-xs text-zinc-500">
+          Avisos de eventos próximos só chegam para categorias marcadas aqui —
+          sem nenhuma selecionada, você não recebe avisos de proximidade.
+        </Text>
+        <CategoryMultiSelect
+          value={categories}
+          onChange={handleCategoriesChange}
+        />
+      </View>
+
+      <View className="mt-6">
+        <SettingsRow
+          label="Privacidade e consentimentos"
+          description="Gerenciar todos os consentimentos, exportar dados e ver a política de privacidade"
+          icon="shield-checkmark-outline"
+          onPress={() => router.push('/profile/privacy')}
+        />
+      </View>
+      <Text className="px-4 mt-3 text-xs text-zinc-600 leading-4">
+        Sua localização aproximada expira no servidor após 90 dias sem
+        atualização e é apagada imediatamente se você desligar o uso de
+        localização. Notificações antigas também expiram no servidor.
+      </Text>
+    </ScrollView>
+  )
+}
