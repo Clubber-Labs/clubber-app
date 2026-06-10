@@ -25,32 +25,32 @@ export function MapZoomControls({
         accessibilityLabel={
           densityActive ? 'Ocultar densidade' : 'Mostrar densidade'
         }
-        className={`w-12 h-12 rounded-full items-center justify-center border ${densityActive ? 'bg-orange-600 border-orange-500' : 'bg-zinc-900 border-zinc-800'}`}
+        className={`w-16 h-16 rounded-full items-center justify-center border ${densityActive ? 'bg-red-600 border-red-500' : 'bg-zinc-900 border-zinc-800'}`}
       >
         <Ionicons
           name="flame"
-          size={22}
-          color={densityActive ? '#ffffff' : '#f97316'}
+          size={28}
+          color={densityActive ? '#ffffff' : '#dc2626'}
         />
       </Pressable>
       <Pressable
         onPress={onZoomIn}
-        className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 items-center justify-center"
+        className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 items-center justify-center"
       >
-        <Ionicons name="add" size={24} color="#f4f4f5" />
+        <Ionicons name="add" size={28} color="#f4f4f5" />
       </Pressable>
       <Pressable
         onPress={onZoomOut}
-        className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 items-center justify-center"
+        className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 items-center justify-center"
       >
-        <Ionicons name="remove" size={24} color="#f4f4f5" />
+        <Ionicons name="remove" size={28} color="#f4f4f5" />
       </Pressable>
       {showRecenter && (
         <Pressable
           onPress={onRecenter}
-          className="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 items-center justify-center"
+          className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 items-center justify-center"
         >
-          <Ionicons name="locate" size={22} color="#8b5cf6" />
+          <Ionicons name="locate" size={28} color="#8b5cf6" />
         </Pressable>
       )}
     </View>

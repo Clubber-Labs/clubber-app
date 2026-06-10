@@ -66,8 +66,7 @@ function isCancellationError(error: unknown): boolean {
   if (!error || typeof error !== 'object') return false
   const code = (error as { code?: string }).code
   return (
-    code === statusCodes.SIGN_IN_CANCELLED ||
-    code === statusCodes.IN_PROGRESS
+    code === statusCodes.SIGN_IN_CANCELLED || code === statusCodes.IN_PROGRESS
   )
 }
 

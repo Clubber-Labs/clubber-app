@@ -20,20 +20,41 @@ Pendências e configurações que precisam ser revisadas antes do primeiro build
 
 **Apontado por:** code review do PR feat/explore-screen.
 
-### Push Notifications — `expo-notifications` removido temporariamente
+### Push Notifications — iOS bloqueado por falta do Apple Developer Program (pago)
 
-**Contexto:** o package `expo-notifications` foi removido porque o Apple Developer profile não tem Push Notifications capability registrada, e o config-plugin do package adicionava `aps-environment` automaticamente, quebrando builds em device físico (`Provisioning Profile does not support the Push Notifications capability`) e versionando um valor `development` indevido no entitlements.
+**Estado atual (branch feat/notificacoes):** `expo-notifications` foi reintegrado e a feature está completa em `src/features/notifications/` (registro de token gated por consentimento, WS foreground, central in-app, deep-link de tap). O que falta pra push funcionar no iOS é só infraestrutura Apple — exige o Apple Developer Program **pago** (push não existe em personal team).
 
-**Quando reintegrar:**
+**Workaround pra desenvolvimento local em device iOS (sem conta paga):**
 
-1. Habilitar **Push Notifications** capability no Apple Developer Portal (`developer.apple.com` → Identifiers → `com.netobonato.connectaimobile` → Capabilities → Push Notifications)
-2. Reinstalar package: `pnpm add expo-notifications`
-3. Recriar `src/features/notifications/` (hook + service) — esqueleto antigo no histórico do git: `git show <hash>:src/features/notifications/hooks/usePushNotifications.ts`
-4. Consumir `usePushNotifications` no layout autenticado (provavelmente `_layout.tsx` ou tab layout)
-5. Rodar `npx expo prebuild --platform ios` pra regenerar entitlements com `aps-environment`
-6. **Resolver o item acima** (`aps-environment` Debug vs Release) ANTES do primeiro build de produção, senão push falha em release
+1. No `.env.local`: `IOS_DISABLE_PUSH=1`
+2. `pnpm exec expo prebuild --no-install` — remove o entitlement `aps-environment` (plugin condicional em `app.config.js`)
+3. `pnpm run ios --device` builda normal; tudo funciona menos push (o app degrada gracioso — `getExpoPushTokenAsync` falha dentro de try/catch e o registro vira no-op)
+
+⚠️ **Não commitar** o `ios/` gerado com o flag ativo (`git checkout ios/` antes de commitar) e **nunca** setar `IOS_DISABLE_PUSH` em build EAS/produção — sairia release sem push.
+
+**Quando assinar o Apple Developer Program:**
+
+1. Remover `IOS_DISABLE_PUSH` do `.env.local` e rodar `pnpm exec expo prebuild`
+2. Registrar a capability: Xcode → target → Signing & Capabilities → **+ Capability → Push Notifications** (ou portal: Identifiers → `com.netobonato.connectaimobile` → Push Notifications; ou um `eas build`, que sincroniza capabilities sozinho)
+3. Subir a APNs key pro serviço de push do Expo: `eas credentials -p ios`
+4. **Resolver o item acima** (`aps-environment` Debug vs Release) ANTES do primeiro build de produção, senão push falha em release
 
 ## Android
+
+### Push (FCM) — pré-requisito pra push chegar no Android
+
+**Contexto:** o cliente registra o Expo push token, mas a entrega ao device passa pelo FCM — sem as credenciais do Firebase configuradas, o push simplesmente não chega (o build funciona normal). Tudo gratuito.
+
+**Setup (uma vez):**
+
+1. [console.firebase.google.com](https://console.firebase.google.com) → criar projeto → adicionar app **Android** com package `com.netobonato.connectaimobile` → baixar `google-services.json` pra **raiz do repo** (está no `.gitignore` — não commitar)
+2. No `.env.local`: `GOOGLE_SERVICES_JSON=./google-services.json` (o `app.config.js` injeta no prebuild via `android.googleServicesFile`)
+3. Entrega via serviço de push do Expo: Firebase → ⚙️ Configurações do projeto → **Contas de serviço** → gerar chave privada (JSON) → `eas credentials -p android` → upload da **FCM V1 service account key**
+4. `pnpm exec expo prebuild` + `pnpm exec expo run:android`
+
+**Pra builds EAS:** configurar `GOOGLE_SERVICES_JSON` como file env var no EAS (o prebuild do servidor precisa do arquivo — o local gitignored não sobe).
+
+**Teste end-to-end** (Definição de Pronto da feature): backend com `NOTIFICATIONS_ENABLED=true` + Redis ativos; dev build obrigatório (Expo Go não suporta push); fluxo: opt-in → token registrado (`POST /devices` 201) → evento criado perto com categoria preferida → push com app fechado → tap abre o evento; com app aberto, chega pelo WS sem banner duplicado.
 
 ### Login social (Google + Facebook) — habilitar pra Android
 
@@ -135,3 +156,8 @@ Cenários a testar (mesmos do iOS):
 - [ ] Smoke test no simulador iOS e device físico Android
 - [ ] Atribuição da Mapbox/OpenStreetMap acessível na tela "Sobre" (perfil → Sobre)
 - [ ] Login social validado em Android (ver seção "Android" acima) — se ainda não foi feito
+- [ ] `IOS_DISABLE_PUSH` **ausente** do ambiente de build (é só workaround local — release com ele sai sem push iOS)
+- [ ] Push iOS: Apple Developer Program ativo + capability registrada + APNs key no Expo (`eas credentials -p ios`)
+- [ ] Push Android: FCM V1 key no Expo (`eas credentials -p android`) + `GOOGLE_SERVICES_JSON` configurado no EAS
+- [ ] Backend de produção com `NOTIFICATIONS_ENABLED=true` + Redis (sem isso a fila de push/fanout é no-op)
+- [ ] Fluxo de push validado em device Android (opt-in → token → push com app fechado → tap abre o evento)

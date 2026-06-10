@@ -14,13 +14,22 @@ import { Ionicons } from '@expo/vector-icons'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { queryClient } from '@/shared/lib/queryClient'
 import { ConfirmProvider } from '@/shared/lib/confirm'
+import { OpenInMapsProvider } from '@/shared/lib/openInMaps'
 import { BannerProvider } from '@/shared/lib/banner'
 import { useAuthStore } from '@/features/auth/store/authStore'
+import {
+  useConsentStore,
+  selectNeedsConsent,
+  selectNeedsVersionBump,
+  selectConsentHydrated,
+} from '@/features/privacy/store/consentStore'
+import { CONSENT_VERSION } from '@/features/privacy/services/consentService'
 import { useRestoreSession } from '@/features/auth/hooks/useRestoreSession'
 import { endSession } from '@/features/auth/lib/session'
 import { initFacebookSDK } from '@/features/auth/lib/facebookLogin'
 import { SessionUnavailable } from '@/features/auth/components/SessionUnavailable'
 import { ChatRealtimeMount } from '@/features/chat/components/ChatRealtimeMount'
+import { NotificationsMount } from '@/features/notifications/components/NotificationsMount'
 import { GlobalHeader } from '@/shared/components/GlobalHeader'
 
 // Redirecionamentos por status. 'loading'/'offline' são tratados pelos overlays
@@ -32,29 +41,60 @@ function AuthGuard() {
   const segments = useSegments()
   const router = useRouter()
 
+  const needsConsent = useConsentStore(selectNeedsConsent)
+  const needsVersionBump = useConsentStore(s =>
+    selectNeedsVersionBump(s, CONSENT_VERSION),
+  )
+
   useEffect(() => {
     if (status === 'loading' || status === 'offline') return
 
     const inAuthGroup = segments[0] === '(auth)'
     const onCompleteProfile =
       inAuthGroup && (segments as string[])[1] === 'complete-profile'
+    const onConsentScreen =
+      inAuthGroup && (segments as string[])[1] === 'consent'
 
     if (status === 'unauthenticated' && !inAuthGroup) {
       router.replace('/(auth)/login')
-    } else if (
-      status === 'authenticated' &&
-      profileIncomplete &&
-      !onCompleteProfile
-    ) {
+      return
+    }
+
+    if (status === 'authenticated' && profileIncomplete && !onCompleteProfile) {
       router.replace('/(auth)/complete-profile')
-    } else if (
+      return
+    }
+
+    // Gate de consentimento: usuário autenticado com perfil completo mas sem consentimento
+    // (novo usuário) ou com versão desatualizada (version bump) → tela de consent.
+    if (
       status === 'authenticated' &&
       !profileIncomplete &&
+      (needsConsent || needsVersionBump) &&
+      !onConsentScreen
+    ) {
+      router.replace('/(auth)/consent')
+      return
+    }
+
+    // Autenticado, com perfil e consentimento OK → sai do grupo auth
+    if (
+      status === 'authenticated' &&
+      !profileIncomplete &&
+      !needsConsent &&
+      !needsVersionBump &&
       inAuthGroup
     ) {
       router.replace('/(tabs)/feed')
     }
-  }, [status, profileIncomplete, segments, router])
+  }, [
+    status,
+    profileIncomplete,
+    needsConsent,
+    needsVersionBump,
+    segments,
+    router,
+  ])
 
   return null
 }
@@ -73,15 +113,22 @@ export default function RootLayout() {
     initFacebookSDK()
   }, [])
 
-  // 4401 no socket = token inválido e sem rota de refresh → encerra a sessão
-  // (mesmo caminho do interceptor REST 401).
-  const handleChatAuthError = useCallback(() => {
+  // 4401 em qualquer socket (chat/notificações) = token inválido e sem rota
+  // de refresh → encerra a sessão (mesmo caminho do interceptor REST 401).
+  const handleSocketAuthError = useCallback(() => {
     endSession({ expired: true })
   }, [])
 
   // Esconde GlobalHeader durante o fluxo de completar perfil — a tela
   // ainda está em (auth), mas isAuthenticated já é true.
-  const showHeader = isAuthenticated && !profileIncomplete
+  const consentHydrated = useConsentStore(selectConsentHydrated)
+  const needsConsentRoot = useConsentStore(selectNeedsConsent)
+  const needsVersionBumpRoot = useConsentStore(s =>
+    selectNeedsVersionBump(s, CONSENT_VERSION),
+  )
+  const onConsentFlow =
+    !consentHydrated || needsConsentRoot || needsVersionBumpRoot
+  const showHeader = isAuthenticated && !profileIncomplete && !onConsentFlow
   const chatActive = isAuthenticated && !profileIncomplete && !!userId
 
   // Publishable key é pública por natureza (pk_) — sem ela a PaymentSheet
@@ -95,37 +142,42 @@ export default function RootLayout() {
         <QueryClientProvider client={queryClient}>
           <StripeProvider publishableKey={stripePublishableKey}>
             <ConfirmProvider>
-              <BannerProvider>
-                <StatusBar style="light" />
-                <SafeAreaView
-                  style={{ flex: 1, backgroundColor: '#000000' }}
-                  edges={['top']}
-                >
-                  {showHeader && <GlobalHeader />}
-                  <View className="flex-1 bg-black">
-                    <Stack
-                      screenOptions={{
-                        headerShown: false,
-                        contentStyle: { backgroundColor: '#000000' },
-                      }}
-                    />
-                    {/* Gate de sessão: bloqueia as telas até /me validar. */}
-                    {status === 'loading' && (
-                      <View className="absolute inset-0 bg-black" />
-                    )}
-                    {status === 'offline' && (
-                      <SessionUnavailable onRetry={retry} />
-                    )}
-                  </View>
-                </SafeAreaView>
-                <AuthGuard />
-                {chatActive && userId && (
-                  <ChatRealtimeMount
-                    myId={userId}
-                    onAuthError={handleChatAuthError}
-                  />
-                )}
-              </BannerProvider>
+              <OpenInMapsProvider>
+                <BannerProvider>
+                  <StatusBar style="light" />
+                  <SafeAreaView
+                    style={{ flex: 1, backgroundColor: '#000000' }}
+                    edges={['top']}
+                  >
+                    {showHeader && <GlobalHeader />}
+                    <View className="flex-1 bg-black">
+                      <Stack
+                        screenOptions={{
+                          headerShown: false,
+                          contentStyle: { backgroundColor: '#000000' },
+                        }}
+                      />
+                      {/* Gate de sessão: bloqueia as telas até /me validar. */}
+                      {status === 'loading' && (
+                        <View className="absolute inset-0 bg-black" />
+                      )}
+                      {status === 'offline' && (
+                        <SessionUnavailable onRetry={retry} />
+                      )}
+                    </View>
+                  </SafeAreaView>
+                  <AuthGuard />
+                  {chatActive && userId && (
+                    <>
+                      <ChatRealtimeMount
+                        myId={userId}
+                        onAuthError={handleSocketAuthError}
+                      />
+                      <NotificationsMount onAuthError={handleSocketAuthError} />
+                    </>
+                  )}
+                </BannerProvider>
+              </OpenInMapsProvider>
             </ConfirmProvider>
           </StripeProvider>
         </QueryClientProvider>

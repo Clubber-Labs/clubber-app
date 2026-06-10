@@ -10,6 +10,9 @@ type Props = {
 }
 
 export function StepPersonal({ control, errors }: Props) {
+  const maxBirthdate = new Date()
+  maxBirthdate.setFullYear(maxBirthdate.getFullYear() - 16)
+
   return (
     <View className="gap-5">
       <View className="gap-1">
@@ -38,9 +41,7 @@ export function StepPersonal({ control, errors }: Props) {
               )}
             />
             {errors.name && (
-              <Text className="text-white text-xs">
-                {errors.name.message}
-              </Text>
+              <Text className="text-white text-xs">{errors.name.message}</Text>
             )}
           </View>
 
@@ -80,7 +81,7 @@ export function StepPersonal({ control, errors }: Props) {
                 value={value}
                 onChange={onChange}
                 placeholder="Selecione sua data de nascimento"
-                maximumDate={new Date()}
+                maximumDate={maxBirthdate}
                 hasError={!!errors.birthdate}
               />
             )}

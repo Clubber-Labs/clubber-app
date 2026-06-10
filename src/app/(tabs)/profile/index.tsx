@@ -68,6 +68,16 @@ export default function ProfileScreen() {
     return <ProfileEmpty message="Não foi possível carregar o perfil." />
 
   const drawerItems: DrawerItem[] = [
+    // Área de moderação: só para ADMIN (role vem de /users/me).
+    ...(profile.role === 'ADMIN'
+      ? [
+          {
+            label: 'Painel de moderação',
+            icon: 'shield-outline' as const,
+            onPress: () => router.push('/admin/reports'),
+          },
+        ]
+      : []),
     ...(profile.isPrivate
       ? [
           {
@@ -85,6 +95,16 @@ export default function ProfileScreen() {
         router.push(profile.isPremium ? '/billing/manage' : '/billing/upgrade'),
     },
     {
+      label: 'Configurações',
+      icon: 'settings-outline' as const,
+      onPress: () => router.push('/settings'),
+    },
+    {
+      label: 'Privacidade',
+      icon: 'shield-checkmark-outline' as const,
+      onPress: () => router.push('/profile/privacy'),
+    },
+    {
       label: 'Sobre o app',
       icon: 'information-circle-outline',
       onPress: () => router.push('/about'),
@@ -98,7 +118,7 @@ export default function ProfileScreen() {
   ]
 
   const drawerHeader = (
-    <View className="pt-24 pb-4 px-5 border-b border-zinc-900">
+    <View className="pt-5 pb-4 px-5 border-b border-zinc-900">
       <Text className="text-white font-bold text-lg">
         {profile.name} {profile.lastname}
       </Text>

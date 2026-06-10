@@ -1,12 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Animated,
+  BackHandler,
   Dimensions,
-  Modal,
   Pressable,
   Text,
   View,
 } from 'react-native'
+import { useFocusEffect } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import type { ComponentProps } from 'react'
 import { useProfileDrawer } from '../store/profileDrawerStore'
@@ -77,6 +78,22 @@ export function ProfileDrawer({ items, header }: Props) {
     })
   }, [open, translateX, backdropOpacity])
 
+  // O drawer vive na árvore do app (não num <Modal>), pra manter o header e a
+  // tab bar clicáveis. Em troca, o botão físico de voltar do Android — antes
+  // coberto pelo onRequestClose do Modal — precisa fechar o drawer aqui.
+  useEffect(() => {
+    if (!open) return
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      setOpen(false)
+      return true
+    })
+    return () => sub.remove()
+  }, [open, setOpen])
+
+  // Estado é global (Zustand); ao trocar de aba com o drawer aberto, fecha no
+  // blur pra não reaparecer aberto ao voltar ao perfil.
+  useFocusEffect(useCallback(() => () => setOpen(false), [setOpen]))
+
   function close() {
     setOpen(false)
   }
@@ -91,60 +108,54 @@ export function ProfileDrawer({ items, header }: Props) {
     return typeof badge === 'string' && badge.length > 0
   }
 
+  if (!isVisible) return null
+
   return (
-    <Modal
-      visible={isVisible}
-      transparent
-      animationType="none"
-      onRequestClose={close}
-      statusBarTranslucent
-    >
-      <View className="flex-1 flex-row">
-        <Animated.View
-          style={{
-            transform: [{ translateX }],
-            width: DRAWER_WIDTH,
-          }}
-          className="bg-zinc-950 border-r border-zinc-800 h-full"
-        >
-          {header}
-          <View className="py-2">
-            {items.map((item, i) => (
-              <Pressable
-                key={item.label}
-                onPress={() => handleItemPress(item)}
-                className={`flex-row items-center justify-between px-5 py-4 ${i > 0 ? 'border-t border-zinc-900' : ''}`}
-              >
-                <View className="flex-row items-center gap-3">
-                  <Ionicons
-                    name={item.icon}
-                    size={20}
-                    color={item.destructive ? '#ef4444' : '#e5e7eb'}
-                  />
-                  <Text
-                    className={`text-base font-medium ${item.destructive ? 'text-red-400' : 'text-white'}`}
-                  >
-                    {item.label}
+    <View className="absolute inset-0 flex-row">
+      <Animated.View
+        style={{
+          transform: [{ translateX }],
+          width: DRAWER_WIDTH,
+        }}
+        className="bg-zinc-950 border-r border-zinc-800 h-full"
+      >
+        {header}
+        <View className="py-2">
+          {items.map((item, i) => (
+            <Pressable
+              key={item.label}
+              onPress={() => handleItemPress(item)}
+              className={`flex-row items-center justify-between px-5 py-4 ${i > 0 ? 'border-t border-zinc-900' : ''}`}
+            >
+              <View className="flex-row items-center gap-3">
+                <Ionicons
+                  name={item.icon}
+                  size={20}
+                  color={item.destructive ? '#ef4444' : '#e5e7eb'}
+                />
+                <Text
+                  className={`text-base font-medium ${item.destructive ? 'text-red-400' : 'text-white'}`}
+                >
+                  {item.label}
+                </Text>
+              </View>
+              {shouldShowBadge(item.badge) && (
+                <View className="bg-violet-600 rounded-full min-w-5 h-5 px-1.5 items-center justify-center">
+                  <Text className="text-white text-xs font-bold">
+                    {item.badge}
                   </Text>
                 </View>
-                {shouldShowBadge(item.badge) && (
-                  <View className="bg-violet-600 rounded-full min-w-5 h-5 px-1.5 items-center justify-center">
-                    <Text className="text-white text-xs font-bold">
-                      {item.badge}
-                    </Text>
-                  </View>
-                )}
-              </Pressable>
-            ))}
-          </View>
-        </Animated.View>
-        <Animated.View
-          style={{ opacity: backdropOpacity, flex: 1 }}
-          className="bg-black/60"
-        >
-          <Pressable onPress={close} className="flex-1" />
-        </Animated.View>
-      </View>
-    </Modal>
+              )}
+            </Pressable>
+          ))}
+        </View>
+      </Animated.View>
+      <Animated.View
+        style={{ opacity: backdropOpacity, flex: 1 }}
+        className="bg-black/60"
+      >
+        <Pressable onPress={close} className="flex-1" />
+      </Animated.View>
+    </View>
   )
 }

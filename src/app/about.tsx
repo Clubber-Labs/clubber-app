@@ -42,8 +42,8 @@ export default function AboutScreen() {
         </Text>
         <Text className="text-sm text-zinc-300 leading-5">
           Os mapas exibidos no app são fornecidos pela Mapbox e usam dados do
-          OpenStreetMap, mantidos por uma comunidade de colaboradores ao redor do
-          mundo.
+          OpenStreetMap, mantidos por uma comunidade de colaboradores ao redor
+          do mundo.
         </Text>
         <View className="bg-zinc-900 border border-zinc-800 rounded-xl px-4">
           <LinkRow label="© Mapbox" url="https://www.mapbox.com/about/maps/" />

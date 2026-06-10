@@ -1,6 +1,6 @@
-import { forwardRef } from 'react'
-import { View, TextInput, Pressable, ActivityIndicator } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { forwardRef } from 'react'
+import { ActivityIndicator, Pressable, TextInput, View } from 'react-native'
 
 type Props = {
   value: string
@@ -19,21 +19,22 @@ export const SearchInput = forwardRef<TextInput, Props>(function SearchInput(
 
   return (
     <View className="relative">
-      <View className="absolute left-3 top-0 bottom-0 justify-center z-10">
-        <Ionicons name="search" size={18} color="#71717a" />
+      <View className="absolute left-3 top-0 bottom-0 justify-center items-center z-10">
+        <Ionicons name="search" size={18} color="#ffffff" />
       </View>
       <TextInput
         ref={ref}
         value={value}
         onChangeText={onChange}
         placeholder={placeholder}
-        placeholderTextColor="#71717a"
+        placeholderTextColor="#ffffff"
         autoCapitalize="none"
         autoCorrect={false}
         returnKeyType="search"
-        className="bg-zinc-900 border border-zinc-800 rounded-xl pl-10 pr-12 py-3 text-base text-white"
+        textAlignVertical="center"
+        className="bg-black rounded-3xl pl-10 pr-12 py-3 text-base text-white"
       />
-      <View className="absolute right-3 top-0 bottom-0 justify-center">
+      <View className="absolute right-3 top-0 bottom-0 justify-center items-center">
         {loading ? (
           <ActivityIndicator size="small" color="#8b5cf6" />
         ) : hasText ? (

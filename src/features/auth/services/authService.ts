@@ -13,4 +13,8 @@ export const authService = {
   me: () => api.get('/users/me').then(r => r.data),
   socialLogin: (data: SocialLoginPayload): Promise<SocialLoginResponse> =>
     api.post('/auth/social', data).then(r => r.data),
+  forgotPassword: (email: string) =>
+    api.post('/auth/forgot-password', { email }).then(r => r.data),
+  resetPassword: (data: { email: string; code: string; newPassword: string }) =>
+    api.post('/auth/reset-password', data).then(r => r.data),
 }

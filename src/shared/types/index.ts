@@ -178,6 +178,21 @@ export type EventPost = {
 
 export type FollowStatus = 'PENDING' | 'ACCEPTED' | null
 
+// Papel do usuário na plataforma. Só /users/me expõe `role` — /users/:id (rota
+// pública) NÃO retorna, por isso é opcional em UserProfile e deve ser lido
+// apenas do próprio perfil (useMyProfile / useIsAdmin). Premium NÃO é role — é
+// um campo separado (isPremium) no backend.
+export type UserRole = 'USER' | 'ADMIN'
+
+// Ciclo de vida da conta (soft-delete estilo Instagram/LGPD). Computado pelo
+// backend; nunca derivar no client. ANONYMIZED é terminal e nunca chega como 200
+// em /users/me (a sessão vira 401 'Sessão inválida').
+export type AccountStatus =
+  | 'ACTIVE'
+  | 'DEACTIVATED'
+  | 'PENDING_DELETION'
+  | 'ANONYMIZED'
+
 export type UserProfile = {
   id: string
   name: string
@@ -192,6 +207,8 @@ export type UserProfile = {
   phone?: string
   email?: string
   createdAt: string
+  // Presente só em /users/me. Ausente em perfis de terceiros (/users/:id).
+  role?: UserRole
   followStatus?: FollowStatus
   eventsCount: number
   followersCount: number
@@ -199,6 +216,16 @@ export type UserProfile = {
   // Values do enum EventCategory (MAIÚSCULAS). Sempre array; vazio = []. Não
   // incluído nos selects reduzidos (/users e /users/search), por isso opcional.
   preferredCategories?: string[]
+  // Raio de interesse das notificações de proximidade (km). Presente só em
+  // /users/me e só em backends que já expõem o campo no select privado.
+  notifyRadiusKm?: number
+  // Ciclo de vida da conta — presentes só em /users/me e no user de /auth/*
+  // (mesma razão de role?). Em /users/:id são ausentes. Ramificar só nos valores
+  // inativos explícitos; undefined = desconhecido/skip.
+  hasPassword?: boolean
+  accountStatus?: AccountStatus
+  deactivatedAt?: string | null
+  scheduledDeletionAt?: string | null
 }
 
 export type UserEventSummary = {

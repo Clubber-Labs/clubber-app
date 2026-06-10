@@ -7,9 +7,15 @@ import {
   Pressable,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { useComments, useAddComment, useDeleteComment } from '../hooks/useComments'
+import {
+  useComments,
+  useAddComment,
+  useDeleteComment,
+} from '../hooks/useComments'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useConfirm } from '@/shared/lib/confirm'
+import { useReportFlow } from '@/features/reports/hooks/useReportFlow'
+import { ReportReasonSheet } from '@/features/reports/components/ReportReasonSheet'
 import { CommentItem } from './CommentItem'
 
 type Props = {
@@ -20,6 +26,7 @@ export function InlineCommentsSection({ eventId }: Props) {
   const [text, setText] = useState('')
   const myId = useAuthStore(s => s.userId)
   const confirm = useConfirm()
+  const report = useReportFlow()
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
     useComments(eventId)
   const addComment = useAddComment(eventId)
@@ -66,6 +73,15 @@ export function InlineCommentsSection({ eventId }: Props) {
                     ? () => askDelete(comment.id)
                     : undefined
                 }
+                onReport={
+                  comment.author.id !== myId
+                    ? () =>
+                        report.requestReport({
+                          type: 'comment',
+                          id: comment.id,
+                        })
+                    : undefined
+                }
               />
             ))
           )}
@@ -110,6 +126,12 @@ export function InlineCommentsSection({ eventId }: Props) {
           )}
         </Pressable>
       </View>
+
+      <ReportReasonSheet
+        target={report.target}
+        onClose={report.close}
+        onSubmit={report.submit}
+      />
     </View>
   )
 }

@@ -39,7 +39,10 @@ export function PostItem({ eventId, post }: Props) {
           className="flex-row items-center gap-2 flex-1"
           accessibilityLabel={`Ver perfil de ${post.author.username}`}
         >
-          <UserAvatar name={post.author.name} avatarUrl={post.author.avatarUrl} />
+          <UserAvatar
+            name={post.author.name}
+            avatarUrl={post.author.avatarUrl}
+          />
           <View className="flex-1">
             <Text className="text-sm font-semibold text-white">
               {post.author.name} {post.author.lastname}

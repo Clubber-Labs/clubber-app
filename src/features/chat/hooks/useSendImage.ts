@@ -9,9 +9,18 @@ import {
   type MsgCache,
 } from '../lib/realtimeCache'
 import { chatKeys } from './cacheKeys'
-import type { ChatMessage } from '../types'
+import type { ChatMessage, ReplyPreview } from '../types'
 
-type SendImageVars = { uri: string; clientId: string }
+type SendImageVars = {
+  uri: string
+  clientId: string
+  // Dimensões do asset local (do ImagePicker, ou do attachment no retry). A bolha
+  // otimista já reserva o aspect-ratio real — sem isso ela cairia no 220×220 fixo
+  // e "pularia" quando o 201 trouxesse width/height do servidor.
+  width?: number
+  height?: number
+  replyTo?: ReplyPreview | null
+}
 
 // Upload otimista de imagem. A bolha aparece com a imagem local + spinner; no
 // 201 vira o Message real (com a url do servidor); em erro vira 'failed'.
@@ -20,9 +29,14 @@ export function useSendImage(conversationId: string, me: UserMini) {
   const key = chatKeys.messages(conversationId)
 
   return useMutation({
-    mutationFn: ({ uri }: SendImageVars) =>
-      conversationsService.sendImage(conversationId, uri),
-    onMutate: ({ uri, clientId }: SendImageVars) => {
+    mutationFn: ({ uri, clientId, replyTo }: SendImageVars) =>
+      conversationsService.sendImage(
+        conversationId,
+        uri,
+        clientId,
+        replyTo?.id,
+      ),
+    onMutate: ({ uri, clientId, width, height, replyTo }: SendImageVars) => {
       const optimistic: ChatMessage = {
         id: clientId,
         clientId,
@@ -31,9 +45,20 @@ export function useSendImage(conversationId: string, me: UserMini) {
         senderId: me.id,
         sender: me,
         content: null,
-        attachments: [{ id: clientId, url: uri, format: '', size: 0, order: 0 }],
+        attachments: [
+          {
+            id: clientId,
+            url: uri,
+            format: '',
+            size: 0,
+            order: 0,
+            width,
+            height,
+          },
+        ],
         createdAt: new Date().toISOString(),
         deletedAt: null,
+        replyTo: replyTo ?? null,
       }
       queryClient.setQueryData<MsgCache>(key, prev =>
         upsertOptimistic(prev, optimistic),
@@ -46,7 +71,9 @@ export function useSendImage(conversationId: string, me: UserMini) {
       applyMessageToInbox(queryClient, real, me.id, true)
     },
     onError: (_err, { clientId }) => {
-      queryClient.setQueryData<MsgCache>(key, prev => markFailed(prev, clientId))
+      queryClient.setQueryData<MsgCache>(key, prev =>
+        markFailed(prev, clientId),
+      )
     },
   })
 }

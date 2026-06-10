@@ -25,16 +25,13 @@ export function useMapCamera() {
   const cameraRef = useRef<Mapbox.Camera>(null)
   const mapRef = useRef<Mapbox.MapView>(null)
 
-  const flyTo = useCallback(
-    (coords: Coords, zoom?: number, duration = 500) => {
-      cameraRef.current?.setCamera({
-        centerCoordinate: coords,
-        ...(typeof zoom === 'number' ? { zoomLevel: zoom } : {}),
-        animationDuration: duration,
-      })
-    },
-    [],
-  )
+  const flyTo = useCallback((coords: Coords, zoom?: number, duration = 500) => {
+    cameraRef.current?.setCamera({
+      centerCoordinate: coords,
+      ...(typeof zoom === 'number' ? { zoomLevel: zoom } : {}),
+      animationDuration: duration,
+    })
+  }, [])
 
   const adjustZoom = useCallback(async (delta: number) => {
     const map = mapRef.current

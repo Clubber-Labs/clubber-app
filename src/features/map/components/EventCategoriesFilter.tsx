@@ -21,8 +21,7 @@ export function EventCategoriesFilter({ categories, active, onChange }: Props) {
     >
       {categories.map(category => {
         const isActive = active === category
-        const label =
-          category === ALL_CATEGORIES ? 'Todas' : labelFor(category)
+        const label = category === ALL_CATEGORIES ? 'Todas' : labelFor(category)
         return (
           <Pressable
             key={category}

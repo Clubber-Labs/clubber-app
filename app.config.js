@@ -1,4 +1,22 @@
 import 'dotenv/config'
+import { withEntitlementsPlist } from 'expo/config-plugins'
+
+// Build local de iOS sem conta paga do Apple Developer Program: o profile
+// automático do time não cobre aps-environment (adicionado pelo plugin do
+// expo-notifications) e o xcodebuild falha. IOS_DISABLE_PUSH=1 no .env.local
+// remove o entitlement no prebuild — push iOS fica fora DESTE build e o app
+// degrada gracioso (getExpoPushTokenAsync falha dentro de try/catch). Nunca
+// setar em build EAS/produção; não commitar o ios/ gerado com o flag ativo.
+// ATENÇÃO à posição na lista de plugins: mods executam na ORDEM INVERSA —
+// este plugin precisa ser o PRIMEIRO da lista pra rodar por último e vencer
+// o withEntitlementsPlist do expo-notifications (que re-adiciona a chave se
+// não existir).
+function withoutIosPushEntitlement(config) {
+  return withEntitlementsPlist(config, c => {
+    delete c.modResults['aps-environment']
+    return c
+  })
+}
 
 // Reverse-DNS do iOS Client ID = URL scheme que o Google Sign-In registra no
 // Info.plist. Ex: 1234-abc.apps.googleusercontent.com → com.googleusercontent.apps.1234-abc
@@ -63,8 +81,17 @@ export default {
     },
     android: {
       package: 'com.netobonato.connectaimobile',
+      // FCM v1 (push). O arquivo vem do Firebase console e é registrado via
+      // `eas credentials` / env GOOGLE_SERVICES_JSON — sem ele o push Android
+      // não chega, mas o build local segue funcionando.
+      ...(process.env.GOOGLE_SERVICES_JSON
+        ? { googleServicesFile: process.env.GOOGLE_SERVICES_JSON }
+        : {}),
     },
     plugins: [
+      ...(process.env.IOS_DISABLE_PUSH === '1'
+        ? [withoutIosPushEntitlement]
+        : []),
       "expo-router",
       "expo-secure-store",
       ["react-native-vision-camera", {
@@ -73,13 +100,14 @@ export default {
       ["@rnmapbox/maps", {
         RNMAPBOX_MAPS_DOWNLOAD_TOKEN: process.env.RNMAPBOX_MAPS_DOWNLOAD_TOKEN
       }],
+      "expo-notifications",
       ["expo-location", {
-        locationWhenInUsePermission: "Usamos sua localização para mostrar eventos próximos no mapa.",
+        locationWhenInUsePermission: "Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você.",
         // expo-location força as 3 keys de location no plist; só usamos
         // foreground, mas passamos texto PT-BR específico nas de "Always"
         // pra App Review não receber strings genéricas em inglês.
-        locationAlwaysAndWhenInUsePermission: "Usamos sua localização para mostrar eventos próximos no mapa.",
-        locationAlwaysPermission: "Usamos sua localização para mostrar eventos próximos no mapa."
+        locationAlwaysAndWhenInUsePermission: "Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você.",
+        locationAlwaysPermission: "Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você."
       }],
       ["expo-image-picker", {
         photosPermission: "Precisamos de acesso às suas fotos para alterar a foto de perfil.",
@@ -87,8 +115,16 @@ export default {
         // sem isso, sobrescreveria o texto do vision-camera com placeholder
         // genérico em inglês.
         cameraPermission: "Precisamos da câmera para fotos de perfil e eventos",
-        // Não usamos áudio em nenhum lugar; remove NSMicrophoneUsageDescription.
-        microphonePermission: false
+        // Usamos o microfone nas notas de voz do chat (via expo-audio). Texto
+        // PT-BR específico pra não cair no placeholder em inglês do plugin.
+        microphonePermission: "Precisamos do microfone para gravar mensagens de voz."
+      }],
+      ["expo-audio", {
+        microphonePermission: "Precisamos do microfone para gravar mensagens de voz."
+      }],
+      ["expo-video", {
+        supportsBackgroundPlayback: false,
+        supportsPictureInPicture: false
       }],
       ...socialAuthPlugins()
     ],

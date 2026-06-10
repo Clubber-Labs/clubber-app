@@ -74,7 +74,8 @@ export function useEditMessage(conversationId: string) {
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.prevMessages) queryClient.setQueryData(key, ctx.prevMessages)
-      if (ctx?.prevInbox) queryClient.setQueryData(chatKeys.inbox, ctx.prevInbox)
+      if (ctx?.prevInbox)
+        queryClient.setQueryData(chatKeys.inbox, ctx.prevInbox)
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: key })

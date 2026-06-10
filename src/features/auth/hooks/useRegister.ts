@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
+import { isAxiosError } from 'axios'
 import { authService } from '../services/authService'
 import { useAuthStore } from '../store/authStore'
 import {
@@ -7,6 +8,12 @@ import {
   clearAuthSession,
 } from '@/shared/lib/secureStore'
 import type { RegisterInput, RegisterPayload } from '../schemas/registerSchema'
+import {
+  consentService,
+  CONSENT_VERSION,
+  type ConsentFields,
+} from '@/features/privacy/services/consentService'
+import { useConsentStore } from '@/features/privacy/store/consentStore'
 
 function toPayload(data: RegisterInput): RegisterPayload {
   return {
@@ -26,6 +33,27 @@ function toPayload(data: RegisterInput): RegisterPayload {
   }
 }
 
+async function saveRegistrationConsent(consents: ConsentFields) {
+  try {
+    await consentService.create(consents)
+  } catch (error) {
+    if (isAxiosError(error) && error.response?.status === 409) {
+      await consentService.update(consents)
+    } else {
+      throw error
+    }
+  }
+
+  const consentStore = useConsentStore.getState()
+  consentStore.hydrate({
+    ...consents,
+    consentGiven: true,
+    consentVersion: CONSENT_VERSION,
+    revokedAt: null,
+  })
+  consentStore.markSynced()
+}
+
 export function useRegister() {
   const setUser = useAuthStore(s => s.setUser)
 
@@ -41,8 +69,8 @@ export function useRegister() {
 
       try {
         const userId =
-          (response.userId as string | undefined) ??
-          (await authService.me()).id
+          (response.userId as string | undefined) ?? (await authService.me()).id
+        await saveRegistrationConsent(data.consents)
         await saveUserId(userId)
         return { token, userId }
       } catch (err) {

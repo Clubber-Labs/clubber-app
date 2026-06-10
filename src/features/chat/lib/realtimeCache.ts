@@ -1,7 +1,14 @@
 import type { InfiniteData, QueryClient } from '@tanstack/react-query'
 import type { CursorPaginatedResponse } from '@/shared/types'
 import { chatKeys } from '../hooks/cacheKeys'
-import type { ChatMessage, InboxItem, Message } from '../types'
+import type {
+  ChatMessage,
+  Conversation,
+  InboxItem,
+  Message,
+  MessageReaction,
+  ReceiptFrame,
+} from '../types'
 
 export type MsgCache = InfiniteData<CursorPaginatedResponse<ChatMessage>>
 export type InboxCache = InfiniteData<CursorPaginatedResponse<InboxItem>>
@@ -23,7 +30,13 @@ export function upsertMessage(
 ): MsgCache {
   if (messageExists(cache, message.id)) return cache
 
-  if (message.senderId === myId) {
+  // Só casa a bolha otimista por `content` quando a mensagem TEM texto. Mídia
+  // (content === null) não pode ser casada por content — casaria qualquer bolha
+  // de mídia 'sending', trocando a errada com dois envios simultâneos (provável
+  // no upload lento de vídeo). Pra mídia, deixa o `messageExists(id)` (dedup do
+  // eco) e o `reconcileSent` (por clientId, no 201) cuidarem; a janela de
+  // duplicata transitória é mínima e o reconcileSent a colapsa.
+  if (message.senderId === myId && message.content != null) {
     let replaced = false
     const pages = cache.pages.map(page => {
       if (replaced) return page
@@ -36,7 +49,9 @@ export function upsertMessage(
       if (idx === -1) return page
       replaced = true
       const data = [...page.data]
-      data[idx] = { ...message, clientStatus: 'sent' }
+      // Persistida: sem clientStatus (o servidor confirmou). Manter um status
+      // truthy aqui travaria editar/apagar/"Visto" da própria mensagem.
+      data[idx] = { ...message }
       return { ...page, data }
     })
     if (replaced) return { ...cache, pages }
@@ -67,9 +82,7 @@ export function inboxHasConversation(
 ): boolean {
   const cache = queryClient.getQueryData<InboxCache>(chatKeys.inbox)
   if (!cache) return false
-  return cache.pages.some(page =>
-    page.data.some(c => c.id === conversationId),
-  )
+  return cache.pages.some(page => page.data.some(c => c.id === conversationId))
 }
 
 // Move a conversa pro topo, atualiza lastMessage e incrementa unread (exceto se
@@ -183,6 +196,34 @@ export function upsertOptimistic(
   }
 }
 
+// Grava o `publicId` do Cloudinary na bolha otimista de vídeo (achada por
+// clientId), depois do upload e antes do 201. Fica stashado no próprio cache —
+// não num Map global — então limpa sozinho: some quando o reconcileSent troca a
+// bolha pelo Message real, ou some junto se a mensagem for descartada. O retry
+// lê este publicId pra reusar o upload em vez de re-subir o arquivo.
+export function setOptimisticPublicId(
+  cache: MsgCache | undefined,
+  clientId: string,
+  publicId: string,
+): MsgCache | undefined {
+  if (!cache) return cache
+  return {
+    ...cache,
+    pages: cache.pages.map(page => ({
+      ...page,
+      data: page.data.map(m => {
+        if (m.clientId !== clientId) return m
+        const [first, ...rest] = m.attachments
+        if (!first) return m
+        return {
+          ...m,
+          attachments: [{ ...first, publicId }, ...rest],
+        }
+      }),
+    })),
+  }
+}
+
 // 201 recebido: troca o temp pelo Message real. Se o real já entrou pelo socket
 // (eco chegou antes), só descarta o temp pra não duplicar.
 export function reconcileSent(
@@ -198,7 +239,8 @@ export function reconcileSent(
     for (const m of page.data) {
       if (m.clientId === clientId) {
         if (!realExists && !inserted) {
-          data.push({ ...real, clientStatus: 'sent' })
+          // Sem clientStatus: vira mensagem persistida (editável/apagável).
+          data.push({ ...real })
           inserted = true
         }
         continue
@@ -220,8 +262,51 @@ export function markFailed(
     pages: cache.pages.map(page => ({
       ...page,
       data: page.data.map(m =>
-        m.clientId === clientId
-          ? { ...m, clientStatus: 'failed' as const }
+        m.clientId === clientId ? { ...m, clientStatus: 'failed' as const } : m,
+      ),
+    })),
+  }
+}
+
+// Recibo de entrega/leitura vindo do socket: avança o watermark do participante
+// na conversa em cache. Monotônico — nunca retrocede. A tela relê o status das
+// mensagens a partir desses watermarks, então os checks atualizam ao vivo.
+export function applyReceipt(queryClient: QueryClient, frame: ReceiptFrame) {
+  const field = frame.type === 'read' ? 'lastReadAt' : 'lastDeliveredAt'
+  const atMs = new Date(frame.at).getTime()
+  queryClient.setQueryData<Conversation>(
+    chatKeys.conversation(frame.conversationId),
+    prev => {
+      if (!prev) return prev
+      let changed = false
+      const participants = prev.participants.map(p => {
+        if (p.userId !== frame.userId) return p
+        const current = p[field]
+        if (current && new Date(current).getTime() >= atMs) return p
+        changed = true
+        return { ...p, [field]: frame.at }
+      })
+      return changed ? { ...prev, participants } : prev
+    },
+  )
+}
+
+// Update otimista de reação: troca só a lista `reactions` da mensagem por id, no
+// cache da conversa. A reconciliação autoritativa (resposta REST + eco
+// `message_edited` via WS) substitui a Message inteira depois — ambos idempotentes.
+export function setMessageReactions(
+  cache: MsgCache,
+  conversationId: string,
+  messageId: string,
+  reactions: MessageReaction[],
+): MsgCache {
+  return {
+    ...cache,
+    pages: cache.pages.map(page => ({
+      ...page,
+      data: page.data.map(m =>
+        m.id === messageId && m.conversationId === conversationId
+          ? { ...m, reactions }
           : m,
       ),
     })),

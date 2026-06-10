@@ -27,8 +27,14 @@ export function AddParticipantsModal({
   onAdd,
 }: Props) {
   const [query, setQuery] = useState('')
-  const { users, trimmed, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useChatUserSearch(query)
+  const {
+    users,
+    trimmed,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useChatUserSearch(query)
 
   const candidates = users.filter(u => !existingIds.includes(u.id))
 
@@ -57,6 +63,7 @@ export function AddParticipantsModal({
               placeholder="Buscar pessoas…"
               placeholderTextColor="#71717a"
               autoCapitalize="none"
+              textAlignVertical="center"
               className="flex-1 py-3 text-base text-white"
             />
           </View>

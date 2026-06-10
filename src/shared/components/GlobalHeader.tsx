@@ -5,6 +5,8 @@ import { useProfileDrawer } from '@/features/users/store/profileDrawerStore'
 import { useFollowRequests } from '@/features/follows/hooks/useFollowRequests'
 import { useMapUiStore } from '@/features/map/store/mapUiStore'
 import { isDefaultMapFilters } from '@/features/map/types'
+import { useUnreadCount } from '@/features/notifications/hooks/useUnreadCount'
+import { UnreadBadge } from './UnreadBadge'
 
 type Props = {
   showNotifications?: boolean
@@ -21,7 +23,8 @@ export function GlobalHeader({
 }: Props) {
   const router = useRouter()
   const segments = useSegments()
-  const setDrawerOpen = useProfileDrawer(s => s.setOpen)
+  const toggleDrawer = useProfileDrawer(s => s.toggle)
+  const { count: unreadNotifications } = useUnreadCount()
 
   const isTabsRoot = segments[0] === '(tabs)' && segments.length <= 2
   const isProfileTab = segments.includes('profile') && isTabsRoot
@@ -41,6 +44,11 @@ export function GlobalHeader({
     router.back()
   }
 
+  function handleNotifications() {
+    if (onNotificationsPress) return onNotificationsPress()
+    router.push('/notifications')
+  }
+
   return (
     <View className="bg-black border-b border-zinc-900 px-4 py-3 flex-row items-center justify-center relative">
       <View className="absolute left-4 top-0 bottom-0 flex-row items-center">
@@ -54,7 +62,7 @@ export function GlobalHeader({
         )}
         {isProfileTab && (
           <Pressable
-            onPress={() => setDrawerOpen(true)}
+            onPress={toggleDrawer}
             className="w-9 h-9 items-center justify-center"
             accessibilityLabel={
               hasPendingRequests
@@ -92,11 +100,20 @@ export function GlobalHeader({
       <View className="absolute right-4 top-0 bottom-0 flex-row items-center gap-2">
         {showNotifications && (
           <Pressable
-            onPress={onNotificationsPress}
+            onPress={handleNotifications}
             className="w-9 h-9 items-center justify-center"
+            accessibilityLabel={
+              unreadNotifications > 0
+                ? `Notificações (${unreadNotifications} não lidas)`
+                : 'Notificações'
+            }
           >
             <Ionicons name="notifications-outline" size={24} color="#e5e7eb" />
-            <View className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+            {unreadNotifications > 0 && (
+              <View className="absolute -top-0.5 -right-1.5">
+                <UnreadBadge count={unreadNotifications} />
+              </View>
+            )}
           </Pressable>
         )}
       </View>

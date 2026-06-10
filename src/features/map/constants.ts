@@ -1,4 +1,5 @@
-export const MAP_STYLE_URL = 'mapbox://styles/bonatoneto/cmoz3l4fa003601qrd130bk09'
+export const MAP_STYLE_URL =
+  'mapbox://styles/bonatoneto/cmoz3l4fa003601qrd130bk09'
 export const BRAZIL_CENTER: [number, number] = [-47.9292, -15.7801]
 export const BRAZIL_ZOOM = 4
 export const USER_ZOOM = 13
@@ -12,6 +13,8 @@ export const ALL_CATEGORIES = 'Todas'
 export const VIOLET_500 = '#8b5cf6'
 export const VIOLET_600 = '#7c3aed'
 export const VIOLET_400 = '#a78bfa'
+// Azul padrão do "blue dot" de localização (iOS system blue).
+export const LOCATION_BLUE = '#007AFF'
 
 // Debounce da captura de bbox ao arrastar o mapa (carga por viewport).
 export const BBOX_DEBOUNCE_MS = 300

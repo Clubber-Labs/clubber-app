@@ -1,40 +1,44 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { View, Text, TextInput, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { SheetModal } from './SheetModal'
-import type { ReportReason } from '../types'
+import { SheetModal } from '@/shared/components/SheetModal'
+import { REASON_OPTIONS, reportSheetTitle } from '../utils/reportLabels'
+import type { ReportReason, ReportTarget } from '../types'
 
 type Props = {
-  visible: boolean
+  // Quando != null o sheet abre; o título é derivado do tipo do alvo.
+  target: ReportTarget | null
   onClose: () => void
   onSubmit: (reason: ReportReason, details?: string) => void
 }
 
-const REASONS: { value: ReportReason; label: string }[] = [
-  { value: 'HATE_SPEECH', label: 'Discurso de ódio' },
-  { value: 'SPAM_OR_FRAUD', label: 'Spam ou fraude' },
-  { value: 'HARASSMENT', label: 'Assédio' },
-  { value: 'INAPPROPRIATE_CONTENT', label: 'Conteúdo inapropriado' },
-  { value: 'OTHER', label: 'Outro' },
-]
-
-export function ReportReasonPicker({ visible, onClose, onSubmit }: Props) {
+// Seletor de motivo + detalhes opcional, reutilizável por qualquer alvo
+// (mensagem, evento, comentário, usuário). Substitui o antigo
+// ReportReasonPicker específico de chat.
+export function ReportReasonSheet({ target, onClose, onSubmit }: Props) {
+  const visible = target !== null
   const [reason, setReason] = useState<ReportReason | null>(null)
   const [details, setDetails] = useState('')
+
+  // Reseta ao fechar pra não reabrir com seleção/old text de outra denúncia.
+  useEffect(() => {
+    if (!visible) {
+      setReason(null)
+      setDetails('')
+    }
+  }, [visible])
 
   function submit() {
     if (!reason) return
     onSubmit(reason, details.trim() || undefined)
-    setReason(null)
-    setDetails('')
   }
 
   return (
     <SheetModal visible={visible} onClose={onClose}>
       <Text className="text-white font-semibold text-base px-5 pt-1 pb-2">
-        Denunciar mensagem
+        {target ? reportSheetTitle(target.type) : 'Denunciar'}
       </Text>
-      {REASONS.map(r => {
+      {REASON_OPTIONS.map(r => {
         const active = reason === r.value
         return (
           <Pressable

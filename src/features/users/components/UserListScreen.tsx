@@ -56,9 +56,7 @@ export function UserListScreen({ query, emptyMessage, renderTrailing }: Props) {
       renderItem={({ item }) => (
         <UserListItem user={item} trailing={renderTrailing?.(item)} />
       )}
-      ItemSeparatorComponent={() => (
-        <View className="h-px bg-zinc-900 ml-16" />
-      )}
+      ItemSeparatorComponent={() => <View className="h-px bg-zinc-900 ml-16" />}
       ListEmptyComponent={
         <View className="items-center justify-center pt-16">
           <Text className="text-zinc-500 text-sm">{emptyMessage}</Text>

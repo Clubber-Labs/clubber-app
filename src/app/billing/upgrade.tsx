@@ -81,11 +81,24 @@ export default function UpgradeScreen() {
       </View>
 
       <View className="items-center mb-8">
-        <View className="w-16 h-16 rounded-2xl bg-violet-600/20 items-center justify-center mb-4">
-          <Ionicons name="diamond" size={32} color="#a78bfa" />
+        {/* Badge com camadas concêntricas pra dar profundidade/brilho ao
+            ícone (NativeWind não tem gradiente nativo — halo via opacidades). */}
+        <View className="w-28 h-28 rounded-full bg-violet-600/10 items-center justify-center mb-5">
+          <View className="w-20 h-20 rounded-full bg-violet-600/20 items-center justify-center">
+            <View className="w-14 h-14 rounded-2xl bg-violet-600 items-center justify-center">
+              <Ionicons name="diamond" size={30} color="#ffffff" />
+            </View>
+          </View>
         </View>
-        <Text className="text-white font-bold text-2xl">ConnectAI Premium</Text>
-        <Text className="text-zinc-400 text-sm mt-1 text-center">
+        <View className="flex-row items-center gap-2">
+          <Text className="text-white font-bold text-2xl">ConnectAI</Text>
+          <View className="px-2 py-0.5 rounded-md bg-violet-600/20 border border-violet-500/40">
+            <Text className="text-violet-300 text-xs font-bold tracking-wide">
+              PREMIUM
+            </Text>
+          </View>
+        </View>
+        <Text className="text-zinc-400 text-sm mt-2 text-center">
           Mais visibilidade para você e seus eventos.
         </Text>
       </View>

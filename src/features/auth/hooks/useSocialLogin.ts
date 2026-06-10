@@ -12,6 +12,7 @@ import {
 } from '@/shared/lib/secureStore'
 import { useBanner } from '@/shared/lib/banner'
 import { getConflictMessage } from '@/shared/utils/conflictMessage'
+import { maybeShowWelcomeBack } from '@/features/account/lib/welcomeBack'
 import { userKeys } from '@/features/users/hooks/cacheKeys'
 import type { SocialProvider } from '../schemas/socialLoginSchema'
 
@@ -60,7 +61,11 @@ function mapSocialError(error: unknown, provider: SocialProvider): string {
 
 async function getProviderToken(
   provider: SocialProvider,
-): Promise<{ kind: 'token'; token: string } | { kind: 'cancelled' } | { kind: 'missing_email' }> {
+): Promise<
+  | { kind: 'token'; token: string }
+  | { kind: 'cancelled' }
+  | { kind: 'missing_email' }
+> {
   if (provider === 'google') {
     const result = await signInWithGoogle()
     if (result.kind === 'cancelled') return { kind: 'cancelled' }
@@ -108,6 +113,10 @@ export function useSocialLogin(provider: SocialProvider) {
       // flicker pro feed antes do AuthGuard redirecionar pra complete-profile.
       setProfileIncomplete(response.profileIncomplete)
       setUser(response.user.id)
+
+      // Reativação no login social (backend já reativou na carência). Banner
+      // dirigido só pelo marker local, amarrado a este userId.
+      await maybeShowWelcomeBack(showBanner, response.user.id)
 
       return {
         kind: 'authenticated',

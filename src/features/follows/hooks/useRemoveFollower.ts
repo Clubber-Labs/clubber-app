@@ -18,7 +18,8 @@ export function useRemoveFollower(viewerId: string) {
   const listKey = followListKeys.followers(viewerId)
 
   return useMutation({
-    mutationFn: (followerId: string) => followsService.removeFollower(followerId),
+    mutationFn: (followerId: string) =>
+      followsService.removeFollower(followerId),
     onMutate: async followerId => {
       await queryClient.cancelQueries({ queryKey: listKey })
       await queryClient.cancelQueries({ queryKey: userKeys.me })
@@ -42,7 +43,8 @@ export function useRemoveFollower(viewerId: string) {
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.prevList) queryClient.setQueryData(listKey, ctx.prevList)
-      if (ctx?.prevProfile) queryClient.setQueryData(userKeys.me, ctx.prevProfile)
+      if (ctx?.prevProfile)
+        queryClient.setQueryData(userKeys.me, ctx.prevProfile)
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: listKey })

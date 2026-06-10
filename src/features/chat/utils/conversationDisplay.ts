@@ -1,7 +1,11 @@
 import type { UserMini } from '@/shared/types'
 import type { Conversation, InboxItem, Participant } from '../types'
+import { firstAttachmentKind } from './attachmentPreview'
 
-type WithParticipants = { type: 'DIRECT' | 'GROUP'; participants: Participant[] }
+type WithParticipants = {
+  type: 'DIRECT' | 'GROUP'
+  participants: Participant[]
+}
 
 function others(participants: Participant[], myId: string): Participant[] {
   return participants.filter(p => p.userId !== myId)
@@ -38,12 +42,17 @@ export function lastMessagePreview(item: InboxItem, myId: string): string {
   if (!msg) return 'Iniciar conversa'
   if (msg.deletedAt) return 'Mensagem removida'
 
+  const kind = firstAttachmentKind(msg.attachments)
   const body =
     msg.content && msg.content.length > 0
       ? msg.content
-      : msg.attachments.length > 0
-        ? '📷 Imagem'
-        : ''
+      : kind === 'AUDIO'
+        ? '🎤 Áudio'
+        : kind === 'VIDEO'
+          ? '🎥 Vídeo'
+          : kind === 'IMAGE'
+            ? '📷 Imagem'
+            : ''
 
   if (msg.senderId === myId) return `Você: ${body}`
   if (item.type === 'GROUP') return `${firstName(msg.sender)}: ${body}`

@@ -6,10 +6,13 @@ import {
   saveUserId,
   clearAuthSession,
 } from '@/shared/lib/secureStore'
+import { useBanner } from '@/shared/lib/banner'
+import { maybeShowWelcomeBack } from '@/features/account/lib/welcomeBack'
 import type { LoginInput } from '../schemas/loginSchema'
 
 export function useLogin() {
   const setUser = useAuthStore(s => s.setUser)
+  const showBanner = useBanner()
 
   return useMutation({
     mutationFn: async (data: LoginInput) => {
@@ -19,8 +22,7 @@ export function useLogin() {
 
       try {
         const userId =
-          (response.userId as string | undefined) ??
-          (await authService.me()).id
+          (response.userId as string | undefined) ?? (await authService.me()).id
         await saveUserId(userId)
         return { token, userId }
       } catch (err) {
@@ -30,6 +32,9 @@ export function useLogin() {
     },
     onSuccess: ({ userId }) => {
       setUser(userId)
+      // Reativação no login: o backend já reativou na carência; o banner é
+      // dirigido só pelo marker local (a resposta de login não traz accountStatus).
+      void maybeShowWelcomeBack(showBanner, userId)
     },
   })
 }

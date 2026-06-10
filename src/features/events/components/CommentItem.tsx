@@ -11,9 +11,11 @@ type Props = {
   eventId: string
   // Presente só quando o usuário pode apagar (é o autor) — habilita swipe-apagar.
   onDelete?: () => void
+  // Presente só para comentários de terceiros — exibe o atalho de denúncia.
+  onReport?: () => void
 }
 
-export function CommentItem({ comment, eventId, onDelete }: Props) {
+export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
   const navigateToProfile = useNavigateToProfile()
   const toggleLike = useToggleCommentLike(eventId)
 
@@ -35,9 +37,21 @@ export function CommentItem({ comment, eventId, onDelete }: Props) {
             {comment.author.name} {comment.author.lastname}
           </Text>
         </Pressable>
-        <Text className="text-xs text-zinc-500">
-          {formatRelative(comment.createdAt)}
-        </Text>
+        <View className="flex-row items-center gap-2">
+          <Text className="text-xs text-zinc-500">
+            {formatRelative(comment.createdAt)}
+          </Text>
+          {onReport && (
+            <Pressable
+              onPress={onReport}
+              hitSlop={8}
+              accessibilityRole="button"
+              accessibilityLabel="Denunciar comentário"
+            >
+              <Ionicons name="flag-outline" size={14} color="#71717a" />
+            </Pressable>
+          )}
+        </View>
       </View>
       <Text className="text-sm text-zinc-200">{comment.content}</Text>
       <Pressable

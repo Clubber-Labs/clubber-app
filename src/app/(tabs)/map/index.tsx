@@ -18,7 +18,7 @@ import { useUserLocation } from '@/shared/hooks/useUserLocation'
 import { useUserLiveLocation } from '@/shared/hooks/useUserLiveLocation'
 import { useBanner } from '@/shared/lib/banner'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
-import { UserLocationMarker } from '@/features/map/components/UserLocationMarker'
+import { UserLocationLayer } from '@/features/map/components/UserLocationLayer'
 import { useMapZoomState } from '@/features/map/hooks/useMapZoomState'
 import { useHeatmap } from '@/features/map/hooks/useHeatmap'
 import { useViewportBbox } from '@/features/map/hooks/useViewportBbox'
@@ -146,23 +146,17 @@ export default function MapScreen() {
           centerCoordinate={BRAZIL_CENTER}
           animationMode="flyTo"
         />
-        {/* Posição do usuário: avatar (em vez da bolinha) seguindo o GPS ao vivo.
-            A posição alimenta só o marcador — a busca de eventos segue por bbox. */}
-        {locationStatus === 'ready' && myPos && profile.data && (
-          <Mapbox.MarkerView
-            id="user-location"
-            coordinate={myPos}
-            anchor={{ x: 0.5, y: 0.5 }}
-            allowOverlap
-          >
-            <UserLocationMarker
-              name={`${profile.data.name} ${profile.data.lastname}`.trim()}
-              avatarUrl={profile.data.avatarUrl}
-            />
-          </Mapbox.MarkerView>
-        )}
-        {/* Densidade ao fundo (declarada antes) + pins/clusters por cima. */}
+        {/* Densidade ao fundo + indicador do usuário, ambos abaixo dos pins. */}
         {densityVisible && <EventHeatmapLayer points={heatmapPoints} />}
+        {/* Indicador de posição como STYLE LAYER (não MarkerView): style layer
+            NUNCA captura toque e fica abaixo dos pins — então nunca bloqueia a
+            interação com eles (o MarkerView bloqueava, mesmo com pointerEvents). */}
+        {locationStatus === 'ready' && myPos && (
+          <UserLocationLayer
+            coordinate={myPos}
+            avatarUrl={profile.data?.avatarUrl}
+          />
+        )}
         {!showMarkers ? (
           <EventClustersLayer
             ref={shapeSourceRef}

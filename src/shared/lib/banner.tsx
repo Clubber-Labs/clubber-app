@@ -1,6 +1,13 @@
 // Banner imperativo, mesmo padrão do confirm.tsx. Mostra uma mensagem fixa no
 // topo da tela com slide-in animado. Auto-dismiss em 5s; tap fecha imediato.
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import type { ReactNode } from 'react'
 import { Banner } from '../components/Banner'
 

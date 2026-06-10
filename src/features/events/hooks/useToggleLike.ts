@@ -91,7 +91,10 @@ export function useToggleLike(eventId: string) {
         queryClient.setQueryData(detailKey, context.prevDetail)
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: feedKey })
+      // O optimistic update já reflete o like e a contagem no card. Refetch
+      // ativo do feed reordenaria o evento na hora (backend ranqueia por
+      // engajamento); 'none' marca stale → reordena só no próximo refresh/fetch.
+      queryClient.invalidateQueries({ queryKey: feedKey, refetchType: 'none' })
       queryClient.invalidateQueries({ queryKey: detailKey })
       queryClient.invalidateQueries({ queryKey: ['events', 'list'] as const })
     },

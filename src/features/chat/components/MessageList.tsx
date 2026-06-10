@@ -10,57 +10,60 @@ import {
 import { useMessages } from '../hooks/useMessages'
 import { MessageBubble } from './MessageBubble'
 import { DateSeparator } from './DateSeparator'
+import { TypingIndicator } from './TypingIndicator'
 import { buildMessageMeta } from '../utils/groupMessages'
-import { formatMessageTime } from '../utils/messageTime'
-import type { ChatMessage } from '../types'
+import { messageStatus } from '../utils/messageStatus'
+import { aggregateReactions } from '../utils/reactions'
+import type { ChatMessage, Participant } from '../types'
 
 type Props = {
   conversationId: string
   myId: string
   isGroup: boolean
-  // lastReadAt do outro participante (DM) → "Visto" na última mensagem minha lida.
-  otherReadAt?: string | null
+  // Participantes (com watermarks lastReadAt/lastDeliveredAt) → status (check)
+  // de cada mensagem minha.
+  participants: Participant[]
+  // Rótulo de "digitando…" já resolvido; vazio = ninguém digitando.
+  typingLabel: string
   onLongPressMessage: (message: ChatMessage) => void
   onPressImage: (url: string) => void
+  onPressVideo: (url: string) => void
   onRetry: (message: ChatMessage) => void
-  onEditMessage: (message: ChatMessage) => void
-  onDeleteMessage: (message: ChatMessage) => void
+  onReplyMessage: (message: ChatMessage) => void
+  onToggleReaction: (message: ChatMessage, emoji: string) => void
 }
 
 export function MessageList({
   conversationId,
   myId,
   isGroup,
-  otherReadAt,
+  participants,
+  typingLabel,
   onLongPressMessage,
   onPressImage,
+  onPressVideo,
   onRetry,
-  onEditMessage,
-  onDeleteMessage,
+  onReplyMessage,
+  onToggleReaction,
 }: Props) {
-  const { messages, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useMessages(conversationId)
+  const {
+    messages,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useMessages(conversationId)
 
   const meta = useMemo(
     () => buildMessageMeta(messages, myId, isGroup),
     [messages, myId, isGroup],
   )
 
-  // Última (mais nova) mensagem minha já lida pelo outro — recebe o "Visto".
-  const seenMessageId = useMemo(() => {
-    if (!otherReadAt) return null
-    const readTime = new Date(otherReadAt).getTime()
-    for (const m of messages) {
-      if (
-        m.senderId === myId &&
-        !m.clientStatus &&
-        new Date(m.createdAt).getTime() <= readTime
-      ) {
-        return m.id
-      }
-    }
-    return null
-  }, [messages, otherReadAt, myId])
+  // Outros participantes (sem mim) — base pro status (entregue/lido) das minhas msgs.
+  const others = useMemo(
+    () => participants.filter(p => p.userId !== myId),
+    [participants, myId],
+  )
 
   const listRef = useRef<FlatList<ChatMessage>>(null)
   const atBottomRef = useRef(true)
@@ -76,6 +79,19 @@ export function MessageList({
 
   function onScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
     atBottomRef.current = e.nativeEvent.contentOffset.y <= 40
+  }
+
+  // Rola até a mensagem citada ao tocar na citação — só se já estiver carregada
+  // (páginas mais antigas podem não estar; aí é no-op).
+  function scrollToMessage(messageId: string) {
+    const index = messages.findIndex(m => m.id === messageId)
+    if (index >= 0) {
+      listRef.current?.scrollToIndex({
+        index,
+        animated: true,
+        viewPosition: 0.5,
+      })
+    }
   }
 
   if (isLoading) {
@@ -100,12 +116,12 @@ export function MessageList({
           <Text className="text-zinc-400 text-center">Diga olá 👋</Text>
         </View>
       }
+      ListHeaderComponent={<TypingIndicator label={typingLabel} />}
       renderItem={({ item, index }) => {
         const m = meta[index]
-        const seen =
-          item.id === seenMessageId && otherReadAt
-            ? `Visto ${formatMessageTime(otherReadAt)}`
-            : null
+        const status = messageStatus(item, myId, others)
+        const replyId = item.replyTo?.id
+        const reactions = aggregateReactions(item.reactions, myId)
         return (
           <View>
             {m.showDateSeparator && <DateSeparator iso={item.createdAt} />}
@@ -113,15 +129,35 @@ export function MessageList({
               message={item}
               meta={m}
               isGroup={isGroup}
-              seenLabel={seen}
+              status={status}
+              reactions={reactions}
               onLongPress={() => onLongPressMessage(item)}
               onPressImage={onPressImage}
+              onPressVideo={onPressVideo}
               onRetry={() => onRetry(item)}
-              onEdit={() => onEditMessage(item)}
-              onDelete={() => onDeleteMessage(item)}
+              onReply={() => onReplyMessage(item)}
+              onPressReply={
+                replyId ? () => scrollToMessage(replyId) : undefined
+              }
+              onToggleReaction={emoji => onToggleReaction(item, emoji)}
             />
           </View>
         )
+      }}
+      onScrollToIndexFailed={info => {
+        // Item carregado mas fora da janela montada do FlatList: aproxima via
+        // offset estimado e re-tenta o scroll exato no próximo frame.
+        listRef.current?.scrollToOffset({
+          offset: info.averageItemLength * info.index,
+          animated: true,
+        })
+        setTimeout(() => {
+          listRef.current?.scrollToIndex({
+            index: info.index,
+            viewPosition: 0.5,
+            animated: true,
+          })
+        }, 60)
       }}
       onEndReached={() => {
         if (hasNextPage && !isFetchingNextPage) fetchNextPage()

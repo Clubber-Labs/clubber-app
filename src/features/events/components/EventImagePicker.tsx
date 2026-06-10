@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  Image,
-  Pressable,
-  ScrollView,
-} from 'react-native'
+import { View, Text, Image, Pressable, ScrollView } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { usePickImages } from '@/shared/hooks/usePickImages'
 

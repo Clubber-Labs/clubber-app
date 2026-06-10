@@ -13,7 +13,11 @@ export function SelectedUserChips({ users, onRemove }: Props) {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 12, gap: 8, alignItems: 'center' }}
+      contentContainerStyle={{
+        paddingHorizontal: 12,
+        gap: 8,
+        alignItems: 'center',
+      }}
       className="py-2 border-b border-zinc-900 grow-0"
     >
       {users.map(user => (

@@ -8,7 +8,10 @@ type Props = {
 
 const MAX_VISIBLE = 3
 
-export function FriendAttendancesStack({ attendances, totalAttendances }: Props) {
+export function FriendAttendancesStack({
+  attendances,
+  totalAttendances,
+}: Props) {
   if (attendances.length === 0) return null
 
   const visible = attendances.slice(0, MAX_VISIBLE)

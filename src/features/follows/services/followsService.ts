@@ -47,7 +47,5 @@ export const followsService = {
       .then(() => undefined),
 
   rejectFollowRequest: (followerId: string): Promise<void> =>
-    api
-      .delete(`/users/me/follow-requests/${followerId}`)
-      .then(() => undefined),
+    api.delete(`/users/me/follow-requests/${followerId}`).then(() => undefined),
 }

@@ -34,3 +34,7 @@ export function isForbiddenError(error: unknown): boolean {
 export function isNotFoundError(error: unknown): boolean {
   return isAxiosError(error) && error.response?.status === 404
 }
+
+export function isTooManyRequestsError(error: unknown): boolean {
+  return isAxiosError(error) && error.response?.status === 429
+}

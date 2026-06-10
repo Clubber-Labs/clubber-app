@@ -17,7 +17,11 @@ export function SheetRow({ icon, label, onPress, destructive }: Props) {
       onPress={onPress}
       className="flex-row items-center gap-3 px-5 py-3.5 active:bg-zinc-900"
     >
-      <Ionicons name={icon} size={22} color={destructive ? '#ef4444' : '#e4e4e7'} />
+      <Ionicons
+        name={icon}
+        size={22}
+        color={destructive ? '#ef4444' : '#e4e4e7'}
+      />
       <Text
         className={`text-base ${destructive ? 'text-red-500' : 'text-zinc-100'}`}
       >

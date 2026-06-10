@@ -11,7 +11,9 @@ export function CategorySingleSelect({ value, onChange }: Props) {
   const { categories, isLoading } = useCategories()
 
   if (isLoading && categories.length === 0) {
-    return <ActivityIndicator size="small" color="#8b5cf6" className="self-start" />
+    return (
+      <ActivityIndicator size="small" color="#8b5cf6" className="self-start" />
+    )
   }
 
   return (

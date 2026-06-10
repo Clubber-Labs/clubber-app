@@ -4,10 +4,22 @@
 import { getApiError, isConflictError } from '@/shared/lib/apiError'
 
 const FIELD_MESSAGES: { keyword: string; message: string }[] = [
-  { keyword: 'phone', message: 'Este telefone já está cadastrado em outra conta.' },
-  { keyword: 'telefone', message: 'Este telefone já está cadastrado em outra conta.' },
-  { keyword: 'email', message: 'Este e-mail já está cadastrado em outra conta.' },
-  { keyword: 'e-mail', message: 'Este e-mail já está cadastrado em outra conta.' },
+  {
+    keyword: 'phone',
+    message: 'Este telefone já está cadastrado em outra conta.',
+  },
+  {
+    keyword: 'telefone',
+    message: 'Este telefone já está cadastrado em outra conta.',
+  },
+  {
+    keyword: 'email',
+    message: 'Este e-mail já está cadastrado em outra conta.',
+  },
+  {
+    keyword: 'e-mail',
+    message: 'Este e-mail já está cadastrado em outra conta.',
+  },
   { keyword: 'username', message: 'Este nome de usuário já está em uso.' },
   { keyword: 'usuário', message: 'Este nome de usuário já está em uso.' },
 ]

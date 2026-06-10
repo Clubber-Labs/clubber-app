@@ -1,10 +1,7 @@
 // Substitui Alert.alert (banido). Ver CLAUDE.md → "Confirmações destrutivas".
 import { createContext, useCallback, useContext, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
-import {
-  ConfirmDialog,
-  type ConfirmOptions,
-} from '../components/ConfirmDialog'
+import { ConfirmDialog, type ConfirmOptions } from '../components/ConfirmDialog'
 
 type ConfirmFn = (options: ConfirmOptions) => Promise<boolean>
 

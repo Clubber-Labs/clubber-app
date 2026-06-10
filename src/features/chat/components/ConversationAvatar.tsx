@@ -19,7 +19,11 @@ export function ConversationAvatar({ users, type, size = 52 }: Props) {
           style={{ width: size, height: size, borderRadius: size / 2 }}
           className="bg-zinc-800 items-center justify-center"
         >
-          <Ionicons name="people" size={Math.round(size * 0.5)} color="#a1a1aa" />
+          <Ionicons
+            name="people"
+            size={Math.round(size * 0.5)}
+            color="#a1a1aa"
+          />
         </View>
       )
     }
@@ -36,7 +40,11 @@ export function ConversationAvatar({ users, type, size = 52 }: Props) {
             }}
             className="border-2 border-black rounded-full overflow-hidden"
           >
-            <UserAvatar name={user.name} avatarUrl={user.avatarUrl} size={small} />
+            <UserAvatar
+              name={user.name}
+              avatarUrl={user.avatarUrl}
+              size={small}
+            />
           </View>
         ))}
       </View>

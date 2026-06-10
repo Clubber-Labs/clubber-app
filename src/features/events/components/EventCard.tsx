@@ -45,7 +45,10 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
             className="flex-row items-center gap-2"
             accessibilityLabel={`Ver perfil de ${event.author.username}`}
           >
-            <UserAvatar name={event.author.name} avatarUrl={event.author.avatarUrl} />
+            <UserAvatar
+              name={event.author.name}
+              avatarUrl={event.author.avatarUrl}
+            />
             <View>
               <Text className="text-sm font-semibold text-white">
                 {event.author.name} {event.author.lastname}
@@ -144,7 +147,6 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
             {event._count.comments}
           </Text>
         </Pressable>
-
       </View>
 
       {!expanded && (event.recentComments?.length ?? 0) > 0 && (

@@ -20,10 +20,7 @@ export function EventActionsMenu({ visible, actions, onClose }: Props) {
       animationType="fade"
       onRequestClose={onClose}
     >
-      <Pressable
-        className="flex-1 bg-black/60 justify-end"
-        onPress={onClose}
-      >
+      <Pressable className="flex-1 bg-black/60 justify-end" onPress={onClose}>
         <Pressable
           className="bg-zinc-900 border-t border-zinc-800 rounded-t-2xl pb-8"
           onPress={e => e.stopPropagation()}

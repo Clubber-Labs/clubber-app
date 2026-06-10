@@ -9,15 +9,22 @@ import {
   type MsgCache,
 } from '../lib/realtimeCache'
 import { chatKeys } from './cacheKeys'
-import type { ChatMessage } from '../types'
+import { uuidv4 } from '@/shared/utils/uuid'
+import type { ChatMessage, ReplyPreview } from '../types'
 
-let counter = 0
+// UUID v4: reusado como `Idempotency-Key` em todo envio (o contrato exige a chave
+// em todos os tipos). É 1-por-mensagem e o retry reusa o mesmo clientId, então o
+// backend deduplica o reenvio. O reconcile casa por igualdade exata — o formato
+// não importa, só a unicidade.
 export function newClientId(): string {
-  counter += 1
-  return `temp-${Date.now()}-${counter}`
+  return uuidv4()
 }
 
-type SendVars = { content: string; clientId: string }
+type SendVars = {
+  content: string
+  clientId: string
+  replyTo?: ReplyPreview | null
+}
 
 // Envio otimista de texto. A bolha aparece na hora (clientStatus 'sending'); no
 // 201 vira o Message real; em erro vira 'failed' (retry reusa o mesmo clientId).
@@ -26,9 +33,14 @@ export function useSendMessage(conversationId: string, me: UserMini) {
   const key = chatKeys.messages(conversationId)
 
   return useMutation({
-    mutationFn: ({ content }: SendVars) =>
-      conversationsService.sendMessage(conversationId, content),
-    onMutate: ({ content, clientId }: SendVars) => {
+    mutationFn: ({ content, clientId, replyTo }: SendVars) =>
+      conversationsService.sendMessage(
+        conversationId,
+        content,
+        clientId,
+        replyTo?.id,
+      ),
+    onMutate: ({ content, clientId, replyTo }: SendVars) => {
       const optimistic: ChatMessage = {
         id: clientId,
         clientId,
@@ -40,6 +52,7 @@ export function useSendMessage(conversationId: string, me: UserMini) {
         attachments: [],
         createdAt: new Date().toISOString(),
         deletedAt: null,
+        replyTo: replyTo ?? null,
       }
       queryClient.setQueryData<MsgCache>(key, prev =>
         upsertOptimistic(prev, optimistic),
@@ -52,7 +65,9 @@ export function useSendMessage(conversationId: string, me: UserMini) {
       applyMessageToInbox(queryClient, real, me.id, true)
     },
     onError: (_err, { clientId }) => {
-      queryClient.setQueryData<MsgCache>(key, prev => markFailed(prev, clientId))
+      queryClient.setQueryData<MsgCache>(key, prev =>
+        markFailed(prev, clientId),
+      )
     },
   })
 }

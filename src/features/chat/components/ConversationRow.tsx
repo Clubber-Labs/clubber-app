@@ -1,6 +1,8 @@
 import { View, Text, Pressable } from 'react-native'
 import { ConversationAvatar } from './ConversationAvatar'
-import { UnreadBadge } from './UnreadBadge'
+import { PresenceDot } from './PresenceDot'
+import { UnreadBadge } from '@/shared/components/UnreadBadge'
+import { usePresence } from '../hooks/usePresence'
 import {
   conversationAvatarUsers,
   conversationTitle,
@@ -23,16 +25,30 @@ export function ConversationRow({ item, myId, onPress }: Props) {
   const unread = item.unreadCount > 0
   const time = item.lastMessageAt ? formatInboxTime(item.lastMessageAt) : ''
 
+  // Ponto online só em DM (presença é por usuário). Grupo → sem ponto.
+  const other =
+    item.type === 'DIRECT'
+      ? item.participants.find(p => p.userId !== myId)?.user
+      : undefined
+  const presence = usePresence(other?.id)
+
   return (
     <Pressable
       onPress={onPress}
       className="flex-row items-center gap-3 px-4 py-3 bg-black active:bg-zinc-900"
       accessibilityLabel={`Conversa: ${title}${unread ? `, ${item.unreadCount} não lidas` : ''}`}
     >
-      <ConversationAvatar
-        users={conversationAvatarUsers(item, myId)}
-        type={item.type}
-      />
+      <View>
+        <ConversationAvatar
+          users={conversationAvatarUsers(item, myId)}
+          type={item.type}
+        />
+        {presence?.online && (
+          <View className="absolute bottom-0 right-0">
+            <PresenceDot online />
+          </View>
+        )}
+      </View>
       <View className="flex-1 gap-0.5">
         <View className="flex-row items-center justify-between">
           <Text
@@ -42,7 +58,9 @@ export function ConversationRow({ item, myId, onPress }: Props) {
             {title}
           </Text>
           {!!time && (
-            <Text className={`text-xs ${unread ? 'text-violet-400' : 'text-zinc-500'}`}>
+            <Text
+              className={`text-xs ${unread ? 'text-violet-400' : 'text-zinc-500'}`}
+            >
               {time}
             </Text>
           )}

@@ -4,6 +4,7 @@ import { formatEventDate } from '@/shared/utils/dateFormat'
 import { CategoryBadge } from '@/shared/components/CategoryBadge'
 import { EventStatusBadge } from './EventStatusBadge'
 import { EventImagesCarousel } from './EventImagesCarousel'
+import { AddressLink } from '@/shared/components/AddressLink'
 import type { EventDetail } from '@/shared/types'
 
 type Props = {
@@ -13,7 +14,12 @@ type Props = {
 export function EventHeader({ event }: Props) {
   return (
     <View>
-      <EventImagesCarousel images={event.images} />
+      {/* Full-bleed: a capa usa SCREEN_WIDTH, então -mx-4 cancela o padding
+          horizontal (16px) do container pai (EventPostsFeed) pra encostar nas
+          bordas. O texto abaixo segue recuado pelo padding do container. */}
+      <View className="-mx-4">
+        <EventImagesCarousel images={event.images} />
+      </View>
 
       <View className="pt-4 gap-3">
         <View className="flex-row items-center gap-2 flex-wrap">
@@ -38,12 +44,17 @@ export function EventHeader({ event }: Props) {
         </View>
 
         {event.address && (
-          <View className="flex-row items-center gap-2">
+          <AddressLink
+            address={event.address}
+            latitude={event.latitude}
+            longitude={event.longitude}
+            className="flex-row items-center gap-2"
+          >
             <Ionicons name="location-outline" size={16} color="#a1a1aa" />
             <Text className="text-zinc-300 text-sm flex-1">
               {event.address}
             </Text>
-          </View>
+          </AddressLink>
         )}
 
         <View className="flex-row items-center gap-2">
