@@ -16,6 +16,12 @@ import { Button } from '@/shared/components/Button'
 import { getApiError } from '@/shared/lib/apiError'
 
 const ACTIVATION_POLL_MS = 2000
+// Teto pra esperar o webhook ativar o premium. Ao estourar, libera a saída —
+// webhook lento/perdido não pode prender o usuário (que já foi cobrado no
+// fluxo de pagamento) num spinner sem volta.
+const ACTIVATION_TIMEOUT_MS = 35000
+// Status terminais que não vão virar premium: para o polling e dá saída.
+const TERMINAL_STATUSES = ['CANCELED', 'INCOMPLETE_EXPIRED', 'UNPAID']
 
 export default function UpgradeScreen() {
   const router = useRouter()
@@ -24,10 +30,11 @@ export default function UpgradeScreen() {
 
   // Pós-pagamento: a ativação chega via webhook no backend. Polla a
   // assinatura até ela existir como TRIALING/ACTIVE e então segue pra
-  // tela de gerenciamento.
+  // tela de gerenciamento. `stalled` corta o polling e troca pra UI de saída.
   const [activating, setActivating] = useState(false)
+  const [stalled, setStalled] = useState(false)
   const { data: subscription } = useSubscription({
-    refetchInterval: activating ? ACTIVATION_POLL_MS : false,
+    refetchInterval: activating && !stalled ? ACTIVATION_POLL_MS : false,
   })
 
   const activated =
@@ -44,6 +51,24 @@ export default function UpgradeScreen() {
     if (profile?.isPremium && !activating) router.replace('/billing/manage')
   }, [profile?.isPremium, activating, router])
 
+  // Timeout: se o webhook não confirmar a tempo, sai do spinner pra UI de saída.
+  useEffect(() => {
+    if (!activating || stalled) return
+    const timer = setTimeout(() => setStalled(true), ACTIVATION_TIMEOUT_MS)
+    return () => clearTimeout(timer)
+  }, [activating, stalled])
+
+  // Status terminal (pagamento falhou/expirou): para o spinner de imediato.
+  useEffect(() => {
+    if (
+      activating &&
+      subscription &&
+      TERMINAL_STATUSES.includes(subscription.status)
+    ) {
+      setStalled(true)
+    }
+  }, [activating, subscription])
+
   function handleSubscribe() {
     subscribe.mutate(undefined, {
       onSuccess: outcome => {
@@ -52,6 +77,31 @@ export default function UpgradeScreen() {
         // voltar ao normal é o sinal (padrão do app).
       },
     })
+  }
+
+  // Ativação demorou ou terminou em estado não-ativo: dá saída ao usuário.
+  if (activating && stalled) {
+    return (
+      <View className="flex-1 bg-black items-center justify-center gap-5 px-8">
+        <Ionicons name="time-outline" size={44} color="#a78bfa" />
+        <Text className="text-white font-semibold text-lg text-center">
+          A confirmação está demorando
+        </Text>
+        <Text className="text-zinc-400 text-sm text-center">
+          Se o pagamento foi concluído, seu acesso premium é liberado assim que
+          a confirmação chegar. Você pode acompanhar pela tela de assinatura.
+        </Text>
+        <View className="w-full gap-3 mt-1">
+          <Button
+            label="Ver minha assinatura"
+            onPress={() => router.replace('/billing/manage')}
+          />
+          <Pressable onPress={() => router.back()} hitSlop={8} className="py-2">
+            <Text className="text-zinc-400 text-sm text-center">Voltar</Text>
+          </Pressable>
+        </View>
+      </View>
+    )
   }
 
   if (activating) {
