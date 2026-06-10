@@ -1,20 +1,13 @@
 import { useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 import { useRouter } from 'expo-router'
-import * as Location from 'expo-location'
 import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
-import { useConsent } from '@/features/privacy/hooks/useConsent'
 import {
   useMyProfile,
   useUpdateProfile,
 } from '@/features/users/hooks/useProfile'
+import { useNotificationConsent } from '@/features/notifications/hooks/useNotificationConsent'
 import { useNotificationPrefs } from '@/features/notifications/hooks/useNotificationPrefs'
-import { useOsPermissions } from '@/features/notifications/hooks/useOsPermissions'
-import {
-  enablePush,
-  disablePush,
-} from '@/features/notifications/lib/pushRegistration'
-import { syncLocationOnce } from '@/features/notifications/lib/locationSync'
 import { RadiusSlider } from '@/features/notifications/components/RadiusSlider'
 import { OsPermissionWarning } from '@/features/notifications/components/OsPermissionWarning'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
@@ -22,8 +15,14 @@ import { SettingsRow } from '@/shared/components/SettingsRow'
 
 export default function NotificationSettingsScreen() {
   const router = useRouter()
-  const { consent, updateConsent } = useConsent()
-  const osPermissions = useOsPermissions()
+  const {
+    pushConsent,
+    locationConsent,
+    osPush,
+    osLocation,
+    togglePush,
+    toggleLocation,
+  } = useNotificationConsent()
   const { notifyRadiusKm, saveRadius } = useNotificationPrefs()
   const { data: profile } = useMyProfile()
   const updateProfile = useUpdateProfile(profile?.id ?? '')
@@ -32,24 +31,6 @@ export default function NotificationSettingsScreen() {
   // perfil (PUT substitui a lista completa — ver UpdateMePayload).
   const [localCategories, setLocalCategories] = useState<string[] | null>(null)
   const categories = localCategories ?? profile?.preferredCategories ?? []
-
-  // LGPD: o opt-in é registrado ANTES de qualquer prompt do SO; sem opt-in,
-  // nenhuma API de push/localização é chamada.
-  async function handlePushToggle(value: boolean) {
-    await updateConsent({ pushNotifications: value })
-    if (value) await enablePush()
-    else await disablePush()
-    await osPermissions.refresh()
-  }
-
-  async function handleLocationToggle(value: boolean) {
-    await updateConsent({ locationPrecise: value })
-    if (value) {
-      const permission = await Location.requestForegroundPermissionsAsync()
-      if (permission.granted) void syncLocationOnce()
-    }
-    await osPermissions.refresh()
-  }
 
   function handleCategoriesChange(next: string[]) {
     if (!profile) return
@@ -79,22 +60,20 @@ export default function NotificationSettingsScreen() {
         <ConsentToggleRow
           label="Notificações push"
           description="Enviar notificações push neste aparelho sobre convites, atividade da sua rede e eventos perto de você."
-          value={consent.pushNotifications}
-          onChange={v => void handlePushToggle(v)}
+          value={pushConsent}
+          onChange={v => void togglePush(v)}
         />
-        {consent.pushNotifications && osPermissions.push === 'denied' && (
+        {pushConsent && osPush === 'denied' && (
           <OsPermissionWarning message="A permissão de notificações está negada no sistema — o push não chega até você reativá-la." />
         )}
         <ConsentToggleRow
           label="Eventos perto de você"
           description="Usar sua localização aproximada (~1km, calculada no aparelho) para avisar de eventos próximos. A posição exata nunca sai do seu celular."
-          value={consent.locationPrecise}
-          onChange={v => void handleLocationToggle(v)}
-          isLast={
-            !(consent.locationPrecise && osPermissions.location === 'denied')
-          }
+          value={locationConsent}
+          onChange={v => void toggleLocation(v)}
+          isLast={!(locationConsent && osLocation === 'denied')}
         />
-        {consent.locationPrecise && osPermissions.location === 'denied' && (
+        {locationConsent && osLocation === 'denied' && (
           <OsPermissionWarning message="A permissão de localização está negada no sistema — os avisos de proximidade não funcionam sem ela." />
         )}
       </View>
@@ -103,7 +82,7 @@ export default function NotificationSettingsScreen() {
         <RadiusSlider
           value={notifyRadiusKm}
           onCommit={km => void saveRadius(km)}
-          disabled={!consent.locationPrecise}
+          disabled={!locationConsent}
         />
         <Text className="text-xs text-zinc-500 mt-1">
           Distância máxima de um evento novo para você ser avisado.
