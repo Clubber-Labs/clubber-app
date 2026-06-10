@@ -1,4 +1,18 @@
 import 'dotenv/config'
+import { withEntitlementsPlist } from 'expo/config-plugins'
+
+// Build local de iOS sem conta paga do Apple Developer Program: o profile
+// automático do time não cobre aps-environment (adicionado pelo plugin do
+// expo-notifications) e o xcodebuild falha. IOS_DISABLE_PUSH=1 no .env.local
+// remove o entitlement no prebuild — push iOS fica fora DESTE build e o app
+// degrada gracioso (getExpoPushTokenAsync falha dentro de try/catch). Nunca
+// setar em build EAS/produção; não commitar o ios/ gerado com o flag ativo.
+function withoutIosPushEntitlement(config) {
+  return withEntitlementsPlist(config, c => {
+    delete c.modResults['aps-environment']
+    return c
+  })
+}
 
 // Reverse-DNS do iOS Client ID = URL scheme que o Google Sign-In registra no
 // Info.plist. Ex: 1234-abc.apps.googleusercontent.com → com.googleusercontent.apps.1234-abc
@@ -105,7 +119,10 @@ export default {
         supportsBackgroundPlayback: false,
         supportsPictureInPicture: false
       }],
-      ...socialAuthPlugins()
+      ...socialAuthPlugins(),
+      ...(process.env.IOS_DISABLE_PUSH === '1'
+        ? [withoutIosPushEntitlement]
+        : [])
     ],
     extra: {
       apiUrl: process.env.API_URL,
