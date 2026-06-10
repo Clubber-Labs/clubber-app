@@ -27,6 +27,7 @@ import { endSession } from '@/features/auth/lib/session'
 import { initFacebookSDK } from '@/features/auth/lib/facebookLogin'
 import { SessionUnavailable } from '@/features/auth/components/SessionUnavailable'
 import { ChatRealtimeMount } from '@/features/chat/components/ChatRealtimeMount'
+import { NotificationsMount } from '@/features/notifications/components/NotificationsMount'
 import { GlobalHeader } from '@/shared/components/GlobalHeader'
 
 // Redirecionamentos por status. 'loading'/'offline' são tratados pelos overlays
@@ -110,9 +111,9 @@ export default function RootLayout() {
     initFacebookSDK()
   }, [])
 
-  // 4401 no socket = token inválido e sem rota de refresh → encerra a sessão
-  // (mesmo caminho do interceptor REST 401).
-  const handleChatAuthError = useCallback(() => {
+  // 4401 em qualquer socket (chat/notificações) = token inválido e sem rota
+  // de refresh → encerra a sessão (mesmo caminho do interceptor REST 401).
+  const handleSocketAuthError = useCallback(() => {
     endSession({ expired: true })
   }, [])
 
@@ -159,10 +160,13 @@ export default function RootLayout() {
                 </SafeAreaView>
                 <AuthGuard />
                 {chatActive && userId && (
-                  <ChatRealtimeMount
-                    myId={userId}
-                    onAuthError={handleChatAuthError}
-                  />
+                  <>
+                    <ChatRealtimeMount
+                      myId={userId}
+                      onAuthError={handleSocketAuthError}
+                    />
+                    <NotificationsMount onAuthError={handleSocketAuthError} />
+                  </>
                 )}
               </BannerProvider>
             </OpenInMapsProvider>

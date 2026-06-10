@@ -38,7 +38,7 @@ export const CONSENT_ITEMS: Array<{
     key: 'locationPrecise',
     label: 'Localização precisa (GPS)',
     description:
-      'Usamos sua posição em tempo real para exibir eventos próximos no mapa e no mapa de calor.',
+      'Usamos sua posição em tempo real para exibir eventos próximos no mapa e no mapa de calor e, se as notificações estiverem ativas, avisar de eventos perto de você (sua posição aproximada é calculada no aparelho).',
     category: 'location',
   },
   {

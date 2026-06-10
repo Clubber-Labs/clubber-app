@@ -36,3 +36,7 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# Credenciais Firebase/Google (FCM push e submit) — nunca commitar
+google-services.json
+google-service-account.json

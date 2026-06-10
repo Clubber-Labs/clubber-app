@@ -23,6 +23,12 @@ export default function SettingsScreen() {
           onPress={() => router.push('/settings/account')}
         />
         <SettingsRow
+          label="Notificações"
+          description="Push, eventos próximos e categorias preferidas"
+          icon="notifications-outline"
+          onPress={() => router.push('/settings/notifications')}
+        />
+        <SettingsRow
           label="Privacidade"
           description="Consentimentos e dados (LGPD)"
           icon="shield-checkmark-outline"

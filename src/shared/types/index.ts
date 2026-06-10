@@ -214,6 +214,9 @@ export type UserProfile = {
   // Values do enum EventCategory (MAIÚSCULAS). Sempre array; vazio = []. Não
   // incluído nos selects reduzidos (/users e /users/search), por isso opcional.
   preferredCategories?: string[]
+  // Raio de interesse das notificações de proximidade (km). Presente só em
+  // /users/me e só em backends que já expõem o campo no select privado.
+  notifyRadiusKm?: number
   // Ciclo de vida da conta — presentes só em /users/me e no user de /auth/*
   // (mesma razão de role?). Em /users/:id são ausentes. Ramificar só nos valores
   // inativos explícitos; undefined = desconhecido/skip.

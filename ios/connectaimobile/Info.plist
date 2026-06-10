@@ -81,11 +81,11 @@
     <key>NSFaceIDUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your Face ID biometric data.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>Usamos sua localização para mostrar eventos próximos no mapa.</string>
+    <string>Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você.</string>
     <key>NSLocationAlwaysUsageDescription</key>
-    <string>Usamos sua localização para mostrar eventos próximos no mapa.</string>
+    <string>Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você.</string>
     <key>NSLocationWhenInUseUsageDescription</key>
-    <string>Usamos sua localização para mostrar eventos próximos no mapa.</string>
+    <string>Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Precisamos do microfone para gravar mensagens de voz.</string>
     <key>NSPhotoLibraryUsageDescription</key>

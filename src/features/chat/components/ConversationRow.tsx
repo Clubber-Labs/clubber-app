@@ -1,7 +1,7 @@
 import { View, Text, Pressable } from 'react-native'
 import { ConversationAvatar } from './ConversationAvatar'
 import { PresenceDot } from './PresenceDot'
-import { UnreadBadge } from './UnreadBadge'
+import { UnreadBadge } from '@/shared/components/UnreadBadge'
 import { usePresence } from '../hooks/usePresence'
 import {
   conversationAvatarUsers,
