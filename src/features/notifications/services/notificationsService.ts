@@ -26,8 +26,14 @@ export const notificationsService = {
     api.post('/devices', { token, platform }).then(() => undefined),
 
   // Idempotente no backend (204 mesmo se o token já não existe).
+  // skipAuthHandler: roda dentro do endSession com sessão expirada — um 401
+  // aqui re-dispararia o handler global e entraria em loop de logout.
   removeDevice: (token: string): Promise<void> =>
-    api.delete(`/devices/${encodeURIComponent(token)}`).then(() => undefined),
+    api
+      .delete(`/devices/${encodeURIComponent(token)}`, {
+        skipAuthHandler: true,
+      })
+      .then(() => undefined),
 
   // Geohash precisão 6 calculado NO DEVICE — a coordenada precisa nunca sai
   // do aparelho (minimização de dados / LGPD).
