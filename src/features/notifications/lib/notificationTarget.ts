@@ -1,4 +1,4 @@
-import type { AppNotification } from '../schemas/notificationSchema'
+import type { NotificationType } from '../schemas/notificationSchema'
 
 // Destino de navegação derivado de type + ids — whitelist explícita; nunca uma
 // URL vinda do payload.
@@ -7,8 +7,16 @@ export type NotificationTarget =
   | { kind: 'profile'; userId: string }
   | { kind: 'followRequests' }
 
+// Subconjunto que o roteamento usa — satisfeito tanto pela Notification
+// completa (central/WS) quanto pelo data enriquecido do push.
+type NotificationTargetInput = {
+  type: NotificationType
+  actorId?: string | null
+  eventId?: string | null
+}
+
 export function notificationTarget(
-  n: AppNotification,
+  n: NotificationTargetInput,
 ): NotificationTarget | null {
   switch (n.type) {
     case 'FOLLOW_REQUEST':

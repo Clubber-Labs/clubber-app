@@ -54,11 +54,23 @@ export const notificationWsFrameSchema = z.object({
 
 // `data` do push do SO. O payload de um push NÃO é confiável (deep-link pode
 // ser forjado) — só estes campos roteiam, depois de validados; o resto é
-// ignorado. O push não carrega type/id da notificação (limitação do contrato).
+// ignorado. O `.catch(null)` por campo degrada valor malformado/desconhecido
+// individualmente (ex.: NotificationType novo num app antigo) sem derrubar o
+// parse inteiro — o roteamento cai no fallback em vez de quebrar.
 export const pushDataSchema = z.object({
-  eventId: z.uuid().optional(),
-  actor: z.object({ id: z.uuid() }).optional(),
+  // Contrato enriquecido (backend com buildPushData): permite marcar como
+  // lida e rotear por tipo no tap.
+  notificationId: z.uuid().nullish().catch(null),
+  type: notificationTypeSchema.nullish().catch(null),
+  actorId: z.uuid().nullish().catch(null),
+  eventId: z.uuid().nullish().catch(null),
+  postId: z.uuid().nullish().catch(null),
+  commentId: z.uuid().nullish().catch(null),
+  // Contrato original (fallback): { actor } nas sociais.
+  actor: z.object({ id: z.uuid() }).nullish().catch(null),
 })
+
+export type PushData = z.infer<typeof pushDataSchema>
 
 // "AppNotification" (e não "Notification") para não colidir com o tipo global
 // de expo-notifications nos arquivos que importam os dois.

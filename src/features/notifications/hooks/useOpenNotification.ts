@@ -5,7 +5,7 @@ import { useBanner } from '@/shared/lib/banner'
 import { isNotFoundError, isForbiddenError } from '@/shared/lib/apiError'
 import { eventsService } from '@/features/events/services/eventsService'
 import { eventKeys } from '@/features/events/hooks/cacheKeys'
-import type { AppNotification } from '../schemas/notificationSchema'
+import type { AppNotification, PushData } from '../schemas/notificationSchema'
 import { notificationTarget } from '../lib/notificationTarget'
 import type { NotificationTarget } from '../lib/notificationTarget'
 import { useMarkRead } from './useMarkRead'
@@ -18,7 +18,9 @@ export function useOpenNotification() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const showBanner = useBanner()
-  const markRead = useMarkRead()
+  // `mutate` tem identidade estável no TanStack v5 — usar o objeto da mutation
+  // re-criaria os callbacks (e re-assinaria o listener de tap) a cada transição.
+  const { mutate: markRead } = useMarkRead()
 
   const openTarget = useCallback(
     async (target: NotificationTarget | null) => {
@@ -53,11 +55,45 @@ export function useOpenNotification() {
 
   const openNotification = useCallback(
     (n: AppNotification) => {
-      if (n.readAt === null) markRead.mutate(n.id)
+      if (n.readAt === null) markRead(n.id)
       void openTarget(notificationTarget(n))
     },
     [markRead, openTarget],
   )
 
-  return { openNotification, openTarget }
+  // Tap num push do SO. Com o contrato enriquecido (notificationId/type+ids)
+  // marca como lida e roteia igual à central; payload antigo cai no fallback
+  // eventId → evento / actor → perfil; sem nada utilizável → central.
+  const openFromPush = useCallback(
+    (data: PushData) => {
+      if (data.notificationId) markRead(data.notificationId)
+
+      if (data.type) {
+        const target = notificationTarget({
+          type: data.type,
+          actorId: data.actorId ?? data.actor?.id ?? null,
+          eventId: data.eventId ?? null,
+        })
+        if (target) {
+          void openTarget(target)
+          return
+        }
+        router.push('/notifications')
+        return
+      }
+
+      if (data.eventId) {
+        void openTarget({ kind: 'event', eventId: data.eventId })
+        return
+      }
+      if (data.actor?.id) {
+        void openTarget({ kind: 'profile', userId: data.actor.id })
+        return
+      }
+      router.push('/notifications')
+    },
+    [markRead, openTarget, router],
+  )
+
+  return { openNotification, openTarget, openFromPush }
 }
