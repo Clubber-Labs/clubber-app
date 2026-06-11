@@ -19,12 +19,14 @@ type Props = {
   // O fluxo vive na tela do mapa — fechar o painel não descarta as sugestões
   // já geradas (nem gasta outra geração da quota ao reabrir).
   suggest: ReturnType<typeof useSuggestSpots>
+  // Escolher (no card ou no rascunho do mapa) é orquestrado pela tela.
+  onChoose: (suggestion: SpotSuggestion) => void
   onClose: () => void
 }
 
 // Painel da metade de baixo da tab do mapa: gera e lista as sugestões da IA
-// enquanto os balões dos spots continuam visíveis na metade de cima.
-export function SpotSuggestionsPanel({ suggest, onClose }: Props) {
+// enquanto os balões dos spots e os rascunhos continuam visíveis em cima.
+export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
   const router = useRouter()
   const {
     hasLocationConsent,
@@ -35,15 +37,6 @@ export function SpotSuggestionsPanel({ suggest, onClose }: Props) {
     locationIssue,
     handleGenerate,
   } = suggest
-
-  function choose(suggestion: SpotSuggestion) {
-    // Candidatos são efêmeros (não persistem no backend) — seguem por
-    // parâmetro de rota até o form de publicação.
-    router.push({
-      pathname: '/spots/publish',
-      params: { candidate: JSON.stringify(suggestion) },
-    })
-  }
 
   const hasResult = suggestions.length > 0
 
@@ -152,8 +145,12 @@ export function SpotSuggestionsPanel({ suggest, onClose }: Props) {
           gap: 12,
         }}
         ListHeaderComponent={header}
-        renderItem={({ item }) => (
-          <SpotSuggestionCard suggestion={item} onChoose={() => choose(item)} />
+        renderItem={({ item, index }) => (
+          <SpotSuggestionCard
+            suggestion={item}
+            rank={index + 1}
+            onChoose={() => onChoose(item)}
+          />
         )}
       />
     </View>

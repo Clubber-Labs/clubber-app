@@ -38,7 +38,8 @@ import { SpotMarkers } from '@/features/spots/components/SpotMarkers'
 import { SpotPreviewCard } from '@/features/spots/components/SpotPreviewCard'
 import { GenerateSpotsButton } from '@/features/spots/components/GenerateSpotsButton'
 import { SpotSuggestionsPanel } from '@/features/spots/components/SpotSuggestionsPanel'
-import type { Spot } from '@/features/spots/types'
+import { SuggestionMarkers } from '@/features/spots/components/SuggestionMarkers'
+import type { Spot, SpotSuggestion } from '@/features/spots/types'
 
 const COINCIDENT_FOCUS_ZOOM = 20
 
@@ -48,7 +49,8 @@ export default function MapScreen() {
   const livePos = useUserLiveLocation(locationStatus === 'ready')
   const myPos = livePos ?? userCoords
   const profile = useMyProfile()
-  const { cameraRef, mapRef, flyTo, adjustZoom, focusOnEvent } = useMapCamera()
+  const { cameraRef, mapRef, flyTo, adjustZoom, focusOnEvent, fitToCoords } =
+    useMapCamera()
   const { showMarkers, onCameraZoomChange } = useMapZoomState()
   const { bbox, onRegionChange } = useViewportBbox(mapRef)
 
@@ -82,6 +84,23 @@ export default function MapScreen() {
   useEffect(() => {
     if (userCoords) flyTo(userCoords, USER_ZOOM, 800)
   }, [userCoords, flyTo])
+
+  // Sugestões geradas → enquadra os rascunhos na metade visível do mapa (o
+  // padding inferior do fitToCoords compensa o painel aberto por cima).
+  const suggestions = suggest.suggestions
+  useEffect(() => {
+    if (!suggestionsOpen || suggestions.length === 0) return
+    fitToCoords(suggestions.map(s => [s.longitude, s.latitude]))
+  }, [suggestionsOpen, suggestions, fitToCoords])
+
+  function chooseSuggestion(suggestion: SpotSuggestion) {
+    // Candidatos são efêmeros (não persistem no backend) — seguem por
+    // parâmetro de rota até o form de publicação.
+    router.push({
+      pathname: '/spots/publish',
+      params: { candidate: JSON.stringify(suggestion) },
+    })
+  }
 
   // Abre o preview e aproxima — vale pra tap no pin e pra resultado de busca
   // (que pode estar fora do viewport; o flyTo dispara o refetch por bbox).
@@ -206,6 +225,12 @@ export default function MapScreen() {
           onPress={openSpot}
           dimmed={densityVisible}
         />
+        {suggestionsOpen && (
+          <SuggestionMarkers
+            suggestions={suggest.suggestions}
+            onPress={chooseSuggestion}
+          />
+        )}
       </Mapbox.MapView>
 
       <View className="absolute top-3 left-3 right-3">
@@ -252,6 +277,7 @@ export default function MapScreen() {
       {suggestionsOpen && (
         <SpotSuggestionsPanel
           suggest={suggest}
+          onChoose={chooseSuggestion}
           onClose={() => setSuggestionsOpen(false)}
         />
       )}

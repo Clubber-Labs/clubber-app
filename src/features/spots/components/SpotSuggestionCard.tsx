@@ -5,12 +5,14 @@ import type { SpotSuggestion } from '../types'
 
 type Props = {
   suggestion: SpotSuggestion
+  // Posição na lista ranqueada — mesmo número do marcador de rascunho no mapa.
+  rank: number
   onChoose: () => void
 }
 
 // Card de um candidato gerado pela IA. A copy (suggestedTitle) é o destaque —
 // vira o título sugerido do spot ao escolher.
-export function SpotSuggestionCard({ suggestion, onChoose }: Props) {
+export function SpotSuggestionCard({ suggestion, rank, onChoose }: Props) {
   return (
     <Pressable
       onPress={onChoose}
@@ -20,7 +22,9 @@ export function SpotSuggestionCard({ suggestion, onChoose }: Props) {
     >
       <View className="flex-row items-center justify-between gap-2">
         <View className="flex-row items-center gap-2 flex-1">
-          <Ionicons name="location-outline" size={16} color="#a78bfa" />
+          <View className="bg-violet-600 rounded-full w-5 h-5 items-center justify-center">
+            <Text className="text-white text-[10px] font-bold">{rank}</Text>
+          </View>
           <Text
             className="text-zinc-300 text-sm font-medium flex-1"
             numberOfLines={1}
