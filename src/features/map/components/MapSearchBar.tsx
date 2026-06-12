@@ -23,7 +23,7 @@ type Props = {
 export function MapSearchBar({ onSelect }: Props) {
   const [query, setQuery] = useState('')
   const { events, trimmed, isLoading } = useSearchEvents(query)
-  const { labelFor } = useCategories()
+  const { labelsFor } = useCategories()
   const open = trimmed.length >= 2
 
   function handleSelect(event: FeedEvent) {
@@ -79,7 +79,7 @@ export function MapSearchBar({ onSelect }: Props) {
                         numberOfLines={1}
                         className="text-zinc-500 text-xs flex-1"
                       >
-                        {event.address || labelFor(event.category)}
+                        {event.address || labelsFor(event.categories)}
                       </Text>
                     </View>
                   </View>

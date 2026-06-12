@@ -36,5 +36,12 @@ export function useCategories() {
     [labels],
   )
 
-  return { categories, labelFor, isLoading: query.isLoading }
+  // Junta os rótulos de várias categorias num texto único (ex.: "Festa, Música")
+  // para linhas de resumo onde não cabe uma pílula por categoria.
+  const labelsFor = useCallback(
+    (values: string[]) => values.map(labelFor).join(', '),
+    [labelFor],
+  )
+
+  return { categories, labelFor, labelsFor, isLoading: query.isLoading }
 }

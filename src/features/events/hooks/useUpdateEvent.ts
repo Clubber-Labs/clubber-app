@@ -30,7 +30,7 @@ export function useUpdateEvent(id: string) {
           endDate: data.endDate ? data.endDate.toISOString() : null,
           latitude: data.latitude,
           longitude: data.longitude,
-          category: data.category,
+          categories: data.categories,
           isPublic: data.isPublic,
         })
       }

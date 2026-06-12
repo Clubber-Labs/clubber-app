@@ -15,7 +15,9 @@ export function EventInfoBlock({ event }: Props) {
     <View className="gap-2">
       <View className="flex-row items-center gap-1.5 flex-wrap">
         <EventStatusBadge status={event.status} date={event.date} />
-        <CategoryBadge value={event.category} />
+        {event.categories.map(category => (
+          <CategoryBadge key={category} value={category} />
+        ))}
         {!event.isPublic && (
           <View className="bg-zinc-800 px-2 py-0.5 rounded-full">
             <Text className="text-zinc-300 text-[11px] font-semibold">

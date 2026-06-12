@@ -109,7 +109,7 @@ export type FeedEvent = {
   latitude: number
   longitude: number
   address?: string
-  category: string
+  categories: string[]
   author: FeedAuthor
   // /feed inclui friendAttendances e reason (personalizados); /events não
   // retorna esses campos. Optional pra refletir o contrato real da API.
@@ -138,7 +138,7 @@ export type EventDetail = {
   latitude: number
   longitude: number
   address?: string
-  category: string
+  categories: string[]
   isPublic: boolean
   images: EventImage[]
   maxCapacity?: number
@@ -232,7 +232,7 @@ export type UserEventSummary = {
   id: string
   title: string
   date: string
-  category: string
+  categories: string[]
   images: EventImage[]
   address?: string | null
   isPublic: boolean

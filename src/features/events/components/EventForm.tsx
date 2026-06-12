@@ -17,7 +17,7 @@ import type { ReactNode } from 'react'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { DatePicker } from '@/shared/components/DatePicker'
-import { CategorySingleSelect } from '@/shared/components/CategorySingleSelect'
+import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import { LocationPicker } from './LocationPicker'
 import { AddressAutocomplete } from './AddressAutocomplete'
 
@@ -25,7 +25,7 @@ const DEFAULTS: Partial<CreateEventInput> = {
   title: '',
   description: '',
   address: '',
-  category: '',
+  categories: [],
   isPublic: true,
 }
 
@@ -162,17 +162,17 @@ export function EventForm({
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">Categoria</Text>
+          <Text className="text-sm font-medium text-zinc-300">Categorias</Text>
           <Controller
             control={control}
-            name="category"
+            name="categories"
             render={({ field: { onChange, value } }) => (
-              <CategorySingleSelect value={value} onChange={onChange} />
+              <CategoryMultiSelect value={value} onChange={onChange} />
             )}
           />
-          {errors.category && (
+          {errors.categories && (
             <Text className="text-white text-xs">
-              {errors.category.message}
+              {errors.categories.message}
             </Text>
           )}
         </View>

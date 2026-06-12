@@ -19,7 +19,9 @@ export const createEventSchema = z
       .min(1, 'Selecione um local no mapa'),
     latitude: z.number().min(-90).max(90),
     longitude: z.number().min(-180).max(180),
-    category: z.string().min(1, 'Categoria é obrigatória'),
+    categories: z
+      .array(z.string())
+      .min(1, 'Selecione ao menos uma categoria'),
     isPublic: z.boolean(),
   })
   .refine(data => !data.endDate || data.endDate > data.date, {

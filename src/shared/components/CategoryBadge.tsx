@@ -5,8 +5,8 @@ type Props = {
   value: string
 }
 
-// Pílula violeta com o rótulo localizado da categoria. Substitui qualquer
-// renderização de `event.category` cru (que mostraria o enum, ex.: 'PARTY').
+// Pílula violeta com o rótulo localizado de uma categoria. Um evento pode ter
+// várias — o pai mapeia `event.categories` renderizando uma pílula por valor.
 export function CategoryBadge({ value }: Props) {
   const { labelFor } = useCategories()
   return (
