@@ -39,7 +39,10 @@ export function DMDetails({ conversation, myId, onViewProfile }: Props) {
       confirmLabel: 'Bloquear',
       destructive: true,
     })
-    if (ok) block.mutate(other.id, { onError: e => showBanner(getApiError(e).message) })
+    if (ok)
+      block.mutate(other.id, {
+        onError: e => showBanner(getApiError(e).message),
+      })
   }
 
   return (

@@ -25,9 +25,7 @@ export const editProfileSchema = z.object({
   bio: z.string().max(255, 'Máximo 255 caracteres'),
   isPrivate: z.boolean(),
   birthdate: z.date().optional(),
-  preferredCategories: z
-    .array(z.string())
-    .max(10, 'No máximo 10 categorias'),
+  preferredCategories: z.array(z.string()).max(10, 'No máximo 10 categorias'),
 })
 
 export type EditProfileInput = z.infer<typeof editProfileSchema>

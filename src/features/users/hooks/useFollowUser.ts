@@ -11,7 +11,9 @@ import type { SearchUserItem } from '../schemas/searchUserSchema'
 import { userKeys } from './cacheKeys'
 
 type SearchCache = InfiniteData<CursorPaginatedResponse<SearchUserItem>>
-type SearchSnapshot = ReadonlyArray<[readonly unknown[], SearchCache | undefined]>
+type SearchSnapshot = ReadonlyArray<
+  [readonly unknown[], SearchCache | undefined]
+>
 
 type Snapshot = {
   profile: UserProfile | undefined

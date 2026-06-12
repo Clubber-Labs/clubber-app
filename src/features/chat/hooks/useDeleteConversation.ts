@@ -25,6 +25,7 @@ export function useDeleteConversation() {
     onError: (_err, _id, ctx) => {
       if (ctx?.prev) queryClient.setQueryData(chatKeys.inbox, ctx.prev)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: chatKeys.inbox }),
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: chatKeys.inbox }),
   })
 }

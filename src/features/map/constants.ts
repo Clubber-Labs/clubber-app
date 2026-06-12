@@ -1,4 +1,5 @@
-export const MAP_STYLE_URL = 'mapbox://styles/bonatoneto/cmoz3l4fa003601qrd130bk09'
+export const MAP_STYLE_URL =
+  'mapbox://styles/bonatoneto/cmoz3l4fa003601qrd130bk09'
 export const BRAZIL_CENTER: [number, number] = [-47.9292, -15.7801]
 export const BRAZIL_ZOOM = 4
 export const USER_ZOOM = 13

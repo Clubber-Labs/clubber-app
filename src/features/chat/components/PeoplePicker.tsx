@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import type { ReactElement, ReactNode } from 'react'
-import { View, Text, TextInput, FlatList, ActivityIndicator } from 'react-native'
+import {
+  View,
+  Text,
+  TextInput,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useChatUserSearch } from '../hooks/useChatUserSearch'
 import { useChatSuggestions } from '../hooks/useChatSuggestions'
@@ -18,9 +24,16 @@ type Props = {
 export function PeoplePicker({ myId, renderItem, belowSearch }: Props) {
   const [query, setQuery] = useState('')
 
-  const { users, trimmed, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useChatUserSearch(query)
-  const { people: suggestions, isLoading: suggestionsLoading } = useChatSuggestions(myId)
+  const {
+    users,
+    trimmed,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useChatUserSearch(query)
+  const { people: suggestions, isLoading: suggestionsLoading } =
+    useChatSuggestions(myId)
 
   const isSearching = trimmed.length >= 2
   const listData = isSearching ? users : suggestions
@@ -62,12 +75,15 @@ export function PeoplePicker({ myId, renderItem, belowSearch }: Props) {
             ) : null
           }
           onEndReached={() => {
-            if (isSearching && hasNextPage && !isFetchingNextPage) fetchNextPage()
+            if (isSearching && hasNextPage && !isFetchingNextPage)
+              fetchNextPage()
           }}
           onEndReachedThreshold={0.4}
           ListEmptyComponent={
             isSearching ? (
-              <Text className="text-zinc-500 text-center mt-6">Ninguém encontrado.</Text>
+              <Text className="text-zinc-500 text-center mt-6">
+                Ninguém encontrado.
+              </Text>
             ) : (
               <Text className="text-zinc-600 text-center mt-6">
                 Siga pessoas para vê-las aqui ou busque por nome.

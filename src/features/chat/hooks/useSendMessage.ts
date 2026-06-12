@@ -65,7 +65,9 @@ export function useSendMessage(conversationId: string, me: UserMini) {
       applyMessageToInbox(queryClient, real, me.id, true)
     },
     onError: (_err, { clientId }) => {
-      queryClient.setQueryData<MsgCache>(key, prev => markFailed(prev, clientId))
+      queryClient.setQueryData<MsgCache>(key, prev =>
+        markFailed(prev, clientId),
+      )
     },
   })
 }

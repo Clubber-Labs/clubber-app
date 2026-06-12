@@ -1,10 +1,5 @@
 import { api } from '@/shared/lib/api'
-import type {
-  Report,
-  ReportReason,
-  ReportStatus,
-  ReportTarget,
-} from '../types'
+import type { Report, ReportReason, ReportStatus, ReportTarget } from '../types'
 
 type CreatePayload = {
   target: ReportTarget

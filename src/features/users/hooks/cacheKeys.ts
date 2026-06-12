@@ -8,10 +8,7 @@ export const userKeys = {
   search: (q: string) => ['users', 'search', q] as const,
 }
 
-export function invalidateUserViews(
-  queryClient: QueryClient,
-  userId?: string,
-) {
+export function invalidateUserViews(queryClient: QueryClient, userId?: string) {
   queryClient.invalidateQueries({ queryKey: userKeys.me })
   if (userId) {
     queryClient.invalidateQueries({ queryKey: userKeys.profile(userId) })

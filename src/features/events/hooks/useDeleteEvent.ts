@@ -45,7 +45,8 @@ export function useDeleteEvent(id: string) {
       if (authorId) {
         const userEventsKey = userKeys.events(authorId)
         await queryClient.cancelQueries({ queryKey: userEventsKey })
-        prevUserEvents = queryClient.getQueryData<UserEventsCache>(userEventsKey)
+        prevUserEvents =
+          queryClient.getQueryData<UserEventsCache>(userEventsKey)
         queryClient.setQueryData<UserEventsCache>(userEventsKey, old =>
           removeFromInfiniteList(old, id),
         )

@@ -17,7 +17,12 @@ type ConsentState = ConsentFields & {
 }
 
 type ConsentActions = {
-  hydrate: (data: Partial<ConsentState> & { consentGiven?: boolean; consentVersion?: string | null }) => void
+  hydrate: (
+    data: Partial<ConsentState> & {
+      consentGiven?: boolean
+      consentVersion?: string | null
+    },
+  ) => void
   setField: (field: keyof ConsentFields, value: boolean) => void
   setMany: (fields: Partial<ConsentFields>) => void
   acceptAll: () => void
@@ -42,7 +47,7 @@ const initialState: ConsentState = {
 
 export const useConsentStore = create<ConsentState & ConsentActions>()(
   persist(
-    (set) => ({
+    set => ({
       ...initialState,
 
       hydrate(data) {
@@ -71,7 +76,12 @@ export const useConsentStore = create<ConsentState & ConsentActions>()(
       },
 
       acceptEssentialOnly() {
-        set({ ...DEFAULT_CONSENT_FIELDS, consentGiven: true, status: 'given', isSynced: false })
+        set({
+          ...DEFAULT_CONSENT_FIELDS,
+          consentGiven: true,
+          status: 'given',
+          isSynced: false,
+        })
       },
 
       revoke() {
@@ -84,21 +94,31 @@ export const useConsentStore = create<ConsentState & ConsentActions>()(
         })
       },
 
-      markSynced() { set({ isSynced: true }) },
-      markUnsynced() { set({ isSynced: false }) },
-      markPending() { set({ status: 'pending' }) },
-      setHydrated() { set({ hydrated: true }) },
+      markSynced() {
+        set({ isSynced: true })
+      },
+      markUnsynced() {
+        set({ isSynced: false })
+      },
+      markPending() {
+        set({ status: 'pending' })
+      },
+      setHydrated() {
+        set({ hydrated: true })
+      },
       // Limpa os dados de consentimento (logout/troca de usuário) MAS preserva
       // `hydrated`: ele indica "o AsyncStorage já foi lido" — um latch de sessão,
       // não um dado de consentimento. Zerá-lo deixaria onConsentFlow=true (header
       // some) até reiniciar o app, pois onRehydrateStorage só roda no boot.
-      reset() { set(s => ({ ...initialState, hydrated: s.hydrated })) },
+      reset() {
+        set(s => ({ ...initialState, hydrated: s.hydrated }))
+      },
     }),
     {
       name: 'connectai-consent-v1',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ isSynced: _s, hydrated: _h, ...state }) => state,
-      onRehydrateStorage: () => (state) => {
+      onRehydrateStorage: () => state => {
         state?.setHydrated()
       },
     },
@@ -110,8 +130,14 @@ export const selectConsentGiven = (s: ConsentState) => s.consentGiven
 /** Só redireciona para consent quando já hidratado E realmente precisa de consentimento */
 export const selectNeedsConsent = (s: ConsentState) =>
   s.hydrated && (!s.consentGiven || s.status === 'pending')
-export const selectNeedsVersionBump = (s: ConsentState, currentVersion: string) =>
-  s.hydrated && s.consentGiven && s.consentVersion !== null && s.consentVersion !== currentVersion
+export const selectNeedsVersionBump = (
+  s: ConsentState,
+  currentVersion: string,
+) =>
+  s.hydrated &&
+  s.consentGiven &&
+  s.consentVersion !== null &&
+  s.consentVersion !== currentVersion
 export const selectConsentHydrated = (s: ConsentState) => s.hydrated
 export const selectCanUseLocation = (s: ConsentState) => s.locationPrecise
 export const selectCanUseSocialFeed = (s: ConsentState) => s.socialFeed

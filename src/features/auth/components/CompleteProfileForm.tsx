@@ -71,7 +71,9 @@ function defaultsFromProfile(
     phone: profile.phone ?? '',
     bio: profile.bio ?? '',
     isPrivate: profile.isPrivate ?? false,
-    birthdate: profile.birthdate ? parseLocalDate(profile.birthdate) : undefined,
+    birthdate: profile.birthdate
+      ? parseLocalDate(profile.birthdate)
+      : undefined,
     preferredCategories: profile.preferredCategories ?? [],
   }
 }

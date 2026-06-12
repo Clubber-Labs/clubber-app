@@ -5,6 +5,9 @@ import { useBanner } from '@/shared/lib/banner'
 import { isNotFoundError, isForbiddenError } from '@/shared/lib/apiError'
 import { eventsService } from '@/features/events/services/eventsService'
 import { eventKeys } from '@/features/events/hooks/cacheKeys'
+import { spotsService } from '@/features/spots/services/spotsService'
+import { spotKeys } from '@/features/spots/hooks/cacheKeys'
+import type { Spot } from '@/features/spots/types'
 import type { AppNotification, PushData } from '../schemas/notificationSchema'
 import { notificationTarget } from '../lib/notificationTarget'
 import type { NotificationTarget } from '../lib/notificationTarget'
@@ -48,6 +51,44 @@ export function useOpenNotification() {
           }
           router.push(`/events/${target.eventId}`)
           return
+        case 'spot':
+          // 404 cobre expirado/removido, privado e bloqueio (o backend não
+          // distingue de propósito) — vira banner, sem revelar mais que isso.
+          try {
+            await queryClient.fetchQuery({
+              queryKey: spotKeys.detail(target.spotId),
+              queryFn: () => spotsService.getById(target.spotId),
+            })
+          } catch (err) {
+            if (isNotFoundError(err) || isForbiddenError(err)) {
+              showBanner('Esse rolê não está mais disponível.')
+              return
+            }
+          }
+          router.push(
+            target.highlightRenew
+              ? `/spots/${target.spotId}?renew=1`
+              : `/spots/${target.spotId}`,
+          )
+          return
+        case 'spotChat':
+          // O chat do grupo é resolvido pelo spot (conversationId). Sem ele
+          // (erro de rede), cai no detalhe — que tem estado de erro próprio
+          // e leva ao chat com um tap.
+          try {
+            const spot = await queryClient.fetchQuery<Spot>({
+              queryKey: spotKeys.detail(target.spotId),
+              queryFn: () => spotsService.getById(target.spotId),
+            })
+            router.push(`/conversations/${spot.conversationId}`)
+          } catch (err) {
+            if (isNotFoundError(err) || isForbiddenError(err)) {
+              showBanner('Esse rolê não está mais disponível.')
+              return
+            }
+            router.push(`/spots/${target.spotId}`)
+          }
+          return
       }
     },
     [queryClient, router, showBanner],
@@ -73,6 +114,7 @@ export function useOpenNotification() {
           type: data.type,
           actorId: data.actorId ?? data.actor?.id ?? null,
           eventId: data.eventId ?? null,
+          spotId: data.spotId ?? null,
         })
         if (target) {
           void openTarget(target)

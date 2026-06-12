@@ -23,8 +23,14 @@ export function MapFiltersSheet() {
         <View className="flex-row items-center justify-between py-2">
           <Text className="text-white text-lg font-bold">Filtros</Text>
           {!isDefaultMapFilters(filters) && (
-            <Pressable onPress={reset} hitSlop={8} accessibilityLabel="Limpar filtros">
-              <Text className="text-violet-400 text-sm font-medium">Limpar</Text>
+            <Pressable
+              onPress={reset}
+              hitSlop={8}
+              accessibilityLabel="Limpar filtros"
+            >
+              <Text className="text-violet-400 text-sm font-medium">
+                Limpar
+              </Text>
             </Pressable>
           )}
         </View>
@@ -56,7 +62,9 @@ export function MapFiltersSheet() {
           </View>
           <Switch
             value={filters.friendsOnly}
-            onValueChange={friendsOnly => setFilters({ ...filters, friendsOnly })}
+            onValueChange={friendsOnly =>
+              setFilters({ ...filters, friendsOnly })
+            }
             trackColor={{ true: '#7c3aed', false: '#3f3f46' }}
             thumbColor="#ffffff"
           />

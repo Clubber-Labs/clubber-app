@@ -12,7 +12,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
 import { useConsent } from '@/features/privacy/hooks/useConsent'
-import { CATEGORY_LABELS, type ConsentFields } from '@/features/privacy/services/consentService'
+import {
+  CATEGORY_LABELS,
+  type ConsentFields,
+} from '@/features/privacy/services/consentService'
 import {
   DEFAULT_CONSENT_FIELDS,
   ORDERED_CATEGORIES,
@@ -26,7 +29,9 @@ export default function ConsentScreen() {
 
   const [fields, setFields] = useState<ConsentFields>(DEFAULT_CONSENT_FIELDS)
   const [loading, setLoading] = useState(false)
-  const [expandedCategory, setExpandedCategory] = useState<string | null>('location')
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(
+    'location',
+  )
 
   const itemsByCategory = useMemo(() => groupItemsByCategory(), [])
 
@@ -58,11 +63,18 @@ export default function ConsentScreen() {
 
       <View className="flex-1 bg-black">
         {/* Header — respeita safe area no topo */}
-        <View style={{ paddingTop: insets.top + 16 }} className="px-5 pb-4 border-b border-zinc-800">
+        <View
+          style={{ paddingTop: insets.top + 16 }}
+          className="px-5 pb-4 border-b border-zinc-800"
+        >
           <Text className="text-2xl font-bold text-white">Sua privacidade</Text>
           <Text className="text-zinc-400 text-sm mt-1 leading-5">
-            Escolha o que nos permite usar. Você pode mudar isso a qualquer momento em{' '}
-            <Text className="text-violet-400 font-medium">Perfil → Privacidade</Text>.
+            Escolha o que nos permite usar. Você pode mudar isso a qualquer
+            momento em{' '}
+            <Text className="text-violet-400 font-medium">
+              Perfil → Privacidade
+            </Text>
+            .
           </Text>
         </View>
 
@@ -77,14 +89,16 @@ export default function ConsentScreen() {
             <View className="flex-row items-center justify-between px-4 py-3 border-b border-zinc-800">
               <View className="flex-row items-center gap-2">
                 <Ionicons name="lock-closed" size={14} color="#a78bfa" />
-                <Text className="text-sm font-semibold text-violet-400">Dados essenciais</Text>
+                <Text className="text-sm font-semibold text-violet-400">
+                  Dados essenciais
+                </Text>
               </View>
               <Text className="text-xs text-zinc-500">Sempre ativo</Text>
             </View>
             <View className="px-4 py-3">
               <Text className="text-xs text-zinc-400 leading-4">
-                Necessários para criar e manter sua conta, autenticação e operação básica do app.
-                Não podem ser desativados.
+                Necessários para criar e manter sua conta, autenticação e
+                operação básica do app. Não podem ser desativados.
               </Text>
             </View>
           </View>
@@ -96,7 +110,10 @@ export default function ConsentScreen() {
             const expanded = expandedCategory === cat
 
             return (
-              <View key={cat} className="mx-4 mt-3 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden">
+              <View
+                key={cat}
+                className="mx-4 mt-3 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden"
+              >
                 <Pressable
                   onPress={() => setExpandedCategory(expanded ? null : cat)}
                   className="flex-row items-center justify-between px-4 py-3 active:opacity-70"
@@ -111,16 +128,17 @@ export default function ConsentScreen() {
                   />
                 </Pressable>
 
-                {expanded && items.map((item, idx) => (
-                  <ConsentToggleRow
-                    key={item.key}
-                    label={item.label}
-                    description={item.description}
-                    value={fields[item.key]}
-                    onChange={v => toggleField(item.key, v)}
-                    isLast={idx === items.length - 1}
-                  />
-                ))}
+                {expanded &&
+                  items.map((item, idx) => (
+                    <ConsentToggleRow
+                      key={item.key}
+                      label={item.label}
+                      description={item.description}
+                      value={fields[item.key]}
+                      onChange={v => toggleField(item.key, v)}
+                      isLast={idx === items.length - 1}
+                    />
+                  ))}
               </View>
             )
           })}
@@ -137,7 +155,8 @@ export default function ConsentScreen() {
           </Pressable>
 
           <Text className="text-zinc-600 text-xs text-center mt-3 mx-6 leading-4">
-            LGPD — Lei nº 13.709/2018. Consentimento livre, informado e inequívoco (Art. 8).{'\n'}
+            LGPD — Lei nº 13.709/2018. Consentimento livre, informado e
+            inequívoco (Art. 8).{'\n'}
             Versão da política: 1.0 · Vigência: 02/06/2026.
           </Text>
         </ScrollView>
@@ -155,7 +174,9 @@ export default function ConsentScreen() {
             {loading ? (
               <ActivityIndicator color="white" />
             ) : (
-              <Text className="text-white font-bold text-base">Aceitar todos</Text>
+              <Text className="text-white font-bold text-base">
+                Aceitar todos
+              </Text>
             )}
           </Pressable>
 
@@ -164,7 +185,9 @@ export default function ConsentScreen() {
             disabled={loading}
             className="bg-zinc-900 rounded-xl py-4 items-center border border-zinc-700 active:opacity-80"
           >
-            <Text className={`font-semibold text-base ${loading ? 'text-zinc-500' : 'text-white'}`}>
+            <Text
+              className={`font-semibold text-base ${loading ? 'text-zinc-500' : 'text-white'}`}
+            >
               Continuar com selecionados
             </Text>
           </Pressable>
@@ -174,7 +197,9 @@ export default function ConsentScreen() {
             disabled={loading}
             className="py-3 items-center"
           >
-            <Text className={`text-sm ${loading ? 'text-zinc-700' : 'text-zinc-500'}`}>
+            <Text
+              className={`text-sm ${loading ? 'text-zinc-700' : 'text-zinc-500'}`}
+            >
               Apenas o essencial
             </Text>
           </Pressable>

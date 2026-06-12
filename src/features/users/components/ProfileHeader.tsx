@@ -73,7 +73,9 @@ export function ProfileHeader({
           onPress={onEditPress}
           className="mt-4 border border-zinc-700 rounded-lg px-6 py-2"
         >
-          <Text className="text-zinc-200 font-medium text-sm">Editar perfil</Text>
+          <Text className="text-zinc-200 font-medium text-sm">
+            Editar perfil
+          </Text>
         </Pressable>
       )}
     </View>

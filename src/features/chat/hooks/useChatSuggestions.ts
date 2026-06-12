@@ -1,5 +1,8 @@
 import { useMemo } from 'react'
-import { useFollowers, useFollowing } from '@/features/follows/hooks/useFollowList'
+import {
+  useFollowers,
+  useFollowing,
+} from '@/features/follows/hooks/useFollowList'
 import type { FeedAuthor, UserMini } from '@/shared/types'
 
 // Recomendações para iniciar conversa: quem o usuário segue + seguidores,

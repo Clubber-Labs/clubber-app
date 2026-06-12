@@ -19,15 +19,15 @@ export function buildProfilePatch(
   // preferredCategories: PUT substitui o estado completo. Só inclui a chave se
   // a seleção mudou — incluir (mesmo []) recria a lista; omitir mantém a atual.
   // Comparação ordem-insensível pois a ordem dos chips não é semântica.
-  if (!sameCategories(form.preferredCategories, profile.preferredCategories ?? []))
+  if (
+    !sameCategories(form.preferredCategories, profile.preferredCategories ?? [])
+  )
     patch.preferredCategories = form.preferredCategories
 
   // form.birthdate undefined = user não tocou no campo; não sobrescreve.
   if (form.birthdate) {
     const formDate = toLocalIsoDate(form.birthdate)
-    const profileDate = profile.birthdate
-      ? profile.birthdate.split('T')[0]
-      : ''
+    const profileDate = profile.birthdate ? profile.birthdate.split('T')[0] : ''
     if (formDate !== profileDate) patch.birthdate = formDate
   }
 

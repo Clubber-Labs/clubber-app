@@ -79,7 +79,9 @@ export default function NewGroupScreen() {
             className="bg-violet-600 rounded-full py-3.5 items-center"
           >
             <Text className="text-white font-semibold text-base">
-              {create.isPending ? 'Criando…' : `Criar grupo (${selected.length})`}
+              {create.isPending
+                ? 'Criando…'
+                : `Criar grupo (${selected.length})`}
             </Text>
           </Pressable>
         </View>

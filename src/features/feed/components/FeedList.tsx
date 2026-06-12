@@ -70,7 +70,9 @@ export function FeedList() {
       ) : events.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-white font-semibold text-base mb-1">
-            {filtering ? 'Nenhum evento para esses filtros' : 'Nada por aqui ainda'}
+            {filtering
+              ? 'Nenhum evento para esses filtros'
+              : 'Nada por aqui ainda'}
           </Text>
           <Text className="text-zinc-400 text-center text-sm">
             {filtering

@@ -8,7 +8,5 @@ type Props = {
 // revert. Ver CLAUDE.md → "Tratamento de erros e feedback ao usuário".
 export function FormError({ message }: Props) {
   if (!message) return null
-  return (
-    <Text className="text-white text-sm text-center">{message}</Text>
-  )
+  return <Text className="text-white text-sm text-center">{message}</Text>
 }

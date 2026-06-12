@@ -11,10 +11,9 @@ export const blocksService = {
   unblock: (userId: string): Promise<void> =>
     api.delete(`/blocks/${userId}`).then(() => undefined),
 
-  list: ({
-    limit = 20,
-    cursor,
-  }: ListParams = {}): Promise<CursorPaginatedResponse<Block>> =>
+  list: ({ limit = 20, cursor }: ListParams = {}): Promise<
+    CursorPaginatedResponse<Block>
+  > =>
     api
       .get('/blocks', {
         params: { limit, ...(cursor ? { cursor } : {}) },

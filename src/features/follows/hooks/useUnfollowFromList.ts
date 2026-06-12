@@ -35,14 +35,17 @@ export function useUnfollowFromList(viewerId: string) {
       const snapshot: Snapshot = {
         prevList: queryClient.getQueryData<FollowingCache>(listKey),
         prevMyProfile: queryClient.getQueryData<UserProfile>(userKeys.me),
-        prevTargetProfile: queryClient.getQueryData<UserProfile>(targetProfileKey),
+        prevTargetProfile:
+          queryClient.getQueryData<UserProfile>(targetProfileKey),
       }
 
       queryClient.setQueryData<FollowingCache>(listKey, old =>
         removeFromInfiniteList(old, targetId),
       )
       queryClient.setQueryData<UserProfile>(userKeys.me, prev =>
-        prev ? { ...prev, followingCount: Math.max(0, prev.followingCount - 1) } : prev,
+        prev
+          ? { ...prev, followingCount: Math.max(0, prev.followingCount - 1) }
+          : prev,
       )
       queryClient.setQueryData<UserProfile>(targetProfileKey, prev =>
         prev
@@ -59,11 +62,15 @@ export function useUnfollowFromList(viewerId: string) {
     onError: (_err, _vars, ctx) => {
       if (!ctx) return
       const { snapshot, targetId } = ctx
-      if (snapshot.prevList) queryClient.setQueryData(listKey, snapshot.prevList)
+      if (snapshot.prevList)
+        queryClient.setQueryData(listKey, snapshot.prevList)
       if (snapshot.prevMyProfile)
         queryClient.setQueryData(userKeys.me, snapshot.prevMyProfile)
       if (snapshot.prevTargetProfile)
-        queryClient.setQueryData(userKeys.profile(targetId), snapshot.prevTargetProfile)
+        queryClient.setQueryData(
+          userKeys.profile(targetId),
+          snapshot.prevTargetProfile,
+        )
     },
     onSettled: (_data, _err, targetId) => {
       queryClient.invalidateQueries({ queryKey: listKey })

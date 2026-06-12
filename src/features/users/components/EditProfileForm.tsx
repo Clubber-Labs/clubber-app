@@ -36,7 +36,9 @@ function defaultsFromProfile(profile: UserProfile): EditProfileInput {
     phone: profile.phone ?? '',
     bio: profile.bio ?? '',
     isPrivate: profile.isPrivate,
-    birthdate: profile.birthdate ? parseLocalDate(profile.birthdate) : undefined,
+    birthdate: profile.birthdate
+      ? parseLocalDate(profile.birthdate)
+      : undefined,
     preferredCategories: profile.preferredCategories ?? [],
   }
 }

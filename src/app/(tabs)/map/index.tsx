@@ -32,6 +32,14 @@ import { MapStatusBanner } from '@/features/map/components/MapStatusBanner'
 import { MapSearchBar } from '@/features/map/components/MapSearchBar'
 import { MapFiltersSheet } from '@/features/map/components/MapFiltersSheet'
 import { FloatingCreateButton } from '@/features/events/components/FloatingCreateButton'
+import { useViewportSpots } from '@/features/spots/hooks/useViewportSpots'
+import { useSuggestSpots } from '@/features/spots/hooks/useSuggestSpots'
+import { SpotMarkers } from '@/features/spots/components/SpotMarkers'
+import { SpotPreviewCard } from '@/features/spots/components/SpotPreviewCard'
+import { GenerateSpotsButton } from '@/features/spots/components/GenerateSpotsButton'
+import { SpotSuggestionsPanel } from '@/features/spots/components/SpotSuggestionsPanel'
+import { SuggestionMarkers } from '@/features/spots/components/SuggestionMarkers'
+import type { Spot, SpotSuggestion } from '@/features/spots/types'
 
 const COINCIDENT_FOCUS_ZOOM = 20
 
@@ -41,7 +49,8 @@ export default function MapScreen() {
   const livePos = useUserLiveLocation(locationStatus === 'ready')
   const myPos = livePos ?? userCoords
   const profile = useMyProfile()
-  const { cameraRef, mapRef, flyTo, adjustZoom, focusOnEvent } = useMapCamera()
+  const { cameraRef, mapRef, flyTo, adjustZoom, focusOnEvent, fitToCoords } =
+    useMapCamera()
   const { showMarkers, onCameraZoomChange } = useMapZoomState()
   const { bbox, onRegionChange } = useViewportBbox(mapRef)
 
@@ -49,7 +58,13 @@ export default function MapScreen() {
   const showBanner = useBanner()
 
   const [selectedEvent, setSelectedEvent] = useState<FeedEvent | null>(null)
+  const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null)
   const [densityVisible, setDensityVisible] = useState(false)
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false)
+
+  // O fluxo de gerar vive aqui (não no painel) pra fechar/reabrir o painel
+  // sem perder as sugestões já geradas — reabrir não gasta outra geração.
+  const suggest = useSuggestSpots()
 
   const shapeSourceRef = useRef<Mapbox.ShapeSource>(null)
 
@@ -57,17 +72,48 @@ export default function MapScreen() {
     bbox,
     filters,
   )
+  // Spots sempre visíveis, sem o gate de zoom dos pins de evento: o zoom
+  // padrão (USER_ZOOM) fica abaixo do threshold e esconderia os balões. O
+  // volume é baixo (máx. 5 ativos por usuário, vida de 24h) — não clusteriza.
+  const { data: spots = [] } = useViewportSpots(bbox, {
+    categories: filters.categories,
+    friendsOnly: filters.friendsOnly,
+  })
   const { data: heatmapPoints = [] } = useHeatmap(bbox, filters, densityVisible)
 
   useEffect(() => {
     if (userCoords) flyTo(userCoords, USER_ZOOM, 800)
   }, [userCoords, flyTo])
 
+  // Sugestões geradas → enquadra os rascunhos na metade visível do mapa (o
+  // padding inferior do fitToCoords compensa o painel aberto por cima).
+  const suggestions = suggest.suggestions
+  useEffect(() => {
+    if (!suggestionsOpen || suggestions.length === 0) return
+    fitToCoords(suggestions.map(s => [s.longitude, s.latitude]))
+  }, [suggestionsOpen, suggestions, fitToCoords])
+
+  function chooseSuggestion(suggestion: SpotSuggestion) {
+    // Candidatos são efêmeros (não persistem no backend) — seguem por
+    // parâmetro de rota até o form de publicação.
+    router.push({
+      pathname: '/spots/publish',
+      params: { candidate: JSON.stringify(suggestion) },
+    })
+  }
+
   // Abre o preview e aproxima — vale pra tap no pin e pra resultado de busca
   // (que pode estar fora do viewport; o flyTo dispara o refetch por bbox).
   function openEvent(event: FeedEvent) {
+    setSelectedSpot(null)
     setSelectedEvent(event)
     focusOnEvent([event.longitude, event.latitude])
+  }
+
+  function openSpot(spot: Spot) {
+    setSelectedEvent(null)
+    setSelectedSpot(spot)
+    focusOnEvent([spot.longitude, spot.latitude])
   }
 
   // Centraliza na posição ATUAL (live), com fallback pro fix inicial; sem coords,
@@ -128,6 +174,7 @@ export default function MapScreen() {
         onPress={() => {
           Keyboard.dismiss()
           setSelectedEvent(null)
+          setSelectedSpot(null)
         }}
         // onMapIdle dispara quando o mapa estabiliza (load inicial + fim de cada
         // movimento) — captura confiável do bbox. onCameraChanged reforça (e
@@ -172,6 +219,18 @@ export default function MapScreen() {
             dimmed={densityVisible}
           />
         )}
+        <SpotMarkers
+          spots={spots}
+          selectedId={selectedSpot?.id}
+          onPress={openSpot}
+          dimmed={densityVisible}
+        />
+        {suggestionsOpen && (
+          <SuggestionMarkers
+            suggestions={suggest.suggestions}
+            onPress={chooseSuggestion}
+          />
+        )}
       </Mapbox.MapView>
 
       <View className="absolute top-3 left-3 right-3">
@@ -208,13 +267,34 @@ export default function MapScreen() {
         onToggleDensity={() => setDensityVisible(v => !v)}
       />
 
-      {!selectedEvent && <FloatingCreateButton />}
+      {!selectedEvent && !selectedSpot && !suggestionsOpen && (
+        <>
+          <FloatingCreateButton />
+          <GenerateSpotsButton onPress={() => setSuggestionsOpen(true)} />
+        </>
+      )}
+
+      {suggestionsOpen && (
+        <SpotSuggestionsPanel
+          suggest={suggest}
+          onChoose={chooseSuggestion}
+          onClose={() => setSuggestionsOpen(false)}
+        />
+      )}
 
       {selectedEvent && (
         <EventPreviewCard
           event={selectedEvent}
           onClose={() => setSelectedEvent(null)}
           onSeeDetails={() => router.push(`/events/${selectedEvent.id}`)}
+        />
+      )}
+
+      {selectedSpot && (
+        <SpotPreviewCard
+          spot={selectedSpot}
+          onClose={() => setSelectedSpot(null)}
+          onSeeDetails={() => router.push(`/spots/${selectedSpot.id}`)}
         />
       )}
 

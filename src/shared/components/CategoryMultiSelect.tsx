@@ -21,7 +21,9 @@ export function CategoryMultiSelect({ value, onChange, max = 10 }: Props) {
   }
 
   if (isLoading && categories.length === 0) {
-    return <ActivityIndicator size="small" color="#8b5cf6" className="self-start" />
+    return (
+      <ActivityIndicator size="small" color="#8b5cf6" className="self-start" />
+    )
   }
 
   const atMax = value.length >= max

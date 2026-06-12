@@ -16,7 +16,11 @@ export function useViewportEvents(
   return useQuery({
     queryKey: ['map-events', bbox, params],
     queryFn: () =>
-      mapService.getViewportEvents({ ...bbox!, ...params, limit: VIEWPORT_LIMIT }),
+      mapService.getViewportEvents({
+        ...bbox!,
+        ...params,
+        limit: VIEWPORT_LIMIT,
+      }),
     enabled: enabled && !!bbox,
     staleTime: 1000 * 30,
     placeholderData: keepPreviousData,

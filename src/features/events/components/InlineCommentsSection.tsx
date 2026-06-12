@@ -7,7 +7,11 @@ import {
   Pressable,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { useComments, useAddComment, useDeleteComment } from '../hooks/useComments'
+import {
+  useComments,
+  useAddComment,
+  useDeleteComment,
+} from '../hooks/useComments'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useReportFlow } from '@/features/reports/hooks/useReportFlow'

@@ -134,6 +134,9 @@ export default {
       googleWebClientId: process.env.GOOGLE_WEB_CLIENT_ID,
       googleIosClientId: process.env.GOOGLE_IOS_CLIENT_ID,
       facebookAppId: process.env.FACEBOOK_APP_ID,
+      // Chave PÚBLICA do Stripe (pk_test_/pk_live_) — PaymentSheet nativa.
+      // A secret key NUNCA entra no app; tudo sensível passa pelo backend.
+      stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
       eas: {
         projectId: "89ff5c01-195a-42ea-a8d0-94425a85a89d"
       }

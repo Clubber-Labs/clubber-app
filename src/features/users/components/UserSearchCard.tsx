@@ -34,7 +34,10 @@ export function UserSearchCard({ user }: Props) {
         <UserAvatar name={fullName} avatarUrl={user.avatarUrl} size={48} />
         <View className="flex-1">
           <View className="flex-row items-center gap-1.5">
-            <Text className="text-white font-semibold text-sm" numberOfLines={1}>
+            <Text
+              className="text-white font-semibold text-sm"
+              numberOfLines={1}
+            >
               {fullName}
             </Text>
             {showLock && (

@@ -1,7 +1,11 @@
 import { useCallback, useEffect } from 'react'
 import { isAxiosError } from 'axios'
 import { useConsentStore, selectNeedsVersionBump } from '../store/consentStore'
-import { consentService, CONSENT_VERSION, type ConsentFields } from '../services/consentService'
+import {
+  consentService,
+  CONSENT_VERSION,
+  type ConsentFields,
+} from '../services/consentService'
 import { useAuthStore } from '@/features/auth/store/authStore'
 
 /**
@@ -14,7 +18,9 @@ export function useConsent() {
   const isAuth = useAuthStore(s => s.isAuthenticated)
   const consentStatus = useConsentStore(s => s.status)
   const isSynced = useConsentStore(s => s.isSynced)
-  const needsVersionBump = useConsentStore(s => selectNeedsVersionBump(s, CONSENT_VERSION))
+  const needsVersionBump = useConsentStore(s =>
+    selectNeedsVersionBump(s, CONSENT_VERSION),
+  )
 
   // Campos reativos — cada um re-renderiza apenas quando seu valor muda
   const locationPrecise = useConsentStore(s => s.locationPrecise)
@@ -92,7 +98,11 @@ export function useConsent() {
 
   const grantConsent = useCallback(
     async (fields: ConsentFields) => {
-      hydrate({ ...fields, consentGiven: true, consentVersion: CONSENT_VERSION })
+      hydrate({
+        ...fields,
+        consentGiven: true,
+        consentVersion: CONSENT_VERSION,
+      })
       try {
         await consentService.create(fields)
         markSynced()

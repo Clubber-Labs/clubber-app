@@ -7,6 +7,8 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { Stack, useRouter, useSegments } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { QueryClientProvider } from '@tanstack/react-query'
+import { StripeProvider } from '@stripe/stripe-react-native'
+import Constants from 'expo-constants'
 import { useFonts } from 'expo-font'
 import { Ionicons } from '@expo/vector-icons'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
@@ -129,48 +131,55 @@ export default function RootLayout() {
   const showHeader = isAuthenticated && !profileIncomplete && !onConsentFlow
   const chatActive = isAuthenticated && !profileIncomplete && !!userId
 
+  // Publishable key é pública por natureza (pk_) — sem ela a PaymentSheet
+  // falha no init com erro tratado na tela de upgrade, o resto do app segue.
+  const stripePublishableKey: string =
+    Constants.expoConfig?.extra?.stripePublishableKey ?? ''
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <ConfirmProvider>
-            <OpenInMapsProvider>
-              <BannerProvider>
-                <StatusBar style="light" />
-                <SafeAreaView
-                  style={{ flex: 1, backgroundColor: '#000000' }}
-                  edges={['top']}
-                >
-                  {showHeader && <GlobalHeader />}
-                  <View className="flex-1 bg-black">
-                    <Stack
-                      screenOptions={{
-                        headerShown: false,
-                        contentStyle: { backgroundColor: '#000000' },
-                      }}
-                    />
-                    {/* Gate de sessão: bloqueia as telas até /me validar. */}
-                    {status === 'loading' && (
-                      <View className="absolute inset-0 bg-black" />
-                    )}
-                    {status === 'offline' && (
-                      <SessionUnavailable onRetry={retry} />
-                    )}
-                  </View>
-                </SafeAreaView>
-                <AuthGuard />
-                {chatActive && userId && (
-                  <>
-                    <ChatRealtimeMount
-                      myId={userId}
-                      onAuthError={handleSocketAuthError}
-                    />
-                    <NotificationsMount onAuthError={handleSocketAuthError} />
-                  </>
-                )}
-              </BannerProvider>
-            </OpenInMapsProvider>
-          </ConfirmProvider>
+          <StripeProvider publishableKey={stripePublishableKey}>
+            <ConfirmProvider>
+              <OpenInMapsProvider>
+                <BannerProvider>
+                  <StatusBar style="light" />
+                  <SafeAreaView
+                    style={{ flex: 1, backgroundColor: '#000000' }}
+                    edges={['top']}
+                  >
+                    {showHeader && <GlobalHeader />}
+                    <View className="flex-1 bg-black">
+                      <Stack
+                        screenOptions={{
+                          headerShown: false,
+                          contentStyle: { backgroundColor: '#000000' },
+                        }}
+                      />
+                      {/* Gate de sessão: bloqueia as telas até /me validar. */}
+                      {status === 'loading' && (
+                        <View className="absolute inset-0 bg-black" />
+                      )}
+                      {status === 'offline' && (
+                        <SessionUnavailable onRetry={retry} />
+                      )}
+                    </View>
+                  </SafeAreaView>
+                  <AuthGuard />
+                  {chatActive && userId && (
+                    <>
+                      <ChatRealtimeMount
+                        myId={userId}
+                        onAuthError={handleSocketAuthError}
+                      />
+                      <NotificationsMount onAuthError={handleSocketAuthError} />
+                    </>
+                  )}
+                </BannerProvider>
+              </OpenInMapsProvider>
+            </ConfirmProvider>
+          </StripeProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

@@ -70,7 +70,11 @@ export function MapSearchBar({ onSelect }: Props) {
                       {event.title}
                     </Text>
                     <View className="flex-row items-center gap-1">
-                      <Ionicons name="location-outline" size={12} color="#71717a" />
+                      <Ionicons
+                        name="location-outline"
+                        size={12}
+                        color="#71717a"
+                      />
                       <Text
                         numberOfLines={1}
                         className="text-zinc-500 text-xs flex-1"

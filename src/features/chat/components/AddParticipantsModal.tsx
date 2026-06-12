@@ -27,8 +27,14 @@ export function AddParticipantsModal({
   onAdd,
 }: Props) {
   const [query, setQuery] = useState('')
-  const { users, trimmed, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-    useChatUserSearch(query)
+  const {
+    users,
+    trimmed,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useChatUserSearch(query)
 
   const candidates = users.filter(u => !existingIds.includes(u.id))
 

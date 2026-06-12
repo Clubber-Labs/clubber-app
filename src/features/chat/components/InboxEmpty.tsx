@@ -22,7 +22,9 @@ export function InboxEmpty({ onNew }: Props) {
         className="mt-2 bg-violet-600 rounded-full px-5 py-2.5"
         accessibilityLabel="Iniciar conversa"
       >
-        <Text className="text-white font-semibold text-sm">Iniciar conversa</Text>
+        <Text className="text-white font-semibold text-sm">
+          Iniciar conversa
+        </Text>
       </Pressable>
     </View>
   )

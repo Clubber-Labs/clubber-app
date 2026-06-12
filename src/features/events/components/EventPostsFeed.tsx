@@ -34,8 +34,7 @@ export function EventPostsFeed({
   const { refreshing, onRefresh } = usePullRefresh(refetch)
 
   const posts = data?.pages.flatMap(page => page.data) ?? []
-  const canPost =
-    myAttendance === 'CONFIRMED' || myAttendance === 'INTERESTED'
+  const canPost = myAttendance === 'CONFIRMED' || myAttendance === 'INTERESTED'
 
   return (
     <FlatList<EventPost>

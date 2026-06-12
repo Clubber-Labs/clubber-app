@@ -24,8 +24,7 @@ type HeaderProps = {
 }
 
 function DetailHeader({ event, isAuthor }: HeaderProps) {
-  const allowAttendance =
-    event.status !== 'PAST' && event.status !== 'CANCELED'
+  const allowAttendance = event.status !== 'PAST' && event.status !== 'CANCELED'
 
   return (
     <View>

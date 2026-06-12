@@ -46,7 +46,11 @@ export const useAuthStore = create<AuthState>(set => ({
   // Boot sem sessão válida — preserva sessionExpired (o interceptor pode tê-lo
   // marcado no 401 do próprio /me).
   setUnauthenticated: () =>
-    set({ ...flags('unauthenticated'), userId: null, profileIncomplete: false }),
+    set({
+      ...flags('unauthenticated'),
+      userId: null,
+      profileIncomplete: false,
+    }),
   logout: (expired = false) =>
     set({
       ...flags('unauthenticated'),

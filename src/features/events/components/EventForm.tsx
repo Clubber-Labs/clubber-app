@@ -157,9 +157,7 @@ export function EventForm({
             )}
           />
           {errors.endDate && (
-            <Text className="text-white text-xs">
-              {errors.endDate.message}
-            </Text>
+            <Text className="text-white text-xs">{errors.endDate.message}</Text>
           )}
         </View>
 
@@ -202,9 +200,7 @@ export function EventForm({
             )}
           />
           {errors.address && (
-            <Text className="text-white text-xs">
-              {errors.address.message}
-            </Text>
+            <Text className="text-white text-xs">{errors.address.message}</Text>
           )}
         </View>
 

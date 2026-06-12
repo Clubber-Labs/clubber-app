@@ -41,9 +41,7 @@ export function StepPersonal({ control, errors }: Props) {
               )}
             />
             {errors.name && (
-              <Text className="text-white text-xs">
-                {errors.name.message}
-              </Text>
+              <Text className="text-white text-xs">{errors.name.message}</Text>
             )}
           </View>
 

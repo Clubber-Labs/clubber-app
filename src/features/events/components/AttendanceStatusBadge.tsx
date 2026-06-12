@@ -12,7 +12,10 @@ const LABEL: Record<AttendanceType, string> = {
   NOT_INTERESTED: 'Não vai',
 }
 
-const COLOR: Record<AttendanceType, { bg: string; text: string; icon: string }> = {
+const COLOR: Record<
+  AttendanceType,
+  { bg: string; text: string; icon: string }
+> = {
   CONFIRMED: {
     bg: 'bg-violet-900',
     text: 'text-violet-200',

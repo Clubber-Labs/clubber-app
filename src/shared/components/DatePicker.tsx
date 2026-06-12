@@ -49,9 +49,7 @@ export function DatePicker({
         className={`border ${hasError ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5`}
       >
         <Text
-          className={
-            value ? 'text-base text-white' : 'text-base text-zinc-500'
-          }
+          className={value ? 'text-base text-white' : 'text-base text-zinc-500'}
         >
           {value ? formatValue(value, mode) : placeholder}
         </Text>

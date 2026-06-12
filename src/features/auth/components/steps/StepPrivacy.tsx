@@ -5,8 +5,14 @@ import type { Control, FieldErrors } from 'react-hook-form'
 import { Ionicons } from '@expo/vector-icons'
 import type { RegisterInput } from '../../schemas/registerSchema'
 import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
-import { CATEGORY_LABELS, CONSENT_VERSION } from '@/features/privacy/services/consentService'
-import { ORDERED_CATEGORIES, groupItemsByCategory } from '@/features/privacy/constants'
+import {
+  CATEGORY_LABELS,
+  CONSENT_VERSION,
+} from '@/features/privacy/services/consentService'
+import {
+  ORDERED_CATEGORIES,
+  groupItemsByCategory,
+} from '@/features/privacy/constants'
 
 type Props = {
   control: Control<RegisterInput>

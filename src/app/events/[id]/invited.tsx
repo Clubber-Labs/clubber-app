@@ -1,9 +1,4 @@
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-} from 'react-native'
+import { View, Text, FlatList, ActivityIndicator } from 'react-native'
 import { useLocalSearchParams } from 'expo-router'
 import { useEventInvites } from '@/features/events/hooks/useInvites'
 import { UserListItem } from '@/features/users/components/UserListItem'
@@ -47,9 +42,7 @@ export default function InvitedScreen() {
       data={invited ?? []}
       keyExtractor={u => u.id}
       renderItem={({ item }) => <UserListItem user={item} />}
-      ItemSeparatorComponent={() => (
-        <View className="h-px bg-zinc-900 ml-16" />
-      )}
+      ItemSeparatorComponent={() => <View className="h-px bg-zinc-900 ml-16" />}
       ListEmptyComponent={
         <View className="items-center justify-center pt-16 px-6">
           <Text className="text-zinc-500 text-sm text-center">

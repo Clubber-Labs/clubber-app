@@ -64,7 +64,11 @@ function EventPin({
           style={{ width: inner, height: inner, borderRadius: inner / 2 }}
           className="bg-zinc-800 items-center justify-center"
         >
-          <Ionicons name="calendar-outline" size={Math.round(inner * 0.45)} color="#52525b" />
+          <Ionicons
+            name="calendar-outline"
+            size={Math.round(inner * 0.45)}
+            color="#52525b"
+          />
         </View>
       )}
     </View>
@@ -91,10 +95,11 @@ function SingleMarker({
 }) {
   const size = selected ? PIN_SIZE_SELECTED : PIN_SIZE
   const opacity = dimmed ? DIMMED_OPACITY : 1
-  const attendees = (event.topAttendances ?? event.friendAttendances ?? []).slice(
-    0,
-    MAX_FRIENDS,
-  )
+  const attendees = (
+    event.topAttendances ??
+    event.friendAttendances ??
+    []
+  ).slice(0, MAX_FRIENDS)
   const moreCount = Math.max(0, event._count.attendances - attendees.length)
   const hasMore = attendees.length > 0 && moreCount > 0
 
@@ -148,10 +153,13 @@ function SingleMarker({
       allowOverlap
     >
       <View
-        style={{ width: layout.frameWidth, height: layout.frameHeight, opacity }}
+        style={{
+          width: layout.frameWidth,
+          height: layout.frameHeight,
+          opacity,
+        }}
         pointerEvents="box-none"
       >
-
         <View style={{ position: 'absolute', left: 0, top: 0 }}>{pin}</View>
 
         {[...items].reverse().map(item => {
@@ -178,7 +186,9 @@ function SingleMarker({
                   justifyContent: 'center',
                 }}
               >
-                <Text style={{ color: '#ffffff', fontSize: 11, fontWeight: '700' }}>
+                <Text
+                  style={{ color: '#ffffff', fontSize: 11, fontWeight: '700' }}
+                >
                   +{item.count}
                 </Text>
               </View>
@@ -224,7 +234,11 @@ function CoincidentMarker({
       allowOverlap
     >
       <View
-        style={{ width: frame, height: frame, opacity: dimmed ? DIMMED_OPACITY : 1 }}
+        style={{
+          width: frame,
+          height: frame,
+          opacity: dimmed ? DIMMED_OPACITY : 1,
+        }}
         pointerEvents="box-none"
       >
         {group.map((event, index) => {

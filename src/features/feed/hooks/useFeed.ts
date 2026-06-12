@@ -20,7 +20,10 @@ type Options = {
   enabled?: boolean
 }
 
-export function useFeed(filters: Filters = {}, { enabled = true }: Options = {}) {
+export function useFeed(
+  filters: Filters = {},
+  { enabled = true }: Options = {},
+) {
   // Normaliza pra que {} e {status: undefined} compartilhem a mesma queryKey
   // (sem normalizar, geram hashes distintos → cache duplicado). Memoiza pra
   // estabilizar referência entre renders quando o filtro lógico não muda.

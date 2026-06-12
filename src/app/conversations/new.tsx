@@ -18,7 +18,10 @@ export default function NewConversationScreen() {
   async function openDM(user: UserMini) {
     if (create.isPending) return
     try {
-      const conv = await create.mutateAsync({ type: 'DIRECT', targetUserId: user.id })
+      const conv = await create.mutateAsync({
+        type: 'DIRECT',
+        targetUserId: user.id,
+      })
       router.replace(`/conversations/${conv.id}`)
     } catch (e) {
       showBanner(
@@ -37,7 +40,9 @@ export default function NewConversationScreen() {
 
       <PeoplePicker
         myId={myId ?? ''}
-        renderItem={user => <ChatPersonRow user={user} onPress={() => openDM(user)} />}
+        renderItem={user => (
+          <ChatPersonRow user={user} onPress={() => openDM(user)} />
+        )}
         belowSearch={
           <Pressable
             onPress={() => router.push('/conversations/new-group')}
@@ -47,7 +52,9 @@ export default function NewConversationScreen() {
             <View className="w-11 h-11 rounded-full bg-violet-600 items-center justify-center">
               <Ionicons name="people" size={22} color="#ffffff" />
             </View>
-            <Text className="text-violet-400 font-semibold text-base">Novo grupo</Text>
+            <Text className="text-violet-400 font-semibold text-base">
+              Novo grupo
+            </Text>
           </Pressable>
         }
       />

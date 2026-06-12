@@ -109,7 +109,9 @@ export default function AdminReportDetailScreen() {
     : null
   const targetType = reportTargetType(report)
   const canRemoveTarget =
-    targetType === 'event' || targetType === 'comment' || targetType === 'message'
+    targetType === 'event' ||
+    targetType === 'comment' ||
+    targetType === 'message'
   const isPending =
     updateReport.isPending || deleteReport.isPending || removeTarget.isPending
 

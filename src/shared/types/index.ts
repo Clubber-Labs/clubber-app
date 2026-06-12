@@ -201,6 +201,8 @@ export type UserProfile = {
   bio?: string | null
   avatarUrl?: string | null
   isPrivate: boolean
+  // Só vem no perfil próprio (GET /users/me) — gates de UI premium e paywall.
+  isPremium?: boolean
   birthdate?: string
   phone?: string
   email?: string

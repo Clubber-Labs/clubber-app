@@ -42,7 +42,9 @@ export function UserEventCard({ event, onPress }: Props) {
         <View className="gap-1">
           <View className="flex-row items-center gap-1">
             <Ionicons name="time-outline" size={12} color="#a1a1aa" />
-            <Text className="text-zinc-400 text-xs">{formatDate(event.date)}</Text>
+            <Text className="text-zinc-400 text-xs">
+              {formatDate(event.date)}
+            </Text>
           </View>
           <View className="flex-row items-center gap-1">
             <Ionicons name="grid-outline" size={12} color="#a1a1aa" />

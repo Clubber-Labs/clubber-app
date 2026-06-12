@@ -39,7 +39,9 @@ export function reportTargetPreview(r: Report): string | null {
   if (r.message?.content) return r.message.content
   if (r.targetUser) {
     const name = `${r.targetUser.name} ${r.targetUser.lastname}`.trim()
-    return name ? `${name} (@${r.targetUser.username})` : `@${r.targetUser.username}`
+    return name
+      ? `${name} (@${r.targetUser.username})`
+      : `@${r.targetUser.username}`
   }
   return null
 }
