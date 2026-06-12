@@ -82,7 +82,9 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
             }
             onPress={handleGenerate}
             loading={isGenerating}
-            disabled={isGenerating}
+            // Quota zerada (conhecida após a 1ª geração): o aviso abaixo já
+            // explica; clicável só renderia um 429 garantido.
+            disabled={isGenerating || remaining === 0}
           />
           {remaining !== undefined && (
             <Text className="text-zinc-500 text-xs text-center">
