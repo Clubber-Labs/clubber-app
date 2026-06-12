@@ -14,6 +14,10 @@ export const NOTIFICATION_TYPES = [
   'POST_REACTION',
   'COMMENT_REACTION',
   'EVENT_ATTENDANCE',
+  // Spots: rolê perto (proximidade), novo membro no grupo, rolê expirando.
+  'SPOT_NEARBY',
+  'SPOT_JOIN',
+  'SPOT_RENEWAL',
 ] as const
 
 export const notificationTypeSchema = z.enum(NOTIFICATION_TYPES)
@@ -33,13 +37,18 @@ export const notificationSchema = z.object({
   eventId: z.uuid().nullable(),
   postId: z.uuid().nullable(),
   commentId: z.uuid().nullable(),
+  // `.default(null)` tolera backend anterior aos spots (campo ausente) sem
+  // derrubar o parse do frame WS.
+  spotId: z.uuid().nullable().default(null),
   title: z.string(),
   body: z.string(),
-  // Varia por tipo: { actor } nas sociais, { eventId } na de proximidade.
+  // Varia por tipo: { actor } nas sociais, { eventId } na de proximidade,
+  // { spotId } nas de spot.
   data: z
     .object({
       actor: notificationActorSchema.optional(),
       eventId: z.uuid().optional(),
+      spotId: z.uuid().optional(),
     })
     .nullable(),
   readAt: z.string().nullable(),
@@ -66,6 +75,7 @@ export const pushDataSchema = z.object({
   eventId: z.uuid().nullish().catch(null),
   postId: z.uuid().nullish().catch(null),
   commentId: z.uuid().nullish().catch(null),
+  spotId: z.uuid().nullish().catch(null),
   // Contrato original (fallback): { actor } nas sociais.
   actor: z.object({ id: z.uuid() }).nullish().catch(null),
 })

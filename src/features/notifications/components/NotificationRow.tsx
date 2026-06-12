@@ -10,9 +10,12 @@ type Props = {
 }
 
 export function NotificationRow({ notification, onPress }: Props) {
-  const { title, body, createdAt, readAt, data } = notification
+  const { type, title, body, createdAt, readAt, data } = notification
   const actor = data?.actor
   const unread = readAt === null
+  // Sem actor no payload, o ícone segue o domínio: spots usam a mesma
+  // iconografia do "gerar rolê"; o resto mantém o pino de proximidade.
+  const fallbackIcon = type.startsWith('SPOT_') ? 'sparkles' : 'location'
 
   return (
     <Pressable
@@ -27,7 +30,7 @@ export function NotificationRow({ notification, onPress }: Props) {
         />
       ) : (
         <View className="w-10 h-10 rounded-full bg-violet-950 items-center justify-center">
-          <Ionicons name="location" size={20} color="#a78bfa" />
+          <Ionicons name={fallbackIcon} size={20} color="#a78bfa" />
         </View>
       )}
 

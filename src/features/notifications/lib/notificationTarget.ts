@@ -6,6 +6,9 @@ export type NotificationTarget =
   | { kind: 'event'; eventId: string }
   | { kind: 'profile'; userId: string }
   | { kind: 'followRequests' }
+  | { kind: 'spot'; spotId: string; highlightRenew?: boolean }
+  // Direto pro grupo do spot (o chat é resolvido via GET /spots/:id).
+  | { kind: 'spotChat'; spotId: string }
 
 // Subconjunto que o roteamento usa — satisfeito tanto pela Notification
 // completa (central/WS) quanto pelo data enriquecido do push.
@@ -13,6 +16,7 @@ type NotificationTargetInput = {
   type: NotificationType
   actorId?: string | null
   eventId?: string | null
+  spotId?: string | null
 }
 
 export function notificationTarget(
@@ -37,5 +41,15 @@ export function notificationTarget(
       // e post não tem rota própria) — o melhor destino disponível é o autor.
       if (n.eventId) return { kind: 'event', eventId: n.eventId }
       return n.actorId ? { kind: 'profile', userId: n.actorId } : null
+    case 'SPOT_NEARBY':
+      return n.spotId ? { kind: 'spot', spotId: n.spotId } : null
+    case 'SPOT_JOIN':
+      // Novo membro = contexto de conversa: abre direto o chat do grupo.
+      return n.spotId ? { kind: 'spotChat', spotId: n.spotId } : null
+    case 'SPOT_RENEWAL':
+      // "Seu rolê está acabando" → detalhe com o CTA de renovar em destaque.
+      return n.spotId
+        ? { kind: 'spot', spotId: n.spotId, highlightRenew: true }
+        : null
   }
 }
