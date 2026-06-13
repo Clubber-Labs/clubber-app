@@ -4,6 +4,7 @@ import { formatEventDate } from '@/shared/utils/dateFormat'
 import { CategoryBadge } from '@/shared/components/CategoryBadge'
 import { AddressLink } from '@/shared/components/AddressLink'
 import { EventStatusBadge } from '@/features/events/components/EventStatusBadge'
+import { SponsoredBadge } from '@/features/featured-events/components/SponsoredBadge'
 import type { FeedEvent } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
@@ -15,6 +16,7 @@ export function EventInfoBlock({ event }: Props) {
   return (
     <View className="gap-2">
       <View className="flex-row items-center gap-1.5 flex-wrap">
+        {event.isFeatured && <SponsoredBadge />}
         <EventStatusBadge status={event.status} date={event.date} />
         {event.categories.map(category => (
           <CategoryBadge key={category} value={category} />

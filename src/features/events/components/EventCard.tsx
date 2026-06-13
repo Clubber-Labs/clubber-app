@@ -7,6 +7,7 @@ import { FriendAttendancesStack } from './FriendAttendancesStack'
 import { AttendanceStatusBadge } from './AttendanceStatusBadge'
 import { EventStatusBadge } from './EventStatusBadge'
 import { FeedReasonBanner } from './FeedReasonBanner'
+import { SponsoredBadge } from '@/features/featured-events/components/SponsoredBadge'
 import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { formatRelative } from '@/shared/utils/dateFormat'
@@ -60,6 +61,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
             </View>
           </Pressable>
           <View className="flex-row items-center gap-1.5">
+            {event.isFeatured && <SponsoredBadge />}
             <EventStatusBadge status={event.status} date={event.date} />
             <AttendanceStatusBadge attendance={event.userAttendance} />
             {!event.isPublic && (

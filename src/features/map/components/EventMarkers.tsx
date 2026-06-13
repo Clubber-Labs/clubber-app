@@ -45,8 +45,12 @@ function EventPin({
         height: size,
         borderRadius: size / 2,
         borderWidth: 3,
-        borderColor: selected ? colors.content : colors.content,
-        backgroundColor: colors.content,
+        borderColor: event.isFeatured
+          ? colors.brandEmphasis
+          : selected
+            ? colors.contentBright
+            : colors.content,
+        backgroundColor: event.isFeatured ? colors.brandEmphasis : colors.content,
         overflow: 'hidden',
         alignItems: 'center',
         justifyContent: 'center',
