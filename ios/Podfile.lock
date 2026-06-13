@@ -9,11 +9,15 @@ PODS:
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
+  - EXApplication (7.0.8):
+    - ExpoModulesCore
   - EXConstants (18.0.13):
     - ExpoModulesCore
   - EXImageLoader (6.0.0):
     - ExpoModulesCore
     - React-Core
+  - EXNotifications (0.32.17):
+    - ExpoModulesCore
   - Expo (54.0.33):
     - ExpoModulesCore
     - hermes-engine
@@ -1507,6 +1511,51 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - react-native-slider (5.0.1):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - react-native-slider/common (= 5.0.1)
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
+  - react-native-slider/common (5.0.1):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - React-NativeModulesApple (0.81.5):
     - hermes-engine
     - React-callinvoker
@@ -1857,6 +1906,28 @@ PODS:
     - React-utils (= 0.81.5)
     - ReactNativeDependencies
   - ReactNativeDependencies (0.81.5)
+  - RNCAsyncStorage (2.2.0):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - RNDateTimePicker (9.1.0):
     - hermes-engine
     - RCTRequired
@@ -2188,6 +2259,91 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - Stripe (24.19.0):
+    - StripeApplePay (= 24.19.0)
+    - StripeCore (= 24.19.0)
+    - StripePayments (= 24.19.0)
+    - StripePaymentsUI (= 24.19.0)
+    - StripeUICore (= 24.19.0)
+  - stripe-react-native (0.50.3):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Stripe (~> 24.19.0)
+    - stripe-react-native/NewArch (= 0.50.3)
+    - StripeApplePay (~> 24.19.0)
+    - StripeFinancialConnections (~> 24.19.0)
+    - StripePayments (~> 24.19.0)
+    - StripePaymentSheet (~> 24.19.0)
+    - StripePaymentsUI (~> 24.19.0)
+    - Yoga
+  - stripe-react-native/NewArch (0.50.3):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Stripe (~> 24.19.0)
+    - StripeApplePay (~> 24.19.0)
+    - StripeFinancialConnections (~> 24.19.0)
+    - StripePayments (~> 24.19.0)
+    - StripePaymentSheet (~> 24.19.0)
+    - StripePaymentsUI (~> 24.19.0)
+    - Yoga
+  - StripeApplePay (24.19.0):
+    - StripeCore (= 24.19.0)
+  - StripeCore (24.19.0)
+  - StripeFinancialConnections (24.19.0):
+    - StripeCore (= 24.19.0)
+    - StripeUICore (= 24.19.0)
+  - StripePayments (24.19.0):
+    - StripeCore (= 24.19.0)
+    - StripePayments/Stripe3DS2 (= 24.19.0)
+  - StripePayments/Stripe3DS2 (24.19.0):
+    - StripeCore (= 24.19.0)
+  - StripePaymentSheet (24.19.0):
+    - StripeApplePay (= 24.19.0)
+    - StripeCore (= 24.19.0)
+    - StripePayments (= 24.19.0)
+    - StripePaymentsUI (= 24.19.0)
+  - StripePaymentsUI (24.19.0):
+    - StripeCore (= 24.19.0)
+    - StripePayments (= 24.19.0)
+    - StripeUICore (= 24.19.0)
+  - StripeUICore (24.19.0):
+    - StripeCore (= 24.19.0)
   - Turf (4.0.0)
   - VisionCamera (3.9.2):
     - React
@@ -2196,8 +2352,10 @@ PODS:
   - Yoga (0.0.0)
 
 DEPENDENCIES:
+  - "EXApplication (from `../node_modules/.pnpm/expo-application@7.0.8_expo@54.0.33/node_modules/expo-application/ios`)"
   - "EXConstants (from `../node_modules/.pnpm/expo-constants@18.0.13_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-nativ_17c76283d170f6a3c089a013363f5595/node_modules/expo-constants/ios`)"
   - "EXImageLoader (from `../node_modules/.pnpm/expo-image-loader@6.0.0_expo@54.0.33/node_modules/expo-image-loader/ios`)"
+  - "EXNotifications (from `../node_modules/.pnpm/expo-notifications@0.32.17_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-n_b5d01557f325d4bece4420104b1f1fcf/node_modules/expo-notifications/ios`)"
   - "Expo (from `../node_modules/.pnpm/expo@54.0.33_@babel+core@7.29.0_@expo+metro-runtime@6.1.2_expo-router@6.0.23_react-nati_9f1a7757e068c6350923efc33fe8c56f/node_modules/expo`)"
   - "ExpoAdapterFBSDKNext (from `../node_modules/.pnpm/react-native-fbsdk-next@13.4.3_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@rea_32f9c31ec70f41a7326d1db7b350e285/node_modules/react-native-fbsdk-next/ios`)"
   - "ExpoAdapterGoogleSignIn (from `../node_modules/.pnpm/@react-native-google-signin+google-signin@16.1.2_expo@54.0.33_react-native@0.81.5_@babe_a64371635bb26f785a095d5fa8bb7b50/node_modules/@react-native-google-signin/google-signin/expo/ios`)"
@@ -2254,6 +2412,7 @@ DEPENDENCIES:
   - "React-microtasksnativemodule (from `../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel+core@7._a0df58fc1fe96c31423c9b72cceb7fec/node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)"
   - "react-native-fbsdk-next (from `../node_modules/.pnpm/react-native-fbsdk-next@13.4.3_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@rea_32f9c31ec70f41a7326d1db7b350e285/node_modules/react-native-fbsdk-next`)"
   - "react-native-safe-area-context (from `../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.81.5_@babel+core@7.29.0_@react-nati_83f6b7d6aab88cbcd9ac2fe4d6bb2cb7/node_modules/react-native-safe-area-context`)"
+  - "react-native-slider (from `../node_modules/.pnpm/@react-native-community+slider@5.0.1/node_modules/@react-native-community/slider`)"
   - "React-NativeModulesApple (from `../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel+core@7._a0df58fc1fe96c31423c9b72cceb7fec/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)"
   - "React-oscompat (from `../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel+core@7._a0df58fc1fe96c31423c9b72cceb7fec/node_modules/react-native/ReactCommon/oscompat`)"
   - "React-perflogger (from `../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel+core@7._a0df58fc1fe96c31423c9b72cceb7fec/node_modules/react-native/ReactCommon/reactperflogger`)"
@@ -2285,6 +2444,7 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios`)
   - "ReactCommon/turbomodule/core (from `../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel+core@7._a0df58fc1fe96c31423c9b72cceb7fec/node_modules/react-native/ReactCommon`)"
   - "ReactNativeDependencies (from `../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel+core@7._a0df58fc1fe96c31423c9b72cceb7fec/node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`)"
+  - "RNCAsyncStorage (from `../node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.81.5_@babel+core@7.29.0__8dedbfc959f1eab015519d509d2be511/node_modules/@react-native-async-storage/async-storage`)"
   - "RNDateTimePicker (from `../node_modules/.pnpm/@react-native-community+datetimepicker@9.1.0_expo@54.0.33_react-native@0.81.5_@babel+co_f49b9f66e40373b90cce97890cb838e6/node_modules/@react-native-community/datetimepicker`)"
   - "RNGestureHandler (from `../node_modules/.pnpm/react-native-gesture-handler@2.28.0_react-native@0.81.5_@babel+core@7.29.0_@react-nativ_b30794ba10fcab9200c8b958e5b499bd/node_modules/react-native-gesture-handler`)"
   - "RNGoogleSignin (from `../node_modules/.pnpm/@react-native-google-signin+google-signin@16.1.2_expo@54.0.33_react-native@0.81.5_@babe_a64371635bb26f785a095d5fa8bb7b50/node_modules/@react-native-google-signin/google-signin`)"
@@ -2293,6 +2453,7 @@ DEPENDENCIES:
   - "RNScreens (from `../node_modules/.pnpm/react-native-screens@4.16.0_react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-_85d298e7181ad04463c6b9d3cf700780/node_modules/react-native-screens`)"
   - "RNSVG (from `../node_modules/.pnpm/react-native-svg@15.15.5_react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-con_ef53bf37e1f70bec9148742f67ef062b/node_modules/react-native-svg`)"
   - "RNWorklets (from `../node_modules/.pnpm/react-native-worklets@0.8.1_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel_0034dbf1664ae04accb0ae8f8a620840/node_modules/react-native-worklets`)"
+  - "stripe-react-native (from `../node_modules/.pnpm/@stripe+stripe-react-native@0.50.3_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0__52649e7c236b20282444f1cdc10fe4b0/node_modules/@stripe/stripe-react-native`)"
   - "VisionCamera (from `../node_modules/.pnpm/react-native-vision-camera@3.9.2_react-native@0.81.5_@babel+core@7.29.0_@react-native+m_87863c99423512604fb1b405b4036c77/node_modules/react-native-vision-camera`)"
   - "Yoga (from `../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel+core@7._a0df58fc1fe96c31423c9b72cceb7fec/node_modules/react-native/ReactCommon/yoga`)"
 
@@ -2314,13 +2475,25 @@ SPEC REPOS:
     - MapboxCoreMaps
     - MapboxMaps
     - PromisesObjC
+    - Stripe
+    - StripeApplePay
+    - StripeCore
+    - StripeFinancialConnections
+    - StripePayments
+    - StripePaymentSheet
+    - StripePaymentsUI
+    - StripeUICore
     - Turf
 
 EXTERNAL SOURCES:
+  EXApplication:
+    :path: "../node_modules/.pnpm/expo-application@7.0.8_expo@54.0.33/node_modules/expo-application/ios"
   EXConstants:
     :path: "../node_modules/.pnpm/expo-constants@18.0.13_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-nativ_17c76283d170f6a3c089a013363f5595/node_modules/expo-constants/ios"
   EXImageLoader:
     :path: "../node_modules/.pnpm/expo-image-loader@6.0.0_expo@54.0.33/node_modules/expo-image-loader/ios"
+  EXNotifications:
+    :path: "../node_modules/.pnpm/expo-notifications@0.32.17_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-n_b5d01557f325d4bece4420104b1f1fcf/node_modules/expo-notifications/ios"
   Expo:
     :path: "../node_modules/.pnpm/expo@54.0.33_@babel+core@7.29.0_@expo+metro-runtime@6.1.2_expo-router@6.0.23_react-nati_9f1a7757e068c6350923efc33fe8c56f/node_modules/expo"
   ExpoAdapterFBSDKNext:
@@ -2432,6 +2605,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/.pnpm/react-native-fbsdk-next@13.4.3_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@rea_32f9c31ec70f41a7326d1db7b350e285/node_modules/react-native-fbsdk-next"
   react-native-safe-area-context:
     :path: "../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.81.5_@babel+core@7.29.0_@react-nati_83f6b7d6aab88cbcd9ac2fe4d6bb2cb7/node_modules/react-native-safe-area-context"
+  react-native-slider:
+    :path: "../node_modules/.pnpm/@react-native-community+slider@5.0.1/node_modules/@react-native-community/slider"
   React-NativeModulesApple:
     :path: "../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel+core@7._a0df58fc1fe96c31423c9b72cceb7fec/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-oscompat:
@@ -2494,6 +2669,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel+core@7._a0df58fc1fe96c31423c9b72cceb7fec/node_modules/react-native/ReactCommon"
   ReactNativeDependencies:
     :podspec: "../node_modules/.pnpm/react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel+core@7._a0df58fc1fe96c31423c9b72cceb7fec/node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec"
+  RNCAsyncStorage:
+    :path: "../node_modules/.pnpm/@react-native-async-storage+async-storage@2.2.0_react-native@0.81.5_@babel+core@7.29.0__8dedbfc959f1eab015519d509d2be511/node_modules/@react-native-async-storage/async-storage"
   RNDateTimePicker:
     :path: "../node_modules/.pnpm/@react-native-community+datetimepicker@9.1.0_expo@54.0.33_react-native@0.81.5_@babel+co_f49b9f66e40373b90cce97890cb838e6/node_modules/@react-native-community/datetimepicker"
   RNGestureHandler:
@@ -2510,6 +2687,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/.pnpm/react-native-svg@15.15.5_react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-con_ef53bf37e1f70bec9148742f67ef062b/node_modules/react-native-svg"
   RNWorklets:
     :path: "../node_modules/.pnpm/react-native-worklets@0.8.1_@babel+core@7.29.0_@react-native+metro-config@0.85.2_@babel_0034dbf1664ae04accb0ae8f8a620840/node_modules/react-native-worklets"
+  stripe-react-native:
+    :path: "../node_modules/.pnpm/@stripe+stripe-react-native@0.50.3_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0__52649e7c236b20282444f1cdc10fe4b0/node_modules/@stripe/stripe-react-native"
   VisionCamera:
     :path: "../node_modules/.pnpm/react-native-vision-camera@3.9.2_react-native@0.81.5_@babel+core@7.29.0_@react-native+m_87863c99423512604fb1b405b4036c77/node_modules/react-native-vision-camera"
   Yoga:
@@ -2518,8 +2697,10 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AppAuth: 1c1a8afa7e12f2ec3a294d9882dfa5ab7d3cb063
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
+  EXApplication: 1e98d4b1dccdf30627f92917f4b2c5a53c330e5f
   EXConstants: fce59a631a06c4151602843667f7cfe35f81e271
   EXImageLoader: 189e3476581efe3ad4d1d3fb4735b7179eb26f05
+  EXNotifications: c67e92b9fdfe785ff9dbdc5f4c0ff935de357da7
   Expo: aadbcc8c6c14ff3105a9154f1683cb1424ff0d2a
   ExpoAdapterFBSDKNext: 49ecf2414e4787250b0ed1faae99d1295dee674e
   ExpoAdapterGoogleSignIn: ab4d9fc38cb91077a4138d178395525ec65d0c2e
@@ -2589,6 +2770,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: f775db9e991c6f3b8ccbc02bfcde22770f96e23b
   react-native-fbsdk-next: 325e4973a478f098bb9406fb2a13fa2e1f5dffeb
   react-native-safe-area-context: 37e680fc4cace3c0030ee46e8987d24f5d3bdab2
+  react-native-slider: 8c562583722c396a3682f451f0b6e68e351ec3b9
   React-NativeModulesApple: 8969913947d5b576de4ed371a939455a8daf28aa
   React-oscompat: ce47230ed20185e91de62d8c6d139ae61763d09c
   React-perflogger: 02b010e665772c7dcb859d85d44c1bfc5ac7c0e4
@@ -2620,6 +2802,7 @@ SPEC CHECKSUMS:
   ReactCodegen: aba3d3db98711294b66d12cb7a79f878e7892a5c
   ReactCommon: 08810150b1206cc44aecf5f6ae19af32f29151a8
   ReactNativeDependencies: 71ce9c28beb282aa720ea7b46980fff9669f428a
+  RNCAsyncStorage: 3a4f5e2777dae1688b781a487923a08569e27fe4
   RNDateTimePicker: 9025ccd219b382f246e9ceb85cd4095279b9bad1
   RNGestureHandler: 2914750df066d89bf9d8f48a10ad5f0051108ac3
   RNGoogleSignin: 104dd7238c56fe354e4b0a8fd267f866039ffdf3
@@ -2628,6 +2811,15 @@ SPEC CHECKSUMS:
   RNScreens: d8d6f1792f6e7ac12b0190d33d8d390efc0c1845
   RNSVG: 1b2772436cb0cebfae91616c4fdd99feeef5ee6d
   RNWorklets: 44dfee34d2e674dac1bb98b246cc54cc3a00627c
+  Stripe: d1824162e4bcb6ead10401a0dc8e8a3d5ffee41f
+  stripe-react-native: eb0d6fac02a31029c3c3d0fc43e6b25dbf9c61fd
+  StripeApplePay: eb64705d3c919492b1b28876652fd0aca2db38cc
+  StripeCore: b5bee05167f0c8ccce936244a031a9972fdeade8
+  StripeFinancialConnections: fd6c661f86f47b1d26a32f588b3a0b09826aba84
+  StripePayments: cf00b3c85cd7b57e40f622493f81bdf361cb3982
+  StripePaymentSheet: b126816213ae4f56ff4525ad25f94bb985a43e27
+  StripePaymentsUI: 05d4be35b34f821d5ddc8617dee04219f3646253
+  StripeUICore: d07bd63a4b53dee8cab4d6f81ce5a7ab3e28511e
   Turf: c9eb11a65d96af58cac523460fd40fec5061b081
   VisionCamera: 6a90992822a293947af96e77618933405a417871
   Yoga: 5934998fbeaef7845dbf698f698518695ab4cd1a
