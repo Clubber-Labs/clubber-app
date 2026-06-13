@@ -15,8 +15,8 @@ export function ProfilePreferredCategories({ values }: Props) {
   return (
     <View className="flex-row flex-wrap justify-center gap-1.5 mt-3">
       {values.map(value => (
-        <View key={value} className="bg-violet-950 px-2.5 py-1 rounded-full">
-          <Text className="text-violet-300 text-xs font-medium">
+        <View key={value} className="bg-brand-surface px-2.5 py-1 rounded-full">
+          <Text className="text-brand-text-strong text-xs font-medium">
             {labelFor(value)}
           </Text>
         </View>

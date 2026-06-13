@@ -12,6 +12,7 @@ import ReanimatedSwipeable, {
   type SwipeableMethods,
   SwipeDirection,
 } from 'react-native-gesture-handler/ReanimatedSwipeable'
+import { colors } from '@/shared/theme'
 
 export type SwipeAction = {
   icon: keyof typeof Ionicons.glyphMap
@@ -59,7 +60,7 @@ function RightActions({
           className="items-center justify-center"
           accessibilityLabel={action.label}
         >
-          <Ionicons name={action.icon} size={24} color="#ffffff" />
+          <Ionicons name={action.icon} size={24} color={colors.content} />
         </Pressable>
       ))}
     </Animated.View>
@@ -91,7 +92,7 @@ function TriggerIcon({
 
   return (
     <Animated.View style={style} className="items-center justify-center px-5">
-      <Ionicons name={icon} size={22} color="#8b5cf6" />
+      <Ionicons name={icon} size={22} color={colors.brandEmphasis} />
     </Animated.View>
   )
 }

@@ -11,6 +11,7 @@ import { useFocusEffect } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import type { ComponentProps } from 'react'
 import { useProfileDrawer } from '../store/profileDrawerStore'
+import { colors } from '@/shared/theme'
 
 type IconName = ComponentProps<typeof Ionicons>['name']
 
@@ -117,7 +118,7 @@ export function ProfileDrawer({ items, header }: Props) {
           transform: [{ translateX }],
           width: DRAWER_WIDTH,
         }}
-        className="bg-zinc-950 border-r border-zinc-800 h-full"
+        className="bg-surface-sunken border-r border-line h-full"
       >
         {header}
         <View className="py-2">
@@ -125,23 +126,25 @@ export function ProfileDrawer({ items, header }: Props) {
             <Pressable
               key={item.label}
               onPress={() => handleItemPress(item)}
-              className={`flex-row items-center justify-between px-5 py-4 ${i > 0 ? 'border-t border-zinc-900' : ''}`}
+              className={`flex-row items-center justify-between px-5 py-4 ${i > 0 ? 'border-t border-line-subtle' : ''}`}
             >
               <View className="flex-row items-center gap-3">
                 <Ionicons
                   name={item.icon}
                   size={20}
-                  color={item.destructive ? '#ef4444' : '#e5e7eb'}
+                  color={
+                    item.destructive ? colors.danger : colors.contentSecondary
+                  }
                 />
                 <Text
-                  className={`text-base font-medium ${item.destructive ? 'text-red-400' : 'text-white'}`}
+                  className={`text-base font-medium ${item.destructive ? 'text-danger-text' : 'text-content'}`}
                 >
                   {item.label}
                 </Text>
               </View>
               {shouldShowBadge(item.badge) && (
-                <View className="bg-violet-600 rounded-full min-w-5 h-5 px-1.5 items-center justify-center">
-                  <Text className="text-white text-xs font-bold">
+                <View className="bg-brand rounded-full min-w-5 h-5 px-1.5 items-center justify-center">
+                  <Text className="text-content text-xs font-bold">
                     {item.badge}
                   </Text>
                 </View>
@@ -152,7 +155,7 @@ export function ProfileDrawer({ items, header }: Props) {
       </Animated.View>
       <Animated.View
         style={{ opacity: backdropOpacity, flex: 1 }}
-        className="bg-black/60"
+        className="bg-background/60"
       >
         <Pressable onPress={close} className="flex-1" />
       </Animated.View>

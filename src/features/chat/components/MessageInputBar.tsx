@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { View, Text, TextInput, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { colors } from '@/shared/theme'
 
 type Props = {
   onSendText: (text: string) => void
@@ -79,31 +80,40 @@ export function MessageInputBar({
   }
 
   return (
-    <View className="border-t pb-7 px-2 pt-2 border-zinc-900 bg-black">
+    <View className="border-t pb-7 px-2 pt-2 border-line-subtle bg-background">
       {isEditing && (
-        <View className="flex-row items-center justify-between px-4 py-1.5 bg-zinc-950">
+        <View className="flex-row items-center justify-between px-4 py-1.5 bg-surface-sunken">
           <View className="flex-row items-center gap-2">
-            <Ionicons name="pencil" size={14} color="#8b5cf6" />
-            <Text className="text-zinc-300 text-sm">Editando mensagem</Text>
+            <Ionicons name="pencil" size={14} color={colors.brandEmphasis} />
+            <Text className="text-content-tertiary text-sm">
+              Editando mensagem
+            </Text>
           </View>
           <Pressable onPress={cancelEdit} accessibilityLabel="Cancelar edição">
-            <Ionicons name="close" size={18} color="#a1a1aa" />
+            <Ionicons name="close" size={18} color={colors.contentMuted} />
           </Pressable>
         </View>
       )}
 
       {replyingTo && !isEditing && (
-        <View className="flex-row items-center justify-between px-4 py-1.5 bg-zinc-950">
+        <View className="flex-row items-center justify-between px-4 py-1.5 bg-surface-sunken">
           <View className="flex-row items-center gap-2 flex-1">
-            <Ionicons name="arrow-undo-outline" size={14} color="#8b5cf6" />
+            <Ionicons
+              name="arrow-undo-outline"
+              size={14}
+              color={colors.brandEmphasis}
+            />
             <View className="flex-1">
               <Text
-                className="text-violet-300 text-[12px] font-semibold"
+                className="text-brand-text-strong text-[12px] font-semibold"
                 numberOfLines={1}
               >
                 Respondendo a {replyingTo.senderName}
               </Text>
-              <Text className="text-zinc-400 text-[12px]" numberOfLines={1}>
+              <Text
+                className="text-content-muted text-[12px]"
+                numberOfLines={1}
+              >
                 {replyingTo.preview}
               </Text>
             </View>
@@ -112,7 +122,7 @@ export function MessageInputBar({
             onPress={onCancelReply}
             accessibilityLabel="Cancelar resposta"
           >
-            <Ionicons name="close" size={18} color="#a1a1aa" />
+            <Ionicons name="close" size={18} color={colors.contentMuted} />
           </Pressable>
         </View>
       )}
@@ -128,7 +138,7 @@ export function MessageInputBar({
             <Ionicons
               name="add-circle-outline"
               size={26}
-              color={disabled ? '#3f3f46' : '#8b5cf6'}
+              color={disabled ? colors.lineStrong : colors.brandEmphasis}
             />
           </Pressable>
         )}
@@ -139,14 +149,14 @@ export function MessageInputBar({
             onChangeText={handleChangeText}
             editable={isEditing || !disabled}
             placeholder="Mensagem…"
-            placeholderTextColor="#71717a"
+            placeholderTextColor={colors.contentSubtle}
             multiline
             maxLength={2000}
-            className="bg-zinc-900 rounded-2xl px-4 py-2.5 text-base text-white max-h-32"
+            className="bg-surface rounded-2xl px-4 py-2.5 text-base text-content max-h-32"
             style={{ minHeight: 40 }}
           />
           {nearLimit && (
-            <Text className="text-[11px] text-zinc-500 self-end mt-0.5 mr-1">
+            <Text className="text-[11px] text-content-subtle self-end mt-0.5 mr-1">
               {text.length}/2000
             </Text>
           )}
@@ -156,26 +166,26 @@ export function MessageInputBar({
           <Pressable
             onPress={onStartRecording}
             disabled={disabled}
-            className="w-10 h-10 items-center justify-center rounded-full bg-zinc-800"
+            className="w-10 h-10 items-center justify-center rounded-full bg-surface-elevated"
             accessibilityLabel="Gravar áudio"
           >
             <Ionicons
               name="mic"
               size={20}
-              color={disabled ? '#52525b' : '#8b5cf6'}
+              color={disabled ? colors.contentFaint : colors.brandEmphasis}
             />
           </Pressable>
         ) : (
           <Pressable
             onPress={handleSend}
             disabled={!canSend}
-            className={`w-10 h-10 items-center justify-center rounded-full ${canSend ? 'bg-violet-600' : 'bg-zinc-800'}`}
+            className={`w-10 h-10 items-center justify-center rounded-full ${canSend ? 'bg-brand' : 'bg-surface-elevated'}`}
             accessibilityLabel={isEditing ? 'Salvar edição' : 'Enviar mensagem'}
           >
             <Ionicons
               name={isEditing ? 'checkmark' : 'send'}
               size={18}
-              color={canSend ? '#ffffff' : '#52525b'}
+              color={canSend ? colors.content : colors.contentFaint}
             />
           </Pressable>
         )}

@@ -2,6 +2,7 @@ import { ScrollView, View, Text, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import * as Linking from 'expo-linking'
 import Constants from 'expo-constants'
+import { colors } from '@/shared/theme'
 
 const VERSION = Constants.expoConfig?.version ?? '—'
 
@@ -17,10 +18,10 @@ function LinkRow({ label, url, showBorder }: LinkRowProps) {
       onPress={() => {
         void Linking.openURL(url).catch(() => {})
       }}
-      className={`flex-row items-center justify-between py-3 ${showBorder ? 'border-t border-zinc-800' : ''}`}
+      className={`flex-row items-center justify-between py-3 ${showBorder ? 'border-t border-line' : ''}`}
     >
-      <Text className="text-zinc-200 text-base">{label}</Text>
-      <Ionicons name="open-outline" size={18} color="#a1a1aa" />
+      <Text className="text-content-secondary text-base">{label}</Text>
+      <Ionicons name="open-outline" size={18} color={colors.contentMuted} />
     </Pressable>
   )
 }
@@ -28,24 +29,24 @@ function LinkRow({ label, url, showBorder }: LinkRowProps) {
 export default function AboutScreen() {
   return (
     <ScrollView
-      className="flex-1 bg-black"
+      className="flex-1 bg-background"
       contentContainerStyle={{ padding: 20, gap: 24 }}
     >
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-white">ConnectAI</Text>
-        <Text className="text-sm text-zinc-400">Versão {VERSION}</Text>
+        <Text className="text-2xl font-bold text-content">ConnectAI</Text>
+        <Text className="text-sm text-content-muted">Versão {VERSION}</Text>
       </View>
 
       <View className="gap-2">
-        <Text className="text-xs uppercase tracking-wider text-zinc-500 font-semibold">
+        <Text className="text-xs uppercase tracking-wider text-content-subtle font-semibold">
           Mapas
         </Text>
-        <Text className="text-sm text-zinc-300 leading-5">
+        <Text className="text-sm text-content-tertiary leading-5">
           Os mapas exibidos no app são fornecidos pela Mapbox e usam dados do
           OpenStreetMap, mantidos por uma comunidade de colaboradores ao redor
           do mundo.
         </Text>
-        <View className="bg-zinc-900 border border-zinc-800 rounded-xl px-4">
+        <View className="bg-surface border border-line rounded-xl px-4">
           <LinkRow label="© Mapbox" url="https://www.mapbox.com/about/maps/" />
           <LinkRow
             label="© OpenStreetMap"

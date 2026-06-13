@@ -10,6 +10,7 @@ import { useSearchUsers } from '@/features/users/hooks/useSearchUsers'
 import { UserSearchInput } from '@/features/users/components/UserSearchInput'
 import { UserSearchCard } from '@/features/users/components/UserSearchCard'
 import { UserSearchEmpty } from '@/features/users/components/UserSearchEmpty'
+import { colors } from '@/shared/theme'
 
 export default function SearchScreen() {
   const [query, setQuery] = useState('')
@@ -29,7 +30,7 @@ export default function SearchScreen() {
     !showIdle && !isLoading && !isError && users.length === 0
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-background">
       <UserSearchInput
         value={query}
         onChange={setQuery}
@@ -45,7 +46,7 @@ export default function SearchScreen() {
           className="flex-1 items-center py-12"
           onPress={Keyboard.dismiss}
         >
-          <ActivityIndicator color="#8b5cf6" />
+          <ActivityIndicator color={colors.brandEmphasis} />
         </Pressable>
       ) : showNoResults ? (
         <Pressable className="flex-1" onPress={Keyboard.dismiss}>
@@ -57,7 +58,7 @@ export default function SearchScreen() {
           keyExtractor={u => u.id}
           renderItem={({ item }) => <UserSearchCard user={item} />}
           ItemSeparatorComponent={() => (
-            <View className="h-px bg-zinc-900 mx-4" />
+            <View className="h-px bg-surface mx-4" />
           )}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) fetchNextPage()
@@ -66,7 +67,7 @@ export default function SearchScreen() {
           ListFooterComponent={
             isFetchingNextPage ? (
               <ActivityIndicator
-                color="#8b5cf6"
+                color={colors.brandEmphasis}
                 style={{ marginVertical: 16 }}
               />
             ) : null

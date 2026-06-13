@@ -18,6 +18,7 @@ import {
   useUpdateRole,
 } from '../hooks/useGroupAdmin'
 import type { Conversation, Participant } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   conversation: Conversation
@@ -80,7 +81,7 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
           size={88}
         />
         <View className="flex-row items-center gap-2 mt-2">
-          <Text className="text-white font-bold text-xl">
+          <Text className="text-content font-bold text-xl">
             {conversation.title ?? 'Grupo'}
           </Text>
           {amAdmin && (
@@ -89,16 +90,16 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
               accessibilityLabel="Renomear grupo"
               className="p-1"
             >
-              <Ionicons name="pencil" size={16} color="#8b5cf6" />
+              <Ionicons name="pencil" size={16} color={colors.brandEmphasis} />
             </Pressable>
           )}
         </View>
-        <Text className="text-zinc-500">
+        <Text className="text-content-subtle">
           {conversation.participants.length} participantes
         </Text>
       </View>
 
-      <Text className="text-zinc-400 text-xs font-medium uppercase tracking-wider px-4 pt-3 pb-1">
+      <Text className="text-content-muted text-xs font-medium uppercase tracking-wider px-4 pt-3 pb-1">
         Participantes
       </Text>
       {conversation.participants.map(p => (
@@ -116,10 +117,14 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
           onPress={() => setAddOpen(true)}
           className="flex-row items-center gap-3 px-4 py-3"
         >
-          <View className="w-11 h-11 rounded-full bg-zinc-900 items-center justify-center">
-            <Ionicons name="person-add" size={20} color="#8b5cf6" />
+          <View className="w-11 h-11 rounded-full bg-surface items-center justify-center">
+            <Ionicons
+              name="person-add"
+              size={20}
+              color={colors.brandEmphasis}
+            />
           </View>
-          <Text className="text-violet-400 text-base font-medium">
+          <Text className="text-brand-text text-base font-medium">
             Adicionar pessoas
           </Text>
         </Pressable>
@@ -127,10 +132,10 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
 
       <Pressable
         onPress={handleLeave}
-        className="flex-row items-center gap-3 px-4 py-3.5 mt-3 border-t border-zinc-900"
+        className="flex-row items-center gap-3 px-4 py-3.5 mt-3 border-t border-line-subtle"
       >
-        <Ionicons name="exit-outline" size={22} color="#ef4444" />
-        <Text className="text-red-500 text-base">Sair do grupo</Text>
+        <Ionicons name="exit-outline" size={22} color={colors.danger} />
+        <Text className="text-danger text-base">Sair do grupo</Text>
       </Pressable>
 
       <GroupTitleModal

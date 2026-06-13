@@ -20,6 +20,7 @@ import { DatePicker } from '@/shared/components/DatePicker'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import { LocationPicker } from './LocationPicker'
 import { AddressAutocomplete } from './AddressAutocomplete'
+import { colors } from '@/shared/theme'
 
 const DEFAULTS: Partial<CreateEventInput> = {
   title: '',
@@ -73,35 +74,39 @@ export function EventForm({
         keyboardShouldPersistTaps="handled"
       >
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">Título</Text>
+          <Text className="text-sm font-medium text-content-tertiary">
+            Título
+          </Text>
           <Controller
             control={control}
             name="title"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.title ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                className={`border ${errors.title ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                 placeholder="Festival de música no parque"
-                placeholderTextColor="#71717a"
+                placeholderTextColor={colors.contentSubtle}
                 value={value}
                 onChangeText={onChange}
               />
             )}
           />
           {errors.title && (
-            <Text className="text-white text-xs">{errors.title.message}</Text>
+            <Text className="text-content text-xs">{errors.title.message}</Text>
           )}
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">Descrição</Text>
+          <Text className="text-sm font-medium text-content-tertiary">
+            Descrição
+          </Text>
           <Controller
             control={control}
             name="description"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.description ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white min-h-[96px]`}
+                className={`border ${errors.description ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content min-h-[96px]`}
                 placeholder="Conte mais sobre o evento..."
-                placeholderTextColor="#71717a"
+                placeholderTextColor={colors.contentSubtle}
                 value={value ?? ''}
                 onChangeText={onChange}
                 multiline
@@ -110,14 +115,16 @@ export function EventForm({
             )}
           />
           {errors.description && (
-            <Text className="text-white text-xs">
+            <Text className="text-content text-xs">
               {errors.description.message}
             </Text>
           )}
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">Data e hora</Text>
+          <Text className="text-sm font-medium text-content-tertiary">
+            Data e hora
+          </Text>
           <Controller
             control={control}
             name="date"
@@ -133,14 +140,14 @@ export function EventForm({
             )}
           />
           {errors.date && (
-            <Text className="text-white text-xs">{errors.date.message}</Text>
+            <Text className="text-content text-xs">{errors.date.message}</Text>
           )}
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">
+          <Text className="text-sm font-medium text-content-tertiary">
             Horário de término{' '}
-            <Text className="text-zinc-500 text-xs">(opcional)</Text>
+            <Text className="text-content-subtle text-xs">(opcional)</Text>
           </Text>
           <Controller
             control={control}
@@ -157,12 +164,16 @@ export function EventForm({
             )}
           />
           {errors.endDate && (
-            <Text className="text-white text-xs">{errors.endDate.message}</Text>
+            <Text className="text-content text-xs">
+              {errors.endDate.message}
+            </Text>
           )}
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">Categorias</Text>
+          <Text className="text-sm font-medium text-content-tertiary">
+            Categorias
+          </Text>
           <Controller
             control={control}
             name="categories"
@@ -171,14 +182,16 @@ export function EventForm({
             )}
           />
           {errors.categories && (
-            <Text className="text-white text-xs">
+            <Text className="text-content text-xs">
               {errors.categories.message}
             </Text>
           )}
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">Endereço</Text>
+          <Text className="text-sm font-medium text-content-tertiary">
+            Endereço
+          </Text>
           <Controller
             control={control}
             name="address"
@@ -200,12 +213,14 @@ export function EventForm({
             )}
           />
           {errors.address && (
-            <Text className="text-white text-xs">{errors.address.message}</Text>
+            <Text className="text-content text-xs">
+              {errors.address.message}
+            </Text>
           )}
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">
+          <Text className="text-sm font-medium text-content-tertiary">
             Local no mapa
           </Text>
           <Controller
@@ -233,18 +248,18 @@ export function EventForm({
             )}
           />
           {(errors.latitude || errors.longitude) && (
-            <Text className="text-white text-xs">
+            <Text className="text-content text-xs">
               Toque no mapa para escolher o local
             </Text>
           )}
         </View>
 
-        <View className="flex-row items-center justify-between bg-zinc-900 px-4 py-3 rounded-xl">
+        <View className="flex-row items-center justify-between bg-surface px-4 py-3 rounded-xl">
           <View className="flex-1">
-            <Text className="text-sm font-medium text-zinc-200">
+            <Text className="text-sm font-medium text-content-secondary">
               Evento público
             </Text>
-            <Text className="text-xs text-zinc-400">
+            <Text className="text-xs text-content-muted">
               Visível para qualquer pessoa
             </Text>
           </View>

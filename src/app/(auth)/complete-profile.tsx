@@ -14,6 +14,7 @@ import { useLogout } from '@/features/auth/hooks/useLogout'
 import { CompleteProfileForm } from '@/features/auth/components/CompleteProfileForm'
 import { Button } from '@/shared/components/Button'
 import { useConfirm } from '@/shared/lib/confirm'
+import { colors } from '@/shared/theme'
 
 export default function CompleteProfileScreen() {
   const { data: profile, isLoading, isError, refetch } = useMyProfile()
@@ -37,35 +38,35 @@ export default function CompleteProfileScreen() {
       <Stack.Screen options={{ headerShown: false, gestureEnabled: false }} />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{ flex: 1, backgroundColor: '#000000' }}
+        style={{ flex: 1, backgroundColor: colors.background }}
       >
         <Pressable
           onPress={handleExit}
           hitSlop={12}
           className="flex-row items-center gap-1 px-6 pt-4 self-start"
         >
-          <Ionicons name="chevron-back" size={22} color="#ffffff" />
-          <Text className="text-white font-semibold text-base">Sair</Text>
+          <Ionicons name="chevron-back" size={22} color={colors.content} />
+          <Text className="text-content font-semibold text-base">Sair</Text>
         </Pressable>
 
         <ScrollView
           contentContainerStyle={{ padding: 24, paddingTop: 16 }}
           keyboardShouldPersistTaps="handled"
         >
-          <Text className="text-3xl font-bold text-white mb-2">
+          <Text className="text-3xl font-bold text-content mb-2">
             Complete seu perfil
           </Text>
-          <Text className="text-zinc-400 mb-8">
+          <Text className="text-content-muted mb-8">
             Faltam algumas informações pra você começar a usar o ConnectAI.
           </Text>
 
           {isLoading ? (
             <View className="items-center py-12">
-              <ActivityIndicator color="#a78bfa" />
+              <ActivityIndicator color={colors.brandText} />
             </View>
           ) : isError || !profile ? (
             <View className="items-center py-12 gap-4">
-              <Text className="text-white text-base text-center">
+              <Text className="text-content text-base text-center">
                 Não conseguimos carregar seu perfil. Verifique sua conexão.
               </Text>
               <Button

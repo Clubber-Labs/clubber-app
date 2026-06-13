@@ -14,6 +14,7 @@ import { useResumeSubscription } from '@/features/billing/hooks/useResumeSubscri
 import { SubscriptionCard } from '@/features/billing/components/SubscriptionCard'
 import { Button } from '@/shared/components/Button'
 import { useConfirm } from '@/shared/lib/confirm'
+import { colors } from '@/shared/theme'
 
 export default function ManageSubscriptionScreen() {
   const router = useRouter()
@@ -40,22 +41,22 @@ export default function ManageSubscriptionScreen() {
 
   if (isLoading || !subscription) {
     return (
-      <View className="flex-1 bg-black items-center justify-center">
-        <ActivityIndicator color="#7c3aed" />
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator color={colors.brand} />
       </View>
     )
   }
 
   return (
     <ScrollView
-      className="flex-1 bg-black"
+      className="flex-1 bg-background"
       contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
     >
       <View className="flex-row items-center gap-3 mb-6">
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Ionicons name="arrow-back" size={24} color="#ffffff" />
+          <Ionicons name="arrow-back" size={24} color={colors.content} />
         </Pressable>
-        <Text className="text-white font-bold text-xl">Assinatura</Text>
+        <Text className="text-content font-bold text-xl">Assinatura</Text>
       </View>
 
       <SubscriptionCard subscription={subscription} />

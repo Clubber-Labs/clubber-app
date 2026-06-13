@@ -1,4 +1,5 @@
 import { Switch, Text, View } from 'react-native'
+import { colors } from '@/shared/theme'
 
 type Props = {
   label: string
@@ -19,11 +20,11 @@ export function ConsentToggleRow({
 }: Props) {
   return (
     <View
-      className={`flex-row items-start py-4 px-4 ${!isLast ? 'border-b border-zinc-800' : ''}`}
+      className={`flex-row items-start py-4 px-4 ${!isLast ? 'border-b border-line' : ''}`}
     >
       <View className="flex-1 mr-4">
-        <Text className="text-sm font-semibold text-white">{label}</Text>
-        <Text className="text-xs text-zinc-400 mt-1 leading-4">
+        <Text className="text-sm font-semibold text-content">{label}</Text>
+        <Text className="text-xs text-content-muted mt-1 leading-4">
           {description}
         </Text>
       </View>
@@ -31,9 +32,9 @@ export function ConsentToggleRow({
         value={value}
         onValueChange={onChange}
         disabled={disabled}
-        thumbColor={value ? '#7c3aed' : '#3f3f46'}
-        trackColor={{ true: '#4c1d95', false: '#27272a' }}
-        ios_backgroundColor="#27272a"
+        thumbColor={value ? colors.brand : colors.lineStrong}
+        trackColor={{ true: colors.brandSurfaceStrong, false: colors.line }}
+        ios_backgroundColor={colors.line}
       />
     </View>
   )

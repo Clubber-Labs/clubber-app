@@ -31,6 +31,7 @@ import { SessionUnavailable } from '@/features/auth/components/SessionUnavailabl
 import { ChatRealtimeMount } from '@/features/chat/components/ChatRealtimeMount'
 import { NotificationsMount } from '@/features/notifications/components/NotificationsMount'
 import { GlobalHeader } from '@/shared/components/GlobalHeader'
+import { colors } from '@/shared/theme'
 
 // Redirecionamentos por status. 'loading'/'offline' são tratados pelos overlays
 // no RootLayout (não navega), pra não jogar o usuário no login enquanto valida
@@ -146,20 +147,20 @@ export default function RootLayout() {
                 <BannerProvider>
                   <StatusBar style="light" />
                   <SafeAreaView
-                    style={{ flex: 1, backgroundColor: '#000000' }}
+                    style={{ flex: 1, backgroundColor: colors.background }}
                     edges={['top']}
                   >
                     {showHeader && <GlobalHeader />}
-                    <View className="flex-1 bg-black">
+                    <View className="flex-1 bg-background">
                       <Stack
                         screenOptions={{
                           headerShown: false,
-                          contentStyle: { backgroundColor: '#000000' },
+                          contentStyle: { backgroundColor: colors.background },
                         }}
                       />
                       {/* Gate de sessão: bloqueia as telas até /me validar. */}
                       {status === 'loading' && (
-                        <View className="absolute inset-0 bg-black" />
+                        <View className="absolute inset-0 bg-background" />
                       )}
                       {status === 'offline' && (
                         <SessionUnavailable onRetry={retry} />

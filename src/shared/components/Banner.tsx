@@ -30,7 +30,7 @@ export function Banner({ message, onDismiss }: Props) {
         zIndex: 9999,
         transform: [{ translateY }],
       }}
-      className="bg-black"
+      className="bg-background"
     >
       <Pressable
         onPress={onDismiss}
@@ -40,7 +40,7 @@ export function Banner({ message, onDismiss }: Props) {
           paddingHorizontal: 20,
         }}
       >
-        <Text className="text-white font-bold text-base text-center">
+        <Text className="text-content font-bold text-base text-center">
           {message}
         </Text>
       </Pressable>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { View, Text, TextInput, Pressable } from 'react-native'
 import { SheetModal } from './SheetModal'
+import { colors } from '@/shared/theme'
 
 type Props = {
   visible: boolean
@@ -31,25 +32,25 @@ export function GroupTitleModal({
 
   return (
     <SheetModal visible={visible} onClose={onClose}>
-      <Text className="text-white font-semibold text-base px-5 pt-1 pb-2">
+      <Text className="text-content font-semibold text-base px-5 pt-1 pb-2">
         {heading}
       </Text>
       <TextInput
         value={title}
         onChangeText={setTitle}
         placeholder="Ex: Squad do show"
-        placeholderTextColor="#71717a"
+        placeholderTextColor={colors.contentSubtle}
         maxLength={80}
-        className="bg-zinc-900 rounded-xl px-4 py-3 text-white mx-5"
+        className="bg-surface rounded-xl px-4 py-3 text-content mx-5"
       />
       <View className="px-5 mt-3">
         <Pressable
           onPress={() => canConfirm && onConfirm(title.trim())}
           disabled={!canConfirm}
-          className={`rounded-full py-3 items-center ${canConfirm ? 'bg-violet-600' : 'bg-zinc-800'}`}
+          className={`rounded-full py-3 items-center ${canConfirm ? 'bg-brand' : 'bg-surface-elevated'}`}
         >
           <Text
-            className={`font-semibold ${canConfirm ? 'text-white' : 'text-zinc-500'}`}
+            className={`font-semibold ${canConfirm ? 'text-content' : 'text-content-subtle'}`}
           >
             {submitting ? 'Salvando…' : confirmLabel}
           </Text>

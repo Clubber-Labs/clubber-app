@@ -22,8 +22,8 @@ export function UserListItem({ user, trailing }: Props) {
       >
         <UserAvatar name={fullName} avatarUrl={user.avatarUrl} size={44} />
         <View className="flex-1">
-          <Text className="text-white font-semibold text-sm">{fullName}</Text>
-          <Text className="text-zinc-400 text-xs">@{user.username}</Text>
+          <Text className="text-content font-semibold text-sm">{fullName}</Text>
+          <Text className="text-content-muted text-xs">@{user.username}</Text>
         </View>
       </Pressable>
       {trailing}

@@ -12,7 +12,7 @@ const MESSAGES: Record<Props['kind'], string> = {
 export function UserSearchEmpty({ kind }: Props) {
   return (
     <View className="items-center py-12 px-6">
-      <Text className="text-zinc-400 text-center text-sm">
+      <Text className="text-content-muted text-center text-sm">
         {MESSAGES[kind]}
       </Text>
     </View>

@@ -49,9 +49,9 @@ export default function NewGroupScreen() {
   }
 
   return (
-    <View className="flex-1 bg-black">
-      <View className="px-4 py-2.5 border-b border-zinc-900">
-        <Text className="text-white font-semibold text-lg">Novo grupo</Text>
+    <View className="flex-1 bg-background">
+      <View className="px-4 py-2.5 border-b border-line-subtle">
+        <Text className="text-content font-semibold text-lg">Novo grupo</Text>
       </View>
 
       <PeoplePicker
@@ -72,13 +72,13 @@ export default function NewGroupScreen() {
       />
 
       {selected.length > 0 && (
-        <View className="px-4 pb-6 pt-2 border-t border-zinc-900">
+        <View className="px-4 pb-6 pt-2 border-t border-line-subtle">
           <Pressable
             onPress={() => setTitleOpen(true)}
             disabled={create.isPending}
-            className="bg-violet-600 rounded-full py-3.5 items-center"
+            className="bg-brand rounded-full py-3.5 items-center"
           >
-            <Text className="text-white font-semibold text-base">
+            <Text className="text-content font-semibold text-base">
               {create.isPending
                 ? 'Criando…'
                 : `Criar grupo (${selected.length})`}

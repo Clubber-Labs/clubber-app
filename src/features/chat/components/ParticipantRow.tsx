@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { RoleBadge } from './RoleBadge'
 import type { Participant } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   participant: Participant
@@ -22,11 +23,11 @@ export function ParticipantRow({
     <View className="flex-row items-center gap-3 px-4 py-3">
       <UserAvatar name={user.name} avatarUrl={user.avatarUrl} size={44} />
       <View className="flex-1">
-        <Text className="text-zinc-100 font-semibold text-base">
+        <Text className="text-content-bright font-semibold text-base">
           {user.name} {user.lastname}
           {isMe ? ' (você)' : ''}
         </Text>
-        <Text className="text-zinc-500 text-sm">@{user.username}</Text>
+        <Text className="text-content-subtle text-sm">@{user.username}</Text>
       </View>
       {participant.role === 'ADMIN' && <RoleBadge />}
       {canManage && (
@@ -35,7 +36,11 @@ export function ParticipantRow({
           className="w-9 h-9 items-center justify-center"
           accessibilityLabel={`Gerenciar ${user.name}`}
         >
-          <Ionicons name="ellipsis-vertical" size={18} color="#a1a1aa" />
+          <Ionicons
+            name="ellipsis-vertical"
+            size={18}
+            color={colors.contentMuted}
+          />
         </Pressable>
       )}
     </View>

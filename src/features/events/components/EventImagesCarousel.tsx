@@ -9,6 +9,7 @@ import {
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import type { EventImage } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   images: EventImage[]
@@ -24,9 +25,9 @@ export function EventImagesCarousel({ images, height = 224 }: Props) {
     return (
       <View
         style={{ height }}
-        className="w-full bg-violet-700 items-center justify-center"
+        className="w-full bg-brand-strong items-center justify-center"
       >
-        <Ionicons name="calendar" size={56} color="#ffffff" />
+        <Ionicons name="calendar" size={56} color={colors.content} />
       </View>
     )
   }
@@ -36,7 +37,7 @@ export function EventImagesCarousel({ images, height = 224 }: Props) {
       <Image
         source={{ uri: images[0].url }}
         style={{ width: SCREEN_WIDTH, height }}
-        className="bg-zinc-800"
+        className="bg-surface-elevated"
         resizeMode="cover"
       />
     )
@@ -61,7 +62,7 @@ export function EventImagesCarousel({ images, height = 224 }: Props) {
           <Image
             source={{ uri: item.url }}
             style={{ width: SCREEN_WIDTH, height }}
-            className="bg-zinc-800"
+            className="bg-surface-elevated"
             resizeMode="cover"
           />
         )}
@@ -70,7 +71,7 @@ export function EventImagesCarousel({ images, height = 224 }: Props) {
         {images.map((img, i) => (
           <View
             key={img.id}
-            className={`w-1.5 h-1.5 rounded-full ${i === index ? 'bg-white' : 'bg-white/40'}`}
+            className={`w-1.5 h-1.5 rounded-full ${i === index ? 'bg-content' : 'bg-content/40'}`}
           />
         ))}
       </View>

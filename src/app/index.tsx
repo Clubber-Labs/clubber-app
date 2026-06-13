@@ -8,7 +8,7 @@ export default function Index() {
   // 'loading'/'offline' são cobertos pelos overlays do _layout — não redireciona
   // pro login enquanto valida a sessão ou está offline no boot.
   if (status === 'loading' || status === 'offline') {
-    return <View className="flex-1 bg-black" />
+    return <View className="flex-1 bg-background" />
   }
 
   if (status === 'authenticated') {

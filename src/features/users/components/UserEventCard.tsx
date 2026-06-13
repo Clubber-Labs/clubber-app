@@ -2,6 +2,7 @@ import { View, Text, Pressable, Image } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useCategories } from '@/shared/hooks/useCategories'
 import type { UserEventSummary } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   event: UserEventSummary
@@ -21,7 +22,7 @@ export function UserEventCard({ event, onPress }: Props) {
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row bg-zinc-900 rounded-xl overflow-hidden mb-3"
+      className="flex-row bg-surface rounded-xl overflow-hidden mb-3"
     >
       {event.images[0] ? (
         <Image
@@ -30,32 +31,48 @@ export function UserEventCard({ event, onPress }: Props) {
           resizeMode="cover"
         />
       ) : (
-        <View className="w-24 h-24 bg-zinc-800 items-center justify-center">
-          <Ionicons name="calendar-outline" size={28} color="#52525b" />
+        <View className="w-24 h-24 bg-surface-elevated items-center justify-center">
+          <Ionicons
+            name="calendar-outline"
+            size={28}
+            color={colors.contentFaint}
+          />
         </View>
       )}
 
       <View className="flex-1 px-3 py-3 justify-between">
-        <Text className="text-white font-semibold text-sm" numberOfLines={2}>
+        <Text className="text-content font-semibold text-sm" numberOfLines={2}>
           {event.title}
         </Text>
         <View className="gap-1">
           <View className="flex-row items-center gap-1">
-            <Ionicons name="time-outline" size={12} color="#a1a1aa" />
-            <Text className="text-zinc-400 text-xs">
+            <Ionicons
+              name="time-outline"
+              size={12}
+              color={colors.contentMuted}
+            />
+            <Text className="text-content-muted text-xs">
               {formatDate(event.date)}
             </Text>
           </View>
           <View className="flex-row items-center gap-1">
-            <Ionicons name="grid-outline" size={12} color="#a1a1aa" />
-            <Text className="text-zinc-400 text-xs">
+            <Ionicons
+              name="grid-outline"
+              size={12}
+              color={colors.contentMuted}
+            />
+            <Text className="text-content-muted text-xs">
               {labelsFor(event.categories)}
             </Text>
           </View>
           {typeof event.attendancesCount === 'number' && (
             <View className="flex-row items-center gap-1">
-              <Ionicons name="people-outline" size={12} color="#a1a1aa" />
-              <Text className="text-zinc-400 text-xs">
+              <Ionicons
+                name="people-outline"
+                size={12}
+                color={colors.contentMuted}
+              />
+              <Text className="text-content-muted text-xs">
                 {event.attendancesCount} participantes
               </Text>
             </View>

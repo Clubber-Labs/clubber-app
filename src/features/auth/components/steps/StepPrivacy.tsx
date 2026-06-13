@@ -13,6 +13,7 @@ import {
   ORDERED_CATEGORIES,
   groupItemsByCategory,
 } from '@/features/privacy/constants'
+import { colors } from '@/shared/theme'
 
 type Props = {
   control: Control<RegisterInput>
@@ -25,34 +26,34 @@ export function StepPrivacy({ control, errors }: Props) {
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-white">
+        <Text className="text-2xl font-bold text-content">
           Privacidade e LGPD
         </Text>
-        <Text className="text-sm text-zinc-400">
+        <Text className="text-sm text-content-muted">
           Confirme os termos obrigatórios e escolha os usos opcionais dos seus
           dados.
         </Text>
       </View>
 
-      <View className="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden">
-        <View className="flex-row items-center justify-between px-4 py-3 border-b border-zinc-800">
+      <View className="bg-surface-sunken border border-line rounded-xl overflow-hidden">
+        <View className="flex-row items-center justify-between px-4 py-3 border-b border-line">
           <View className="flex-row items-center gap-2 flex-1">
-            <Ionicons name="lock-closed" size={14} color="#a78bfa" />
-            <Text className="text-sm font-semibold text-violet-400">
+            <Ionicons name="lock-closed" size={14} color={colors.brandText} />
+            <Text className="text-sm font-semibold text-brand-text">
               Dados essenciais
             </Text>
           </View>
-          <Text className="text-[10px] font-bold uppercase text-violet-300">
+          <Text className="text-[10px] font-bold uppercase text-brand-text-strong">
             Obrigatório
           </Text>
         </View>
 
         <View className="flex-row items-start px-4 py-4">
           <View className="flex-1 mr-4 gap-1">
-            <Text className="text-sm font-semibold text-white">
+            <Text className="text-sm font-semibold text-content">
               Termos de Uso e Política de Privacidade
             </Text>
-            <Text className="text-xs text-zinc-400 leading-4">
+            <Text className="text-xs text-content-muted leading-4">
               Necessário para criar e manter sua conta, autenticação e operação
               básica do app.
             </Text>
@@ -64,16 +65,19 @@ export function StepPrivacy({ control, errors }: Props) {
               <Switch
                 value={value}
                 onValueChange={onChange}
-                thumbColor={value ? '#7c3aed' : '#3f3f46'}
-                trackColor={{ true: '#4c1d95', false: '#27272a' }}
-                ios_backgroundColor="#27272a"
+                thumbColor={value ? colors.brand : colors.lineStrong}
+                trackColor={{
+                  true: colors.brandSurfaceStrong,
+                  false: colors.line,
+                }}
+                ios_backgroundColor={colors.line}
               />
             )}
           />
         </View>
 
         {errors.termsAccepted && (
-          <Text className="px-4 pb-4 text-white text-xs">
+          <Text className="px-4 pb-4 text-content text-xs">
             {errors.termsAccepted.message}
           </Text>
         )}
@@ -86,10 +90,10 @@ export function StepPrivacy({ control, errors }: Props) {
         return (
           <View
             key={cat}
-            className="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden"
+            className="bg-surface-sunken border border-line rounded-xl overflow-hidden"
           >
-            <View className="px-4 py-3 border-b border-zinc-800">
-              <Text className="text-sm font-semibold text-zinc-300">
+            <View className="px-4 py-3 border-b border-line">
+              <Text className="text-sm font-semibold text-content-tertiary">
                 {CATEGORY_LABELS[cat]}
               </Text>
             </View>
@@ -118,13 +122,13 @@ export function StepPrivacy({ control, errors }: Props) {
         onPress={() => Linking.openURL('https://connectai.app/privacidade')}
         className="flex-row items-center justify-center gap-2 active:opacity-70"
       >
-        <Ionicons name="document-text-outline" size={14} color="#7c3aed" />
-        <Text className="text-violet-400 text-sm">
+        <Ionicons name="document-text-outline" size={14} color={colors.brand} />
+        <Text className="text-brand-text text-sm">
           Ler a Política de Privacidade completa
         </Text>
       </Pressable>
 
-      <Text className="text-zinc-600 text-xs text-center leading-4">
+      <Text className="text-content-faint text-xs text-center leading-4">
         LGPD - Lei no 13.709/2018. Consentimento livre, informado e inequivoco
         (Art. 8).
         {'\n'}Versao da politica: {CONSENT_VERSION} - Vigencia: 02/06/2026.

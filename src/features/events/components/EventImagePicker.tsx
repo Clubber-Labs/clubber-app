@@ -1,6 +1,7 @@
 import { View, Text, Image, Pressable, ScrollView } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { usePickImages } from '@/shared/hooks/usePickImages'
+import { colors } from '@/shared/theme'
 
 type Props = {
   uris: string[]
@@ -23,9 +24,9 @@ export function EventImagePicker({ uris, onChange, maxCount = 5 }: Props) {
 
   return (
     <View className="gap-2">
-      <Text className="text-sm font-medium text-zinc-300">
+      <Text className="text-sm font-medium text-content-tertiary">
         Fotos do evento{' '}
-        <Text className="text-zinc-500 text-xs">
+        <Text className="text-content-subtle text-xs">
           ({uris.length}/{maxCount})
         </Text>
       </Text>
@@ -39,26 +40,26 @@ export function EventImagePicker({ uris, onChange, maxCount = 5 }: Props) {
           <View key={`${uri}-${i}`} className="relative">
             <Image
               source={{ uri }}
-              className="w-20 h-20 rounded-xl bg-zinc-800"
+              className="w-20 h-20 rounded-xl bg-surface-elevated"
               resizeMode="cover"
             />
             <Pressable
               onPress={() => remove(i)}
-              className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-zinc-900 border border-zinc-700 items-center justify-center"
+              className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-surface border border-line-strong items-center justify-center"
               hitSlop={6}
               accessibilityLabel="Remover foto"
             >
-              <Ionicons name="close" size={14} color="#f4f4f5" />
+              <Ionicons name="close" size={14} color={colors.contentBright} />
             </Pressable>
           </View>
         ))}
         {canAddMore && (
           <Pressable
             onPress={pick}
-            className="w-20 h-20 rounded-xl bg-zinc-900 border border-dashed border-zinc-700 items-center justify-center"
+            className="w-20 h-20 rounded-xl bg-surface border border-dashed border-line-strong items-center justify-center"
             accessibilityLabel="Adicionar fotos"
           >
-            <Ionicons name="add" size={24} color="#a1a1aa" />
+            <Ionicons name="add" size={24} color={colors.contentMuted} />
           </Pressable>
         )}
       </ScrollView>

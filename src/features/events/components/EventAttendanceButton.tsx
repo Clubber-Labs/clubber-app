@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useSetAttendance, useCancelAttendance } from '../hooks/useAttendance'
 import type { AttendanceType } from '@/shared/types'
 import type { ComponentProps } from 'react'
+import { colors } from '@/shared/theme'
 
 type IconName = ComponentProps<typeof Ionicons>['name']
 
@@ -38,18 +39,16 @@ export function EventAttendanceButton({ eventId, current }: Props) {
             key={type}
             onPress={() => handlePress(type)}
             className={`flex-1 flex-row items-center justify-center gap-1 py-3 rounded-xl border ${
-              active
-                ? 'bg-violet-600 border-violet-600'
-                : 'bg-zinc-900 border-zinc-800'
+              active ? 'bg-brand border-brand' : 'bg-surface border-line'
             }`}
           >
             <Ionicons
               name={icon}
               size={18}
-              color={active ? '#ffffff' : '#374151'}
+              color={active ? colors.content : colors.lineStrong}
             />
             <Text
-              className={`text-xs font-semibold ${active ? 'text-white' : 'text-zinc-200'}`}
+              className={`text-xs font-semibold ${active ? 'text-content' : 'text-content-secondary'}`}
             >
               {label}
             </Text>

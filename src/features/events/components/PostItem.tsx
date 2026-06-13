@@ -7,6 +7,7 @@ import { useConfirm } from '@/shared/lib/confirm'
 import { useDeletePost } from '../hooks/usePosts'
 import { formatRelative } from '@/shared/utils/dateFormat'
 import type { EventPost } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   eventId: string
@@ -32,7 +33,7 @@ export function PostItem({ eventId, post }: Props) {
   }
 
   return (
-    <View className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 gap-3">
+    <View className="bg-surface rounded-2xl p-4 border border-line gap-3">
       <View className="flex-row items-start justify-between">
         <Pressable
           onPress={() => navigateToProfile(post.author.id)}
@@ -44,10 +45,10 @@ export function PostItem({ eventId, post }: Props) {
             avatarUrl={post.author.avatarUrl}
           />
           <View className="flex-1">
-            <Text className="text-sm font-semibold text-white">
+            <Text className="text-sm font-semibold text-content">
               {post.author.name} {post.author.lastname}
             </Text>
-            <Text className="text-xs text-zinc-500">
+            <Text className="text-xs text-content-subtle">
               @{post.author.username} · {formatRelative(post.createdAt)}
             </Text>
           </View>
@@ -59,24 +60,32 @@ export function PostItem({ eventId, post }: Props) {
             disabled={deletePost.isPending}
             className="w-8 h-8 items-center justify-center"
           >
-            <Ionicons name="trash-outline" size={18} color="#ef4444" />
+            <Ionicons name="trash-outline" size={18} color={colors.danger} />
           </Pressable>
         )}
       </View>
 
-      <Text className="text-base text-zinc-100">{post.content}</Text>
+      <Text className="text-base text-content-bright">{post.content}</Text>
 
       {post._count && (
         <View className="flex-row gap-4 pt-1">
           <View className="flex-row items-center gap-1">
-            <Ionicons name="chatbubble-outline" size={14} color="#71717a" />
-            <Text className="text-xs text-zinc-400">
+            <Ionicons
+              name="chatbubble-outline"
+              size={14}
+              color={colors.contentSubtle}
+            />
+            <Text className="text-xs text-content-muted">
               {post._count.comments}
             </Text>
           </View>
           <View className="flex-row items-center gap-1">
-            <Ionicons name="heart-outline" size={14} color="#71717a" />
-            <Text className="text-xs text-zinc-400">
+            <Ionicons
+              name="heart-outline"
+              size={14}
+              color={colors.contentSubtle}
+            />
+            <Text className="text-xs text-content-muted">
               {post._count.reactions}
             </Text>
           </View>

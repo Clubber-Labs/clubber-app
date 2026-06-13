@@ -29,16 +29,16 @@ export function FriendAttendancesStack({
         {visible.map((attendance, i) => (
           <View
             key={attendance.user.id}
-            className="w-6 h-6 rounded-full bg-violet-900 items-center justify-center border-2 border-zinc-900"
+            className="w-6 h-6 rounded-full bg-brand-surface-strong items-center justify-center border-2 border-line-subtle"
             style={{ marginLeft: i === 0 ? 0 : -8 }}
           >
-            <Text className="text-violet-200 text-[10px] font-semibold">
+            <Text className="text-brand-text-bright text-[10px] font-semibold">
               {attendance.user.name[0]?.toUpperCase()}
             </Text>
           </View>
         ))}
       </View>
-      <Text className="text-xs text-zinc-400 flex-1" numberOfLines={1}>
+      <Text className="text-xs text-content-muted flex-1" numberOfLines={1}>
         {summary}
         {others > 0 ? ` · +${others}` : ''}
       </Text>

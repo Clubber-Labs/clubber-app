@@ -4,6 +4,7 @@ import {
   evaluatePasswordStrength,
   type PasswordChecks,
 } from '@/shared/utils/passwordStrength'
+import { colors } from '@/shared/theme'
 
 type Props = {
   password: string
@@ -22,16 +23,16 @@ export function PasswordStrengthMeter({ password, email }: Props) {
   const { score, label, checks } = evaluatePasswordStrength(password, email)
   const barColor =
     label === 'fraca'
-      ? 'bg-red-500'
+      ? 'bg-danger'
       : label === 'média'
-        ? 'bg-yellow-500'
-        : 'bg-green-500'
+        ? 'bg-warning'
+        : 'bg-success'
   const labelColor =
     label === 'fraca'
-      ? 'text-red-400'
+      ? 'text-danger-text'
       : label === 'média'
-        ? 'text-yellow-400'
-        : 'text-green-400'
+        ? 'text-warning'
+        : 'text-success-text'
 
   return (
     <View className="gap-2">
@@ -39,13 +40,13 @@ export function PasswordStrengthMeter({ password, email }: Props) {
         {[0, 1, 2, 3].map(i => (
           <View
             key={i}
-            className={`h-1 flex-1 rounded-full ${i < score ? barColor : 'bg-zinc-800'}`}
+            className={`h-1 flex-1 rounded-full ${i < score ? barColor : 'bg-surface-elevated'}`}
           />
         ))}
       </View>
 
       <View className="flex-row justify-between">
-        <Text className="text-xs text-zinc-500">Força da senha</Text>
+        <Text className="text-xs text-content-subtle">Força da senha</Text>
         <Text className={`text-xs font-medium ${labelColor}`}>{label}</Text>
       </View>
 
@@ -57,10 +58,10 @@ export function PasswordStrengthMeter({ password, email }: Props) {
               <Ionicons
                 name={ok ? 'checkmark-circle' : 'ellipse-outline'}
                 size={14}
-                color={ok ? '#22c55e' : '#52525b'}
+                color={ok ? colors.success : colors.contentFaint}
               />
               <Text
-                className={`text-xs ${ok ? 'text-zinc-300' : 'text-zinc-500'}`}
+                className={`text-xs ${ok ? 'text-content-tertiary' : 'text-content-subtle'}`}
               >
                 {text}
               </Text>

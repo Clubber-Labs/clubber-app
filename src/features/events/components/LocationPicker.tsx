@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { View, Text } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
 import { Ionicons } from '@expo/vector-icons'
+import { colors } from '@/shared/theme'
 
 type Coords = { latitude: number; longitude: number }
 
@@ -38,7 +39,7 @@ export function LocationPicker({
   return (
     <View className="gap-2">
       <View
-        className={`rounded-2xl overflow-hidden border ${hasError ? 'border-white' : 'border-zinc-800'}`}
+        className={`rounded-2xl overflow-hidden border ${hasError ? 'border-content' : 'border-line'}`}
         style={{ height: 240 }}
       >
         <Mapbox.MapView
@@ -54,15 +55,19 @@ export function LocationPicker({
               id="picked-location"
               coordinate={[value.longitude, value.latitude]}
             >
-              <View className="w-8 h-8 rounded-full bg-violet-600 border-2 border-white" />
+              <View className="w-8 h-8 rounded-full bg-brand border-2 border-content" />
             </Mapbox.PointAnnotation>
           )}
         </Mapbox.MapView>
       </View>
 
       <View className="flex-row items-center gap-1.5">
-        <Ionicons name="information-circle-outline" size={14} color="#a1a1aa" />
-        <Text className="text-xs text-zinc-400">
+        <Ionicons
+          name="information-circle-outline"
+          size={14}
+          color={colors.contentMuted}
+        />
+        <Text className="text-xs text-content-muted">
           {value
             ? `${value.latitude.toFixed(5)}, ${value.longitude.toFixed(5)}`
             : 'Toque no mapa para escolher o local'}

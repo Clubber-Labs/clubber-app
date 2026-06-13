@@ -35,8 +35,8 @@ export function StepCode({
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-white">Digite o código</Text>
-        <Text className="text-sm text-zinc-400">
+        <Text className="text-2xl font-bold text-content">Digite o código</Text>
+        <Text className="text-sm text-content-muted">
           Enviamos um código de 6 dígitos para {maskEmail(email)}.
         </Text>
       </View>
@@ -50,14 +50,14 @@ export function StepCode({
 
       <View className="flex-row justify-center">
         {isResending ? (
-          <Text className="text-zinc-500 text-sm">Reenviando...</Text>
+          <Text className="text-content-subtle text-sm">Reenviando...</Text>
         ) : resendIn > 0 ? (
-          <Text className="text-zinc-500 text-sm">
+          <Text className="text-content-subtle text-sm">
             Reenviar em {formatCountdown(resendIn)}
           </Text>
         ) : (
           <Pressable onPress={onResend} accessibilityRole="button">
-            <Text className="text-violet-400 font-semibold text-sm">
+            <Text className="text-brand-text font-semibold text-sm">
               Reenviar código
             </Text>
           </Pressable>

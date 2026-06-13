@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import type { AttendanceType } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   attendance: AttendanceType | null
@@ -17,19 +18,19 @@ const COLOR: Record<
   { bg: string; text: string; icon: string }
 > = {
   CONFIRMED: {
-    bg: 'bg-violet-900',
-    text: 'text-violet-200',
-    icon: '#c4b5fd',
+    bg: 'bg-brand-surface-strong',
+    text: 'text-brand-text-bright',
+    icon: colors.brandTextStrong,
   },
   INTERESTED: {
-    bg: 'bg-zinc-800',
-    text: 'text-zinc-200',
-    icon: '#d4d4d8',
+    bg: 'bg-surface-elevated',
+    text: 'text-content-secondary',
+    icon: colors.contentTertiary,
   },
   NOT_INTERESTED: {
-    bg: 'bg-zinc-800',
-    text: 'text-zinc-400',
-    icon: '#a1a1aa',
+    bg: 'bg-surface-elevated',
+    text: 'text-content-muted',
+    icon: colors.contentMuted,
   },
 }
 

@@ -11,7 +11,7 @@ export function TypingIndicator({ label }: Props) {
   if (!label) return null
   return (
     <View className="px-4 py-1">
-      <Text className="text-zinc-500 text-xs italic" numberOfLines={1}>
+      <Text className="text-content-subtle text-xs italic" numberOfLines={1}>
         {label}
       </Text>
     </View>

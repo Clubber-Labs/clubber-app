@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { SheetModal } from '@/shared/components/SheetModal'
 import { REASON_OPTIONS, reportSheetTitle } from '../utils/reportLabels'
 import type { ReportReason, ReportTarget } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   // Quando != null o sheet abre; o título é derivado do tipo do alvo.
@@ -35,7 +36,7 @@ export function ReportReasonSheet({ target, onClose, onSubmit }: Props) {
 
   return (
     <SheetModal visible={visible} onClose={onClose}>
-      <Text className="text-white font-semibold text-base px-5 pt-1 pb-2">
+      <Text className="text-content font-semibold text-base px-5 pt-1 pb-2">
         {target ? reportSheetTitle(target.type) : 'Denunciar'}
       </Text>
       {REASON_OPTIONS.map(r => {
@@ -46,11 +47,11 @@ export function ReportReasonSheet({ target, onClose, onSubmit }: Props) {
             onPress={() => setReason(r.value)}
             className="flex-row items-center justify-between px-5 py-3"
           >
-            <Text className="text-zinc-100 text-base">{r.label}</Text>
+            <Text className="text-content-bright text-base">{r.label}</Text>
             <Ionicons
               name={active ? 'radio-button-on' : 'radio-button-off'}
               size={20}
-              color={active ? '#8b5cf6' : '#52525b'}
+              color={active ? colors.brandEmphasis : colors.contentFaint}
             />
           </Pressable>
         )
@@ -59,20 +60,20 @@ export function ReportReasonSheet({ target, onClose, onSubmit }: Props) {
         value={details}
         onChangeText={setDetails}
         placeholder="Detalhes (opcional)"
-        placeholderTextColor="#71717a"
+        placeholderTextColor={colors.contentSubtle}
         maxLength={500}
         multiline
-        className="bg-zinc-900 rounded-xl px-4 py-3 text-white mx-5 mt-2"
+        className="bg-surface rounded-xl px-4 py-3 text-content mx-5 mt-2"
         style={{ minHeight: 60, textAlignVertical: 'top' }}
       />
       <View className="px-5 mt-3">
         <Pressable
           onPress={submit}
           disabled={!reason}
-          className={`rounded-full py-3 items-center ${reason ? 'bg-violet-600' : 'bg-zinc-800'}`}
+          className={`rounded-full py-3 items-center ${reason ? 'bg-brand' : 'bg-surface-elevated'}`}
         >
           <Text
-            className={`font-semibold ${reason ? 'text-white' : 'text-zinc-500'}`}
+            className={`font-semibold ${reason ? 'text-content' : 'text-content-subtle'}`}
           >
             Enviar denúncia
           </Text>

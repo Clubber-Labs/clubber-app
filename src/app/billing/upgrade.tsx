@@ -14,6 +14,7 @@ import { useSubscription } from '@/features/billing/hooks/useSubscription'
 import { PremiumBenefits } from '@/features/billing/components/PremiumBenefits'
 import { Button } from '@/shared/components/Button'
 import { getApiError } from '@/shared/lib/apiError'
+import { colors } from '@/shared/theme'
 
 const ACTIVATION_POLL_MS = 2000
 // Teto pra esperar o webhook ativar o premium. Ao estourar, libera a saída —
@@ -82,12 +83,12 @@ export default function UpgradeScreen() {
   // Ativação demorou ou terminou em estado não-ativo: dá saída ao usuário.
   if (activating && stalled) {
     return (
-      <View className="flex-1 bg-black items-center justify-center gap-5 px-8">
-        <Ionicons name="time-outline" size={44} color="#a78bfa" />
-        <Text className="text-white font-semibold text-lg text-center">
+      <View className="flex-1 bg-background items-center justify-center gap-5 px-8">
+        <Ionicons name="time-outline" size={44} color={colors.brandText} />
+        <Text className="text-content font-semibold text-lg text-center">
           A confirmação está demorando
         </Text>
-        <Text className="text-zinc-400 text-sm text-center">
+        <Text className="text-content-muted text-sm text-center">
           Se o pagamento foi concluído, seu acesso premium é liberado assim que
           a confirmação chegar. Você pode acompanhar pela tela de assinatura.
         </Text>
@@ -97,7 +98,9 @@ export default function UpgradeScreen() {
             onPress={() => router.replace('/billing/manage')}
           />
           <Pressable onPress={() => router.back()} hitSlop={8} className="py-2">
-            <Text className="text-zinc-400 text-sm text-center">Voltar</Text>
+            <Text className="text-content-muted text-sm text-center">
+              Voltar
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -106,12 +109,12 @@ export default function UpgradeScreen() {
 
   if (activating) {
     return (
-      <View className="flex-1 bg-black items-center justify-center gap-4 px-8">
-        <ActivityIndicator size="large" color="#7c3aed" />
-        <Text className="text-white font-semibold text-lg">
+      <View className="flex-1 bg-background items-center justify-center gap-4 px-8">
+        <ActivityIndicator size="large" color={colors.brand} />
+        <Text className="text-content font-semibold text-lg">
           Confirmando pagamento...
         </Text>
-        <Text className="text-zinc-400 text-sm text-center">
+        <Text className="text-content-muted text-sm text-center">
           Estamos ativando seu acesso premium. Isso costuma levar poucos
           segundos.
         </Text>
@@ -121,34 +124,34 @@ export default function UpgradeScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-black"
+      className="flex-1 bg-background"
       contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
     >
       <View className="flex-row items-center justify-between mb-6">
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Ionicons name="close" size={26} color="#ffffff" />
+          <Ionicons name="close" size={26} color={colors.content} />
         </Pressable>
       </View>
 
       <View className="items-center mb-8">
         {/* Badge com camadas concêntricas pra dar profundidade/brilho ao
             ícone (NativeWind não tem gradiente nativo — halo via opacidades). */}
-        <View className="w-28 h-28 rounded-full bg-violet-600/10 items-center justify-center mb-5">
-          <View className="w-20 h-20 rounded-full bg-violet-600/20 items-center justify-center">
-            <View className="w-14 h-14 rounded-2xl bg-violet-600 items-center justify-center">
-              <Ionicons name="diamond" size={30} color="#ffffff" />
+        <View className="w-28 h-28 rounded-full bg-brand/10 items-center justify-center mb-5">
+          <View className="w-20 h-20 rounded-full bg-brand/20 items-center justify-center">
+            <View className="w-14 h-14 rounded-2xl bg-brand items-center justify-center">
+              <Ionicons name="diamond" size={30} color={colors.content} />
             </View>
           </View>
         </View>
         <View className="flex-row items-center gap-2">
-          <Text className="text-white font-bold text-2xl">ConnectAI</Text>
-          <View className="px-2 py-0.5 rounded-md bg-violet-600/20 border border-violet-500/40">
-            <Text className="text-violet-300 text-xs font-bold tracking-wide">
+          <Text className="text-content font-bold text-2xl">ConnectAI</Text>
+          <View className="px-2 py-0.5 rounded-md bg-brand/20 border border-brand-emphasis/40">
+            <Text className="text-brand-text-strong text-xs font-bold tracking-wide">
               PREMIUM
             </Text>
           </View>
         </View>
-        <Text className="text-zinc-400 text-sm mt-2 text-center">
+        <Text className="text-content-muted text-sm mt-2 text-center">
           Mais visibilidade para você e seus eventos.
         </Text>
       </View>
@@ -161,12 +164,12 @@ export default function UpgradeScreen() {
           onPress={handleSubscribe}
           loading={subscribe.isPending}
         />
-        <Text className="text-zinc-500 text-xs text-center">
+        <Text className="text-content-subtle text-xs text-center">
           Novos assinantes ganham 7 dias grátis. Assinatura mensal, cancele
           quando quiser — o acesso continua até o fim do período pago.
         </Text>
         {subscribe.isError && (
-          <Text className="text-red-500 text-sm text-center">
+          <Text className="text-danger text-sm text-center">
             {getApiError(subscribe.error).message}
           </Text>
         )}

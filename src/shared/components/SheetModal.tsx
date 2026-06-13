@@ -17,12 +17,15 @@ export function SheetModal({ visible, onClose, children }: Props) {
       animationType="slide"
       onRequestClose={onClose}
     >
-      <Pressable className="flex-1 bg-black/50 justify-end" onPress={onClose}>
+      <Pressable
+        className="flex-1 bg-background/50 justify-end"
+        onPress={onClose}
+      >
         <Pressable
-          className="bg-zinc-950 rounded-t-3xl border-t border-zinc-800 pb-8 pt-2"
+          className="bg-surface-sunken rounded-t-3xl border-t border-line pb-8 pt-2"
           onPress={() => {}}
         >
-          <View className="w-10 h-1 bg-zinc-700 rounded-full self-center mb-2" />
+          <View className="w-10 h-1 bg-surface-high rounded-full self-center mb-2" />
           {children}
         </Pressable>
       </Pressable>

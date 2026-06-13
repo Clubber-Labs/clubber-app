@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax -- cores oficiais da marca Google, não tokens do design system */
 import Svg, { Path } from 'react-native-svg'
 
 type Props = { size?: number }

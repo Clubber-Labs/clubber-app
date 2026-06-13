@@ -6,6 +6,7 @@ import { Waveform } from './Waveform'
 import { useVoiceMessagePlayer } from '../hooks/useVoiceMessagePlayer'
 import { LONG_PRESS_DELAY_MS } from '../utils/longPress'
 import type { Attachment } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   attachment: Attachment
@@ -38,9 +39,9 @@ export function VoiceMessage({ attachment, isMine, onLongPress }: Props) {
   const showElapsed = playing || elapsedMs > 0
   const label = formatDuration(showElapsed ? elapsedMs : totalMs)
 
-  const tint = isMine ? '#ffffff' : '#e4e4e7'
-  const baseBar = isMine ? 'rgba(255,255,255,0.4)' : '#52525b'
-  const activeBar = isMine ? '#ffffff' : '#a78bfa'
+  const tint = isMine ? colors.content : colors.contentSecondary
+  const baseBar = isMine ? 'rgba(255,255,255,0.4)' : colors.contentFaint
+  const activeBar = isMine ? colors.content : colors.brandText
 
   return (
     <View

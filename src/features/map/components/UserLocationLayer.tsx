@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { View, Image } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
 import { LOCATION_BLUE } from '../constants'
+import { colors } from '@/shared/theme'
 
 type Props = {
   // [longitude, latitude] (convenção Mapbox).
@@ -74,8 +75,8 @@ export function UserLocationLayer({ coordinate, avatarUrl }: Props) {
                 height: AVATAR_SIZE,
                 borderRadius: AVATAR_SIZE / 2,
                 borderWidth: RING,
-                borderColor: '#ffffff',
-                backgroundColor: '#ffffff',
+                borderColor: colors.content,
+                backgroundColor: colors.content,
                 overflow: 'hidden',
               }}
             >
@@ -128,7 +129,7 @@ export function UserLocationLayer({ coordinate, avatarUrl }: Props) {
             style={{
               circleRadius: DOT_RADIUS,
               circleColor: LOCATION_BLUE,
-              circleStrokeColor: '#ffffff',
+              circleStrokeColor: colors.content,
               circleStrokeWidth: 3,
               circleEmissiveStrength: 1,
             }}

@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { ProfilePreferredCategories } from './ProfilePreferredCategories'
 import type { UserProfile } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   profile: UserProfile
@@ -45,23 +46,25 @@ export function ProfileHeader({
             size={AVATAR_SIZE}
           />
           {editable && !avatarUploading && (
-            <View className="absolute bottom-0 left-0 right-0 bg-black/50 items-center py-1">
-              <Ionicons name="camera" size={14} color="#fff" />
+            <View className="absolute bottom-0 left-0 right-0 bg-background/50 items-center py-1">
+              <Ionicons name="camera" size={14} color={colors.content} />
             </View>
           )}
           {avatarUploading && (
-            <View className="absolute inset-0 bg-black/60 items-center justify-center">
-              <ActivityIndicator color="#fff" />
+            <View className="absolute inset-0 bg-background/60 items-center justify-center">
+              <ActivityIndicator color={colors.content} />
             </View>
           )}
         </View>
       </Pressable>
 
-      <Text className="text-white font-bold text-xl mt-3">{fullName}</Text>
-      <Text className="text-zinc-400 text-sm mt-0.5">@{profile.username}</Text>
+      <Text className="text-content font-bold text-xl mt-3">{fullName}</Text>
+      <Text className="text-content-muted text-sm mt-0.5">
+        @{profile.username}
+      </Text>
 
       {!!profile.bio && (
-        <Text className="text-zinc-300 text-sm text-center mt-2 leading-5">
+        <Text className="text-content-tertiary text-sm text-center mt-2 leading-5">
           {profile.bio}
         </Text>
       )}
@@ -71,9 +74,9 @@ export function ProfileHeader({
       {isOwnProfile && onEditPress && (
         <Pressable
           onPress={onEditPress}
-          className="mt-4 border border-zinc-700 rounded-lg px-6 py-2"
+          className="mt-4 border border-line-strong rounded-lg px-6 py-2"
         >
-          <Text className="text-zinc-200 font-medium text-sm">
+          <Text className="text-content-secondary font-medium text-sm">
             Editar perfil
           </Text>
         </Pressable>

@@ -21,6 +21,7 @@ import {
   ORDERED_CATEGORIES,
   groupItemsByCategory,
 } from '@/features/privacy/constants'
+import { colors } from '@/shared/theme'
 
 export default function ConsentScreen() {
   const router = useRouter()
@@ -61,17 +62,19 @@ export default function ConsentScreen() {
     <>
       <Stack.Screen options={{ headerShown: false, gestureEnabled: false }} />
 
-      <View className="flex-1 bg-black">
+      <View className="flex-1 bg-background">
         {/* Header — respeita safe area no topo */}
         <View
           style={{ paddingTop: insets.top + 16 }}
-          className="px-5 pb-4 border-b border-zinc-800"
+          className="px-5 pb-4 border-b border-line"
         >
-          <Text className="text-2xl font-bold text-white">Sua privacidade</Text>
-          <Text className="text-zinc-400 text-sm mt-1 leading-5">
+          <Text className="text-2xl font-bold text-content">
+            Sua privacidade
+          </Text>
+          <Text className="text-content-muted text-sm mt-1 leading-5">
             Escolha o que nos permite usar. Você pode mudar isso a qualquer
             momento em{' '}
-            <Text className="text-violet-400 font-medium">
+            <Text className="text-brand-text font-medium">
               Perfil → Privacidade
             </Text>
             .
@@ -85,18 +88,22 @@ export default function ConsentScreen() {
           showsVerticalScrollIndicator={false}
         >
           {/* Essencial — imutável */}
-          <View className="mx-4 mt-4 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden">
-            <View className="flex-row items-center justify-between px-4 py-3 border-b border-zinc-800">
+          <View className="mx-4 mt-4 bg-surface-sunken border border-line rounded-xl overflow-hidden">
+            <View className="flex-row items-center justify-between px-4 py-3 border-b border-line">
               <View className="flex-row items-center gap-2">
-                <Ionicons name="lock-closed" size={14} color="#a78bfa" />
-                <Text className="text-sm font-semibold text-violet-400">
+                <Ionicons
+                  name="lock-closed"
+                  size={14}
+                  color={colors.brandText}
+                />
+                <Text className="text-sm font-semibold text-brand-text">
                   Dados essenciais
                 </Text>
               </View>
-              <Text className="text-xs text-zinc-500">Sempre ativo</Text>
+              <Text className="text-xs text-content-subtle">Sempre ativo</Text>
             </View>
             <View className="px-4 py-3">
-              <Text className="text-xs text-zinc-400 leading-4">
+              <Text className="text-xs text-content-muted leading-4">
                 Necessários para criar e manter sua conta, autenticação e
                 operação básica do app. Não podem ser desativados.
               </Text>
@@ -112,19 +119,19 @@ export default function ConsentScreen() {
             return (
               <View
                 key={cat}
-                className="mx-4 mt-3 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden"
+                className="mx-4 mt-3 bg-surface-sunken border border-line rounded-xl overflow-hidden"
               >
                 <Pressable
                   onPress={() => setExpandedCategory(expanded ? null : cat)}
                   className="flex-row items-center justify-between px-4 py-3 active:opacity-70"
                 >
-                  <Text className="text-sm font-semibold text-white">
+                  <Text className="text-sm font-semibold text-content">
                     {CATEGORY_LABELS[cat]}
                   </Text>
                   <Ionicons
                     name={expanded ? 'chevron-up' : 'chevron-down'}
                     size={16}
-                    color="#71717a"
+                    color={colors.contentSubtle}
                   />
                 </Pressable>
 
@@ -148,13 +155,17 @@ export default function ConsentScreen() {
             onPress={() => Linking.openURL('https://connectai.app/privacidade')}
             className="flex-row items-center justify-center gap-2 mt-5 mx-4 active:opacity-70"
           >
-            <Ionicons name="document-text-outline" size={14} color="#7c3aed" />
-            <Text className="text-violet-400 text-sm">
+            <Ionicons
+              name="document-text-outline"
+              size={14}
+              color={colors.brand}
+            />
+            <Text className="text-brand-text text-sm">
               Ler a Política de Privacidade completa
             </Text>
           </Pressable>
 
-          <Text className="text-zinc-600 text-xs text-center mt-3 mx-6 leading-4">
+          <Text className="text-content-faint text-xs text-center mt-3 mx-6 leading-4">
             LGPD — Lei nº 13.709/2018. Consentimento livre, informado e
             inequívoco (Art. 8).{'\n'}
             Versão da política: 1.0 · Vigência: 02/06/2026.
@@ -163,18 +174,18 @@ export default function ConsentScreen() {
 
         {/* Botões fixos — respeita safe area no rodapé (home bar iPhone) */}
         <View
-          className="absolute bottom-0 left-0 right-0 bg-black border-t border-zinc-800 px-4 gap-2"
+          className="absolute bottom-0 left-0 right-0 bg-background border-t border-line px-4 gap-2"
           style={{ paddingBottom: insets.bottom + 8, paddingTop: 12 }}
         >
           <Pressable
             onPress={handleAcceptAll}
             disabled={loading}
-            className="bg-violet-600 rounded-xl py-4 items-center active:opacity-80"
+            className="bg-brand rounded-xl py-4 items-center active:opacity-80"
           >
             {loading ? (
               <ActivityIndicator color="white" />
             ) : (
-              <Text className="text-white font-bold text-base">
+              <Text className="text-content font-bold text-base">
                 Aceitar todos
               </Text>
             )}
@@ -183,10 +194,10 @@ export default function ConsentScreen() {
           <Pressable
             onPress={() => handleSubmit()}
             disabled={loading}
-            className="bg-zinc-900 rounded-xl py-4 items-center border border-zinc-700 active:opacity-80"
+            className="bg-surface rounded-xl py-4 items-center border border-line-strong active:opacity-80"
           >
             <Text
-              className={`font-semibold text-base ${loading ? 'text-zinc-500' : 'text-white'}`}
+              className={`font-semibold text-base ${loading ? 'text-content-subtle' : 'text-content'}`}
             >
               Continuar com selecionados
             </Text>
@@ -198,7 +209,7 @@ export default function ConsentScreen() {
             className="py-3 items-center"
           >
             <Text
-              className={`text-sm ${loading ? 'text-zinc-700' : 'text-zinc-500'}`}
+              className={`text-sm ${loading ? 'text-content-faint' : 'text-content-subtle'}`}
             >
               Apenas o essencial
             </Text>

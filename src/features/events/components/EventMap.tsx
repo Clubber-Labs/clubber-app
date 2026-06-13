@@ -25,7 +25,7 @@ export function EventMap({ latitude, longitude, height = 200 }: Props) {
           id="event-location"
           coordinate={[longitude, latitude]}
         >
-          <View className="w-8 h-8 rounded-full bg-violet-600 border-2 border-white" />
+          <View className="w-8 h-8 rounded-full bg-brand border-2 border-content" />
         </Mapbox.PointAnnotation>
       </Mapbox.MapView>
     </View>

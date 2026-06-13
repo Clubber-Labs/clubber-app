@@ -17,6 +17,7 @@ import { useConfirm } from '@/shared/lib/confirm'
 import { useReportFlow } from '@/features/reports/hooks/useReportFlow'
 import { ReportReasonSheet } from '@/features/reports/components/ReportReasonSheet'
 import { CommentItem } from './CommentItem'
+import { colors } from '@/shared/theme'
 
 type Props = {
   eventId: string
@@ -53,13 +54,17 @@ export function InlineCommentsSection({ eventId }: Props) {
   }
 
   return (
-    <View className="border-t border-zinc-800 bg-zinc-900">
+    <View className="border-t border-line bg-surface">
       {isLoading ? (
-        <ActivityIndicator size="small" color="#8b5cf6" className="py-6" />
+        <ActivityIndicator
+          size="small"
+          color={colors.brandEmphasis}
+          className="py-6"
+        />
       ) : (
         <View className="px-4 py-3 gap-2">
           {comments.length === 0 ? (
-            <Text className="text-center text-zinc-500 text-sm py-3">
+            <Text className="text-center text-content-subtle text-sm py-3">
               Nenhum comentário ainda. Seja o primeiro!
             </Text>
           ) : (
@@ -93,9 +98,9 @@ export function InlineCommentsSection({ eventId }: Props) {
               className="py-2 items-center"
             >
               {isFetchingNextPage ? (
-                <ActivityIndicator size="small" color="#8b5cf6" />
+                <ActivityIndicator size="small" color={colors.brandEmphasis} />
               ) : (
-                <Text className="text-xs text-violet-400 font-medium">
+                <Text className="text-xs text-brand-text font-medium">
                   Ver mais comentários
                 </Text>
               )}
@@ -104,11 +109,11 @@ export function InlineCommentsSection({ eventId }: Props) {
         </View>
       )}
 
-      <View className="flex-row items-end gap-2 px-3 py-2 border-t border-zinc-800 bg-zinc-900">
+      <View className="flex-row items-end gap-2 px-3 py-2 border-t border-line bg-surface">
         <TextInput
-          className="flex-1 border border-zinc-800 bg-zinc-800 rounded-full px-4 py-2 text-sm text-white max-h-24"
+          className="flex-1 border border-line bg-surface-elevated rounded-full px-4 py-2 text-sm text-content max-h-24"
           placeholder="Escreva um comentário..."
-          placeholderTextColor="#71717a"
+          placeholderTextColor={colors.contentSubtle}
           value={text}
           onChangeText={setText}
           multiline
@@ -117,12 +122,12 @@ export function InlineCommentsSection({ eventId }: Props) {
         <Pressable
           onPress={handleSend}
           disabled={!text.trim() || addComment.isPending}
-          className={`w-9 h-9 rounded-full items-center justify-center ${text.trim() && !addComment.isPending ? 'bg-violet-600' : 'bg-zinc-600'}`}
+          className={`w-9 h-9 rounded-full items-center justify-center ${text.trim() && !addComment.isPending ? 'bg-brand' : 'bg-surface-higher'}`}
         >
           {addComment.isPending ? (
-            <ActivityIndicator size="small" color="#ffffff" />
+            <ActivityIndicator size="small" color={colors.content} />
           ) : (
-            <Ionicons name="send" size={14} color="#ffffff" />
+            <Ionicons name="send" size={14} color={colors.content} />
           )}
         </Pressable>
       </View>

@@ -3,20 +3,21 @@ import { PaymentSheetError, useStripe } from '@stripe/stripe-react-native'
 import { userKeys } from '@/features/users/hooks/cacheKeys'
 import { billingService } from '../services/billingService'
 import { billingKeys } from './cacheKeys'
+import { colors } from '@/shared/theme'
 
 // Paleta dark do app aplicada à PaymentSheet (ela não herda o tema).
 const SHEET_APPEARANCE = {
   colors: {
-    background: '#18181b', // zinc-900
-    componentBackground: '#27272a', // zinc-800
-    componentBorder: '#3f3f46', // zinc-700
-    componentDivider: '#3f3f46',
-    primary: '#7c3aed', // violet-600
-    primaryText: '#ffffff',
-    secondaryText: '#a1a1aa', // zinc-400
-    componentText: '#ffffff',
-    placeholderText: '#71717a', // zinc-500
-    icon: '#a1a1aa',
+    background: colors.surface, // zinc-900
+    componentBackground: colors.line, // zinc-800
+    componentBorder: colors.lineStrong, // zinc-700
+    componentDivider: colors.lineStrong,
+    primary: colors.brand, // violet-600
+    primaryText: colors.content,
+    secondaryText: colors.contentMuted, // zinc-400
+    componentText: colors.content,
+    placeholderText: colors.contentSubtle, // zinc-500
+    icon: colors.contentMuted,
   },
 }
 

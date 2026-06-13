@@ -1,6 +1,7 @@
 import { View, ActivityIndicator } from 'react-native'
 import { useCategories } from '@/shared/hooks/useCategories'
 import { CategoryChip } from './CategoryChip'
+import { colors } from '@/shared/theme'
 
 type Props = {
   value: string[]
@@ -22,7 +23,11 @@ export function CategoryMultiSelect({ value, onChange, max = 10 }: Props) {
 
   if (isLoading && categories.length === 0) {
     return (
-      <ActivityIndicator size="small" color="#8b5cf6" className="self-start" />
+      <ActivityIndicator
+        size="small"
+        color={colors.brandEmphasis}
+        className="self-start"
+      />
     )
   }
 

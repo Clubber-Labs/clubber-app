@@ -2,6 +2,7 @@ import { View, Text, TextInput } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
+import { colors } from '@/shared/theme'
 
 type Props = {
   hasPassword: boolean
@@ -27,10 +28,10 @@ export function DeleteReauthStep({
   return (
     <View className="gap-4">
       <View className="gap-1">
-        <Text className="text-white text-xl font-bold">
+        <Text className="text-content text-xl font-bold">
           Confirme que é você
         </Text>
-        <Text className="text-zinc-400 text-sm leading-5">
+        <Text className="text-content-muted text-sm leading-5">
           {hasPassword
             ? 'Digite sua senha para excluir a conta.'
             : 'Sua sessão confirma sua identidade — você entrou com Google ou Facebook.'}
@@ -39,13 +40,13 @@ export function DeleteReauthStep({
 
       {hasPassword ? (
         <View className="gap-1.5">
-          <Text className="text-zinc-400 text-xs font-medium uppercase tracking-wider">
+          <Text className="text-content-muted text-xs font-medium uppercase tracking-wider">
             Senha
           </Text>
           <TextInput
-            className={`border ${error ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+            className={`border ${error ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
             placeholder="Sua senha"
-            placeholderTextColor="#71717a"
+            placeholderTextColor={colors.contentSubtle}
             onChangeText={onPasswordChange}
             value={password}
             secureTextEntry
@@ -54,9 +55,13 @@ export function DeleteReauthStep({
           />
         </View>
       ) : (
-        <View className="flex-row items-center gap-2 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3">
-          <Ionicons name="shield-checkmark-outline" size={18} color="#a78bfa" />
-          <Text className="text-zinc-400 text-sm flex-1">
+        <View className="flex-row items-center gap-2 bg-surface-sunken border border-line rounded-xl px-4 py-3">
+          <Ionicons
+            name="shield-checkmark-outline"
+            size={18}
+            color={colors.brandText}
+          />
+          <Text className="text-content-muted text-sm flex-1">
             Nenhuma senha necessária para esta conta.
           </Text>
         </View>

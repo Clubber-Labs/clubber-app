@@ -1,6 +1,7 @@
 import { ScrollView, Pressable, Text } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import type { UserMini } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   users: UserMini[]
@@ -18,17 +19,17 @@ export function SelectedUserChips({ users, onRemove }: Props) {
         gap: 8,
         alignItems: 'center',
       }}
-      className="py-2 border-b border-zinc-900 grow-0"
+      className="py-2 border-b border-line-subtle grow-0"
     >
       {users.map(user => (
         <Pressable
           key={user.id}
           onPress={() => onRemove(user.id)}
-          className="flex-row items-center gap-1.5 bg-violet-950 rounded-full pl-3 pr-2 py-1.5"
+          className="flex-row items-center gap-1.5 bg-brand-surface rounded-full pl-3 pr-2 py-1.5"
           accessibilityLabel={`Remover ${user.name}`}
         >
-          <Text className="text-violet-200 text-sm">{user.name}</Text>
-          <Ionicons name="close-circle" size={16} color="#a78bfa" />
+          <Text className="text-brand-text-bright text-sm">{user.name}</Text>
+          <Ionicons name="close-circle" size={16} color={colors.brandText} />
         </Pressable>
       ))}
     </ScrollView>

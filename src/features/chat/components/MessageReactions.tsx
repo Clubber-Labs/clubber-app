@@ -22,14 +22,14 @@ export function MessageReactions({ reactions, isMine, onToggle }: Props) {
           onPress={() => onToggle(emoji)}
           className={`flex-row items-center gap-1 rounded-full px-2 py-0.5 border ${
             mine
-              ? 'bg-violet-600/30 border-violet-500'
-              : 'bg-zinc-800 border-zinc-700'
+              ? 'bg-brand/30 border-brand-emphasis'
+              : 'bg-surface-elevated border-line-strong'
           }`}
           accessibilityLabel={`${emoji} ${count}${mine ? ', sua reação' : ''}`}
         >
           <Text className="text-[13px]">{emoji}</Text>
           <Text
-            className={`text-[12px] font-medium ${mine ? 'text-violet-200' : 'text-zinc-300'}`}
+            className={`text-[12px] font-medium ${mine ? 'text-brand-text-bright' : 'text-content-tertiary'}`}
           >
             {count}
           </Text>

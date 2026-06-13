@@ -17,6 +17,7 @@ import { EventAttendanceButton } from '@/features/events/components/EventAttenda
 import { EventPostsFeed } from '@/features/events/components/EventPostsFeed'
 import { EventActionsButton } from '@/features/events/components/EventActionsButton'
 import { ReportButton } from '@/features/reports/components/ReportButton'
+import { colors } from '@/shared/theme'
 
 type HeaderProps = {
   event: EventDetail
@@ -52,7 +53,7 @@ function DetailHeader({ event, isAuthor }: HeaderProps) {
         )}
         <EventMap latitude={event.latitude} longitude={event.longitude} />
       </View>
-      <View className="px-4 pb-2 border-t border-zinc-800" />
+      <View className="px-4 pb-2 border-t border-line" />
     </View>
   )
 }
@@ -65,23 +66,23 @@ export default function EventDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-black items-center justify-center">
-        <ActivityIndicator size="large" color="#8b5cf6" />
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator size="large" color={colors.brandEmphasis} />
       </View>
     )
   }
 
   if (isForbiddenError(error)) {
     return (
-      <View className="flex-1 bg-black items-center justify-center px-6 gap-3">
-        <Text className="text-white font-semibold text-base text-center">
+      <View className="flex-1 bg-background items-center justify-center px-6 gap-3">
+        <Text className="text-content font-semibold text-base text-center">
           Evento indisponível
         </Text>
-        <Text className="text-zinc-400 text-center text-sm">
+        <Text className="text-content-muted text-center text-sm">
           Este evento é de um perfil privado. Siga o autor para ver.
         </Text>
         <Pressable onPress={() => router.back()}>
-          <Text className="text-violet-400 font-semibold mt-2">Voltar</Text>
+          <Text className="text-brand-text font-semibold mt-2">Voltar</Text>
         </Pressable>
       </View>
     )
@@ -89,12 +90,12 @@ export default function EventDetailScreen() {
 
   if (isError || !event) {
     return (
-      <View className="flex-1 bg-black items-center justify-center px-6 gap-3">
-        <Text className="text-zinc-200 text-center">
+      <View className="flex-1 bg-background items-center justify-center px-6 gap-3">
+        <Text className="text-content-secondary text-center">
           Não foi possível carregar o evento.
         </Text>
         <Pressable onPress={() => router.back()}>
-          <Text className="text-violet-400 font-semibold">Voltar</Text>
+          <Text className="text-brand-text font-semibold">Voltar</Text>
         </Pressable>
       </View>
     )
@@ -103,7 +104,7 @@ export default function EventDetailScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      className="flex-1 bg-black"
+      className="flex-1 bg-background"
     >
       <EventPostsFeed
         eventId={event.id}

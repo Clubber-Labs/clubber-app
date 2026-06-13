@@ -86,7 +86,7 @@ export default function UserProfileScreen() {
   )
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-background">
       <ProfileEventsList
         events={events}
         hasNextPage={eventsQuery.hasNextPage ?? false}
@@ -126,7 +126,7 @@ export default function UserProfileScreen() {
                 router.push(`/users/${profile.id}/following`)
               }
             />
-            <Text className="text-zinc-400 text-xs font-semibold uppercase tracking-wider mt-4 mb-3">
+            <Text className="text-content-muted text-xs font-semibold uppercase tracking-wider mt-4 mb-3">
               Eventos
             </Text>
           </>

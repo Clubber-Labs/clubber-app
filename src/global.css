@@ -1,3 +1,71 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/**
+ * Design System — fonte da verdade das cores.
+ *
+ * Cada token é um canal RGB ("R G B") para suportar opacidade do Tailwind
+ * (ex: bg-surface/60). O tailwind.config referencia estas vars via
+ * rgb(var(--color-x) / <alpha-value>) e gera as classes (bg-surface, text-content…).
+ *
+ * Props que não aceitam className (ícones, Mapbox, tab bar) consomem os mesmos
+ * valores pelo espelho em src/shared/theme/colors.ts — manter os dois em sincronia.
+ *
+ * Tema dark único. Hex de referência ao lado de cada valor.
+ */
+:root {
+  /* superfícies / fundos (escala de elevação dark) */
+  --color-background: 0 0 0; /* #000000 */
+  --color-surface-sunken: 10 10 10; /* #0a0a0a */
+  --color-surface: 24 24 27; /* #18181b */
+  --color-surface-elevated: 39 39 42; /* #27272a */
+  --color-surface-high: 63 63 70; /* #3f3f46 */
+  --color-surface-higher: 82 82 91; /* #52525b */
+
+  /* texto / conteúdo (claro -> escuro) */
+  --color-content: 255 255 255; /* #ffffff */
+  --color-content-bright: 244 244 245; /* #f4f4f5 */
+  --color-content-secondary: 228 228 231; /* #e4e4e7 */
+  --color-content-tertiary: 212 212 216; /* #d4d4d8 */
+  --color-content-muted: 161 161 170; /* #a1a1aa */
+  --color-content-subtle: 113 113 122; /* #71717a */
+  --color-content-faint: 82 82 91; /* #52525b */
+
+  /* bordas */
+  --color-line: 39 39 42; /* #27272a */
+  --color-line-strong: 63 63 70; /* #3f3f46 */
+  --color-line-subtle: 24 24 27; /* #18181b */
+
+  /* marca (violet) */
+  --color-brand: 124 58 237; /* #7c3aed */
+  --color-brand-emphasis: 139 92 246; /* #8b5cf6 */
+  --color-brand-strong: 109 40 217; /* #6d28d9 */
+  --color-brand-text: 167 139 250; /* #a78bfa */
+  --color-brand-text-strong: 196 181 253; /* #c4b5fd */
+  --color-brand-text-bright: 221 214 254; /* #ddd6fe */
+  --color-brand-text-subtle: 237 233 254; /* #ede9fe */
+  --color-brand-surface: 46 16 101; /* #2e1065 */
+  --color-brand-surface-strong: 76 29 149; /* #4c1d95 */
+
+  /* perigo (red) */
+  --color-danger: 239 68 68; /* #ef4444 */
+  --color-danger-strong: 220 38 38; /* #dc2626 */
+  --color-danger-text: 248 113 113; /* #f87171 */
+  --color-danger-text-subtle: 254 202 202; /* #fecaca */
+  --color-danger-surface: 127 29 29; /* #7f1d1d */
+
+  /* aviso (amber) */
+  --color-warning: 251 191 36; /* #fbbf24 */
+  --color-warning-text: 253 230 138; /* #fde68a */
+  --color-warning-surface: 120 53 15; /* #78350f */
+  --color-warning-surface-strong: 69 26 3; /* #451a03 */
+
+  /* sucesso (green) */
+  --color-success: 34 197 94; /* #22c55e */
+  --color-success-text: 74 222 128; /* #4ade80 */
+  --color-success-strong: 22 163 74; /* #16a34a */
+
+  /* informação (sky) — ex: confirmação de "lido" */
+  --color-info: 125 211 252; /* #7dd3fc */
+}

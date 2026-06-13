@@ -24,9 +24,12 @@ export function UserAvatar({ name, avatarUrl, size = 36 }: Props) {
   return (
     <View
       style={{ width: size, height: size, borderRadius }}
-      className="bg-violet-900 items-center justify-center"
+      className="bg-brand-surface-strong items-center justify-center"
     >
-      <Text style={{ fontSize }} className="text-violet-300 font-semibold">
+      <Text
+        style={{ fontSize }}
+        className="text-brand-text-strong font-semibold"
+      >
         {initial}
       </Text>
     </View>

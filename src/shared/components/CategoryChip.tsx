@@ -13,11 +13,11 @@ export function CategoryChip({ label, active, onPress, disabled }: Props) {
       onPress={onPress}
       disabled={disabled}
       className={`px-4 py-2 rounded-full ${
-        active ? 'bg-violet-600' : 'bg-zinc-800'
+        active ? 'bg-brand' : 'bg-surface-elevated'
       } ${disabled ? 'opacity-40' : ''}`}
     >
       <Text
-        className={`text-sm ${active ? 'text-white font-medium' : 'text-zinc-200'}`}
+        className={`text-sm ${active ? 'text-content font-medium' : 'text-content-secondary'}`}
       >
         {label}
       </Text>

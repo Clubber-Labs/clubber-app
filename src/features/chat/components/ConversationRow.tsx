@@ -35,7 +35,7 @@ export function ConversationRow({ item, myId, onPress }: Props) {
   return (
     <Pressable
       onPress={onPress}
-      className="flex-row items-center gap-3 px-4 py-3 bg-black active:bg-zinc-900"
+      className="flex-row items-center gap-3 px-4 py-3 bg-background active:bg-surface"
       accessibilityLabel={`Conversa: ${title}${unread ? `, ${item.unreadCount} não lidas` : ''}`}
     >
       <View>
@@ -53,13 +53,13 @@ export function ConversationRow({ item, myId, onPress }: Props) {
         <View className="flex-row items-center justify-between">
           <Text
             numberOfLines={1}
-            className={`text-base flex-1 mr-2 ${unread ? 'text-white font-bold' : 'text-zinc-100 font-semibold'}`}
+            className={`text-base flex-1 mr-2 ${unread ? 'text-content font-bold' : 'text-content-bright font-semibold'}`}
           >
             {title}
           </Text>
           {!!time && (
             <Text
-              className={`text-xs ${unread ? 'text-violet-400' : 'text-zinc-500'}`}
+              className={`text-xs ${unread ? 'text-brand-text' : 'text-content-subtle'}`}
             >
               {time}
             </Text>
@@ -68,7 +68,7 @@ export function ConversationRow({ item, myId, onPress }: Props) {
         <View className="flex-row items-center justify-between">
           <Text
             numberOfLines={1}
-            className={`text-sm flex-1 mr-2 ${italic ? 'italic ' : ''}${unread ? 'text-zinc-200 font-medium' : 'text-zinc-500'}`}
+            className={`text-sm flex-1 mr-2 ${italic ? 'italic ' : ''}${unread ? 'text-content-secondary font-medium' : 'text-content-subtle'}`}
           >
             {preview}
           </Text>

@@ -24,6 +24,7 @@ import { DeleteReasonStep } from '@/features/account/components/DeleteReasonStep
 import { DataLossWarning } from '@/features/account/components/DataLossWarning'
 import { DeleteReauthStep } from '@/features/account/components/DeleteReauthStep'
 import { AccountExitSuccess } from '@/features/account/components/AccountExitSuccess'
+import { colors } from '@/shared/theme'
 
 type Step = 'reason' | 'warning' | 'reauth'
 type ExitInfo = { scheduledDeletionAt: string | null }
@@ -137,8 +138,8 @@ export default function DeleteAccountScreen() {
 
   if (isLoading || !profile) {
     return (
-      <View className="flex-1 bg-black items-center justify-center">
-        <ActivityIndicator color="#7c3aed" />
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator color={colors.brand} />
       </View>
     )
   }
@@ -146,7 +147,7 @@ export default function DeleteAccountScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={{ flex: 1, backgroundColor: '#000000' }}
+      style={{ flex: 1, backgroundColor: colors.background }}
     >
       <ScrollView
         contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
@@ -180,7 +181,7 @@ export default function DeleteAccountScreen() {
         {step === 'reauth' &&
           (profile.hasPassword === undefined ? (
             <View className="items-center justify-center py-12">
-              <ActivityIndicator color="#7c3aed" />
+              <ActivityIndicator color={colors.brand} />
             </View>
           ) : (
             <DeleteReauthStep

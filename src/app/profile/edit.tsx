@@ -24,6 +24,7 @@ import {
 import type { EditProfileInput } from '@/features/users/schemas/editProfileSchema'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { isConflictError } from '@/shared/lib/apiError'
+import { colors } from '@/shared/theme'
 
 export default function EditProfileScreen() {
   const router = useRouter()
@@ -39,8 +40,8 @@ export default function EditProfileScreen() {
 
   if (isLoading || !profile) {
     return (
-      <View className="flex-1 bg-black items-center justify-center">
-        <ActivityIndicator color="#7c3aed" />
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator color={colors.brand} />
       </View>
     )
   }
@@ -76,7 +77,7 @@ export default function EditProfileScreen() {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={{ flex: 1, backgroundColor: '#000000' }}
+      style={{ flex: 1, backgroundColor: colors.background }}
     >
       <ScrollView
         contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 40 }}
@@ -102,12 +103,12 @@ export default function EditProfileScreen() {
                 size={96}
               />
               {uploadAvatar.isPending ? (
-                <View className="absolute inset-0 bg-black/60 items-center justify-center">
-                  <ActivityIndicator color="#fff" />
+                <View className="absolute inset-0 bg-background/60 items-center justify-center">
+                  <ActivityIndicator color={colors.content} />
                 </View>
               ) : (
-                <View className="absolute bottom-0 left-0 right-0 bg-black/50 items-center py-1">
-                  <Ionicons name="camera" size={14} color="#fff" />
+                <View className="absolute bottom-0 left-0 right-0 bg-background/50 items-center py-1">
+                  <Ionicons name="camera" size={14} color={colors.content} />
                 </View>
               )}
             </View>
@@ -116,7 +117,7 @@ export default function EditProfileScreen() {
             onPress={handlePickAvatar}
             disabled={uploadAvatar.isPending}
           >
-            <Text className="text-violet-400 text-sm font-medium">
+            <Text className="text-brand-text text-sm font-medium">
               Alterar foto
             </Text>
           </Pressable>

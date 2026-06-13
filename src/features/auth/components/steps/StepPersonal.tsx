@@ -3,6 +3,7 @@ import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import type { RegisterInput } from '../../schemas/registerSchema'
 import { DatePicker } from '@/shared/components/DatePicker'
+import { colors } from '@/shared/theme'
 
 type Props = {
   control: Control<RegisterInput>
@@ -16,8 +17,8 @@ export function StepPersonal({ control, errors }: Props) {
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-white">Dados pessoais</Text>
-        <Text className="text-sm text-zinc-400">
+        <Text className="text-2xl font-bold text-content">Dados pessoais</Text>
+        <Text className="text-sm text-content-muted">
           Seu nome real ajuda as pessoas a te encontrarem.
         </Text>
       </View>
@@ -25,15 +26,17 @@ export function StepPersonal({ control, errors }: Props) {
       <View className="gap-4">
         <View className="flex-row gap-3">
           <View className="flex-1 gap-1">
-            <Text className="text-sm font-medium text-zinc-300">Nome</Text>
+            <Text className="text-sm font-medium text-content-tertiary">
+              Nome
+            </Text>
             <Controller
               control={control}
               name="name"
               render={({ field: { onChange, value } }) => (
                 <TextInput
-                  className={`border ${errors.name ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                  className={`border ${errors.name ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                   placeholder="João"
-                  placeholderTextColor="#71717a"
+                  placeholderTextColor={colors.contentSubtle}
                   onChangeText={onChange}
                   value={value}
                   autoCapitalize="words"
@@ -41,20 +44,24 @@ export function StepPersonal({ control, errors }: Props) {
               )}
             />
             {errors.name && (
-              <Text className="text-white text-xs">{errors.name.message}</Text>
+              <Text className="text-content text-xs">
+                {errors.name.message}
+              </Text>
             )}
           </View>
 
           <View className="flex-1 gap-1">
-            <Text className="text-sm font-medium text-zinc-300">Sobrenome</Text>
+            <Text className="text-sm font-medium text-content-tertiary">
+              Sobrenome
+            </Text>
             <Controller
               control={control}
               name="lastname"
               render={({ field: { onChange, value } }) => (
                 <TextInput
-                  className={`border ${errors.lastname ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                  className={`border ${errors.lastname ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                   placeholder="Silva"
-                  placeholderTextColor="#71717a"
+                  placeholderTextColor={colors.contentSubtle}
                   onChangeText={onChange}
                   value={value}
                   autoCapitalize="words"
@@ -62,7 +69,7 @@ export function StepPersonal({ control, errors }: Props) {
               )}
             />
             {errors.lastname && (
-              <Text className="text-white text-xs">
+              <Text className="text-content text-xs">
                 {errors.lastname.message}
               </Text>
             )}
@@ -70,7 +77,7 @@ export function StepPersonal({ control, errors }: Props) {
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">
+          <Text className="text-sm font-medium text-content-tertiary">
             Data de nascimento
           </Text>
           <Controller
@@ -87,7 +94,7 @@ export function StepPersonal({ control, errors }: Props) {
             )}
           />
           {errors.birthdate && (
-            <Text className="text-white text-xs">
+            <Text className="text-content text-xs">
               {errors.birthdate.message}
             </Text>
           )}

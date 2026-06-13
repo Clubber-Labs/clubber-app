@@ -5,6 +5,7 @@ import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfil
 import { formatRelative } from '@/shared/utils/dateFormat'
 import { SwipeableRow } from '@/shared/components/SwipeableRow'
 import type { EventComment } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   comment: EventComment
@@ -27,18 +28,18 @@ export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
   }
 
   const card = (
-    <View className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800">
+    <View className="bg-surface rounded-2xl p-4 border border-line">
       <View className="flex-row items-center justify-between mb-1">
         <Pressable
           onPress={() => navigateToProfile(comment.author.id)}
           accessibilityLabel={`Ver perfil de ${comment.author.username}`}
         >
-          <Text className="text-sm font-semibold text-white">
+          <Text className="text-sm font-semibold text-content">
             {comment.author.name} {comment.author.lastname}
           </Text>
         </Pressable>
         <View className="flex-row items-center gap-2">
-          <Text className="text-xs text-zinc-500">
+          <Text className="text-xs text-content-subtle">
             {formatRelative(comment.createdAt)}
           </Text>
           {onReport && (
@@ -48,12 +49,16 @@ export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
               accessibilityRole="button"
               accessibilityLabel="Denunciar comentário"
             >
-              <Ionicons name="flag-outline" size={14} color="#71717a" />
+              <Ionicons
+                name="flag-outline"
+                size={14}
+                color={colors.contentSubtle}
+              />
             </Pressable>
           )}
         </View>
       </View>
-      <Text className="text-sm text-zinc-200">{comment.content}</Text>
+      <Text className="text-sm text-content-secondary">{comment.content}</Text>
       <Pressable
         onPress={handleLike}
         disabled={toggleLike.isPending}
@@ -63,11 +68,11 @@ export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
         <Ionicons
           name={comment.userLiked ? 'heart' : 'heart-outline'}
           size={16}
-          color={comment.userLiked ? '#ef4444' : '#a1a1aa'}
+          color={comment.userLiked ? colors.danger : colors.contentMuted}
         />
         {comment.reactionsCount > 0 && (
           <Text
-            className={`text-xs ${comment.userLiked ? 'text-red-500' : 'text-zinc-400'}`}
+            className={`text-xs ${comment.userLiked ? 'text-danger' : 'text-content-muted'}`}
           >
             {comment.reactionsCount}
           </Text>

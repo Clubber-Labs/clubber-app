@@ -8,6 +8,7 @@ import { useMarkAllRead } from '@/features/notifications/hooks/useMarkRead'
 import { useOpenNotification } from '@/features/notifications/hooks/useOpenNotification'
 import { NotificationRow } from '@/features/notifications/components/NotificationRow'
 import { NotificationsEmptyState } from '@/features/notifications/components/NotificationsEmptyState'
+import { colors } from '@/shared/theme'
 
 export default function NotificationsScreen() {
   const router = useRouter()
@@ -25,16 +26,16 @@ export default function NotificationsScreen() {
   const { refreshing, onRefresh } = usePullRefresh(refetch)
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-background">
       <View className="flex-row items-center justify-between px-4 py-3">
-        <Text className="text-xl font-bold text-white">Notificações</Text>
+        <Text className="text-xl font-bold text-content">Notificações</Text>
         <View className="flex-row items-center gap-1">
           {count > 0 && (
             <Pressable
               onPress={() => markAllRead.mutate()}
               className="px-3 py-1.5"
             >
-              <Text className="text-violet-400 text-sm font-semibold">
+              <Text className="text-brand-text text-sm font-semibold">
                 Marcar todas como lidas
               </Text>
             </Pressable>
@@ -44,13 +45,17 @@ export default function NotificationsScreen() {
             className="w-9 h-9 items-center justify-center"
             accessibilityLabel="Configurações de notificações"
           >
-            <Ionicons name="settings-outline" size={20} color="#e5e7eb" />
+            <Ionicons
+              name="settings-outline"
+              size={20}
+              color={colors.contentSecondary}
+            />
           </Pressable>
         </View>
       </View>
 
       {isLoading ? (
-        <View className="flex-1 bg-black" />
+        <View className="flex-1 bg-background" />
       ) : (
         <FlatList
           data={notifications}
@@ -66,7 +71,7 @@ export default function NotificationsScreen() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor="#a78bfa"
+              tintColor={colors.brandText}
             />
           }
           ListEmptyComponent={<NotificationsEmptyState />}

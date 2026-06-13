@@ -37,15 +37,15 @@ export function OtpInput({
         {boxes.map((digit, i) => (
           <View
             key={i}
-            className={`w-12 h-14 rounded-xl border items-center justify-center bg-zinc-900 ${
+            className={`w-12 h-14 rounded-xl border items-center justify-center bg-surface ${
               error
-                ? 'border-white'
+                ? 'border-content'
                 : i === focusedIndex
-                  ? 'border-violet-500'
-                  : 'border-zinc-800'
+                  ? 'border-brand-emphasis'
+                  : 'border-line'
             }`}
           >
-            <Text className="text-2xl font-semibold text-white">{digit}</Text>
+            <Text className="text-2xl font-semibold text-content">{digit}</Text>
           </View>
         ))}
       </View>

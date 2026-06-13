@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useChatUserSearch } from '../hooks/useChatUserSearch'
 import { UserPickRow } from './UserPickRow'
 import type { UserMini } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   visible: boolean
@@ -40,37 +41,37 @@ export function AddParticipantsModal({
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <View className="flex-1 bg-black pt-14">
-        <View className="flex-row items-center gap-2 px-3 pb-2 border-b border-zinc-900">
+      <View className="flex-1 bg-background pt-14">
+        <View className="flex-row items-center gap-2 px-3 pb-2 border-b border-line-subtle">
           <Pressable
             onPress={onClose}
             className="w-9 h-9 items-center justify-center"
             accessibilityLabel="Fechar"
           >
-            <Ionicons name="close" size={24} color="#e4e4e7" />
+            <Ionicons name="close" size={24} color={colors.contentSecondary} />
           </Pressable>
-          <Text className="text-white font-semibold text-lg">
+          <Text className="text-content font-semibold text-lg">
             Adicionar pessoas
           </Text>
         </View>
 
         <View className="px-4 py-3">
-          <View className="flex-row items-center gap-2 bg-zinc-900 rounded-xl px-3">
-            <Ionicons name="search" size={18} color="#71717a" />
+          <View className="flex-row items-center gap-2 bg-surface rounded-xl px-3">
+            <Ionicons name="search" size={18} color={colors.contentSubtle} />
             <TextInput
               value={query}
               onChangeText={setQuery}
               placeholder="Buscar pessoas…"
-              placeholderTextColor="#71717a"
+              placeholderTextColor={colors.contentSubtle}
               autoCapitalize="none"
               textAlignVertical="center"
-              className="flex-1 py-3 text-base text-white"
+              className="flex-1 py-3 text-base text-content"
             />
           </View>
         </View>
 
         {isLoading ? (
-          <ActivityIndicator className="mt-6" color="#8b5cf6" />
+          <ActivityIndicator className="mt-6" color={colors.brandEmphasis} />
         ) : (
           <FlatList
             data={candidates}
@@ -89,7 +90,7 @@ export function AddParticipantsModal({
             onEndReachedThreshold={0.4}
             ListEmptyComponent={
               trimmed.length >= 2 ? (
-                <Text className="text-zinc-500 text-center mt-6">
+                <Text className="text-content-subtle text-center mt-6">
                   Ninguém encontrado.
                 </Text>
               ) : null

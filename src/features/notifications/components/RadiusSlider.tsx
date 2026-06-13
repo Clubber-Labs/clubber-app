@@ -5,6 +5,7 @@ import {
   NOTIFY_RADIUS_MIN_KM,
   NOTIFY_RADIUS_MAX_KM,
 } from '../store/notificationPrefsStore'
+import { colors } from '@/shared/theme'
 
 type Props = {
   value: number
@@ -21,8 +22,10 @@ export function RadiusSlider({ value, onCommit, disabled }: Props) {
   return (
     <View className={disabled ? 'opacity-40' : undefined}>
       <View className="flex-row items-center justify-between">
-        <Text className="text-sm font-semibold text-white">Raio de aviso</Text>
-        <Text className="text-sm font-semibold text-violet-400">
+        <Text className="text-sm font-semibold text-content">
+          Raio de aviso
+        </Text>
+        <Text className="text-sm font-semibold text-brand-text">
           {shown} km
         </Text>
       </View>
@@ -37,13 +40,17 @@ export function RadiusSlider({ value, onCommit, disabled }: Props) {
           setDragging(null)
           onCommit(km)
         }}
-        minimumTrackTintColor="#7c3aed"
-        maximumTrackTintColor="#27272a"
-        thumbTintColor="#8b5cf6"
+        minimumTrackTintColor={colors.brand}
+        maximumTrackTintColor={colors.line}
+        thumbTintColor={colors.brandEmphasis}
       />
       <View className="flex-row justify-between">
-        <Text className="text-xs text-zinc-600">{NOTIFY_RADIUS_MIN_KM} km</Text>
-        <Text className="text-xs text-zinc-600">{NOTIFY_RADIUS_MAX_KM} km</Text>
+        <Text className="text-xs text-content-faint">
+          {NOTIFY_RADIUS_MIN_KM} km
+        </Text>
+        <Text className="text-xs text-content-faint">
+          {NOTIFY_RADIUS_MAX_KM} km
+        </Text>
       </View>
     </View>
   )

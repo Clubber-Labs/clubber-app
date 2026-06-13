@@ -16,6 +16,7 @@ import { UserAvatar } from '@/shared/components/UserAvatar'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import type { FeedAuthor } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type PendingAction = 'selected' | 'all' | null
 
@@ -75,16 +76,16 @@ export default function InvitesScreen() {
 
   if (eventLoading) {
     return (
-      <View className="flex-1 bg-black items-center justify-center">
-        <ActivityIndicator color="#7c3aed" />
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator color={colors.brand} />
       </View>
     )
   }
 
   if (eventError || !event) {
     return (
-      <View className="flex-1 bg-black items-center justify-center px-6">
-        <Text className="text-zinc-400 text-center text-sm">
+      <View className="flex-1 bg-background items-center justify-center px-6">
+        <Text className="text-content-muted text-center text-sm">
           Não foi possível carregar o evento.
         </Text>
       </View>
@@ -99,8 +100,8 @@ export default function InvitesScreen() {
 
   if (followersLoading) {
     return (
-      <View className="flex-1 bg-black items-center justify-center">
-        <ActivityIndicator color="#7c3aed" />
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator color={colors.brand} />
       </View>
     )
   }
@@ -110,7 +111,7 @@ export default function InvitesScreen() {
     : null
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-background">
       <FlatList
         data={followers}
         keyExtractor={u => u.id}
@@ -122,18 +123,21 @@ export default function InvitesScreen() {
           />
         )}
         ItemSeparatorComponent={() => (
-          <View className="h-px bg-zinc-900 ml-16" />
+          <View className="h-px bg-surface ml-16" />
         )}
         ListEmptyComponent={
           <View className="items-center justify-center pt-16 px-6">
-            <Text className="text-zinc-500 text-sm text-center">
+            <Text className="text-content-subtle text-sm text-center">
               Você ainda não tem seguidores pra convidar.
             </Text>
           </View>
         }
         ListFooterComponent={
           isFetchingNextPage ? (
-            <ActivityIndicator color="#7c3aed" style={{ marginVertical: 16 }} />
+            <ActivityIndicator
+              color={colors.brand}
+              style={{ marginVertical: 16 }}
+            />
           ) : null
         }
         onEndReached={() => hasNextPage && fetchNextPage()}
@@ -141,7 +145,7 @@ export default function InvitesScreen() {
       />
 
       {followers.length > 0 && (
-        <View className="border-t border-zinc-900 px-4 py-3 gap-2 bg-black">
+        <View className="border-t border-line-subtle px-4 py-3 gap-2 bg-background">
           <FormError message={submitError} />
           <Button
             label={
@@ -159,9 +163,9 @@ export default function InvitesScreen() {
             className="py-2 items-center flex-row justify-center gap-2"
           >
             {pendingAction === 'all' && (
-              <ActivityIndicator color="#a78bfa" size="small" />
+              <ActivityIndicator color={colors.brandText} size="small" />
             )}
-            <Text className="text-violet-400 text-sm font-medium">
+            <Text className="text-brand-text text-sm font-medium">
               Convidar todos os seguidores
             </Text>
           </Pressable>
@@ -189,13 +193,13 @@ function FollowerRow({ user, checked, onToggle }: RowProps) {
     >
       <UserAvatar name={fullName} avatarUrl={user.avatarUrl} size={44} />
       <View className="flex-1">
-        <Text className="text-white font-semibold text-sm">{fullName}</Text>
-        <Text className="text-zinc-400 text-xs">@{user.username}</Text>
+        <Text className="text-content font-semibold text-sm">{fullName}</Text>
+        <Text className="text-content-muted text-xs">@{user.username}</Text>
       </View>
       <Ionicons
         name={checked ? 'checkbox' : 'square-outline'}
         size={22}
-        color={checked ? '#7c3aed' : '#71717a'}
+        color={checked ? colors.brand : colors.contentSubtle}
       />
     </Pressable>
   )

@@ -9,6 +9,7 @@ import {
   hasFullProfile,
   type SearchUserItem,
 } from '../schemas/searchUserSchema'
+import { colors } from '@/shared/theme'
 
 type Props = {
   user: SearchUserItem
@@ -35,20 +36,27 @@ export function UserSearchCard({ user }: Props) {
         <View className="flex-1">
           <View className="flex-row items-center gap-1.5">
             <Text
-              className="text-white font-semibold text-sm"
+              className="text-content font-semibold text-sm"
               numberOfLines={1}
             >
               {fullName}
             </Text>
             {showLock && (
-              <Ionicons name="lock-closed" size={12} color="#a1a1aa" />
+              <Ionicons
+                name="lock-closed"
+                size={12}
+                color={colors.contentMuted}
+              />
             )}
           </View>
-          <Text className="text-zinc-500 text-xs" numberOfLines={1}>
+          <Text className="text-content-subtle text-xs" numberOfLines={1}>
             @{user.username}
           </Text>
           {!!bio && (
-            <Text className="text-zinc-400 text-xs mt-0.5" numberOfLines={1}>
+            <Text
+              className="text-content-muted text-xs mt-0.5"
+              numberOfLines={1}
+            >
               {bio}
             </Text>
           )}
@@ -56,7 +64,7 @@ export function UserSearchCard({ user }: Props) {
       </Pressable>
       <View>
         {isOwn ? (
-          <Text className="text-zinc-500 text-sm">Você</Text>
+          <Text className="text-content-subtle text-sm">Você</Text>
         ) : (
           <FollowButton
             status={user.followStatus}

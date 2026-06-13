@@ -42,6 +42,7 @@ import { ImageViewerModal } from '@/features/chat/components/ImageViewerModal'
 import { VideoPlayerModal } from '@/features/chat/components/VideoPlayerModal'
 import type { UserMini } from '@/shared/types'
 import type { ChatMessage, ReplyPreview } from '@/features/chat/types'
+import { colors } from '@/shared/theme'
 
 const COOLDOWN_MS = 5000
 // Guarda pré-upload (nicety) — o limite real é do backend (413). Pega só vídeos
@@ -399,8 +400,8 @@ export default function ConversationScreen() {
 
   if (isLoading || !conversation) {
     return (
-      <View className="flex-1 bg-black items-center justify-center">
-        <ActivityIndicator size="large" color="#8b5cf6" />
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator size="large" color={colors.brandEmphasis} />
       </View>
     )
   }
@@ -409,7 +410,7 @@ export default function ConversationScreen() {
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 96 : 0}
-      className="flex-1 bg-black"
+      className="flex-1 bg-background"
     >
       <ConversationHeader
         conversation={conversation}

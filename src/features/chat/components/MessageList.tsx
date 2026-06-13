@@ -15,6 +15,7 @@ import { buildMessageMeta } from '../utils/groupMessages'
 import { messageStatus } from '../utils/messageStatus'
 import { aggregateReactions } from '../utils/reactions'
 import type { ChatMessage, Participant } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   conversationId: string
@@ -97,7 +98,7 @@ export function MessageList({
   if (isLoading) {
     return (
       <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#8b5cf6" />
+        <ActivityIndicator size="large" color={colors.brandEmphasis} />
       </View>
     )
   }
@@ -113,7 +114,7 @@ export function MessageList({
       contentContainerStyle={{ paddingVertical: 12, flexGrow: 1 }}
       ListEmptyComponent={
         <View className="flex-1 items-center justify-center px-8">
-          <Text className="text-zinc-400 text-center">Diga olá 👋</Text>
+          <Text className="text-content-muted text-center">Diga olá 👋</Text>
         </View>
       }
       ListHeaderComponent={<TypingIndicator label={typingLabel} />}
@@ -165,7 +166,11 @@ export function MessageList({
       onEndReachedThreshold={0.3}
       ListFooterComponent={
         isFetchingNextPage ? (
-          <ActivityIndicator size="small" color="#8b5cf6" className="py-3" />
+          <ActivityIndicator
+            size="small"
+            color={colors.brandEmphasis}
+            className="py-3"
+          />
         ) : null
       }
     />

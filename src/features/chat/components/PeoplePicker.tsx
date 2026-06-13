@@ -11,6 +11,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { useChatUserSearch } from '../hooks/useChatUserSearch'
 import { useChatSuggestions } from '../hooks/useChatSuggestions'
 import type { UserMini } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   myId: string
@@ -42,16 +43,16 @@ export function PeoplePicker({ myId, renderItem, belowSearch }: Props) {
   return (
     <>
       <View className="px-4 py-3">
-        <View className="flex-row items-center gap-2 bg-zinc-900 rounded-xl px-3">
-          <Ionicons name="search" size={18} color="#71717a" />
+        <View className="flex-row items-center gap-2 bg-surface rounded-xl px-3">
+          <Ionicons name="search" size={18} color={colors.contentSubtle} />
           <TextInput
             value={query}
             onChangeText={setQuery}
             placeholder="Buscar pessoas…"
-            placeholderTextColor="#71717a"
+            placeholderTextColor={colors.contentSubtle}
             autoCapitalize="none"
             textAlignVertical="center"
-            className="flex-1 py-3 text-base text-white"
+            className="flex-1 py-3 text-base text-content"
           />
         </View>
       </View>
@@ -59,7 +60,7 @@ export function PeoplePicker({ myId, renderItem, belowSearch }: Props) {
       {belowSearch}
 
       {loading ? (
-        <ActivityIndicator className="mt-6" color="#8b5cf6" />
+        <ActivityIndicator className="mt-6" color={colors.brandEmphasis} />
       ) : (
         <FlatList
           data={listData}
@@ -69,7 +70,7 @@ export function PeoplePicker({ myId, renderItem, belowSearch }: Props) {
           renderItem={({ item }) => renderItem(item)}
           ListHeaderComponent={
             !isSearching && suggestions.length > 0 ? (
-              <Text className="text-zinc-500 text-xs font-semibold uppercase px-4 pt-4 pb-2">
+              <Text className="text-content-subtle text-xs font-semibold uppercase px-4 pt-4 pb-2">
                 Sugestões
               </Text>
             ) : null
@@ -81,11 +82,11 @@ export function PeoplePicker({ myId, renderItem, belowSearch }: Props) {
           onEndReachedThreshold={0.4}
           ListEmptyComponent={
             isSearching ? (
-              <Text className="text-zinc-500 text-center mt-6">
+              <Text className="text-content-subtle text-center mt-6">
                 Ninguém encontrado.
               </Text>
             ) : (
-              <Text className="text-zinc-600 text-center mt-6">
+              <Text className="text-content-faint text-center mt-6">
                 Siga pessoas para vê-las aqui ou busque por nome.
               </Text>
             )

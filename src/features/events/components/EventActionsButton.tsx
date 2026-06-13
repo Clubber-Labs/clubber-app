@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useDeleteEvent } from '../hooks/useDeleteEvent'
 import { EventActionsMenu, type EventAction } from './EventActionsMenu'
+import { colors } from '@/shared/theme'
 
 type Props = {
   eventId: string
@@ -59,10 +60,10 @@ export function EventActionsButton({ eventId, isPublic }: Props) {
     <>
       <Pressable
         onPress={() => setOpen(true)}
-        className="w-10 h-10 items-center justify-center rounded-full bg-black/50"
+        className="w-10 h-10 items-center justify-center rounded-full bg-background/50"
         hitSlop={8}
       >
-        <Ionicons name="ellipsis-horizontal" size={22} color="#ffffff" />
+        <Ionicons name="ellipsis-horizontal" size={22} color={colors.content} />
       </Pressable>
       <EventActionsMenu
         visible={open}

@@ -175,8 +175,8 @@ export function RegisterForm() {
         </Animated.View>
 
         {genericError && (
-          <View className="bg-zinc-900 border border-white rounded-xl px-4 py-3">
-            <Text className="text-white text-sm">{genericError}</Text>
+          <View className="bg-surface border border-content rounded-xl px-4 py-3">
+            <Text className="text-content text-sm">{genericError}</Text>
           </View>
         )}
 

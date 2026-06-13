@@ -7,6 +7,7 @@ import { useSpot } from '@/features/spots/hooks/useSpot'
 import { useUpdateSpot } from '@/features/spots/hooks/useUpdateSpot'
 import { EditSpotForm } from '@/features/spots/components/EditSpotForm'
 import type { EditSpotInput } from '@/features/spots/schemas/editSpotSchema'
+import { colors } from '@/shared/theme'
 
 export default function EditSpotScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -24,20 +25,20 @@ export default function EditSpotScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-black items-center justify-center">
-        <ActivityIndicator size="large" color="#8b5cf6" />
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator size="large" color={colors.brandEmphasis} />
       </View>
     )
   }
 
   if (!spot) {
     return (
-      <View className="flex-1 bg-black items-center justify-center px-6 gap-3">
-        <Text className="text-zinc-200 text-center">
+      <View className="flex-1 bg-background items-center justify-center px-6 gap-3">
+        <Text className="text-content-secondary text-center">
           Não foi possível carregar o spot.
         </Text>
         <Pressable onPress={() => router.back()}>
-          <Text className="text-violet-400 font-semibold">Voltar</Text>
+          <Text className="text-brand-text font-semibold">Voltar</Text>
         </Pressable>
       </View>
     )
@@ -53,7 +54,7 @@ export default function EditSpotScreen() {
   }
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-background">
       <EditSpotForm
         spot={spot}
         onSubmit={handleSubmit}

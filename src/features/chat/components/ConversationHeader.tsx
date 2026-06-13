@@ -9,6 +9,7 @@ import {
 } from '../utils/conversationDisplay'
 import { lastSeenLabel } from '../utils/presence'
 import type { Conversation } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   conversation: Conversation
@@ -44,7 +45,7 @@ export function ConversationHeader({
   const showOnlineDot = isDirect && !!presence?.online
 
   return (
-    <View className="flex-row items-center gap-1 px-3 py-2 border-b border-zinc-900 bg-black">
+    <View className="flex-row items-center gap-1 px-3 py-2 border-b border-line-subtle bg-background">
       <Pressable
         onPress={onPressDetails}
         className="flex-row items-center gap-2 flex-1"
@@ -65,14 +66,14 @@ export function ConversationHeader({
         <View className="flex-1">
           <Text
             numberOfLines={1}
-            className="text-white font-semibold text-base"
+            className="text-content font-semibold text-base"
           >
             {title}
           </Text>
           {!!subtitle && (
             <Text
               numberOfLines={1}
-              className={`text-xs ${showOnlineDot ? 'text-green-500' : 'text-zinc-500'}`}
+              className={`text-xs ${showOnlineDot ? 'text-success' : 'text-content-subtle'}`}
             >
               {subtitle}
             </Text>
@@ -84,7 +85,11 @@ export function ConversationHeader({
         className="w-9 h-9 items-center justify-center"
         accessibilityLabel="Mais opções"
       >
-        <Ionicons name="ellipsis-vertical" size={20} color="#e4e4e7" />
+        <Ionicons
+          name="ellipsis-vertical"
+          size={20}
+          color={colors.contentSecondary}
+        />
       </Pressable>
     </View>
   )

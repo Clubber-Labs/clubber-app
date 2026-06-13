@@ -3,6 +3,7 @@ import { Text, FlatList, ActivityIndicator } from 'react-native'
 import { useRouter } from 'expo-router'
 import { UserEventCard } from './UserEventCard'
 import type { UserEventSummary } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   events: UserEventSummary[]
@@ -36,11 +37,13 @@ export function ProfileEventsList({
         />
       )}
       ListEmptyComponent={
-        <Text className="text-zinc-500 text-center mt-8">{emptyMessage}</Text>
+        <Text className="text-content-subtle text-center mt-8">
+          {emptyMessage}
+        </Text>
       }
       ListFooterComponent={
         isFetchingNextPage ? (
-          <ActivityIndicator color="#7c3aed" style={{ marginTop: 16 }} />
+          <ActivityIndicator color={colors.brand} style={{ marginTop: 16 }} />
         ) : null
       }
       onEndReached={() => hasNextPage && onLoadMore()}

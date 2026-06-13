@@ -23,8 +23,8 @@ function StatItem({
       disabled={!onPress}
       className="items-center flex-1"
     >
-      <Text className="text-white font-bold text-lg">{value}</Text>
-      <Text className="text-zinc-400 text-xs mt-0.5">{label}</Text>
+      <Text className="text-content font-bold text-lg">{value}</Text>
+      <Text className="text-content-muted text-xs mt-0.5">{label}</Text>
     </Pressable>
   )
 }
@@ -37,15 +37,15 @@ export function ProfileStats({
   onFollowingPress,
 }: Props) {
   return (
-    <View className="flex-row py-4 border-b border-zinc-900">
+    <View className="flex-row py-4 border-b border-line-subtle">
       <StatItem value={eventsCount} label="Eventos" />
-      <View className="w-px bg-zinc-800" />
+      <View className="w-px bg-surface-elevated" />
       <StatItem
         value={followersCount}
         label="Seguidores"
         onPress={onFollowersPress}
       />
-      <View className="w-px bg-zinc-800" />
+      <View className="w-px bg-surface-elevated" />
       <StatItem
         value={followingCount}
         label="Seguindo"

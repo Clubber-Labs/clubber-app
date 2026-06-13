@@ -5,6 +5,7 @@ import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { editSpotSchema, type EditSpotInput } from '../schemas/editSpotSchema'
 import type { Spot } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   spot: Spot
@@ -38,36 +39,39 @@ export function EditSpotForm({
       keyboardShouldPersistTaps="handled"
     >
       <View className="gap-1">
-        <Text className="text-sm font-medium text-zinc-300">Título</Text>
+        <Text className="text-sm font-medium text-content-tertiary">
+          Título
+        </Text>
         <Controller
           control={control}
           name="title"
           render={({ field: { onChange, value } }) => (
             <TextInput
-              className={`border ${errors.title ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
-              placeholderTextColor="#71717a"
+              className={`border ${errors.title ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
+              placeholderTextColor={colors.contentSubtle}
               value={value}
               onChangeText={onChange}
             />
           )}
         />
         {errors.title && (
-          <Text className="text-white text-xs">{errors.title.message}</Text>
+          <Text className="text-content text-xs">{errors.title.message}</Text>
         )}
       </View>
 
       <View className="gap-1">
-        <Text className="text-sm font-medium text-zinc-300">
-          Descrição <Text className="text-zinc-500 text-xs">(opcional)</Text>
+        <Text className="text-sm font-medium text-content-tertiary">
+          Descrição{' '}
+          <Text className="text-content-subtle text-xs">(opcional)</Text>
         </Text>
         <Controller
           control={control}
           name="description"
           render={({ field: { onChange, value } }) => (
             <TextInput
-              className={`border ${errors.description ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white min-h-[96px]`}
+              className={`border ${errors.description ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content min-h-[96px]`}
               placeholder="Combina os detalhes com a galera..."
-              placeholderTextColor="#71717a"
+              placeholderTextColor={colors.contentSubtle}
               value={value ?? ''}
               onChangeText={onChange}
               multiline
@@ -76,7 +80,7 @@ export function EditSpotForm({
           )}
         />
         {errors.description && (
-          <Text className="text-white text-xs">
+          <Text className="text-content text-xs">
             {errors.description.message}
           </Text>
         )}

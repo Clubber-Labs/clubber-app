@@ -4,6 +4,7 @@ import { formatDuration } from '@/shared/utils/formatDuration'
 import { mediaBoxSize } from '../utils/mediaBox'
 import { LONG_PRESS_DELAY_MS } from '../utils/longPress'
 import type { Attachment } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   attachment: Attachment
@@ -44,28 +45,28 @@ export function VideoMessage({
         <Image
           source={{ uri: attachment.thumbnailUrl }}
           style={{ width, height }}
-          className="bg-zinc-700"
+          className="bg-surface-high"
           resizeMode="cover"
         />
       ) : (
-        <View style={{ width, height }} className="bg-zinc-800" />
+        <View style={{ width, height }} className="bg-surface-elevated" />
       )}
 
       {sending ? (
-        <View className="absolute inset-0 items-center justify-center bg-black/25">
-          <ActivityIndicator color="#ffffff" />
+        <View className="absolute inset-0 items-center justify-center bg-background/25">
+          <ActivityIndicator color={colors.content} />
         </View>
       ) : (
         <View className="absolute inset-0 items-center justify-center">
-          <View className="w-12 h-12 items-center justify-center rounded-full bg-black/50">
-            <Ionicons name="play" size={26} color="#ffffff" />
+          <View className="w-12 h-12 items-center justify-center rounded-full bg-background/50">
+            <Ionicons name="play" size={26} color={colors.content} />
           </View>
         </View>
       )}
 
       {attachment.durationMs != null && !sending && (
-        <View className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/60">
-          <Text className="text-[11px] text-white">
+        <View className="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded bg-background/60">
+          <Text className="text-[11px] text-content">
             {formatDuration(attachment.durationMs)}
           </Text>
         </View>

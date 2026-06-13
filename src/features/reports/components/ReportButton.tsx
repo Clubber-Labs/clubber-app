@@ -4,6 +4,7 @@ import { useReportFlow } from '../hooks/useReportFlow'
 import { ReportReasonSheet } from './ReportReasonSheet'
 import { TARGET_LABELS } from '../utils/reportLabels'
 import type { ReportTarget } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   target: ReportTarget
@@ -29,14 +30,14 @@ export function ReportButton({ target, variant = 'overlay' }: Props) {
         accessibilityLabel={`Denunciar ${TARGET_LABELS[target.type]}`}
         className={
           isOverlay
-            ? 'w-10 h-10 items-center justify-center rounded-full bg-black/50'
+            ? 'w-10 h-10 items-center justify-center rounded-full bg-background/50'
             : 'w-9 h-9 items-center justify-center'
         }
       >
         <Ionicons
           name="flag-outline"
           size={isOverlay ? 20 : 22}
-          color={isOverlay ? '#ffffff' : '#a1a1aa'}
+          color={isOverlay ? colors.content : colors.contentMuted}
         />
       </Pressable>
       <ReportReasonSheet

@@ -8,6 +8,7 @@ import { useCreateConversation } from '@/features/chat/hooks/useCreateConversati
 import { PeoplePicker } from '@/features/chat/components/PeoplePicker'
 import { ChatPersonRow } from '@/features/chat/components/ChatPersonRow'
 import type { UserMini } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 export default function NewConversationScreen() {
   const router = useRouter()
@@ -33,9 +34,11 @@ export default function NewConversationScreen() {
   }
 
   return (
-    <View className="flex-1 bg-black">
-      <View className="px-4 py-2.5 border-b border-zinc-900">
-        <Text className="text-white font-semibold text-lg">Nova conversa</Text>
+    <View className="flex-1 bg-background">
+      <View className="px-4 py-2.5 border-b border-line-subtle">
+        <Text className="text-content font-semibold text-lg">
+          Nova conversa
+        </Text>
       </View>
 
       <PeoplePicker
@@ -46,13 +49,13 @@ export default function NewConversationScreen() {
         belowSearch={
           <Pressable
             onPress={() => router.push('/conversations/new-group')}
-            className="flex-row items-center gap-3 px-4 py-3 border-b border-zinc-900 active:bg-zinc-900"
+            className="flex-row items-center gap-3 px-4 py-3 border-b border-line-subtle active:bg-surface"
             accessibilityLabel="Criar novo grupo"
           >
-            <View className="w-11 h-11 rounded-full bg-violet-600 items-center justify-center">
-              <Ionicons name="people" size={22} color="#ffffff" />
+            <View className="w-11 h-11 rounded-full bg-brand items-center justify-center">
+              <Ionicons name="people" size={22} color={colors.content} />
             </View>
-            <Text className="text-violet-400 font-semibold text-base">
+            <Text className="text-brand-text font-semibold text-base">
               Novo grupo
             </Text>
           </Pressable>

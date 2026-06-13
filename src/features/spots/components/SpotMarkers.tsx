@@ -2,6 +2,7 @@ import { View, Text, Pressable } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import type { Spot } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   spots: Spot[]
@@ -15,7 +16,7 @@ const BALLOON_SIZE = 48
 const BALLOON_SIZE_SELECTED = 58
 const BORDER_WIDTH = 3
 const DIMMED_OPACITY = 0.5
-const VIOLET = '#8b5cf6'
+const VIOLET = colors.brandEmphasis
 
 // Proporções do balão de mensagem (estilo 💬): caixa arredondada com rabinho
 // apontando pra baixo-esquerda. Derivadas do tamanho pra escalar na seleção.
@@ -58,7 +59,7 @@ function SpotBalloon({ spot, size }: { spot: Spot; size: number }) {
           borderRadius: size * RADIUS_RATIO,
           borderWidth: BORDER_WIDTH,
           borderColor: VIOLET,
-          backgroundColor: '#0a0a0a',
+          backgroundColor: colors.surfaceSunken,
           alignItems: 'center',
           justifyContent: 'center',
         }}
@@ -71,9 +72,9 @@ function SpotBalloon({ spot, size }: { spot: Spot; size: number }) {
         {spot.memberCount > 1 && (
           <View
             style={{ position: 'absolute', top: -6, right: -6 }}
-            className="bg-violet-600 rounded-full min-w-[20px] h-5 px-1 items-center justify-center border border-black"
+            className="bg-brand rounded-full min-w-[20px] h-5 px-1 items-center justify-center border border-background"
           >
-            <Text className="text-white text-[10px] font-bold">
+            <Text className="text-content text-[10px] font-bold">
               {spot.memberCount}
             </Text>
           </View>

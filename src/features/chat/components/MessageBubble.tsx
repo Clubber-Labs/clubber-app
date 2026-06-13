@@ -15,6 +15,7 @@ import type { AggregatedReaction } from '../utils/reactions'
 import type { MessageMeta } from '../utils/groupMessages'
 import type { MessageStatus } from '../utils/messageStatus'
 import type { ChatMessage } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   message: ChatMessage
@@ -59,8 +60,8 @@ export function MessageBubble({
       <View
         className={`px-3 ${topMargin} ${isMine ? 'items-end' : 'items-start'}`}
       >
-        <View className="bg-zinc-900 rounded-2xl px-3 py-2 border border-zinc-800">
-          <Text className="text-zinc-500 text-sm italic">
+        <View className="bg-surface rounded-2xl px-3 py-2 border border-line">
+          <Text className="text-content-subtle text-sm italic">
             Mensagem removida
           </Text>
         </View>
@@ -92,23 +93,23 @@ export function MessageBubble({
       className="max-w-[80%]"
     >
       <View
-        className={`rounded-2xl ${isMine ? 'bg-violet-600' : 'bg-zinc-800'} ${mediaOnly ? 'p-1' : 'px-3 py-2'}`}
+        className={`rounded-2xl ${isMine ? 'bg-brand' : 'bg-surface-elevated'} ${mediaOnly ? 'p-1' : 'px-3 py-2'}`}
       >
         {reply && (
           <Pressable
             onPress={onPressReply}
             onLongPress={onLongPress}
             delayLongPress={LONG_PRESS_DELAY_MS}
-            className={`mb-1 rounded border-l-2 pl-2 py-0.5 ${isMine ? 'border-violet-200 bg-violet-700/50' : 'border-violet-500 bg-black/25'} ${mediaOnly ? 'mx-1 mt-1' : ''}`}
+            className={`mb-1 rounded border-l-2 pl-2 py-0.5 ${isMine ? 'border-brand-text-bright bg-brand-strong/50' : 'border-brand-emphasis bg-background/25'} ${mediaOnly ? 'mx-1 mt-1' : ''}`}
           >
             <Text
-              className={`text-[12px] font-semibold ${isMine ? 'text-violet-100' : 'text-violet-300'}`}
+              className={`text-[12px] font-semibold ${isMine ? 'text-brand-text-subtle' : 'text-brand-text-strong'}`}
               numberOfLines={1}
             >
               {`${reply.sender.name} ${reply.sender.lastname}`.trim()}
             </Text>
             <Text
-              className={`text-[12px] ${isMine ? 'text-violet-100' : 'text-zinc-300'}`}
+              className={`text-[12px] ${isMine ? 'text-brand-text-subtle' : 'text-content-tertiary'}`}
               numberOfLines={1}
             >
               {replyText}
@@ -140,7 +141,7 @@ export function MessageBubble({
         )}
         {message.content ? (
           <Text
-            className={`text-[15px] ${isMine ? 'text-white' : 'text-zinc-100'} ${image || video ? 'mt-1 px-1' : ''}`}
+            className={`text-[15px] ${isMine ? 'text-content' : 'text-content-bright'} ${image || video ? 'mt-1 px-1' : ''}`}
           >
             {message.content}
           </Text>
@@ -150,7 +151,7 @@ export function MessageBubble({
             className={`flex-row items-center justify-end gap-1 mt-0.5 ${mediaOnly ? 'px-1 pb-0.5' : ''}`}
           >
             <Text
-              className={`text-[11px] ${isMine ? 'text-violet-200' : 'text-zinc-500'}`}
+              className={`text-[11px] ${isMine ? 'text-brand-text-bright' : 'text-content-subtle'}`}
             >
               {edited ? 'editada · ' : ''}
               {formatMessageTime(message.createdAt)}
@@ -165,8 +166,8 @@ export function MessageBubble({
           className="flex-row items-center gap-1 self-end mt-0.5"
           accessibilityLabel="Reenviar mensagem"
         >
-          <Ionicons name="alert-circle" size={12} color="#ef4444" />
-          <Text className="text-[11px] text-red-500">
+          <Ionicons name="alert-circle" size={12} color={colors.danger} />
+          <Text className="text-[11px] text-danger">
             Falhou · Tentar de novo
           </Text>
         </Pressable>
@@ -186,12 +187,12 @@ export function MessageBubble({
   // Mensagem de outro: gutter de avatar (grupo) + nome no topo do run.
   const showGutter = isGroup
   const content = isMine ? (
-    <View className={`px-3 ${topMargin} items-end bg-black`}>
+    <View className={`px-3 ${topMargin} items-end bg-background`}>
       {bubble}
       {reactionsRow}
     </View>
   ) : (
-    <View className={`px-3 ${topMargin} bg-black`}>
+    <View className={`px-3 ${topMargin} bg-background`}>
       {meta.showSenderLabel && (
         <View className="ml-10">
           <SenderLabel

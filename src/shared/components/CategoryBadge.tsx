@@ -10,8 +10,8 @@ type Props = {
 export function CategoryBadge({ value }: Props) {
   const { labelFor } = useCategories()
   return (
-    <View className="bg-violet-950 px-2 py-1 rounded-full">
-      <Text className="text-violet-300 text-xs font-semibold">
+    <View className="bg-brand-surface px-2 py-1 rounded-full">
+      <Text className="text-brand-text-strong text-xs font-semibold">
         {labelFor(value)}
       </Text>
     </View>

@@ -4,7 +4,7 @@ import { FloatingCreateButton } from '@/features/events/components/FloatingCreat
 
 export default function FeedScreen() {
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-background">
       <FeedList />
       <FloatingCreateButton />
     </View>

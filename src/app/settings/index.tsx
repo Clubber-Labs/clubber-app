@@ -7,12 +7,12 @@ export default function SettingsScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-black"
+      className="flex-1 bg-background"
       contentContainerStyle={{ paddingBottom: 40 }}
       showsVerticalScrollIndicator={false}
     >
-      <View className="px-4 pt-6 pb-4 border-b border-zinc-800">
-        <Text className="text-xl font-bold text-white">Configurações</Text>
+      <View className="px-4 pt-6 pb-4 border-b border-line">
+        <Text className="text-xl font-bold text-content">Configurações</Text>
       </View>
 
       <View className="mt-2">

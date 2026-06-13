@@ -13,6 +13,7 @@ import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useCategories } from '@/shared/hooks/useCategories'
 import { useSearchEvents } from '../hooks/useSearchEvents'
 import type { FeedEvent } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   onSelect: (event: FeedEvent) => void
@@ -42,11 +43,11 @@ export function MapSearchBar({ onSelect }: Props) {
       />
 
       {open && (
-        <View className="mt-2 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden max-h-80">
+        <View className="mt-2 bg-surface-sunken border border-line rounded-xl overflow-hidden max-h-80">
           {isLoading ? (
-            <ActivityIndicator className="py-5" color="#8b5cf6" />
+            <ActivityIndicator className="py-5" color={colors.brandEmphasis} />
           ) : events.length === 0 ? (
-            <Text className="text-zinc-500 text-sm text-center py-5">
+            <Text className="text-content-subtle text-sm text-center py-5">
               Nenhum evento encontrado.
             </Text>
           ) : (
@@ -55,7 +56,7 @@ export function MapSearchBar({ onSelect }: Props) {
                 <Pressable
                   key={event.id}
                   onPress={() => handleSelect(event)}
-                  className="flex-row items-center gap-3 px-3 py-2.5 border-b border-zinc-900 active:bg-zinc-900"
+                  className="flex-row items-center gap-3 px-3 py-2.5 border-b border-line-subtle active:bg-surface"
                 >
                   <UserAvatar
                     name={`${event.author.name} ${event.author.lastname}`}
@@ -65,7 +66,7 @@ export function MapSearchBar({ onSelect }: Props) {
                   <View className="flex-1">
                     <Text
                       numberOfLines={1}
-                      className="text-zinc-100 font-semibold text-sm"
+                      className="text-content-bright font-semibold text-sm"
                     >
                       {event.title}
                     </Text>
@@ -73,11 +74,11 @@ export function MapSearchBar({ onSelect }: Props) {
                       <Ionicons
                         name="location-outline"
                         size={12}
-                        color="#71717a"
+                        color={colors.contentSubtle}
                       />
                       <Text
                         numberOfLines={1}
-                        className="text-zinc-500 text-xs flex-1"
+                        className="text-content-subtle text-xs flex-1"
                       >
                         {event.address || labelsFor(event.categories)}
                       </Text>

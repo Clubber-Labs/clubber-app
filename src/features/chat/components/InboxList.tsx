@@ -15,6 +15,7 @@ import { ConversationRow } from './ConversationRow'
 import { InboxSkeleton } from './InboxSkeleton'
 import { InboxEmpty } from './InboxEmpty'
 import type { InboxItem } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   myId: string
@@ -51,14 +52,14 @@ export function InboxList({ myId, onOpen, onNew }: Props) {
   if (isError) {
     return (
       <View className="flex-1 items-center justify-center px-8 gap-3">
-        <Text className="text-zinc-400 text-center">
+        <Text className="text-content-muted text-center">
           Não foi possível carregar as conversas.
         </Text>
         <Pressable
           onPress={() => refetch()}
-          className="border border-zinc-700 rounded-full px-5 py-2"
+          className="border border-line-strong rounded-full px-5 py-2"
         >
-          <Text className="text-violet-400 font-medium text-sm">
+          <Text className="text-brand-text font-medium text-sm">
             Tentar de novo
           </Text>
         </Pressable>
@@ -85,12 +86,12 @@ export function InboxList({ myId, onOpen, onNew }: Props) {
           />
         </SwipeableRow>
       )}
-      ItemSeparatorComponent={() => <View className="h-px bg-zinc-900 ml-20" />}
+      ItemSeparatorComponent={() => <View className="h-px bg-surface ml-20" />}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor="#8b5cf6"
+          tintColor={colors.brandEmphasis}
         />
       }
       onEndReached={() => {
@@ -99,7 +100,11 @@ export function InboxList({ myId, onOpen, onNew }: Props) {
       onEndReachedThreshold={0.4}
       ListFooterComponent={
         isFetchingNextPage ? (
-          <ActivityIndicator size="small" color="#8b5cf6" className="py-4" />
+          <ActivityIndicator
+            size="small"
+            color={colors.brandEmphasis}
+            className="py-4"
+          />
         ) : null
       }
     />

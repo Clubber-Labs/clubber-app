@@ -1,5 +1,6 @@
 import { Pressable, ActivityIndicator } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { colors } from '@/shared/theme'
 
 type Props = {
   onPress: () => void
@@ -16,12 +17,16 @@ export function MessageButton({ onPress, loading }: Props) {
       accessibilityRole="button"
       accessibilityLabel="Enviar mensagem"
       accessibilityState={{ disabled: !!loading, busy: !!loading }}
-      className="rounded-lg py-3 px-4 items-center justify-center border border-zinc-700"
+      className="rounded-lg py-3 px-4 items-center justify-center border border-line-strong"
     >
       {loading ? (
-        <ActivityIndicator size="small" color="#e4e4e7" />
+        <ActivityIndicator size="small" color={colors.contentSecondary} />
       ) : (
-        <Ionicons name="chatbubble-outline" size={20} color="#e4e4e7" />
+        <Ionicons
+          name="chatbubble-outline"
+          size={20}
+          color={colors.contentSecondary}
+        />
       )}
     </Pressable>
   )

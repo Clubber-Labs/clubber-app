@@ -7,6 +7,7 @@ import { useMapUiStore } from '@/features/map/store/mapUiStore'
 import { isDefaultMapFilters } from '@/features/map/types'
 import { useUnreadCount } from '@/features/notifications/hooks/useUnreadCount'
 import { UnreadBadge } from './UnreadBadge'
+import { colors } from '@/shared/theme'
 
 type Props = {
   showNotifications?: boolean
@@ -50,14 +51,18 @@ export function GlobalHeader({
   }
 
   return (
-    <View className="bg-black border-b border-zinc-900 px-4 py-3 flex-row items-center justify-center relative">
+    <View className="bg-background border-b border-line-subtle px-4 py-3 flex-row items-center justify-center relative">
       <View className="absolute left-4 top-0 bottom-0 flex-row items-center">
         {canGoBack && (
           <Pressable
             onPress={handleBack}
             className="w-9 h-9 items-center justify-center"
           >
-            <Ionicons name="chevron-back" size={26} color="#f4f4f5" />
+            <Ionicons
+              name="chevron-back"
+              size={26}
+              color={colors.contentBright}
+            />
           </Pressable>
         )}
         {isProfileTab && (
@@ -70,9 +75,9 @@ export function GlobalHeader({
                 : 'Abrir menu'
             }
           >
-            <Ionicons name="menu" size={26} color="#f4f4f5" />
+            <Ionicons name="menu" size={26} color={colors.contentBright} />
             {hasPendingRequests && (
-              <View className="absolute top-1.5 right-1 w-2 h-2 bg-red-500 rounded-full" />
+              <View className="absolute top-1.5 right-1 w-2 h-2 bg-danger rounded-full" />
             )}
           </Pressable>
         )}
@@ -82,19 +87,23 @@ export function GlobalHeader({
             className="w-9 h-9 items-center justify-center"
             accessibilityLabel="Filtrar eventos"
           >
-            <Ionicons name="options-outline" size={24} color="#f4f4f5" />
+            <Ionicons
+              name="options-outline"
+              size={24}
+              color={colors.contentBright}
+            />
             {hasMapFilters && (
-              <View className="absolute top-1.5 right-1 w-2 h-2 bg-violet-500 rounded-full" />
+              <View className="absolute top-1.5 right-1 w-2 h-2 bg-brand-emphasis rounded-full" />
             )}
           </Pressable>
         )}
       </View>
 
       <View className="flex-row items-center gap-2">
-        <View className="w-8 h-8 rounded-full bg-violet-600 items-center justify-center">
-          <Text className="text-white font-bold text-sm">C</Text>
+        <View className="w-8 h-8 rounded-full bg-brand items-center justify-center">
+          <Text className="text-content font-bold text-sm">C</Text>
         </View>
-        <Text className="text-xl font-bold text-white">ConnectAI</Text>
+        <Text className="text-xl font-bold text-content">ConnectAI</Text>
       </View>
 
       <View className="absolute right-4 top-0 bottom-0 flex-row items-center gap-2">
@@ -108,7 +117,11 @@ export function GlobalHeader({
                 : 'Notificações'
             }
           >
-            <Ionicons name="notifications-outline" size={24} color="#e5e7eb" />
+            <Ionicons
+              name="notifications-outline"
+              size={24}
+              color={colors.contentSecondary}
+            />
             {unreadNotifications > 0 && (
               <View className="absolute -top-0.5 -right-1.5">
                 <UnreadBadge count={unreadNotifications} />

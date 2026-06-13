@@ -3,6 +3,7 @@ import { Pressable, Image, View, ActivityIndicator } from 'react-native'
 import { mediaBoxSize } from '../utils/mediaBox'
 import { LONG_PRESS_DELAY_MS } from '../utils/longPress'
 import type { Attachment } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   attachment: Attachment
@@ -39,13 +40,13 @@ export function ImageMessage({
       <Image
         source={{ uri: attachment.url }}
         style={{ width, height }}
-        className="bg-zinc-700"
+        className="bg-surface-high"
         resizeMode="cover"
         onLoad={() => setLoaded(true)}
       />
       {(!loaded || sending) && (
-        <View className="absolute inset-0 items-center justify-center bg-black/25">
-          <ActivityIndicator color="#ffffff" />
+        <View className="absolute inset-0 items-center justify-center bg-background/25">
+          <ActivityIndicator color={colors.content} />
         </View>
       )}
     </Pressable>

@@ -6,8 +6,8 @@ type Props = {
 
 export function ProfileEmpty({ message }: Props) {
   return (
-    <View className="flex-1 bg-black items-center justify-center px-6">
-      <Text className="text-zinc-400 text-center">{message}</Text>
+    <View className="flex-1 bg-background items-center justify-center px-6">
+      <Text className="text-content-muted text-center">{message}</Text>
     </View>
   )
 }

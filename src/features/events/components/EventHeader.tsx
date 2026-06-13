@@ -6,6 +6,7 @@ import { EventStatusBadge } from './EventStatusBadge'
 import { EventImagesCarousel } from './EventImagesCarousel'
 import { AddressLink } from '@/shared/components/AddressLink'
 import type { EventDetail } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   event: EventDetail
@@ -28,19 +29,19 @@ export function EventHeader({ event }: Props) {
             <CategoryBadge key={category} value={category} />
           ))}
           {!event.isPublic && (
-            <View className="bg-zinc-800 px-2 py-1 rounded-full">
-              <Text className="text-zinc-300 text-xs font-semibold">
+            <View className="bg-surface-elevated px-2 py-1 rounded-full">
+              <Text className="text-content-tertiary text-xs font-semibold">
                 Privado
               </Text>
             </View>
           )}
         </View>
 
-        <Text className="text-2xl font-bold text-white">{event.title}</Text>
+        <Text className="text-2xl font-bold text-content">{event.title}</Text>
 
         <View className="flex-row items-center gap-2">
-          <Ionicons name="time-outline" size={16} color="#a1a1aa" />
-          <Text className="text-zinc-300 text-sm">
+          <Ionicons name="time-outline" size={16} color={colors.contentMuted} />
+          <Text className="text-content-tertiary text-sm">
             {formatEventDate(event.date)}
           </Text>
         </View>
@@ -52,22 +53,34 @@ export function EventHeader({ event }: Props) {
             longitude={event.longitude}
             className="flex-row items-center gap-2"
           >
-            <Ionicons name="location-outline" size={16} color="#a1a1aa" />
-            <Text className="text-zinc-300 text-sm flex-1">
+            <Ionicons
+              name="location-outline"
+              size={16}
+              color={colors.contentMuted}
+            />
+            <Text className="text-content-tertiary text-sm flex-1">
               {event.address}
             </Text>
           </AddressLink>
         )}
 
         <View className="flex-row items-center gap-2">
-          <Ionicons name="person-outline" size={16} color="#a1a1aa" />
-          <Text className="text-zinc-300 text-sm">
+          <Ionicons
+            name="person-outline"
+            size={16}
+            color={colors.contentMuted}
+          />
+          <Text className="text-content-tertiary text-sm">
             por {event.author.name} {event.author.lastname}
           </Text>
         </View>
         <View className="flex-row items-center gap-2">
-          <Ionicons name="people-outline" size={16} color="#a1a1aa" />
-          <Text className="text-zinc-300 text-sm">
+          <Ionicons
+            name="people-outline"
+            size={16}
+            color={colors.contentMuted}
+          />
+          <Text className="text-content-tertiary text-sm">
             {event._count.attendances} presença
             {event._count.attendances !== 1 && 's'}
           </Text>

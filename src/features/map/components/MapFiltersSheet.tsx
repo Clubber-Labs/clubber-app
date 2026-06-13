@@ -4,6 +4,7 @@ import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import { EventStatusFilter } from '@/features/events/components/EventStatusFilter'
 import { useMapUiStore } from '../store/mapUiStore'
 import { isDefaultMapFilters } from '../types'
+import { colors } from '@/shared/theme'
 
 // Menu de filtros do mapa (aberto pelo botão no GlobalHeader). Aplica ao vivo na
 // store — o mapa reage na hora. Escala somando seções aqui + campo em MapFilters.
@@ -21,21 +22,21 @@ export function MapFiltersSheet() {
         showsVerticalScrollIndicator={false}
       >
         <View className="flex-row items-center justify-between py-2">
-          <Text className="text-white text-lg font-bold">Filtros</Text>
+          <Text className="text-content text-lg font-bold">Filtros</Text>
           {!isDefaultMapFilters(filters) && (
             <Pressable
               onPress={reset}
               hitSlop={8}
               accessibilityLabel="Limpar filtros"
             >
-              <Text className="text-violet-400 text-sm font-medium">
+              <Text className="text-brand-text text-sm font-medium">
                 Limpar
               </Text>
             </Pressable>
           )}
         </View>
 
-        <Text className="text-zinc-400 text-sm font-semibold mt-3 mb-2">
+        <Text className="text-content-muted text-sm font-semibold mt-3 mb-2">
           Status
         </Text>
         <EventStatusFilter
@@ -43,7 +44,7 @@ export function MapFiltersSheet() {
           onChange={statuses => setFilters({ ...filters, statuses })}
         />
 
-        <Text className="text-zinc-400 text-sm font-semibold mt-5 mb-2">
+        <Text className="text-content-muted text-sm font-semibold mt-5 mb-2">
           Categorias
         </Text>
         <CategoryMultiSelect
@@ -53,10 +54,10 @@ export function MapFiltersSheet() {
 
         <View className="flex-row items-center justify-between mt-6 mb-1">
           <View className="flex-1 pr-3">
-            <Text className="text-white text-base font-medium">
+            <Text className="text-content text-base font-medium">
               Apenas amigos
             </Text>
-            <Text className="text-zinc-500 text-xs">
+            <Text className="text-content-subtle text-xs">
               Eventos de quem você segue ou com presença de amigos
             </Text>
           </View>
@@ -65,8 +66,8 @@ export function MapFiltersSheet() {
             onValueChange={friendsOnly =>
               setFilters({ ...filters, friendsOnly })
             }
-            trackColor={{ true: '#7c3aed', false: '#3f3f46' }}
-            thumbColor="#ffffff"
+            trackColor={{ true: colors.brand, false: colors.lineStrong }}
+            thumbColor={colors.content}
           />
         </View>
       </ScrollView>

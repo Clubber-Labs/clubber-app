@@ -13,7 +13,7 @@ export function PresenceDot({ online, size = 12 }: Props) {
   return (
     <View
       style={{ width: size, height: size, borderRadius: size / 2 }}
-      className="bg-green-500 border-2 border-black"
+      className="bg-success border-2 border-background"
     />
   )
 }

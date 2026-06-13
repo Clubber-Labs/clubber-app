@@ -2,6 +2,7 @@ import { View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import type { UserMini } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   users: UserMini[]
@@ -17,12 +18,12 @@ export function ConversationAvatar({ users, type, size = 52 }: Props) {
       return (
         <View
           style={{ width: size, height: size, borderRadius: size / 2 }}
-          className="bg-zinc-800 items-center justify-center"
+          className="bg-surface-elevated items-center justify-center"
         >
           <Ionicons
             name="people"
             size={Math.round(size * 0.5)}
-            color="#a1a1aa"
+            color={colors.contentMuted}
           />
         </View>
       )
@@ -38,7 +39,7 @@ export function ConversationAvatar({ users, type, size = 52 }: Props) {
               position: 'absolute',
               ...(i === 0 ? { top: 0, left: 0 } : { bottom: 0, right: 0 }),
             }}
-            className="border-2 border-black rounded-full overflow-hidden"
+            className="border-2 border-background rounded-full overflow-hidden"
           >
             <UserAvatar
               name={user.name}
@@ -56,7 +57,7 @@ export function ConversationAvatar({ users, type, size = 52 }: Props) {
     return (
       <View
         style={{ width: size, height: size, borderRadius: size / 2 }}
-        className="bg-zinc-800"
+        className="bg-surface-elevated"
       />
     )
   }

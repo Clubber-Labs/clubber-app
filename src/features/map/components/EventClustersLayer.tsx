@@ -1,6 +1,7 @@
 import { forwardRef } from 'react'
 import Mapbox from '@rnmapbox/maps'
 import { CLUSTER_MAX_ZOOM, CLUSTER_RADIUS, VIOLET_600 } from '../constants'
+import { colors } from '@/shared/theme'
 
 type Props = {
   shape: GeoJSON.FeatureCollection
@@ -28,10 +29,10 @@ export const EventClustersLayer = forwardRef<Mapbox.ShapeSource, Props>(
           style={{
             textField: ['get', 'point_count_abbreviated'],
             textSize: 13,
-            textColor: '#ffffff',
+            textColor: colors.content,
             // Halo preto opaco e grosso + número sempre opaco → contraste em
             // qualquer fundo (o pico do heatmap é amarelo bem claro).
-            textHaloColor: '#000000',
+            textHaloColor: colors.background,
             textHaloWidth: 2,
             textHaloBlur: 0.4,
             textOpacity: 1,
@@ -48,7 +49,7 @@ export const EventClustersLayer = forwardRef<Mapbox.ShapeSource, Props>(
           filter={['has', 'point_count']}
           style={{
             circleColor: VIOLET_600,
-            circleStrokeColor: '#ffffff',
+            circleStrokeColor: colors.content,
             circleStrokeWidth: 2,
             circleOpacity: opacity,
             circleStrokeOpacity: opacity,
@@ -61,7 +62,7 @@ export const EventClustersLayer = forwardRef<Mapbox.ShapeSource, Props>(
           filter={['!', ['has', 'point_count']]}
           style={{
             circleColor: VIOLET_600,
-            circleStrokeColor: '#ffffff',
+            circleStrokeColor: colors.content,
             circleStrokeWidth: 2,
             circleOpacity: opacity,
             circleStrokeOpacity: opacity,

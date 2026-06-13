@@ -1,6 +1,7 @@
 import { Pressable, Text, ActivityIndicator } from 'react-native'
 import { useUnfollowFromList } from '../hooks/useUnfollowFromList'
 import { useConfirm } from '@/shared/lib/confirm'
+import { colors } from '@/shared/theme'
 
 type Props = {
   viewerId: string
@@ -30,13 +31,15 @@ export function UnfollowListButton({
     <Pressable
       onPress={handlePress}
       disabled={unfollow.isPending}
-      className="px-3 py-1.5 rounded-lg border border-zinc-700"
+      className="px-3 py-1.5 rounded-lg border border-line-strong"
       accessibilityLabel={`Deixar de seguir @${targetUsername}`}
     >
       {unfollow.isPending ? (
-        <ActivityIndicator size="small" color="#a1a1aa" />
+        <ActivityIndicator size="small" color={colors.contentMuted} />
       ) : (
-        <Text className="text-zinc-200 text-xs font-semibold">Seguindo</Text>
+        <Text className="text-content-secondary text-xs font-semibold">
+          Seguindo
+        </Text>
       )}
     </Pressable>
   )

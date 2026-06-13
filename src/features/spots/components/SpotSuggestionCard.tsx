@@ -2,6 +2,7 @@ import { View, Text, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { CategoryBadge } from '@/shared/components/CategoryBadge'
 import type { SpotSuggestion } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   suggestion: SpotSuggestion
@@ -18,15 +19,15 @@ export function SpotSuggestionCard({ suggestion, rank, onChoose }: Props) {
       onPress={onChoose}
       accessibilityRole="button"
       accessibilityLabel={`Escolher ${suggestion.name}`}
-      className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 gap-2"
+      className="bg-surface border border-line rounded-2xl p-4 gap-2"
     >
       <View className="flex-row items-center justify-between gap-2">
         <View className="flex-row items-center gap-2 flex-1">
-          <View className="bg-violet-600 rounded-full w-5 h-5 items-center justify-center">
-            <Text className="text-white text-[10px] font-bold">{rank}</Text>
+          <View className="bg-brand rounded-full w-5 h-5 items-center justify-center">
+            <Text className="text-content text-[10px] font-bold">{rank}</Text>
           </View>
           <Text
-            className="text-zinc-300 text-sm font-medium flex-1"
+            className="text-content-tertiary text-sm font-medium flex-1"
             numberOfLines={1}
           >
             {suggestion.name}
@@ -35,27 +36,27 @@ export function SpotSuggestionCard({ suggestion, rank, onChoose }: Props) {
         <CategoryBadge value={suggestion.category} />
       </View>
 
-      <Text className="text-white text-base font-bold">
+      <Text className="text-content text-base font-bold">
         {suggestion.suggestedTitle}
       </Text>
 
       {suggestion.suggestedDescription && (
-        <Text className="text-zinc-400 text-sm" numberOfLines={2}>
+        <Text className="text-content-muted text-sm" numberOfLines={2}>
           {suggestion.suggestedDescription}
         </Text>
       )}
 
       {suggestion.address && (
-        <Text className="text-zinc-500 text-xs" numberOfLines={1}>
+        <Text className="text-content-subtle text-xs" numberOfLines={1}>
           {suggestion.address}
         </Text>
       )}
 
       <View className="flex-row items-center gap-1 mt-1">
-        <Text className="text-violet-400 text-sm font-semibold">
+        <Text className="text-brand-text text-sm font-semibold">
           Escolher esse
         </Text>
-        <Ionicons name="chevron-forward" size={14} color="#a78bfa" />
+        <Ionicons name="chevron-forward" size={14} color={colors.brandText} />
       </View>
     </Pressable>
   )

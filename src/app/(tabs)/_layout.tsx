@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import type { ComponentProps } from 'react'
 import { useInbox } from '@/features/chat/hooks/useInbox'
+import { colors } from '@/shared/theme'
 
 type IconName = ComponentProps<typeof Ionicons>['name']
 
@@ -49,11 +50,11 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#8b5cf6',
-        tabBarInactiveTintColor: '#ffffff',
+        tabBarActiveTintColor: colors.brandEmphasis,
+        tabBarInactiveTintColor: colors.content,
         tabBarStyle: {
-          backgroundColor: '#000000',
-          borderTopColor: '#27272a',
+          backgroundColor: colors.background,
+          borderTopColor: colors.line,
           borderTopWidth: 1,
           paddingBottom: 8,
           paddingTop: 8,
@@ -65,7 +66,7 @@ export default function TabsLayout() {
           fontWeight: '400',
         },
         tabBarBadgeStyle: {
-          backgroundColor: '#7c3aed',
+          backgroundColor: colors.brand,
           fontSize: 10,
         },
       }}

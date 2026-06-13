@@ -46,10 +46,12 @@ export function DatePicker({
     <>
       <Pressable
         onPress={() => setOpen(true)}
-        className={`border ${hasError ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5`}
+        className={`border ${hasError ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5`}
       >
         <Text
-          className={value ? 'text-base text-white' : 'text-base text-zinc-500'}
+          className={
+            value ? 'text-base text-content' : 'text-base text-content-subtle'
+          }
         >
           {value ? formatValue(value, mode) : placeholder}
         </Text>
@@ -57,11 +59,11 @@ export function DatePicker({
 
       {Platform.OS === 'ios' ? (
         <Modal visible={open} transparent animationType="slide">
-          <View className="flex-1 justify-end bg-black/40">
-            <View className="bg-zinc-900 rounded-t-2xl pb-8">
+          <View className="flex-1 justify-end bg-background/40">
+            <View className="bg-surface rounded-t-2xl pb-8">
               <View className="flex-row justify-end px-4 pt-4 pb-2">
                 <Pressable onPress={handleClose}>
-                  <Text className="text-violet-400 font-semibold text-base">
+                  <Text className="text-brand-text font-semibold text-base">
                     Confirmar
                   </Text>
                 </Pressable>

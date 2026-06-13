@@ -1,4 +1,5 @@
 import { View } from 'react-native'
+import { colors } from '@/shared/theme'
 
 type Props = {
   // Alturas das barras, 0..255.
@@ -21,7 +22,7 @@ export function Waveform({
   barWidth = 3,
   gap = 2,
   progress,
-  color = '#a1a1aa',
+  color = colors.contentMuted,
   activeColor,
   minBarHeight = 3,
 }: Props) {

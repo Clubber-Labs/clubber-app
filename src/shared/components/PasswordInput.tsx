@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { View, TextInput, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import type { ComponentProps } from 'react'
+import { colors } from '@/shared/theme'
 
 type Props = {
   value: string
@@ -28,12 +29,12 @@ export function PasswordInput({
 
   return (
     <View
-      className={`flex-row items-center border ${error ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl pl-4 pr-3`}
+      className={`flex-row items-center border ${error ? 'border-content' : 'border-line'} bg-surface rounded-xl pl-4 pr-3`}
     >
       <TextInput
-        className="flex-1 py-3.5 text-base text-white"
+        className="flex-1 py-3.5 text-base text-content"
         placeholder={placeholder}
-        placeholderTextColor="#71717a"
+        placeholderTextColor={colors.contentSubtle}
         onChangeText={onChangeText}
         value={value}
         secureTextEntry={!visible}
@@ -52,7 +53,7 @@ export function PasswordInput({
         <Ionicons
           name={visible ? 'eye-off-outline' : 'eye-outline'}
           size={20}
-          color="#71717a"
+          color={colors.contentSubtle}
         />
       </Pressable>
     </View>

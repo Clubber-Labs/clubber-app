@@ -9,6 +9,7 @@ import {
 import { Ionicons } from '@expo/vector-icons'
 import { useAddressSearch } from '../hooks/useAddressSearch'
 import type { GeocodingResult } from '../services/geocodingService'
+import { colors } from '@/shared/theme'
 
 type Props = {
   value: string
@@ -46,9 +47,9 @@ export function AddressAutocomplete({
     <View className="gap-1">
       <View className="relative">
         <TextInput
-          className={`border ${hasError ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 pr-10 text-base text-white`}
+          className={`border ${hasError ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 pr-10 text-base text-content`}
           placeholder="Rua, número, bairro"
-          placeholderTextColor="#71717a"
+          placeholderTextColor={colors.contentSubtle}
           value={value}
           onChangeText={handleChange}
           onFocus={() => setFocused(true)}
@@ -57,33 +58,36 @@ export function AddressAutocomplete({
         />
         <View className="absolute right-3 top-0 bottom-0 justify-center">
           {isFetching ? (
-            <ActivityIndicator size="small" color="#8b5cf6" />
+            <ActivityIndicator size="small" color={colors.brandEmphasis} />
           ) : (
-            <Ionicons name="search" size={18} color="#71717a" />
+            <Ionicons name="search" size={18} color={colors.contentSubtle} />
           )}
         </View>
       </View>
 
       {showSuggestions && (
-        <View className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
+        <View className="bg-surface border border-line rounded-xl overflow-hidden">
           {results.map((result, index) => (
             <Pressable
               key={result.id}
               onPress={() => handleSelect(result)}
-              className={`px-4 py-3 ${index > 0 ? 'border-t border-zinc-800' : ''}`}
+              className={`px-4 py-3 ${index > 0 ? 'border-t border-line' : ''}`}
             >
               <View className="flex-row items-start gap-2">
                 <Ionicons
                   name={result.isPoi ? 'business-outline' : 'location-outline'}
                   size={16}
-                  color={result.isPoi ? '#a78bfa' : '#a1a1aa'}
+                  color={result.isPoi ? colors.brandText : colors.contentMuted}
                   style={{ marginTop: 2 }}
                 />
                 <View className="flex-1">
-                  <Text className="text-sm text-white font-medium">
+                  <Text className="text-sm text-content font-medium">
                     {result.shortName}
                   </Text>
-                  <Text className="text-xs text-zinc-400" numberOfLines={1}>
+                  <Text
+                    className="text-xs text-content-muted"
+                    numberOfLines={1}
+                  >
                     {result.placeName}
                   </Text>
                 </View>

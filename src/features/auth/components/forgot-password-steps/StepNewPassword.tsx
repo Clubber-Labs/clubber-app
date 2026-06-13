@@ -48,15 +48,19 @@ export function StepNewPassword({
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-white">Criar nova senha</Text>
-        <Text className="text-sm text-zinc-400">
+        <Text className="text-2xl font-bold text-content">
+          Criar nova senha
+        </Text>
+        <Text className="text-sm text-content-muted">
           Use 8+ caracteres com letras e números.
         </Text>
       </View>
 
       <View className="gap-4">
         <View className="gap-2">
-          <Text className="text-sm font-medium text-zinc-300">Nova senha</Text>
+          <Text className="text-sm font-medium text-content-tertiary">
+            Nova senha
+          </Text>
           <Controller
             control={control}
             name="newPassword"
@@ -73,7 +77,7 @@ export function StepNewPassword({
             )}
           />
           {errors.newPassword && (
-            <Text className="text-white text-xs">
+            <Text className="text-content text-xs">
               {errors.newPassword.message}
             </Text>
           )}
@@ -81,7 +85,7 @@ export function StepNewPassword({
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">
+          <Text className="text-sm font-medium text-content-tertiary">
             Confirmar senha
           </Text>
           <Controller
@@ -99,7 +103,7 @@ export function StepNewPassword({
             )}
           />
           {errors.confirmPassword && (
-            <Text className="text-white text-xs">
+            <Text className="text-content text-xs">
               {errors.confirmPassword.message}
             </Text>
           )}
@@ -109,7 +113,7 @@ export function StepNewPassword({
       <FormError message={resetError} />
 
       {showResendHint && (
-        <Text className="text-zinc-400 text-xs text-center">
+        <Text className="text-content-muted text-xs text-center">
           Toque em “Voltar” para pedir um novo código.
         </Text>
       )}

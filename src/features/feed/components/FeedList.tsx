@@ -14,6 +14,7 @@ import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import { useUserLocation } from '@/shared/hooks/useUserLocation'
 import { flattenInfiniteList } from '@/shared/utils/infiniteList'
 import type { EventStatus, FeedEvent } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 export function FeedList() {
   const router = useRouter()
@@ -53,28 +54,28 @@ export function FeedList() {
 
   return (
     <View className="flex-1">
-      <View className="pt-3 pb-2 border-b border-zinc-900">
+      <View className="pt-3 pb-2 border-b border-line-subtle">
         <EventStatusFilter value={statusFilter} onChange={setStatusFilter} />
       </View>
 
       {!locationResolved || isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#8b5cf6" />
+          <ActivityIndicator size="large" color={colors.brandEmphasis} />
         </View>
       ) : isError ? (
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-zinc-400 text-center">
+          <Text className="text-content-muted text-center">
             Erro ao carregar o feed.
           </Text>
         </View>
       ) : events.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">
-          <Text className="text-white font-semibold text-base mb-1">
+          <Text className="text-content font-semibold text-base mb-1">
             {filtering
               ? 'Nenhum evento para esses filtros'
               : 'Nada por aqui ainda'}
           </Text>
-          <Text className="text-zinc-400 text-center text-sm">
+          <Text className="text-content-muted text-center text-sm">
             {filtering
               ? 'Tente outros filtros ou limpe a seleção.'
               : 'Siga pessoas para ver os eventos delas no seu feed.'}
@@ -95,7 +96,7 @@ export function FeedList() {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor="#8b5cf6"
+              tintColor={colors.brandEmphasis}
             />
           }
           onEndReached={() => {
@@ -106,7 +107,7 @@ export function FeedList() {
             isFetchingNextPage ? (
               <ActivityIndicator
                 size="small"
-                color="#8b5cf6"
+                color={colors.brandEmphasis}
                 className="py-4"
               />
             ) : null

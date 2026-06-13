@@ -11,6 +11,7 @@ import { CreatePostInput } from './CreatePostInput'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import type { AttendanceType, EventPost } from '@/shared/types'
 import type { ReactElement } from 'react'
+import { colors } from '@/shared/theme'
 
 type Props = {
   eventId: string
@@ -57,7 +58,7 @@ export function EventPostsFeed({
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor="#8b5cf6"
+          tintColor={colors.brandEmphasis}
         />
       }
       onEndReached={() => {
@@ -66,10 +67,14 @@ export function EventPostsFeed({
       onEndReachedThreshold={0.3}
       ListEmptyComponent={
         isLoading ? (
-          <ActivityIndicator size="small" color="#8b5cf6" className="py-8" />
+          <ActivityIndicator
+            size="small"
+            color={colors.brandEmphasis}
+            className="py-8"
+          />
         ) : (
           <View className="py-10 items-center">
-            <Text className="text-center text-zinc-400 text-sm">
+            <Text className="text-center text-content-muted text-sm">
               Nenhum post ainda. Seja o primeiro!
             </Text>
           </View>
@@ -77,7 +82,11 @@ export function EventPostsFeed({
       }
       ListFooterComponent={
         isFetchingNextPage ? (
-          <ActivityIndicator size="small" color="#8b5cf6" className="py-3" />
+          <ActivityIndicator
+            size="small"
+            color={colors.brandEmphasis}
+            className="py-3"
+          />
         ) : null
       }
     />

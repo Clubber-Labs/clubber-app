@@ -8,6 +8,7 @@ import type { useSuggestSpots } from '../hooks/useSuggestSpots'
 import { suggestionsErrorMessage } from '../utils/suggestionsError'
 import { SpotSuggestionCard } from './SpotSuggestionCard'
 import type { SpotSuggestion } from '../types'
+import { colors } from '@/shared/theme'
 
 const LOCATION_ISSUE_MESSAGES = {
   denied:
@@ -42,24 +43,24 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
 
   const header = (
     <View className="gap-3 pb-4">
-      <Text className="text-zinc-400 text-sm">
+      <Text className="text-content-muted text-sm">
         A IA sugere rolês em lugares perto de você, com base nas suas
         preferências. Escolha um, publique e chame a galera pro grupo.
       </Text>
 
       {!hasLocationConsent ? (
-        <View className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 gap-3">
+        <View className="bg-surface border border-line rounded-2xl p-4 gap-3">
           <View className="flex-row items-center gap-2">
             <Ionicons
               name="shield-checkmark-outline"
               size={18}
-              color="#a78bfa"
+              color={colors.brandText}
             />
-            <Text className="text-zinc-200 text-sm font-semibold flex-1">
+            <Text className="text-content-secondary text-sm font-semibold flex-1">
               Precisamos da sua localização
             </Text>
           </View>
-          <Text className="text-zinc-400 text-sm">
+          <Text className="text-content-muted text-sm">
             Para sugerir e mostrar rolês perto de você, ative o consentimento de
             localização precisa. Ela é usada só neste momento — nada de
             rastreamento em segundo plano.
@@ -87,7 +88,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
             disabled={isGenerating || remaining === 0}
           />
           {remaining !== undefined && (
-            <Text className="text-zinc-500 text-xs text-center">
+            <Text className="text-content-subtle text-xs text-center">
               {remaining === 0
                 ? 'Você usou todas as gerações de hoje.'
                 : `${remaining} ${remaining === 1 ? 'geração restante' : 'gerações restantes'} hoje`}
@@ -98,7 +99,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
               <FormError message={LOCATION_ISSUE_MESSAGES[locationIssue]} />
               {locationIssue === 'denied' && (
                 <Pressable onPress={() => Linking.openSettings()}>
-                  <Text className="text-violet-400 text-sm font-semibold text-center">
+                  <Text className="text-brand-text text-sm font-semibold text-center">
                     Abrir ajustes
                   </Text>
                 </Pressable>
@@ -110,7 +111,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
               <FormError message={suggestionsErrorMessage(generateError)} />
               {isValidationError(generateError) && (
                 <Pressable onPress={() => router.push('/profile/edit')}>
-                  <Text className="text-violet-400 text-sm font-semibold text-center">
+                  <Text className="text-brand-text text-sm font-semibold text-center">
                     Ajustar preferências
                   </Text>
                 </Pressable>
@@ -123,18 +124,18 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
   )
 
   return (
-    <View className="absolute bottom-0 left-0 right-0 h-[55%] bg-zinc-950 rounded-t-3xl border-t border-zinc-800">
+    <View className="absolute bottom-0 left-0 right-0 h-[55%] bg-surface-sunken rounded-t-3xl border-t border-line">
       <View className="items-center pt-2 pb-1">
-        <View className="w-10 h-1 bg-zinc-700 rounded-full" />
+        <View className="w-10 h-1 bg-surface-high rounded-full" />
       </View>
       <View className="flex-row items-center justify-between px-5 pb-2">
-        <Text className="text-white text-lg font-bold">Bora pra onde?</Text>
+        <Text className="text-content text-lg font-bold">Bora pra onde?</Text>
         <Pressable
           onPress={onClose}
           className="w-8 h-8 items-center justify-center"
           accessibilityLabel="Fechar sugestões"
         >
-          <Ionicons name="close" size={22} color="#a1a1aa" />
+          <Ionicons name="close" size={22} color={colors.contentMuted} />
         </Pressable>
       </View>
       <FlatList

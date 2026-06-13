@@ -27,13 +27,11 @@ export function EventCategoriesFilter({ categories, active, onChange }: Props) {
             key={category}
             onPress={() => onChange(category)}
             className={`px-4 py-2 rounded-full border ${
-              isActive
-                ? 'bg-violet-600 border-violet-600'
-                : 'bg-zinc-900/90 border-zinc-800'
+              isActive ? 'bg-brand border-brand' : 'bg-surface/90 border-line'
             }`}
           >
             <Text
-              className={`text-xs font-semibold ${isActive ? 'text-white' : 'text-zinc-200'}`}
+              className={`text-xs font-semibold ${isActive ? 'text-content' : 'text-content-secondary'}`}
             >
               {label}
             </Text>

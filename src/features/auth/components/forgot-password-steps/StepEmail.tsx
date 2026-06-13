@@ -7,6 +7,7 @@ import {
 } from '../../schemas/forgotPasswordSchema'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
+import { colors } from '@/shared/theme'
 
 type Props = {
   defaultEmail?: string
@@ -33,22 +34,24 @@ export function StepEmail({
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-white">Recuperar senha</Text>
-        <Text className="text-sm text-zinc-400">
+        <Text className="text-2xl font-bold text-content">Recuperar senha</Text>
+        <Text className="text-sm text-content-muted">
           Informe o e-mail da sua conta e enviaremos um código.
         </Text>
       </View>
 
       <View className="gap-1">
-        <Text className="text-sm font-medium text-zinc-300">E-mail</Text>
+        <Text className="text-sm font-medium text-content-tertiary">
+          E-mail
+        </Text>
         <Controller
           control={control}
           name="email"
           render={({ field: { onChange, value } }) => (
             <TextInput
-              className={`border ${errors.email ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+              className={`border ${errors.email ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
               placeholder="joao@email.com"
-              placeholderTextColor="#71717a"
+              placeholderTextColor={colors.contentSubtle}
               onChangeText={onChange}
               value={value}
               autoCapitalize="none"
@@ -60,7 +63,7 @@ export function StepEmail({
           )}
         />
         {errors.email && (
-          <Text className="text-white text-xs">{errors.email.message}</Text>
+          <Text className="text-content text-xs">{errors.email.message}</Text>
         )}
       </View>
 

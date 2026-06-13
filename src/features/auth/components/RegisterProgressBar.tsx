@@ -9,12 +9,12 @@ type Props = {
 export function RegisterProgressBar({ current, total, progressWidth }: Props) {
   return (
     <View className="gap-2">
-      <Text className="text-xs text-zinc-500 text-right">
+      <Text className="text-xs text-content-subtle text-right">
         {current + 1} de {total}
       </Text>
-      <View className="h-1 bg-zinc-800 rounded-full overflow-hidden">
+      <View className="h-1 bg-surface-elevated rounded-full overflow-hidden">
         <Animated.View
-          className="h-full bg-violet-600 rounded-full"
+          className="h-full bg-brand rounded-full"
           style={{ width: progressWidth }}
         />
       </View>

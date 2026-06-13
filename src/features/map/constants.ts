@@ -1,3 +1,4 @@
+import { colors } from '@/shared/theme'
 export const MAP_STYLE_URL =
   'mapbox://styles/bonatoneto/cmoz3l4fa003601qrd130bk09'
 export const BRAZIL_CENTER: [number, number] = [-47.9292, -15.7801]
@@ -10,10 +11,12 @@ export const MARKERS_ZOOM_THRESHOLD = 14
 export const CLUSTER_MAX_ZOOM = 14
 export const CLUSTER_RADIUS = 50
 export const ALL_CATEGORIES = 'Todas'
-export const VIOLET_500 = '#8b5cf6'
-export const VIOLET_600 = '#7c3aed'
-export const VIOLET_400 = '#a78bfa'
-// Azul padrão do "blue dot" de localização (iOS system blue).
+export const VIOLET_500 = colors.brandEmphasis
+export const VIOLET_600 = colors.brand
+export const VIOLET_400 = colors.brandText
+// Azul padrão do "blue dot" de localização (iOS system blue) — cor de plataforma,
+// não um token do design system.
+// eslint-disable-next-line no-restricted-syntax
 export const LOCATION_BLUE = '#007AFF'
 
 // Debounce da captura de bbox ao arrastar o mapa (carga por viewport).

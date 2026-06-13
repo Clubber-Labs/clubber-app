@@ -27,7 +27,7 @@ export default function CreateEventScreen() {
   }
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-background">
       <EventForm
         onSubmit={handleSubmit}
         submitting={create.isPending}

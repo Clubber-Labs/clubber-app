@@ -7,15 +7,15 @@ export default function AccountControlScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-black"
+      className="flex-1 bg-background"
       contentContainerStyle={{ paddingBottom: 40 }}
       showsVerticalScrollIndicator={false}
     >
-      <View className="px-4 pt-6 pb-4 border-b border-zinc-800">
-        <Text className="text-xl font-bold text-white">
+      <View className="px-4 pt-6 pb-4 border-b border-line">
+        <Text className="text-xl font-bold text-content">
           Propriedade e controle da conta
         </Text>
-        <Text className="text-zinc-400 text-sm mt-1 leading-5">
+        <Text className="text-content-muted text-sm mt-1 leading-5">
           Desative temporariamente ou exclua sua conta de forma permanente.
         </Text>
       </View>

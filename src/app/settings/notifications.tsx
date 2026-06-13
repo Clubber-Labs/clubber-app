@@ -45,18 +45,18 @@ export default function NotificationSettingsScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-black"
+      className="flex-1 bg-background"
       contentContainerStyle={{ paddingBottom: 40 }}
       showsVerticalScrollIndicator={false}
     >
-      <View className="px-4 pt-6 pb-4 border-b border-zinc-800">
-        <Text className="text-xl font-bold text-white">Notificações</Text>
-        <Text className="text-xs text-zinc-500 mt-1">
+      <View className="px-4 pt-6 pb-4 border-b border-line">
+        <Text className="text-xl font-bold text-content">Notificações</Text>
+        <Text className="text-xs text-content-subtle mt-1">
           Tudo é opcional e desligado por padrão. Você pode mudar quando quiser.
         </Text>
       </View>
 
-      <View className="mx-4 mt-4 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden">
+      <View className="mx-4 mt-4 bg-surface-sunken border border-line rounded-xl overflow-hidden">
         <ConsentToggleRow
           label="Notificações push"
           description="Enviar notificações push neste aparelho sobre convites, atividade da sua rede e eventos perto de você."
@@ -78,22 +78,22 @@ export default function NotificationSettingsScreen() {
         )}
       </View>
 
-      <View className="mx-4 mt-4 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-4">
+      <View className="mx-4 mt-4 bg-surface-sunken border border-line rounded-xl px-4 py-4">
         <RadiusSlider
           value={notifyRadiusKm}
           onCommit={km => void saveRadius(km)}
           disabled={!locationConsent}
         />
-        <Text className="text-xs text-zinc-500 mt-1">
+        <Text className="text-xs text-content-subtle mt-1">
           Distância máxima de um evento novo para você ser avisado.
         </Text>
       </View>
 
-      <View className="mx-4 mt-4 bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-4 gap-2">
-        <Text className="text-sm font-semibold text-white">
+      <View className="mx-4 mt-4 bg-surface-sunken border border-line rounded-xl px-4 py-4 gap-2">
+        <Text className="text-sm font-semibold text-content">
           Categorias preferidas
         </Text>
-        <Text className="text-xs text-zinc-500">
+        <Text className="text-xs text-content-subtle">
           Avisos de eventos próximos só chegam para categorias marcadas aqui —
           sem nenhuma selecionada, você não recebe avisos de proximidade.
         </Text>
@@ -111,7 +111,7 @@ export default function NotificationSettingsScreen() {
           onPress={() => router.push('/profile/privacy')}
         />
       </View>
-      <Text className="px-4 mt-3 text-xs text-zinc-600 leading-4">
+      <Text className="px-4 mt-3 text-xs text-content-faint leading-4">
         Sua localização aproximada expira no servidor após 90 dias sem
         atualização e é apagada imediatamente se você desligar o uso de
         localização. Notificações antigas também expiram no servidor.

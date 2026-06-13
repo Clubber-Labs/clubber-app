@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Button } from '@/shared/components/Button'
+import { colors } from '@/shared/theme'
 
 type Props = {
   title: string
@@ -20,13 +21,17 @@ export function AccountExitSuccess({
   onDone,
 }: Props) {
   return (
-    <View className="flex-1 bg-black px-6 justify-center gap-8">
+    <View className="flex-1 bg-background px-6 justify-center gap-8">
       <View className="items-center gap-4">
-        <Ionicons name="checkmark-circle-outline" size={56} color="#a78bfa" />
-        <Text className="text-white text-2xl font-bold text-center">
+        <Ionicons
+          name="checkmark-circle-outline"
+          size={56}
+          color={colors.brandText}
+        />
+        <Text className="text-content text-2xl font-bold text-center">
           {title}
         </Text>
-        <Text className="text-zinc-400 text-base text-center leading-6">
+        <Text className="text-content-muted text-base text-center leading-6">
           {message}
         </Text>
       </View>

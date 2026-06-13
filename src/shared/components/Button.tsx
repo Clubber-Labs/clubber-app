@@ -1,4 +1,5 @@
 import { Pressable, Text, ActivityIndicator } from 'react-native'
+import { colors } from '@/shared/theme'
 
 type Variant = 'primary' | 'secondary' | 'destructive'
 
@@ -11,16 +12,16 @@ type Props = {
 }
 
 const containerStyles: Record<Variant, string> = {
-  primary: 'bg-violet-600',
-  secondary: 'border border-zinc-700',
+  primary: 'bg-brand',
+  secondary: 'border border-line-strong',
   // Vermelho igual ao botão destrutivo do ConfirmDialog.
-  destructive: 'bg-red-600',
+  destructive: 'bg-danger-strong',
 }
 
 const textStyles: Record<Variant, string> = {
-  primary: 'text-white',
-  secondary: 'text-zinc-200',
-  destructive: 'text-white',
+  primary: 'text-content',
+  secondary: 'text-content-secondary',
+  destructive: 'text-content',
 }
 
 export function Button({
@@ -43,7 +44,7 @@ export function Button({
       {loading && (
         <ActivityIndicator
           size="small"
-          color={variant === 'secondary' ? '#374151' : '#fff'}
+          color={variant === 'secondary' ? colors.lineStrong : colors.content}
         />
       )}
       <Text className={`font-semibold text-base ${textStyles[variant]}`}>

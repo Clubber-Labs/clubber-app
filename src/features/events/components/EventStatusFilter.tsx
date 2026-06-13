@@ -44,10 +44,10 @@ export function EventStatusFilter({ value, onChange }: Props) {
             accessibilityRole="button"
             accessibilityLabel={`Filtrar por ${option.label}`}
             accessibilityState={{ selected: active }}
-            className={`px-4 py-2 rounded-full ${active ? 'bg-violet-600' : 'bg-zinc-900 border border-zinc-800'}`}
+            className={`px-4 py-2 rounded-full ${active ? 'bg-brand' : 'bg-surface border border-line'}`}
           >
             <Text
-              className={`text-sm font-medium ${active ? 'text-white' : 'text-zinc-300'}`}
+              className={`text-sm font-medium ${active ? 'text-content' : 'text-content-tertiary'}`}
             >
               {option.label}
             </Text>

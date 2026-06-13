@@ -40,6 +40,7 @@ import { GenerateSpotsButton } from '@/features/spots/components/GenerateSpotsBu
 import { SpotSuggestionsPanel } from '@/features/spots/components/SpotSuggestionsPanel'
 import { SuggestionMarkers } from '@/features/spots/components/SuggestionMarkers'
 import type { Spot, SpotSuggestion } from '@/features/spots/types'
+import { colors } from '@/shared/theme'
 
 const COINCIDENT_FOCUS_ZOOM = 20
 
@@ -162,7 +163,7 @@ export default function MapScreen() {
   }
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-background">
       <Mapbox.MapView
         ref={mapRef}
         style={{ flex: 1 }}
@@ -238,14 +239,14 @@ export default function MapScreen() {
       </View>
 
       {isLoading && !error && (
-        <View className="absolute top-24 self-center bg-zinc-900/90 px-3 py-1.5 rounded-full border border-zinc-800">
-          <ActivityIndicator size="small" color="#8b5cf6" />
+        <View className="absolute top-24 self-center bg-surface/90 px-3 py-1.5 rounded-full border border-line">
+          <ActivityIndicator size="small" color={colors.brandEmphasis} />
         </View>
       )}
 
       {!isLoading && truncated && !error && (
-        <View className="absolute top-24 self-center bg-zinc-900/90 px-3 py-1.5 rounded-full border border-zinc-800">
-          <Text className="text-zinc-300 text-xs">
+        <View className="absolute top-24 self-center bg-surface/90 px-3 py-1.5 rounded-full border border-line">
+          <Text className="text-content-tertiary text-xs">
             Aproxime para ver mais eventos
           </Text>
         </View>

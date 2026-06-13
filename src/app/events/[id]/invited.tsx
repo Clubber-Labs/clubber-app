@@ -3,6 +3,7 @@ import { useLocalSearchParams } from 'expo-router'
 import { useEventInvites } from '@/features/events/hooks/useInvites'
 import { UserListItem } from '@/features/users/components/UserListItem'
 import { isForbiddenError } from '@/shared/lib/apiError'
+import { colors } from '@/shared/theme'
 
 export default function InvitedScreen() {
   const { id } = useLocalSearchParams<{ id: string }>()
@@ -10,16 +11,16 @@ export default function InvitedScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-black items-center justify-center">
-        <ActivityIndicator color="#7c3aed" />
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator color={colors.brand} />
       </View>
     )
   }
 
   if (isForbiddenError(error)) {
     return (
-      <View className="flex-1 bg-black items-center justify-center px-6">
-        <Text className="text-zinc-400 text-center text-sm">
+      <View className="flex-1 bg-background items-center justify-center px-6">
+        <Text className="text-content-muted text-center text-sm">
           Apenas o autor do evento pode ver os convidados.
         </Text>
       </View>
@@ -28,8 +29,8 @@ export default function InvitedScreen() {
 
   if (error) {
     return (
-      <View className="flex-1 bg-black items-center justify-center px-6">
-        <Text className="text-zinc-400 text-center text-sm">
+      <View className="flex-1 bg-background items-center justify-center px-6">
+        <Text className="text-content-muted text-center text-sm">
           Não foi possível carregar os convidados.
         </Text>
       </View>
@@ -38,14 +39,14 @@ export default function InvitedScreen() {
 
   return (
     <FlatList
-      className="flex-1 bg-black"
+      className="flex-1 bg-background"
       data={invited ?? []}
       keyExtractor={u => u.id}
       renderItem={({ item }) => <UserListItem user={item} />}
-      ItemSeparatorComponent={() => <View className="h-px bg-zinc-900 ml-16" />}
+      ItemSeparatorComponent={() => <View className="h-px bg-surface ml-16" />}
       ListEmptyComponent={
         <View className="items-center justify-center pt-16 px-6">
-          <Text className="text-zinc-500 text-sm text-center">
+          <Text className="text-content-subtle text-sm text-center">
             Ninguém convidado ainda.
           </Text>
         </View>

@@ -13,6 +13,7 @@ import { FormError } from '@/shared/components/FormError'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import { parseLocalDate } from '@/shared/utils/dateFormat'
 import type { UserProfile } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   profile: UserProfile
@@ -24,9 +25,9 @@ type Props = {
 }
 
 const inputBase =
-  'bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white border'
-const inputOk = 'border-zinc-800'
-const inputErr = 'border-white'
+  'bg-surface rounded-xl px-4 py-3.5 text-base text-content border'
+const inputOk = 'border-line'
+const inputErr = 'border-content'
 
 function defaultsFromProfile(profile: UserProfile): EditProfileInput {
   return {
@@ -83,7 +84,7 @@ export function EditProfileForm({
           render={({ field: { onChange, value, onBlur } }) => (
             <TextInput
               className={`${inputBase} ${errors.name ? inputErr : inputOk}`}
-              placeholderTextColor="#71717a"
+              placeholderTextColor={colors.contentSubtle}
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
@@ -99,7 +100,7 @@ export function EditProfileForm({
           render={({ field: { onChange, value, onBlur } }) => (
             <TextInput
               className={`${inputBase} ${errors.lastname ? inputErr : inputOk}`}
-              placeholderTextColor="#71717a"
+              placeholderTextColor={colors.contentSubtle}
               onChangeText={onChange}
               onBlur={onBlur}
               value={value}
@@ -115,7 +116,7 @@ export function EditProfileForm({
           render={({ field: { onChange, value, onBlur } }) => (
             <TextInput
               className={`${inputBase} ${errors.username ? inputErr : inputOk}`}
-              placeholderTextColor="#71717a"
+              placeholderTextColor={colors.contentSubtle}
               autoCapitalize="none"
               onChangeText={onChange}
               onBlur={onBlur}
@@ -132,7 +133,7 @@ export function EditProfileForm({
           render={({ field: { onChange, value, onBlur } }) => (
             <TextInput
               className={`${inputBase} ${errors.phone ? inputErr : inputOk}`}
-              placeholderTextColor="#71717a"
+              placeholderTextColor={colors.contentSubtle}
               keyboardType="number-pad"
               onChangeText={onChange}
               onBlur={onBlur}
@@ -164,7 +165,7 @@ export function EditProfileForm({
           render={({ field: { onChange, value, onBlur } }) => (
             <TextInput
               className={`${inputBase} ${errors.bio ? inputErr : inputOk}`}
-              placeholderTextColor="#71717a"
+              placeholderTextColor={colors.contentSubtle}
               multiline
               numberOfLines={3}
               maxLength={255}
@@ -196,21 +197,21 @@ export function EditProfileForm({
         render={({ field: { onChange, value } }) => (
           <Pressable
             onPress={() => onChange(!value)}
-            className="flex-row items-center justify-between bg-zinc-900 rounded-xl px-4 py-3.5 border border-zinc-800"
+            className="flex-row items-center justify-between bg-surface rounded-xl px-4 py-3.5 border border-line"
           >
             <View className="flex-1 mr-3">
-              <Text className="text-white text-base font-medium">
+              <Text className="text-content text-base font-medium">
                 Perfil privado
               </Text>
-              <Text className="text-zinc-400 text-xs mt-0.5">
+              <Text className="text-content-muted text-xs mt-0.5">
                 Apenas seguidores aprovados verão seu perfil.
               </Text>
             </View>
             <Switch
               value={value}
               onValueChange={onChange}
-              trackColor={{ false: '#3f3f46', true: '#7c3aed' }}
-              thumbColor="#ffffff"
+              trackColor={{ false: colors.lineStrong, true: colors.brand }}
+              thumbColor={colors.content}
             />
           </Pressable>
         )}
@@ -246,11 +247,11 @@ function Field({
 }) {
   return (
     <View className="gap-1.5">
-      <Text className="text-zinc-400 text-xs font-medium uppercase tracking-wider">
+      <Text className="text-content-muted text-xs font-medium uppercase tracking-wider">
         {label}
       </Text>
       {children}
-      {error && <Text className="text-white text-sm">{error}</Text>}
+      {error && <Text className="text-content text-sm">{error}</Text>}
     </View>
   )
 }

@@ -2,6 +2,7 @@ import { View, Text } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
+import { colors } from '@/shared/theme'
 
 type Props = {
   isLoggingIn: boolean
@@ -18,15 +19,15 @@ export function StepSuccess({
 }: Props) {
   return (
     <View className="gap-6 items-center pt-4">
-      <View className="w-16 h-16 rounded-full bg-green-600/20 items-center justify-center">
-        <Ionicons name="checkmark-circle" size={48} color="#22c55e" />
+      <View className="w-16 h-16 rounded-full bg-success-strong/20 items-center justify-center">
+        <Ionicons name="checkmark-circle" size={48} color={colors.success} />
       </View>
 
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-white text-center">
+        <Text className="text-2xl font-bold text-content text-center">
           Senha redefinida!
         </Text>
-        <Text className="text-sm text-zinc-400 text-center">
+        <Text className="text-sm text-content-muted text-center">
           Sua senha foi atualizada com sucesso.
         </Text>
       </View>

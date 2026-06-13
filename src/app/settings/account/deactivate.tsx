@@ -11,6 +11,7 @@ import { getApiError, isTooManyRequestsError } from '@/shared/lib/apiError'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { AccountExitSuccess } from '@/features/account/components/AccountExitSuccess'
+import { colors } from '@/shared/theme'
 
 const POINTS = [
   'Seu perfil, eventos e atividade somem para as outras pessoas.',
@@ -80,34 +81,34 @@ export default function DeactivateAccountScreen() {
 
   if (isLoading || !profile) {
     return (
-      <View className="flex-1 bg-black items-center justify-center">
-        <ActivityIndicator color="#7c3aed" />
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator color={colors.brand} />
       </View>
     )
   }
 
   return (
     <ScrollView
-      className="flex-1 bg-black"
+      className="flex-1 bg-background"
       contentContainerStyle={{ padding: 20, gap: 20 }}
     >
       <View className="gap-2">
-        <Text className="text-white text-2xl font-bold">Desativar conta</Text>
-        <Text className="text-zinc-400 text-base leading-6">
+        <Text className="text-content text-2xl font-bold">Desativar conta</Text>
+        <Text className="text-content-muted text-base leading-6">
           Como tirar uma pausa: você some do app sem perder nada.
         </Text>
       </View>
 
-      <View className="bg-zinc-950 border border-zinc-800 rounded-xl p-4 gap-3">
+      <View className="bg-surface-sunken border border-line rounded-xl p-4 gap-3">
         {POINTS.map(point => (
           <View key={point} className="flex-row items-start gap-2">
             <Ionicons
               name="ellipse"
               size={6}
-              color="#a78bfa"
+              color={colors.brandText}
               style={{ marginTop: 7 }}
             />
-            <Text className="text-zinc-300 text-sm flex-1 leading-5">
+            <Text className="text-content-tertiary text-sm flex-1 leading-5">
               {point}
             </Text>
           </View>

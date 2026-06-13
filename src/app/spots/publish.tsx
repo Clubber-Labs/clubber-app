@@ -10,6 +10,7 @@ import {
   type CreateSpotInput,
 } from '@/features/spots/schemas/createSpotSchema'
 import type { SpotSuggestion } from '@/features/spots/types'
+import { colors } from '@/shared/theme'
 
 // O rolê vive 24h por vez (renovável) — a janela default é o ciclo inteiro,
 // ajustável nos pickers (teto de agora+24h no schema e no picker).
@@ -66,22 +67,24 @@ export default function PublishSpotScreen() {
   }
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-background">
       <SpotForm
         defaultValues={toDefaults(candidate)}
         onSubmit={handleSubmit}
         submitting={create.isPending}
         submitError={submitError}
         headerSection={
-          <View className="bg-zinc-900 border border-zinc-800 rounded-2xl p-4 gap-1">
+          <View className="bg-surface border border-line rounded-2xl p-4 gap-1">
             <View className="flex-row items-center gap-2">
-              <Ionicons name="location" size={16} color="#a78bfa" />
-              <Text className="text-white text-base font-semibold flex-1">
+              <Ionicons name="location" size={16} color={colors.brandText} />
+              <Text className="text-content text-base font-semibold flex-1">
                 {candidate.name}
               </Text>
             </View>
             {candidate.address && (
-              <Text className="text-zinc-500 text-xs">{candidate.address}</Text>
+              <Text className="text-content-subtle text-xs">
+                {candidate.address}
+              </Text>
             )}
           </View>
         }

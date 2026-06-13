@@ -1,5 +1,6 @@
 import { Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { colors } from '@/shared/theme'
 
 type Props = {
   onPress: () => void
@@ -13,16 +14,16 @@ export function GenerateSpotsButton({ onPress }: Props) {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel="Gerar sugestões de rolê"
-      className="absolute bottom-24 right-6 w-14 h-14 rounded-full bg-zinc-900 border border-violet-600 items-center justify-center shadow-lg"
+      className="absolute bottom-24 right-6 w-14 h-14 rounded-full bg-surface border border-brand items-center justify-center shadow-lg"
       style={{
-        shadowColor: '#000',
+        shadowColor: colors.background,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.2,
         shadowRadius: 8,
         elevation: 6,
       }}
     >
-      <Ionicons name="sparkles" size={24} color="#a78bfa" />
+      <Ionicons name="sparkles" size={24} color={colors.brandText} />
     </Pressable>
   )
 }

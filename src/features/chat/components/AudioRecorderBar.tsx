@@ -6,6 +6,7 @@ import { formatDuration } from '@/shared/utils/formatDuration'
 import { Waveform } from './Waveform'
 import { useVoiceRecorder, type VoiceNote } from '../hooks/useVoiceRecorder'
 import { MAX_AUDIO_DURATION_MS } from '../lib/audioRecording'
+import { colors } from '@/shared/theme'
 
 type Props = {
   // Permissão já garantida pela tela antes de montar esta barra.
@@ -67,33 +68,37 @@ export function AudioRecorderBar({ onSend, onCancel }: Props) {
     .map(db => Math.round(meterToAmplitude(db) * 255))
 
   return (
-    <View className="border-t pb-7 px-2 pt-2 border-zinc-900 bg-black">
+    <View className="border-t pb-7 px-2 pt-2 border-line-subtle bg-background">
       <View className="flex-row items-center gap-2 px-3 py-2">
         <Pressable
           onPress={handleCancel}
           className="w-10 h-10 items-center justify-center"
           accessibilityLabel="Cancelar gravação"
         >
-          <Ionicons name="trash-outline" size={22} color="#ef4444" />
+          <Ionicons name="trash-outline" size={22} color={colors.danger} />
         </Pressable>
 
-        <View className="flex-1 flex-row items-center gap-2 bg-zinc-900 rounded-2xl px-3 h-10">
-          <View className="w-2 h-2 rounded-full bg-red-500" />
-          <Text className="text-white text-sm w-12">
+        <View className="flex-1 flex-row items-center gap-2 bg-surface rounded-2xl px-3 h-10">
+          <View className="w-2 h-2 rounded-full bg-danger" />
+          <Text className="text-content text-sm w-12">
             {formatDuration(durationMs)}
           </Text>
           <View className="flex-1 overflow-hidden">
-            <Waveform values={liveValues} height={24} color="#a1a1aa" />
+            <Waveform
+              values={liveValues}
+              height={24}
+              color={colors.contentMuted}
+            />
           </View>
         </View>
 
         <Pressable
           onPress={handleSend}
           disabled={!isRecording}
-          className="w-10 h-10 items-center justify-center rounded-full bg-violet-600"
+          className="w-10 h-10 items-center justify-center rounded-full bg-brand"
           accessibilityLabel="Enviar áudio"
         >
-          <Ionicons name="send" size={18} color="#ffffff" />
+          <Ionicons name="send" size={18} color={colors.content} />
         </Pressable>
       </View>
     </View>

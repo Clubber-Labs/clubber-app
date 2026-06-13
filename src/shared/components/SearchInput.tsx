@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import { forwardRef } from 'react'
 import { ActivityIndicator, Pressable, TextInput, View } from 'react-native'
+import { colors } from '@/shared/theme'
 
 type Props = {
   value: string
@@ -20,30 +21,34 @@ export const SearchInput = forwardRef<TextInput, Props>(function SearchInput(
   return (
     <View className="relative">
       <View className="absolute left-3 top-0 bottom-0 justify-center items-center z-10">
-        <Ionicons name="search" size={18} color="#ffffff" />
+        <Ionicons name="search" size={18} color={colors.content} />
       </View>
       <TextInput
         ref={ref}
         value={value}
         onChangeText={onChange}
         placeholder={placeholder}
-        placeholderTextColor="#ffffff"
+        placeholderTextColor={colors.content}
         autoCapitalize="none"
         autoCorrect={false}
         returnKeyType="search"
         textAlignVertical="center"
-        className="bg-black rounded-3xl pl-10 pr-12 py-3 text-base text-white"
+        className="bg-background rounded-3xl pl-10 pr-12 py-3 text-base text-content"
       />
       <View className="absolute right-3 top-0 bottom-0 justify-center items-center">
         {loading ? (
-          <ActivityIndicator size="small" color="#8b5cf6" />
+          <ActivityIndicator size="small" color={colors.brandEmphasis} />
         ) : hasText ? (
           <Pressable
             onPress={() => onChange('')}
             hitSlop={10}
             accessibilityLabel="Limpar busca"
           >
-            <Ionicons name="close-circle" size={20} color="#71717a" />
+            <Ionicons
+              name="close-circle"
+              size={20}
+              color={colors.contentSubtle}
+            />
           </Pressable>
         ) : null}
       </View>

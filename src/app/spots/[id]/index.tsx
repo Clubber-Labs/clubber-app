@@ -23,6 +23,7 @@ import { useJoinSpot } from '@/features/spots/hooks/useJoinSpot'
 import { useCancelSpot } from '@/features/spots/hooks/useCancelSpot'
 import { useRenewSpot } from '@/features/spots/hooks/useRenewSpot'
 import { formatSpotWindow } from '@/features/spots/utils/spotWindow'
+import { colors } from '@/shared/theme'
 
 export default function SpotDetailScreen() {
   // renew=1 chega pelo deep-link da notificação SPOT_RENEWAL ("seu rolê está
@@ -47,23 +48,23 @@ export default function SpotDetailScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-black items-center justify-center">
-        <ActivityIndicator size="large" color="#8b5cf6" />
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator size="large" color={colors.brandEmphasis} />
       </View>
     )
   }
 
   if (error || !spot) {
     return (
-      <View className="flex-1 bg-black items-center justify-center px-6 gap-3">
-        <Text className="text-zinc-200 text-center">
+      <View className="flex-1 bg-background items-center justify-center px-6 gap-3">
+        <Text className="text-content-secondary text-center">
           {/* 404 também cobre privado/bloqueio — não revelar existência. */}
           {isNotFoundError(error)
             ? 'Spot não encontrado.'
             : 'Não foi possível carregar o spot.'}
         </Text>
         <Pressable onPress={() => router.back()}>
-          <Text className="text-violet-400 font-semibold">Voltar</Text>
+          <Text className="text-brand-text font-semibold">Voltar</Text>
         </Pressable>
       </View>
     )
@@ -116,12 +117,12 @@ export default function SpotDetailScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-black"
+      className="flex-1 bg-background"
       contentContainerStyle={{ padding: 20, paddingBottom: 40, gap: 16 }}
     >
       {isCanceled && (
-        <View className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3">
-          <Text className="text-red-400 text-sm font-semibold">
+        <View className="bg-surface border border-line rounded-xl px-4 py-3">
+          <Text className="text-danger-text text-sm font-semibold">
             Este spot foi cancelado.
           </Text>
         </View>
@@ -137,19 +138,21 @@ export default function SpotDetailScreen() {
           size={40}
         />
         <View className="flex-1">
-          <Text className="text-white text-sm font-semibold">
+          <Text className="text-content text-sm font-semibold">
             {spot.creator.name} {spot.creator.lastname}
           </Text>
-          <Text className="text-zinc-500 text-xs">
+          <Text className="text-content-subtle text-xs">
             @{spot.creator.username} sugeriu esse rolê
           </Text>
         </View>
       </Pressable>
 
       <View className="gap-2">
-        <Text className="text-white text-2xl font-bold">{spot.title}</Text>
+        <Text className="text-content text-2xl font-bold">{spot.title}</Text>
         {spot.description && (
-          <Text className="text-zinc-300 text-base">{spot.description}</Text>
+          <Text className="text-content-tertiary text-base">
+            {spot.description}
+          </Text>
         )}
       </View>
 
@@ -161,14 +164,18 @@ export default function SpotDetailScreen() {
 
       <View className="gap-2">
         <View className="flex-row items-center gap-2">
-          <Ionicons name="time-outline" size={16} color="#a1a1aa" />
-          <Text className="text-zinc-300 text-sm">
+          <Ionicons name="time-outline" size={16} color={colors.contentMuted} />
+          <Text className="text-content-tertiary text-sm">
             {formatSpotWindow(spot.startsAt, spot.endsAt)}
           </Text>
         </View>
         <View className="flex-row items-center gap-2">
-          <Ionicons name="people-outline" size={16} color="#a1a1aa" />
-          <Text className="text-zinc-300 text-sm">{memberLabel}</Text>
+          <Ionicons
+            name="people-outline"
+            size={16}
+            color={colors.contentMuted}
+          />
+          <Text className="text-content-tertiary text-sm">{memberLabel}</Text>
         </View>
       </View>
 
@@ -195,9 +202,9 @@ export default function SpotDetailScreen() {
       )}
 
       {isCreator && !isCanceled && (
-        <View className="gap-2 border-t border-zinc-900 pt-4">
+        <View className="gap-2 border-t border-line-subtle pt-4">
           {highlightRenew && (
-            <Text className="text-violet-300 text-sm text-center">
+            <Text className="text-brand-text-strong text-sm text-center">
               Seu rolê está acabando — renove para continuar no mapa.
             </Text>
           )}

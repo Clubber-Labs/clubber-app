@@ -41,7 +41,7 @@ export function MessageActionsSheet({
   return (
     <SheetModal visible={visible} onClose={onClose}>
       {canReact && (
-        <View className="flex-row justify-around px-3 pb-2 pt-1 border-b border-zinc-800 mb-1">
+        <View className="flex-row justify-around px-3 pb-2 pt-1 border-b border-line mb-1">
           {QUICK_REACTIONS.map(emoji => (
             <Pressable
               key={emoji}
@@ -50,7 +50,7 @@ export function MessageActionsSheet({
                 onReact(emoji)
               }}
               className={`w-11 h-11 items-center justify-center rounded-full ${
-                emoji === myEmoji ? 'bg-violet-600/30' : ''
+                emoji === myEmoji ? 'bg-brand/30' : ''
               }`}
               accessibilityLabel={`Reagir com ${emoji}`}
             >

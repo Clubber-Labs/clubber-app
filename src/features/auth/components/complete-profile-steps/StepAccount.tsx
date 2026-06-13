@@ -3,6 +3,7 @@ import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import { formatPhone } from '@/shared/utils/masks'
 import type { CompleteProfileInput } from '../../schemas/completeProfileSchema'
+import { colors } from '@/shared/theme'
 
 type Props = {
   control: Control<CompleteProfileInput>
@@ -14,8 +15,8 @@ export function StepAccount({ control, errors, email }: Props) {
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-white">Sua conta</Text>
-        <Text className="text-sm text-zinc-400">
+        <Text className="text-2xl font-bold text-content">Sua conta</Text>
+        <Text className="text-sm text-content-muted">
           Escolha como as pessoas vão te encontrar.
         </Text>
       </View>
@@ -23,15 +24,17 @@ export function StepAccount({ control, errors, email }: Props) {
       <View className="gap-4">
         {!!email && (
           <View className="gap-1">
-            <Text className="text-sm font-medium text-zinc-300">E-mail</Text>
-            <View className="border border-zinc-800 bg-zinc-900 rounded-xl px-4 py-3.5 opacity-70">
-              <Text className="text-base text-zinc-300">{email}</Text>
+            <Text className="text-sm font-medium text-content-tertiary">
+              E-mail
+            </Text>
+            <View className="border border-line bg-surface rounded-xl px-4 py-3.5 opacity-70">
+              <Text className="text-base text-content-tertiary">{email}</Text>
             </View>
           </View>
         )}
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">
+          <Text className="text-sm font-medium text-content-tertiary">
             Nome de usuário
           </Text>
           <Controller
@@ -39,9 +42,9 @@ export function StepAccount({ control, errors, email }: Props) {
             name="username"
             render={({ field: { onChange, value, onBlur } }) => (
               <TextInput
-                className={`border ${errors.username ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                className={`border ${errors.username ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                 placeholder="joaosilva"
-                placeholderTextColor="#71717a"
+                placeholderTextColor={colors.contentSubtle}
                 autoCapitalize="none"
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -50,22 +53,24 @@ export function StepAccount({ control, errors, email }: Props) {
             )}
           />
           {errors.username && (
-            <Text className="text-white text-xs">
+            <Text className="text-content text-xs">
               {errors.username.message}
             </Text>
           )}
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">Telefone</Text>
+          <Text className="text-sm font-medium text-content-tertiary">
+            Telefone
+          </Text>
           <Controller
             control={control}
             name="phone"
             render={({ field: { onChange, value, onBlur } }) => (
               <TextInput
-                className={`border ${errors.phone ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                className={`border ${errors.phone ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                 placeholder="(11) 99999-9999"
-                placeholderTextColor="#71717a"
+                placeholderTextColor={colors.contentSubtle}
                 keyboardType="phone-pad"
                 onChangeText={text => onChange(text.replace(/\D/g, ''))}
                 onBlur={onBlur}
@@ -74,7 +79,7 @@ export function StepAccount({ control, errors, email }: Props) {
             )}
           />
           {errors.phone && (
-            <Text className="text-white text-xs">{errors.phone.message}</Text>
+            <Text className="text-content text-xs">{errors.phone.message}</Text>
           )}
         </View>
       </View>

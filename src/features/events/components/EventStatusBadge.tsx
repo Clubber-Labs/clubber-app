@@ -13,11 +13,15 @@ type Style = {
 }
 
 const STYLES: Record<EventStatus, Style> = {
-  ONGOING: { bg: 'bg-red-900', text: 'text-red-200' },
-  SOON: { bg: 'bg-amber-900', text: 'text-amber-200' },
-  UPCOMING: { bg: 'bg-zinc-800', text: 'text-zinc-200' },
-  PAST: { bg: 'bg-zinc-800/60', text: 'text-zinc-500' },
-  CANCELED: { bg: 'bg-zinc-800', text: 'text-zinc-500', strike: true },
+  ONGOING: { bg: 'bg-danger-surface', text: 'text-danger-text-subtle' },
+  SOON: { bg: 'bg-warning-surface', text: 'text-warning-text' },
+  UPCOMING: { bg: 'bg-surface-elevated', text: 'text-content-secondary' },
+  PAST: { bg: 'bg-surface-elevated/60', text: 'text-content-subtle' },
+  CANCELED: {
+    bg: 'bg-surface-elevated',
+    text: 'text-content-subtle',
+    strike: true,
+  },
 }
 
 function buildLabel(status: EventStatus, date?: string): string {

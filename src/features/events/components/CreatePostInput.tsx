@@ -10,6 +10,7 @@ import {
 import { Ionicons } from '@expo/vector-icons'
 import { useAddPost } from '../hooks/usePosts'
 import { useMe } from '@/features/auth/hooks/useMe'
+import { colors } from '@/shared/theme'
 
 type Props = {
   eventId: string
@@ -33,8 +34,8 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
 
   if (disabled) {
     return (
-      <View className="bg-violet-950 border border-blue-100 rounded-xl px-4 py-3">
-        <Text className="text-sm text-violet-300">
+      <View className="bg-brand-surface border border-info rounded-xl px-4 py-3">
+        <Text className="text-sm text-brand-text-strong">
           {disabledReason ?? 'Você não pode postar agora.'}
         </Text>
       </View>
@@ -42,17 +43,17 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
   }
 
   return (
-    <View className="bg-zinc-900 border border-zinc-800 rounded-2xl p-3 gap-2">
+    <View className="bg-surface border border-line rounded-2xl p-3 gap-2">
       <View className="flex-row gap-2 items-start">
-        <View className="w-9 h-9 rounded-full bg-violet-900 items-center justify-center">
-          <Text className="text-violet-300 font-semibold">
+        <View className="w-9 h-9 rounded-full bg-brand-surface-strong items-center justify-center">
+          <Text className="text-brand-text-strong font-semibold">
             {me?.name?.[0]?.toUpperCase() ?? '?'}
           </Text>
         </View>
         <TextInput
-          className="flex-1 text-base text-white min-h-[40px] max-h-32 pt-2"
+          className="flex-1 text-base text-content min-h-[40px] max-h-32 pt-2"
           placeholder="Compartilhe algo sobre o evento..."
-          placeholderTextColor="#71717a"
+          placeholderTextColor={colors.contentSubtle}
           value={text}
           onChangeText={setText}
           multiline
@@ -61,18 +62,18 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
       </View>
 
       <View className="flex-row items-center justify-between pl-11">
-        <Text className="text-xs text-zinc-500">{text.length}/1000</Text>
+        <Text className="text-xs text-content-subtle">{text.length}/1000</Text>
         <Pressable
           onPress={handleSend}
           disabled={!text.trim() || addPost.isPending}
-          className={`flex-row items-center gap-1 px-4 py-2 rounded-full ${text.trim() && !addPost.isPending ? 'bg-violet-600' : 'bg-zinc-600'}`}
+          className={`flex-row items-center gap-1 px-4 py-2 rounded-full ${text.trim() && !addPost.isPending ? 'bg-brand' : 'bg-surface-higher'}`}
         >
           {addPost.isPending ? (
-            <ActivityIndicator size="small" color="#ffffff" />
+            <ActivityIndicator size="small" color={colors.content} />
           ) : (
-            <Ionicons name="send" size={14} color="#ffffff" />
+            <Ionicons name="send" size={14} color={colors.content} />
           )}
-          <Text className="text-sm font-semibold text-white">Publicar</Text>
+          <Text className="text-sm font-semibold text-content">Publicar</Text>
         </Pressable>
       </View>
     </View>

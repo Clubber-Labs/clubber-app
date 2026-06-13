@@ -20,6 +20,7 @@ import {
   SPOT_MAX_WINDOW_MS,
   type CreateSpotInput,
 } from '../schemas/createSpotSchema'
+import { colors } from '@/shared/theme'
 
 const MAX_CATEGORIES = 5
 
@@ -74,37 +75,40 @@ export function SpotForm({
         {headerSection}
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">Título</Text>
+          <Text className="text-sm font-medium text-content-tertiary">
+            Título
+          </Text>
           <Controller
             control={control}
             name="title"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.title ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                className={`border ${errors.title ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                 placeholder="Como você chamaria esse rolê?"
-                placeholderTextColor="#71717a"
+                placeholderTextColor={colors.contentSubtle}
                 value={value}
                 onChangeText={onChange}
               />
             )}
           />
           {errors.title && (
-            <Text className="text-white text-xs">{errors.title.message}</Text>
+            <Text className="text-content text-xs">{errors.title.message}</Text>
           )}
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">
-            Descrição <Text className="text-zinc-500 text-xs">(opcional)</Text>
+          <Text className="text-sm font-medium text-content-tertiary">
+            Descrição{' '}
+            <Text className="text-content-subtle text-xs">(opcional)</Text>
           </Text>
           <Controller
             control={control}
             name="description"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.description ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white min-h-[96px]`}
+                className={`border ${errors.description ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content min-h-[96px]`}
                 placeholder="Combina os detalhes com a galera..."
-                placeholderTextColor="#71717a"
+                placeholderTextColor={colors.contentSubtle}
                 value={value ?? ''}
                 onChangeText={onChange}
                 multiline
@@ -113,14 +117,16 @@ export function SpotForm({
             )}
           />
           {errors.description && (
-            <Text className="text-white text-xs">
+            <Text className="text-content text-xs">
               {errors.description.message}
             </Text>
           )}
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">Começa</Text>
+          <Text className="text-sm font-medium text-content-tertiary">
+            Começa
+          </Text>
           <Controller
             control={control}
             name="startsAt"
@@ -137,14 +143,16 @@ export function SpotForm({
             )}
           />
           {errors.startsAt && (
-            <Text className="text-white text-xs">
+            <Text className="text-content text-xs">
               {errors.startsAt.message}
             </Text>
           )}
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">Termina</Text>
+          <Text className="text-sm font-medium text-content-tertiary">
+            Termina
+          </Text>
           <Controller
             control={control}
             name="endsAt"
@@ -161,16 +169,20 @@ export function SpotForm({
               />
             )}
           />
-          <Text className="text-zinc-500 text-xs">
+          <Text className="text-content-subtle text-xs">
             O rolê pode durar no máximo 24 horas.
           </Text>
           {errors.endsAt && (
-            <Text className="text-white text-xs">{errors.endsAt.message}</Text>
+            <Text className="text-content text-xs">
+              {errors.endsAt.message}
+            </Text>
           )}
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">Categorias</Text>
+          <Text className="text-sm font-medium text-content-tertiary">
+            Categorias
+          </Text>
           <Controller
             control={control}
             name="categories"
@@ -183,7 +195,7 @@ export function SpotForm({
             )}
           />
           {errors.categories && (
-            <Text className="text-white text-xs">
+            <Text className="text-content text-xs">
               {errors.categories.message}
             </Text>
           )}
@@ -193,12 +205,12 @@ export function SpotForm({
           control={control}
           name="visibility"
           render={({ field: { onChange, value } }) => (
-            <View className="flex-row items-center justify-between bg-zinc-900 px-4 py-3 rounded-xl">
+            <View className="flex-row items-center justify-between bg-surface px-4 py-3 rounded-xl">
               <View className="flex-1 pr-3">
-                <Text className="text-sm font-medium text-zinc-200">
+                <Text className="text-sm font-medium text-content-secondary">
                   Spot público
                 </Text>
-                <Text className="text-xs text-zinc-400">
+                <Text className="text-xs text-content-muted">
                   {VISIBILITY_HINTS[value]}
                 </Text>
               </View>
@@ -207,8 +219,8 @@ export function SpotForm({
                 onValueChange={isPublic =>
                   onChange(isPublic ? 'PUBLIC' : 'FRIENDS')
                 }
-                trackColor={{ true: '#7c3aed', false: '#3f3f46' }}
-                thumbColor="#ffffff"
+                trackColor={{ true: colors.brand, false: colors.lineStrong }}
+                thumbColor={colors.content}
               />
             </View>
           )}

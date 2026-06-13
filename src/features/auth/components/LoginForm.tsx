@@ -7,6 +7,7 @@ import { useLogin } from '../hooks/useLogin'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { isUnauthorizedError } from '@/shared/lib/apiError'
+import { colors } from '@/shared/theme'
 
 type Props = {
   defaultEmail?: string
@@ -30,9 +31,9 @@ export function LoginForm({ defaultEmail }: Props) {
         name="email"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            className={`border ${errors.email ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+            className={`border ${errors.email ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
             placeholder="E-mail"
-            placeholderTextColor="#71717a"
+            placeholderTextColor={colors.contentSubtle}
             onChangeText={onChange}
             value={value}
             autoCapitalize="none"
@@ -41,7 +42,7 @@ export function LoginForm({ defaultEmail }: Props) {
         )}
       />
       {errors.email && (
-        <Text className="text-white text-sm">{errors.email.message}</Text>
+        <Text className="text-content text-sm">{errors.email.message}</Text>
       )}
 
       <Controller
@@ -49,9 +50,9 @@ export function LoginForm({ defaultEmail }: Props) {
         name="password"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            className={`border ${errors.password ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+            className={`border ${errors.password ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
             placeholder="Senha"
-            placeholderTextColor="#71717a"
+            placeholderTextColor={colors.contentSubtle}
             onChangeText={onChange}
             value={value}
             secureTextEntry
@@ -59,12 +60,12 @@ export function LoginForm({ defaultEmail }: Props) {
         )}
       />
       {errors.password && (
-        <Text className="text-white text-sm">{errors.password.message}</Text>
+        <Text className="text-content text-sm">{errors.password.message}</Text>
       )}
 
       <View className="flex-row justify-end">
         <Link href="/(auth)/forgot-password">
-          <Text className="text-violet-400 text-sm font-medium">
+          <Text className="text-brand-text text-sm font-medium">
             Esqueci minha senha
           </Text>
         </Link>

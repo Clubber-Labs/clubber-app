@@ -3,19 +3,20 @@ import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { InboxList } from '@/features/chat/components/InboxList'
+import { colors } from '@/shared/theme'
 
 export default function InboxScreen() {
   const router = useRouter()
   const myId = useAuthStore(s => s.userId)
 
-  if (!myId) return <View className="flex-1 bg-black" />
+  if (!myId) return <View className="flex-1 bg-background" />
 
   const goNew = () => router.push('/conversations/new')
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-background">
       <View className="flex-row items-center justify-between px-4 pt-3 pb-2">
-        <Text className="text-white text-2xl font-bold">Mensagens</Text>
+        <Text className="text-content text-2xl font-bold">Mensagens</Text>
       </View>
 
       <InboxList
@@ -26,10 +27,10 @@ export default function InboxScreen() {
 
       <Pressable
         onPress={goNew}
-        className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-violet-600 items-center justify-center"
+        className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-brand items-center justify-center"
         accessibilityLabel="Nova conversa"
       >
-        <Ionicons name="create" size={24} color="#ffffff" />
+        <Ionicons name="create" size={24} color={colors.content} />
       </Pressable>
     </View>
   )

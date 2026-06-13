@@ -5,6 +5,7 @@ import {
   DELETE_REASON_OPTIONS,
   type DeleteReason,
 } from '../utils/deleteReasons'
+import { colors } from '@/shared/theme'
 
 type Props = {
   reason: DeleteReason | null
@@ -25,10 +26,10 @@ export function DeleteReasonStep({
 }: Props) {
   return (
     <View className="gap-1">
-      <Text className="text-white text-xl font-bold mb-1">
+      <Text className="text-content text-xl font-bold mb-1">
         Por que está saindo?
       </Text>
-      <Text className="text-zinc-400 text-sm mb-3">
+      <Text className="text-content-muted text-sm mb-3">
         Opcional — sua resposta nos ajuda a melhorar o app.
       </Text>
 
@@ -40,11 +41,11 @@ export function DeleteReasonStep({
             onPress={() => onReasonChange(o.value)}
             className="flex-row items-center justify-between py-3"
           >
-            <Text className="text-zinc-100 text-base">{o.label}</Text>
+            <Text className="text-content-bright text-base">{o.label}</Text>
             <Ionicons
               name={active ? 'radio-button-on' : 'radio-button-off'}
               size={20}
-              color={active ? '#8b5cf6' : '#52525b'}
+              color={active ? colors.brandEmphasis : colors.contentFaint}
             />
           </Pressable>
         )
@@ -55,10 +56,10 @@ export function DeleteReasonStep({
           value={otherText}
           onChangeText={onOtherTextChange}
           placeholder="Conte um pouco mais (opcional)"
-          placeholderTextColor="#71717a"
+          placeholderTextColor={colors.contentSubtle}
           maxLength={500}
           multiline
-          className="bg-zinc-900 rounded-xl px-4 py-3 text-white mt-1"
+          className="bg-surface rounded-xl px-4 py-3 text-content mt-1"
           style={{ minHeight: 60, textAlignVertical: 'top' }}
         />
       )}

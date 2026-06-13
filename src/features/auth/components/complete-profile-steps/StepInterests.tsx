@@ -3,6 +3,7 @@ import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import type { CompleteProfileInput } from '../../schemas/completeProfileSchema'
+import { colors } from '@/shared/theme'
 
 type Props = {
   control: Control<CompleteProfileInput>
@@ -13,18 +14,18 @@ export function StepInterests({ control, errors }: Props) {
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-white">Quase lá</Text>
-        <Text className="text-sm text-zinc-400">
+        <Text className="text-2xl font-bold text-content">Quase lá</Text>
+        <Text className="text-sm text-content-muted">
           Personalize seu perfil e o que aparece no seu feed.
         </Text>
       </View>
 
       <View className="gap-5">
         <View className="gap-2">
-          <Text className="text-sm font-medium text-zinc-300">
+          <Text className="text-sm font-medium text-content-tertiary">
             Categorias de interesse
           </Text>
-          <Text className="text-xs text-zinc-500">
+          <Text className="text-xs text-content-subtle">
             Escolha temas de eventos pra personalizar seu feed. Dá pra mudar
             depois.
           </Text>
@@ -36,24 +37,24 @@ export function StepInterests({ control, errors }: Props) {
             )}
           />
           {errors.preferredCategories && (
-            <Text className="text-white text-xs">
+            <Text className="text-content text-xs">
               {errors.preferredCategories.message}
             </Text>
           )}
         </View>
 
         <View className="gap-1">
-          <Text className="text-sm font-medium text-zinc-300">
-            Bio <Text className="text-zinc-500 text-xs">(opcional)</Text>
+          <Text className="text-sm font-medium text-content-tertiary">
+            Bio <Text className="text-content-subtle text-xs">(opcional)</Text>
           </Text>
           <Controller
             control={control}
             name="bio"
             render={({ field: { onChange, value, onBlur } }) => (
               <TextInput
-                className={`border ${errors.bio ? 'border-white' : 'border-zinc-800'} bg-zinc-900 rounded-xl px-4 py-3.5 text-base text-white`}
+                className={`border ${errors.bio ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                 placeholder="Conte algo sobre você..."
-                placeholderTextColor="#71717a"
+                placeholderTextColor={colors.contentSubtle}
                 multiline
                 numberOfLines={3}
                 maxLength={255}
@@ -65,7 +66,7 @@ export function StepInterests({ control, errors }: Props) {
             )}
           />
           {errors.bio && (
-            <Text className="text-white text-xs">{errors.bio.message}</Text>
+            <Text className="text-content text-xs">{errors.bio.message}</Text>
           )}
         </View>
 
@@ -75,21 +76,21 @@ export function StepInterests({ control, errors }: Props) {
           render={({ field: { onChange, value } }) => (
             <Pressable
               onPress={() => onChange(!value)}
-              className="flex-row items-center justify-between bg-zinc-900 rounded-xl px-4 py-3.5 border border-zinc-800"
+              className="flex-row items-center justify-between bg-surface rounded-xl px-4 py-3.5 border border-line"
             >
               <View className="flex-1 mr-3">
-                <Text className="text-white text-base font-medium">
+                <Text className="text-content text-base font-medium">
                   Perfil privado
                 </Text>
-                <Text className="text-zinc-400 text-xs mt-0.5">
+                <Text className="text-content-muted text-xs mt-0.5">
                   Apenas seguidores aprovados verão seu perfil.
                 </Text>
               </View>
               <Switch
                 value={value}
                 onValueChange={onChange}
-                trackColor={{ false: '#3f3f46', true: '#7c3aed' }}
-                thumbColor="#ffffff"
+                trackColor={{ false: colors.lineStrong, true: colors.brand }}
+                thumbColor={colors.content}
               />
             </Pressable>
           )}

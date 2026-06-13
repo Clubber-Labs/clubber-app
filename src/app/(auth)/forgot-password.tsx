@@ -9,7 +9,7 @@ export default function ForgotPasswordScreen() {
 
   return (
     <ScrollView
-      className="flex-1 bg-black"
+      className="flex-1 bg-background"
       contentContainerStyle={{
         paddingTop: 64,
         paddingBottom: 32,
@@ -22,9 +22,9 @@ export default function ForgotPasswordScreen() {
         <ForgotPasswordForm defaultEmail={defaultEmail} />
 
         <View className="flex-row justify-center mt-6 gap-1">
-          <Text className="text-zinc-400">Lembrou a senha?</Text>
+          <Text className="text-content-muted">Lembrou a senha?</Text>
           <Link href="/(auth)/login">
-            <Text className="text-violet-400 font-semibold">Entrar</Text>
+            <Text className="text-brand-text font-semibold">Entrar</Text>
           </Link>
         </View>
       </View>

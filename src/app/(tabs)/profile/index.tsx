@@ -108,16 +108,18 @@ export default function ProfileScreen() {
   ]
 
   const drawerHeader = (
-    <View className="pt-5 pb-4 px-5 border-b border-zinc-900">
-      <Text className="text-white font-bold text-lg">
+    <View className="pt-5 pb-4 px-5 border-b border-line-subtle">
+      <Text className="text-content font-bold text-lg">
         {profile.name} {profile.lastname}
       </Text>
-      <Text className="text-zinc-400 text-sm mt-0.5">@{profile.username}</Text>
+      <Text className="text-content-muted text-sm mt-0.5">
+        @{profile.username}
+      </Text>
     </View>
   )
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-background">
       <ProfileEventsList
         events={events}
         hasNextPage={hasNextPage}
@@ -144,7 +146,7 @@ export default function ProfileScreen() {
               }
             />
             <View className="mt-4 mb-3">
-              <Text className="text-zinc-400 text-xs font-semibold uppercase tracking-wider">
+              <Text className="text-content-muted text-xs font-semibold uppercase tracking-wider">
                 Eventos
               </Text>
             </View>

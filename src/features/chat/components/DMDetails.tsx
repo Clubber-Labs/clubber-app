@@ -6,6 +6,7 @@ import { useBanner } from '@/shared/lib/banner'
 import { getApiError } from '@/shared/lib/apiError'
 import { useBlocks, useBlockUser, useUnblockUser } from '../hooks/useBlocks'
 import type { Conversation } from '../types'
+import { colors } from '@/shared/theme'
 
 type Props = {
   conversation: Conversation
@@ -49,26 +50,30 @@ export function DMDetails({ conversation, myId, onViewProfile }: Props) {
     <View className="px-4">
       <View className="items-center pt-6 pb-4 gap-1.5">
         <UserAvatar name={other.name} avatarUrl={other.avatarUrl} size={88} />
-        <Text className="text-white font-bold text-xl mt-2">
+        <Text className="text-content font-bold text-xl mt-2">
           {other.name} {other.lastname}
         </Text>
-        <Text className="text-zinc-500">@{other.username}</Text>
+        <Text className="text-content-subtle">@{other.username}</Text>
       </View>
 
       <Pressable
         onPress={() => onViewProfile(other.id)}
-        className="flex-row items-center gap-3 py-3.5 border-t border-zinc-900"
+        className="flex-row items-center gap-3 py-3.5 border-t border-line-subtle"
       >
-        <Ionicons name="person-outline" size={22} color="#e4e4e7" />
-        <Text className="text-zinc-100 text-base">Ver perfil</Text>
+        <Ionicons
+          name="person-outline"
+          size={22}
+          color={colors.contentSecondary}
+        />
+        <Text className="text-content-bright text-base">Ver perfil</Text>
       </Pressable>
 
       <Pressable
         onPress={toggleBlock}
-        className="flex-row items-center gap-3 py-3.5 border-t border-zinc-900"
+        className="flex-row items-center gap-3 py-3.5 border-t border-line-subtle"
       >
-        <Ionicons name="ban-outline" size={22} color="#ef4444" />
-        <Text className="text-red-500 text-base">
+        <Ionicons name="ban-outline" size={22} color={colors.danger} />
+        <Text className="text-danger text-base">
           {isBlocked ? 'Desbloquear usuário' : 'Bloquear usuário'}
         </Text>
       </Pressable>

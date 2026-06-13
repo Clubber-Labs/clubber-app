@@ -6,6 +6,7 @@ import { useUpdateEvent } from '@/features/events/hooks/useUpdateEvent'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import type { CreateEventInput } from '@/features/events/schemas/createEventSchema'
 import type { EventDetail } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 function toDefaults(event: EventDetail): Partial<CreateEventInput> {
   return {
@@ -42,27 +43,27 @@ export default function EditEventScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-black items-center justify-center">
-        <ActivityIndicator size="large" color="#8b5cf6" />
+      <View className="flex-1 bg-background items-center justify-center">
+        <ActivityIndicator size="large" color={colors.brandEmphasis} />
       </View>
     )
   }
 
   if (isError || !event) {
     return (
-      <View className="flex-1 bg-black items-center justify-center px-6 gap-3">
-        <Text className="text-zinc-200 text-center">
+      <View className="flex-1 bg-background items-center justify-center px-6 gap-3">
+        <Text className="text-content-secondary text-center">
           Não foi possível carregar o evento.
         </Text>
         <Pressable onPress={() => router.back()}>
-          <Text className="text-violet-400 font-semibold">Voltar</Text>
+          <Text className="text-brand-text font-semibold">Voltar</Text>
         </Pressable>
       </View>
     )
   }
 
   return (
-    <View className="flex-1 bg-black">
+    <View className="flex-1 bg-background">
       <EventForm
         defaultValues={toDefaults(event)}
         onSubmit={handleSubmit}

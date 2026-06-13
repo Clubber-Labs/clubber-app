@@ -9,6 +9,7 @@ import {
   fanoutRadius,
   friendStackLayout,
 } from '../utils/markerLayout'
+import { colors } from '@/shared/theme'
 
 type Props = {
   events: FeedEvent[]
@@ -44,8 +45,8 @@ function EventPin({
         height: size,
         borderRadius: size / 2,
         borderWidth: 3,
-        borderColor: selected ? '#ffffff' : '#ffffff',
-        backgroundColor: '#ffffff',
+        borderColor: selected ? colors.content : colors.content,
+        backgroundColor: colors.content,
         overflow: 'hidden',
         alignItems: 'center',
         justifyContent: 'center',
@@ -62,12 +63,12 @@ function EventPin({
       ) : (
         <View
           style={{ width: inner, height: inner, borderRadius: inner / 2 }}
-          className="bg-zinc-800 items-center justify-center"
+          className="bg-surface-elevated items-center justify-center"
         >
           <Ionicons
             name="calendar-outline"
             size={Math.round(inner * 0.45)}
-            color="#52525b"
+            color={colors.contentFaint}
           />
         </View>
       )}
@@ -171,7 +172,7 @@ function SingleMarker({
             height: f,
             borderRadius: f / 2,
             borderWidth: 2,
-            borderColor: '#0a0a0a',
+            borderColor: colors.surfaceSunken,
             overflow: 'hidden' as const,
           }
           if (item.kind === 'more') {
@@ -181,13 +182,17 @@ function SingleMarker({
                 pointerEvents="none"
                 style={{
                   ...base,
-                  backgroundColor: '#27272a',
+                  backgroundColor: colors.line,
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
                 <Text
-                  style={{ color: '#ffffff', fontSize: 11, fontWeight: '700' }}
+                  style={{
+                    color: colors.content,
+                    fontSize: 11,
+                    fontWeight: '700',
+                  }}
                 >
                   +{item.count}
                 </Text>
