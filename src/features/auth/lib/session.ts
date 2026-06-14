@@ -1,5 +1,6 @@
 import { queryClient } from '@/shared/lib/queryClient'
-import { clearAuthSession } from '@/shared/lib/secureStore'
+import { clearAuthSession, getRefreshToken } from '@/shared/lib/secureStore'
+import { authService } from '../services/authService'
 import { useAuthStore } from '../store/authStore'
 import { useConsentStore } from '@/features/privacy/store/consentStore'
 import { usePresenceStore } from '@/features/chat/store/presenceStore'
@@ -23,6 +24,17 @@ export async function endSession({
     await disablePush()
   } catch {
     // ignore
+  }
+  // Logout server-side: revoga o refresh token atual no backend (best-effort).
+  // Pulamos quando a sessão já expirou — o access é inválido e a chamada cairia
+  // em 401 (e o refresh já foi/está sendo invalidado de qualquer forma).
+  if (!expired) {
+    try {
+      const refreshToken = await getRefreshToken()
+      if (refreshToken) await authService.logout(refreshToken)
+    } catch {
+      // ignore — falha de rede/401 não bloqueia o logout local
+    }
   }
   await clearNotificationStorage()
   await clearAuthSession()

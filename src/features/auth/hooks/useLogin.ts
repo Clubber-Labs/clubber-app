@@ -3,6 +3,7 @@ import { authService } from '../services/authService'
 import { useAuthStore } from '../store/authStore'
 import {
   saveToken,
+  saveRefreshToken,
   saveUserId,
   clearAuthSession,
 } from '@/shared/lib/secureStore'
@@ -17,12 +18,12 @@ export function useLogin() {
   return useMutation({
     mutationFn: async (data: LoginInput) => {
       const response = await authService.login(data)
-      const token = response.token as string
+      const token = response.token
       await saveToken(token)
+      await saveRefreshToken(response.refreshToken)
 
       try {
-        const userId =
-          (response.userId as string | undefined) ?? (await authService.me()).id
+        const userId = response.userId ?? (await authService.me()).id
         await saveUserId(userId)
         return { token, userId }
       } catch (err) {
