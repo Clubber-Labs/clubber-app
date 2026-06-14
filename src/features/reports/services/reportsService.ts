@@ -13,6 +13,8 @@ function reportPath(target: ReportTarget): string {
   switch (target.type) {
     case 'event':
       return `/events/${target.id}/report`
+    case 'post':
+      return `/posts/${target.id}/report`
     case 'comment':
       return `/comments/${target.id}/report`
     case 'message':

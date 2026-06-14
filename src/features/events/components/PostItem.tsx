@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native'
+import { View, Text, Pressable, Image, ScrollView } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
@@ -12,9 +12,12 @@ import { colors } from '@/shared/theme'
 type Props = {
   eventId: string
   post: EventPost
+  // Quando definido (post de outra pessoa), exibe o botão de denúncia. O sheet
+  // é elevado pela lista (EventPostsFeed), igual ao padrão de comentários.
+  onReport?: () => void
 }
 
-export function PostItem({ eventId, post }: Props) {
+export function PostItem({ eventId, post, onReport }: Props) {
   const userId = useAuthStore(s => s.userId)
   const deletePost = useDeletePost(eventId)
   const navigateToProfile = useNavigateToProfile()
@@ -54,7 +57,7 @@ export function PostItem({ eventId, post }: Props) {
           </View>
         </Pressable>
 
-        {isAuthor && (
+        {isAuthor ? (
           <Pressable
             onPress={handleDelete}
             disabled={deletePost.isPending}
@@ -62,10 +65,39 @@ export function PostItem({ eventId, post }: Props) {
           >
             <Ionicons name="trash-outline" size={18} color={colors.danger} />
           </Pressable>
-        )}
+        ) : onReport ? (
+          <Pressable
+            onPress={onReport}
+            className="w-8 h-8 items-center justify-center"
+            accessibilityLabel="Denunciar publicação"
+          >
+            <Ionicons
+              name="flag-outline"
+              size={16}
+              color={colors.contentSubtle}
+            />
+          </Pressable>
+        ) : null}
       </View>
 
       <Text className="text-base text-content-bright">{post.content}</Text>
+
+      {post.images && post.images.length > 0 && (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 8 }}
+        >
+          {post.images.map(img => (
+            <Image
+              key={img.id}
+              source={{ uri: img.url }}
+              className="w-40 h-40 rounded-xl bg-surface-elevated"
+              resizeMode="cover"
+            />
+          ))}
+        </ScrollView>
+      )}
 
       {post._count && (
         <View className="flex-row gap-4 pt-1">

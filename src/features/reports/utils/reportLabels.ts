@@ -24,6 +24,7 @@ export const REASON_OPTIONS: { value: ReportReason; label: string }[] = (
 // Singular para títulos de sheet ("Denunciar evento") e descrições.
 export const TARGET_LABELS: Record<ReportTargetType, string> = {
   event: 'evento',
+  post: 'publicação',
   comment: 'comentário',
   message: 'mensagem',
   user: 'usuário',

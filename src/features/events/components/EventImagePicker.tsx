@@ -7,9 +7,15 @@ type Props = {
   uris: string[]
   onChange: (uris: string[]) => void
   maxCount?: number
+  label?: string
 }
 
-export function EventImagePicker({ uris, onChange, maxCount = 5 }: Props) {
+export function EventImagePicker({
+  uris,
+  onChange,
+  maxCount = 5,
+  label = 'Fotos do evento',
+}: Props) {
   const remaining = Math.max(1, maxCount - uris.length)
   const pick = usePickImages(
     picked => onChange([...uris, ...picked].slice(0, maxCount)),
@@ -25,7 +31,7 @@ export function EventImagePicker({ uris, onChange, maxCount = 5 }: Props) {
   return (
     <View className="gap-2">
       <Text className="text-sm font-medium text-content-tertiary">
-        Fotos do evento{' '}
+        {label}{' '}
         <Text className="text-content-subtle text-xs">
           ({uris.length}/{maxCount})
         </Text>

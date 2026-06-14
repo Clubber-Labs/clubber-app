@@ -34,6 +34,33 @@ export function useAddPost(eventId: string) {
   })
 }
 
+// Sobe imagens de um post recém-criado, uma requisição por imagem (espelha
+// useUploadEventImages). Tolera falha parcial via allSettled; ao terminar,
+// invalida a lista pra hidratar as imagens. O post já existe (texto-first),
+// então a falha aqui não perde o conteúdo.
+export function useUploadPostImages(eventId: string) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async ({
+      postId,
+      uris,
+    }: {
+      postId: string
+      uris: string[]
+    }) => {
+      const results = await Promise.allSettled(
+        uris.map(uri => eventsService.uploadPostImage(eventId, postId, uri)),
+      )
+      const failed = results.filter(r => r.status === 'rejected').length
+      return { postId, total: uris.length, failed }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: postsKey(eventId) })
+    },
+  })
+}
+
 // Optimistic remove — ver CLAUDE.md → "Tratamento de erros e feedback".
 export function useDeletePost(eventId: string) {
   const queryClient = useQueryClient()

@@ -8,9 +8,12 @@ import {
   Keyboard,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { useAddPost } from '../hooks/usePosts'
+import { useAddPost, useUploadPostImages } from '../hooks/usePosts'
+import { EventImagePicker } from './EventImagePicker'
 import { useMe } from '@/features/auth/hooks/useMe'
 import { colors } from '@/shared/theme'
+
+const MAX_POST_IMAGES = 4
 
 type Props = {
   eventId: string
@@ -20,15 +23,27 @@ type Props = {
 
 export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
   const [text, setText] = useState('')
+  const [imageUris, setImageUris] = useState<string[]>([])
   const { data: me } = useMe()
   const addPost = useAddPost(eventId)
+  const uploadImages = useUploadPostImages(eventId)
 
   function handleSend() {
     const content = text.trim()
     if (!content) return
     Keyboard.dismiss()
+    // Texto-first: cria o post e, com sucesso, sobe as imagens contra o id
+    // criado (mesmo padrão do create de evento). A navegação/limpeza não
+    // espera o upload terminar.
+    const uris = imageUris
     addPost.mutate(content, {
-      onSuccess: () => setText(''),
+      onSuccess: post => {
+        if (uris.length > 0) {
+          uploadImages.mutate({ postId: post.id, uris })
+        }
+        setText('')
+        setImageUris([])
+      },
     })
   }
 
@@ -58,6 +73,15 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
           onChangeText={setText}
           multiline
           maxLength={1000}
+        />
+      </View>
+
+      <View className="pl-11">
+        <EventImagePicker
+          uris={imageUris}
+          onChange={setImageUris}
+          maxCount={MAX_POST_IMAGES}
+          label="Fotos da publicação"
         />
       </View>
 

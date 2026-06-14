@@ -3,6 +3,7 @@ import { buildImageFile } from '@/shared/utils/imageUpload'
 import type {
   CursorPaginatedResponse,
   EventDetail,
+  EventImage,
   EventStatus,
   Attendance,
   AttendanceType,
@@ -144,6 +145,20 @@ export const eventsService = {
     form.append('file', buildImageFile(uri, 'event.jpg'))
     return api
       .post(`/events/${eventId}/images`, form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .then(r => r.data)
+  },
+
+  uploadPostImage: (
+    eventId: string,
+    postId: string,
+    uri: string,
+  ): Promise<EventImage> => {
+    const form = new FormData()
+    form.append('file', buildImageFile(uri, 'post.jpg'))
+    return api
+      .post(`/events/${eventId}/posts/${postId}/images`, form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       .then(r => r.data)

@@ -170,6 +170,7 @@ export type EventPost = {
   authorId: string
   eventId: string
   author: CommentAuthor
+  images?: EventImage[]
   _count?: {
     comments: number
     reactions: number
