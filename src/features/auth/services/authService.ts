@@ -13,6 +13,12 @@ export const authService = {
   me: () => api.get('/users/me').then(r => r.data),
   socialLogin: (data: SocialLoginPayload): Promise<SocialLoginResponse> =>
     api.post('/auth/social', data).then(r => r.data),
+  // Revoga o refresh token atual no servidor (logout). skipAuthHandler: um 401
+  // aqui (sessão já inválida) não deve disparar o fluxo global de refresh.
+  logout: (refreshToken: string) =>
+    api
+      .post('/auth/logout', { refreshToken }, { skipAuthHandler: true })
+      .then(r => r.data),
   forgotPassword: (email: string) =>
     api.post('/auth/forgot-password', { email }).then(r => r.data),
   resetPassword: (data: { email: string; code: string; newPassword: string }) =>

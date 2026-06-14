@@ -1,6 +1,6 @@
-import { api } from '@/shared/lib/api'
 import { queryClient } from '@/shared/lib/queryClient'
 import { clearAuthSession, getRefreshToken } from '@/shared/lib/secureStore'
+import { authService } from '../services/authService'
 import { useAuthStore } from '../store/authStore'
 import { useConsentStore } from '@/features/privacy/store/consentStore'
 import { usePresenceStore } from '@/features/chat/store/presenceStore'
@@ -31,13 +31,7 @@ export async function endSession({
   if (!expired) {
     try {
       const refreshToken = await getRefreshToken()
-      if (refreshToken) {
-        await api.post(
-          '/auth/logout',
-          { refreshToken },
-          { skipAuthHandler: true },
-        )
-      }
+      if (refreshToken) await authService.logout(refreshToken)
     } catch {
       // ignore — falha de rede/401 não bloqueia o logout local
     }

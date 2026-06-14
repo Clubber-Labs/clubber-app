@@ -63,7 +63,9 @@ async function refreshSession(): Promise<void> {
   const { data } = await api.post<{ token: string; refreshToken: string }>(
     '/auth/refresh',
     { refreshToken },
-    { skipAuthHandler: true, _retry: true },
+    // skipAuthHandler já faz o interceptor sair cedo se o próprio refresh der
+    // 401 — não precisa de _retry aqui.
+    { skipAuthHandler: true },
   )
   await saveToken(data.token)
   await saveRefreshToken(data.refreshToken)
@@ -101,16 +103,19 @@ api.interceptors.response.use(
     isRefreshing = true
     try {
       await refreshSession()
-      flushQueue(null)
-      // O request interceptor relê o token novo do SecureStore no retry.
-      return await api(original)
     } catch (refreshErr) {
+      isRefreshing = false
       flushQueue(refreshErr)
       // Refresh falhou (expirado/revogado): aí sim encerra a sessão de verdade.
       unauthorizedHandler?.()
       return Promise.reject(refreshErr)
-    } finally {
-      isRefreshing = false
     }
+    // Baixa o flag e drena a fila ANTES de re-tentar: um 401 que chegue durante
+    // o round-trip do retry inicia um ciclo novo (com token já fresco) em vez de
+    // entrar numa fila que já foi drenada e ficar pendurado pra sempre.
+    isRefreshing = false
+    flushQueue(null)
+    // O request interceptor relê o token novo do SecureStore no retry.
+    return api(original)
   },
 )
