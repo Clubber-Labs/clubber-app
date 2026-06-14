@@ -9,6 +9,7 @@ export type SocialLoginPayload = {
 
 export type SocialLoginResponse = {
   token: string
+  refreshToken: string
   user: UserProfile
   profileIncomplete: boolean
 }

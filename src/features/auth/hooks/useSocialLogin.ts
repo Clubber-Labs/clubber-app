@@ -6,6 +6,7 @@ import { signInWithGoogle } from '../lib/googleSignIn'
 import { signInWithFacebook } from '../lib/facebookLogin'
 import {
   saveToken,
+  saveRefreshToken,
   saveUserId,
   saveProfileIncomplete,
   clearAuthSession,
@@ -100,6 +101,7 @@ export function useSocialLogin(provider: SocialProvider) {
       })
 
       await saveToken(response.token)
+      await saveRefreshToken(response.refreshToken)
       await saveUserId(response.user.id)
       // Persistir profileIncomplete pra o restore sobreviver a kill/restart sem
       // depender de me() ter sucesso (offline = me() falha, flag persistido vence).

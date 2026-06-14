@@ -4,6 +4,7 @@ import { authService } from '../services/authService'
 import { useAuthStore } from '../store/authStore'
 import {
   saveToken,
+  saveRefreshToken,
   saveUserId,
   clearAuthSession,
 } from '@/shared/lib/secureStore'
@@ -66,6 +67,7 @@ export function useRegister() {
       })
       const token = response.token as string
       await saveToken(token)
+      await saveRefreshToken(response.refreshToken as string)
 
       try {
         const userId =
