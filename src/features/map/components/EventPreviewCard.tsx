@@ -6,6 +6,7 @@ import { EventDateChip } from '@/features/events/components/EventDateChip'
 import { EventStatusBadge } from '@/features/events/components/EventStatusBadge'
 import { EventAttendeesStack } from '@/features/events/components/EventAttendeesStack'
 import { distanceKm, formatDistance } from '@/shared/utils/distance'
+import { featuredAttendees } from '@/shared/utils/featuredAttendees'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -27,7 +28,7 @@ export function EventPreviewCard({
 }: Props) {
   const cover = event.images[0]?.url
   const gradId = `preview-grad-${event.id}`
-  const attendees = event.topAttendances ?? event.friendAttendances ?? []
+  const attendees = featuredAttendees(event)
   const distance = userCoords
     ? formatDistance(distanceKm(userCoords, [event.longitude, event.latitude]))
     : null

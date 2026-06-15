@@ -9,8 +9,9 @@ import { EventAttendeesStack } from './EventAttendeesStack'
 import { FeedReasonBanner } from './FeedReasonBanner'
 import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
 import { UserAvatar } from '@/shared/components/UserAvatar'
-import { formatRelative } from '@/shared/utils/dateFormat'
+import { formatRelative, formatTime } from '@/shared/utils/dateFormat'
 import { formatFullName } from '@/shared/utils/fullName'
+import { featuredAttendees } from '@/shared/utils/featuredAttendees'
 import type { FeedEvent } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
@@ -20,13 +21,6 @@ type Props = {
   // Banner de "amigo X" só faz sentido em contexto personalizado (/feed).
   // Em listagens genéricas (sem dado de amizade), passe false.
   showReason?: boolean
-}
-
-function formatTime(iso: string): string {
-  return new Date(iso).toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-  })
 }
 
 export function EventCard({ event, onPress, showReason = true }: Props) {
@@ -39,9 +33,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
   const liked = event.userLiked
   const reason = showReason ? event.reason : null
   const hasImage = !!event.images[0]?.url
-  // topAttendances (participantes em geral) tem prioridade; cai pra amigos
-  // quando o backend não envia o destaque geral.
-  const attendees = event.topAttendances ?? event.friendAttendances ?? []
+  const attendees = featuredAttendees(event)
   const going = event.userAttendance === 'CONFIRMED'
   const interested = event.userAttendance === 'INTERESTED'
   const rsvpPending = setAttendance.isPending || cancelAttendance.isPending

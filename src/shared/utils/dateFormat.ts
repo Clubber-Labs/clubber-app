@@ -9,6 +9,10 @@ export function formatEventDate(iso: string): string {
   return format(new Date(iso), "d 'de' MMMM 'às' HH:mm", { locale: ptBR })
 }
 
+export function formatTime(iso: string): string {
+  return format(new Date(iso), 'HH:mm', { locale: ptBR })
+}
+
 export function formatShortDate(iso: string): string {
   return format(new Date(iso), 'dd/MM/yyyy', { locale: ptBR })
 }

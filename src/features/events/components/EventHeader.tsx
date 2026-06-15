@@ -1,7 +1,6 @@
-import type { ReactNode } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import type { ComponentProps } from 'react'
 import Svg, {
   Defs,
   RadialGradient,

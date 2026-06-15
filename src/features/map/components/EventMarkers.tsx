@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons'
 import Mapbox from '@rnmapbox/maps'
 import type { FeedEvent, FriendAttendance } from '@/shared/types'
 import { UserAvatar } from '@/shared/components/UserAvatar'
+import { featuredAttendees } from '@/shared/utils/featuredAttendees'
 import {
   groupCoincidentEvents,
   fanoutOffset,
@@ -102,11 +103,7 @@ function socialItems(event: FeedEvent, detailsOpen: boolean): StackItem[] {
 
   if (detailsOpen) return []
 
-  const attendees = (
-    event.topAttendances ??
-    event.friendAttendances ??
-    []
-  ).slice(0, MAX_FRIENDS)
+  const attendees = featuredAttendees(event).slice(0, MAX_FRIENDS)
   const moreCount = Math.max(0, event._count.attendances - attendees.length)
   const items: StackItem[] = attendees.map((attendee, index) => ({
     key: attendee.user.id,
