@@ -54,8 +54,10 @@ export function useSuggestSpots() {
       generate.mutate({
         latitude: location.latitude,
         longitude: location.longitude,
-        // Override por geração (WYSIWYG: manda o que o slider mostra).
-        radiusKm,
+        // radiusKm é OVERRIDE: só vai quando o usuário mexeu no slider. Sem
+        // override o backend usa o raio salvo — evita mandar o default (antes de
+        // /users/me hidratar) e sobrescrever o valor real do usuário naquela busca.
+        ...(radiusOverride !== null ? { radiusKm: radiusOverride } : {}),
         ...(hasValidQuery ? { query: trimmedQuery } : {}),
       })
     } finally {

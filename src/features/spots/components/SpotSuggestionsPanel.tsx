@@ -177,7 +177,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
   return (
     <View
       ref={sheetRef}
-      className="absolute left-0 right-0 h-fit bottom-0 bg-surface-sunken rounded-t-3xl border-t border-line"
+      className="absolute left-0 right-0 max-h-[80%] bottom-0 bg-surface-sunken rounded-t-3xl border-t border-line"
       style={{ transform: [{ translateY: -keyboardLift }] }}
     >
       <View className="items-center pt-2 pb-1">
@@ -194,6 +194,10 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
         </Pressable>
       </View>
       <FlatList
+        // A folha tem teto (max-h); flexShrink deixa a lista encolher e rolar
+        // dentro dele com muitos cards. Sem isto a lista estica a folha além da
+        // tela e a virtualização não rola (flex-1 colaparia: base 0 em pai auto).
+        style={{ flexShrink: 1 }}
         // Ordem ranqueada pela IA — renderiza como veio, sem reordenar.
         data={suggestions}
         keyExtractor={item => item.placeId}
