@@ -1,5 +1,6 @@
 import axios, { type AxiosError } from 'axios'
 import Constants from 'expo-constants'
+import { isUnauthorizedError } from './apiError'
 import {
   getRefreshToken,
   getToken,
@@ -13,6 +14,10 @@ declare module 'axios' {
     // nem tenta refresh. Usado pela reautenticação da exclusão de conta (ali um
     // 401 significa "Senha incorreta") e pela própria chamada de /auth/refresh.
     skipAuthHandler?: boolean
+    // Quando true, o interceptor de request NÃO anexa o header Authorization.
+    // Usado pelo /auth/refresh: é rota PÚBLICA e o contrato exige que o access
+    // (já expirado) não seja enviado — mandá-lo pode fazer o refresh falhar.
+    skipAuthHeader?: boolean
     // Marca um request já re-tentado após um refresh bem-sucedido — evita loop
     // caso o retry também volte 401.
     _retry?: boolean
@@ -34,6 +39,7 @@ export function setUnauthorizedHandler(handler: (() => void) | null) {
 }
 
 api.interceptors.request.use(async config => {
+  if (config.skipAuthHeader) return config
   const token = await getToken()
   if (token) config.headers.Authorization = `Bearer ${token}`
   return config
@@ -55,17 +61,28 @@ function flushQueue(error: unknown) {
   pendingQueue = []
 }
 
+// Falha IRRECUPERÁVEL do refresh — não há mais refresh token guardado. Marcada
+// como terminal (encerra a sessão), ao contrário de uma falha de rede.
+class MissingRefreshTokenError extends Error {}
+
+// Distingue "sessão de fato perdida" (refresh ausente ou rejeitado com 401) de
+// "falha transitória" (rede/5xx/429). Só a primeira deve deslogar o usuário —
+// o contrato manda encerrar a sessão SÓ quando o refresh volta 401.
+function isTerminalRefreshError(error: unknown): boolean {
+  return error instanceof MissingRefreshTokenError || isUnauthorizedError(error)
+}
+
 // Troca o refresh atual por um par novo e persiste. O backend rotaciona o
 // refresh a cada uso; por isso salvamos o novo refresh também.
 async function refreshSession(): Promise<void> {
   const refreshToken = await getRefreshToken()
-  if (!refreshToken) throw new Error('no refresh token')
+  if (!refreshToken) throw new MissingRefreshTokenError('no refresh token')
   const { data } = await api.post<{ token: string; refreshToken: string }>(
     '/auth/refresh',
     { refreshToken },
-    // skipAuthHandler já faz o interceptor sair cedo se o próprio refresh der
-    // 401 — não precisa de _retry aqui.
-    { skipAuthHandler: true },
+    // skipAuthHandler: o próprio refresh não deve disparar o fluxo de 401.
+    // skipAuthHeader: rota pública — não enviar o access (expirado) no header.
+    { skipAuthHandler: true, skipAuthHeader: true },
   )
   await saveToken(data.token)
   await saveRefreshToken(data.refreshToken)
@@ -106,8 +123,10 @@ api.interceptors.response.use(
     } catch (refreshErr) {
       isRefreshing = false
       flushQueue(refreshErr)
-      // Refresh falhou (expirado/revogado): aí sim encerra a sessão de verdade.
-      unauthorizedHandler?.()
+      // Só encerra a sessão se o refresh foi de fato rejeitado (401) ou não há
+      // mais refresh token. Falha de rede/5xx/429 é transitória: mantém a sessão
+      // e deixa o request original falhar normalmente (o usuário pode retentar).
+      if (isTerminalRefreshError(refreshErr)) unauthorizedHandler?.()
       return Promise.reject(refreshErr)
     }
     // Baixa o flag e drena a fila ANTES de re-tentar: um 401 que chegue durante
