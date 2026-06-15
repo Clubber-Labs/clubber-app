@@ -190,6 +190,7 @@
   .pill-soon { background: rgba(251,191,36,.16); color: var(--warning-text); border: 1px solid rgba(251,191,36,.32); }
   .pill-private { background: rgba(0,0,0,.5); color: var(--content-tertiary); border: 1px solid rgba(255,255,255,.14); }
   .pill-past { background: rgba(0,0,0,.5); color: var(--content-subtle); border: 1px solid rgba(255,255,255,.1); }
+  .pill-sponsored { background: rgba(124,58,237,.2); color: var(--brand-text); border: 1px solid rgba(139,92,246,.4); }
 
   .byline { display: flex; align-items: center; gap: 8px; }
   .byline .av { width: 26px; height: 26px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,.5); flex: none; }
@@ -638,6 +639,67 @@
         </div></div>
       </div>
 
+    </div>
+  </section>
+
+  <!-- ════════════ 5. EVENTO PROMOVIDO ════════════ -->
+  <section>
+    <div class="sec-head"><div class="num">5</div><h2>Evento promovido</h2></div>
+    <p class="sec-sub">Eventos patrocinados (premium) ganham o selo <b>Patrocinado</b> na faixa do hero — cantos do sistema (rounded-md) e acento da marca — sem competir com a hierarquia do card. No mapa, o pin do evento fica <b>violeta</b>.</p>
+
+    <div class="grid cols-2">
+      <!-- card promovido no feed -->
+      <div class="panel">
+        <div class="label good">Card no feed — selo no hero</div>
+        <div style="max-width:312px;margin:0 auto">
+          <div class="ecard">
+            <div class="hero">
+              <div class="img photo-show"></div>
+              <div class="scrim"></div>
+              <div class="top">
+                <div class="datechip"><div class="m">JUN</div><div class="d">14</div></div>
+                <div style="display:flex;align-items:center;gap:6px">
+                  <div class="pill pill-sponsored"><svg class="i sm" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5 6 .5-4.5 4 1.4 5.9L12 21l-5.4 1.9 1.4-5.9-4.5-4 6-.5z"/></svg> Patrocinado</div>
+                  <div class="pill pill-soon">● Sábado</div>
+                </div>
+              </div>
+              <div class="bottom"><div class="byline"><div class="av g3"></div><div class="txt">Coletivo Aurora<small>organizador</small></div></div></div>
+            </div>
+            <div class="ebody"><div class="etitle">Festa Aurora · Open Air</div>
+              <div class="emeta"><span class="it"><svg class="i sm" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg> Lapa</span><span class="it"><svg class="i sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> 22h</span></div>
+            </div>
+            <div class="social"><div class="stack"><div class="av g1"></div><div class="av g2"></div><div class="av g5"></div></div><div class="txt"><b>+124</b> interessados</div></div>
+            <div class="efoot"><button class="btn btn-primary rsvp"><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Vou</button><button class="iconbtn"><svg class="i lg" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- onde mais aparece -->
+      <div class="panel">
+        <div class="label">No mapa &amp; no detalhe</div>
+        <div style="position:relative;height:208px;border-radius:12px;overflow:hidden;border:1px solid var(--line);margin-bottom:14px">
+          <div class="mapbg"></div>
+          <div class="pin brand" style="top:44px;left:62px"><svg class="i sm" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 3l2.5 5.5 6 .5-4.5 4 1.4 5.9L12 21l-5.4 1.9 1.4-5.9-4.5-4 6-.5z"/></svg></div>
+          <div class="pin cluster" style="top:92px;left:196px"><span>8</span></div>
+          <div style="position:absolute;left:10px;right:10px;bottom:10px">
+            <div class="ecard" style="margin:0;box-shadow:0 4px 12px rgba(0,0,0,.5)">
+              <div style="display:flex;gap:10px;padding:10px">
+                <div class="photo-show" style="width:62px;height:62px;border-radius:10px;flex:none"></div>
+                <div style="flex:1;min-width:0">
+                  <div style="display:flex;align-items:center;gap:5px;margin-bottom:5px"><div class="pill pill-sponsored" style="padding:3px 7px"><svg class="i sm" viewBox="0 0 24 24"><path d="M12 3l2.5 5.5 6 .5-4.5 4 1.4 5.9L12 21l-5.4 1.9 1.4-5.9-4.5-4 6-.5z"/></svg> Patrocinado</div></div>
+                  <div class="etitle" style="font-size:15px;line-height:1.2">Festa Aurora · Open Air</div>
+                  <div class="emeta" style="margin-top:4px"><span class="it">Lapa · 1,2 km</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="notes">
+          <div class="note plus"><span class="k">1</span><span><b>Selo no hero</b> (feed) e na linha de status do <b>preview do mapa</b> — o mesmo componente <span class="pill-inline">SponsoredBadge</span>.</span></div>
+          <div class="note plus"><span class="k">2</span><span><b>Pin violeta</b> (<span class="pill-inline">brand-emphasis</span>) no mapa em vez do anel branco — destaca o patrocinado entre os demais.</span></div>
+          <div class="note plus"><span class="k">3</span><span><b>No detalhe</b>, o autor vê o <span class="pill-inline">PromoteEventCard</span> (promover / cancelar) — controle, não selo público.</span></div>
+        </div>
+      </div>
     </div>
   </section>
 
