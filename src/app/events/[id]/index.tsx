@@ -20,6 +20,7 @@ import { EventPostsFeed } from '@/features/events/components/EventPostsFeed'
 import { EventActionsButton } from '@/features/events/components/EventActionsButton'
 import { EventShareButton } from '@/features/events/components/EventShareButton'
 import { EventAnalyticsEntryCard } from '@/features/event-analytics/components/EventAnalyticsEntryCard'
+import { PromoteEventCard } from '@/features/featured-events/components/PromoteEventCard'
 import { useTrackEventView } from '@/features/event-analytics/hooks/useTrackEventView'
 import { useTrackEventShare } from '@/features/event-analytics/hooks/useTrackEventShare'
 import { ReportButton } from '@/features/reports/components/ReportButton'
@@ -68,6 +69,14 @@ function DetailHeader({ event, isAuthor, isPremium, onShared }: HeaderProps) {
       <View className="gap-5 pt-5 pb-5">
         {isAuthor && (
           <EventAnalyticsEntryCard eventId={event.id} isPremium={isPremium} />
+        )}
+        {isAuthor && (
+          <PromoteEventCard
+            eventId={event.id}
+            eventDate={event.date}
+            isPremium={isPremium}
+            isFeatured={!!event.isFeatured}
+          />
         )}
         {allowAttendance && (
           <EventAttendanceButton

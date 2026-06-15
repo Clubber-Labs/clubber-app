@@ -101,6 +101,7 @@ export type FeedEvent = {
   description?: string
   images: EventImage[]
   isPublic: boolean
+  isFeatured?: boolean
   createdAt: string
   date: string
   endDate?: string | null
@@ -135,6 +136,7 @@ export type EventDetail = {
   date: string
   endDate?: string | null
   status?: EventStatus | null
+  isFeatured?: boolean
   latitude: number
   longitude: number
   address?: string

@@ -4,6 +4,7 @@ import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg'
 import type { FeedEvent } from '@/shared/types'
 import { EventDateChip } from '@/features/events/components/EventDateChip'
 import { EventStatusBadge } from '@/features/events/components/EventStatusBadge'
+import { SponsoredBadge } from '@/features/featured-events/components/SponsoredBadge'
 import { EventAttendeesStack } from '@/features/events/components/EventAttendeesStack'
 import { distanceKm, formatDistance } from '@/shared/utils/distance'
 import { featuredAttendees } from '@/shared/utils/featuredAttendees'
@@ -76,7 +77,8 @@ export function EventPreviewCard({
         </View>
 
         <View className="flex-1 gap-1.5 pr-6">
-          <View className="flex-row">
+          <View className="flex-row items-center gap-1.5">
+            {event.isFeatured && <SponsoredBadge />}
             <EventStatusBadge status={event.status} date={event.date} />
           </View>
           <Text

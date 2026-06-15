@@ -9,6 +9,7 @@ import Svg, {
 } from 'react-native-svg'
 import { EventDateChip } from './EventDateChip'
 import { EventStatusBadge } from './EventStatusBadge'
+import { SponsoredBadge } from '@/features/featured-events/components/SponsoredBadge'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { formatFullName } from '@/shared/utils/fullName'
 import type { FeedEvent } from '@/shared/types'
@@ -44,6 +45,7 @@ function TopChips({ event, isPast }: { event: FeedEvent; isPast: boolean }) {
     <View className="flex-row items-start justify-between">
       <EventDateChip date={event.date} muted={isPast} />
       <View className="flex-row items-center gap-1.5">
+        {event.isFeatured && <SponsoredBadge />}
         {!event.isPublic && <PrivatePill />}
         <EventStatusBadge status={event.status} date={event.date} />
       </View>

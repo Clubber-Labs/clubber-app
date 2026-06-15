@@ -42,3 +42,7 @@ export function toLocalIsoDate(date: Date): string {
   const d = String(date.getDate()).padStart(2, '0')
   return `${y}-${m}-${d}`
 }
+
+export function formatDateTime(iso: string): string {
+  return format(new Date(iso), 'dd/MM/yyyy HH:mm', { locale: ptBR })
+}
