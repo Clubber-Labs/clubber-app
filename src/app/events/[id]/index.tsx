@@ -17,6 +17,7 @@ import { EventAttendanceButton } from '@/features/events/components/EventAttenda
 import { EventPostsFeed } from '@/features/events/components/EventPostsFeed'
 import { EventActionsButton } from '@/features/events/components/EventActionsButton'
 import { ReportButton } from '@/features/reports/components/ReportButton'
+import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
 import { colors } from '@/shared/theme'
 
 type HeaderProps = {
@@ -26,25 +27,27 @@ type HeaderProps = {
 
 function DetailHeader({ event, isAuthor }: HeaderProps) {
   const allowAttendance = event.status !== 'PAST' && event.status !== 'CANCELED'
+  const navigateToProfile = useNavigateToProfile()
+  const router = useRouter()
 
   return (
     <View>
-      <View className="relative">
-        <EventHeader event={event} />
-        {isAuthor ? (
-          <View className="absolute top-3 right-3">
+      <EventHeader
+        event={event}
+        onAuthorPress={() => navigateToProfile(event.author.id)}
+        onBack={() => router.back()}
+        actions={
+          isAuthor ? (
             <EventActionsButton eventId={event.id} isPublic={event.isPublic} />
-          </View>
-        ) : (
-          <View className="absolute top-3 right-3">
+          ) : (
             <ReportButton
               target={{ type: 'event', id: event.id }}
               variant="overlay"
             />
-          </View>
-        )}
-      </View>
-      <View className="pt-4 pb-5 gap-5">
+          )
+        }
+      />
+      <View className="gap-5 pt-5 pb-5">
         {allowAttendance && (
           <EventAttendanceButton
             eventId={event.id}
@@ -53,7 +56,7 @@ function DetailHeader({ event, isAuthor }: HeaderProps) {
         )}
         <EventMap latitude={event.latitude} longitude={event.longitude} />
       </View>
-      <View className="px-4 pb-2 border-t border-line" />
+      <View className="border-t border-line" />
     </View>
   )
 }

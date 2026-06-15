@@ -17,6 +17,9 @@ type Props = {
   onPress: (event: FeedEvent) => void
   // Semi-transparente quando a densidade (heatmap) está visível por baixo.
   dimmed?: boolean
+  // Com um card de detalhes aberto, a pilha de participantes some dos pins; o
+  // avatar do organizador (eventos com capa) permanece.
+  detailsOpen?: boolean
 }
 
 const PIN_SIZE = 54
@@ -81,28 +84,63 @@ type StackItem = { key: string; index: number } & (
   | { kind: 'more'; count: number }
 )
 
-// Pin único: criador no topo + pilha de participantes na base (amigos primeiro,
-// depois não-amigos — a ordem vem do backend), do meio pra direita, sobrepostos.
-function SingleMarker({
-  event,
-  selected,
-  onPress,
-  dimmed,
-}: {
-  event: FeedEvent
-  selected: boolean
-  onPress: (event: FeedEvent) => void
-  dimmed?: boolean
-}) {
-  const size = selected ? PIN_SIZE_SELECTED : PIN_SIZE
-  const opacity = dimmed ? DIMMED_OPACITY : 1
+// Prova social pendurada na base do pin (só pin único):
+//  - evento COM capa → avatar do organizador (sempre, mesmo com o card aberto)
+//  - evento SEM capa → pilha de participantes (amigos primeiro) + "+N", só no
+//    modo de navegação (some ao abrir o card de detalhes)
+function socialItems(event: FeedEvent, detailsOpen: boolean): StackItem[] {
+  if (event.images[0]?.url) {
+    return [
+      {
+        key: event.author.id,
+        index: 0,
+        kind: 'avatar',
+        attendee: { user: event.author },
+      },
+    ]
+  }
+
+  if (detailsOpen) return []
+
   const attendees = (
     event.topAttendances ??
     event.friendAttendances ??
     []
   ).slice(0, MAX_FRIENDS)
   const moreCount = Math.max(0, event._count.attendances - attendees.length)
-  const hasMore = attendees.length > 0 && moreCount > 0
+  const items: StackItem[] = attendees.map((attendee, index) => ({
+    key: attendee.user.id,
+    index,
+    kind: 'avatar',
+    attendee,
+  }))
+  if (attendees.length > 0 && moreCount > 0) {
+    items.push({
+      key: 'more',
+      index: attendees.length,
+      kind: 'more',
+      count: moreCount,
+    })
+  }
+  return items
+}
+
+function SingleMarker({
+  event,
+  selected,
+  onPress,
+  dimmed,
+  detailsOpen,
+}: {
+  event: FeedEvent
+  selected: boolean
+  onPress: (event: FeedEvent) => void
+  dimmed?: boolean
+  detailsOpen?: boolean
+}) {
+  const size = selected ? PIN_SIZE_SELECTED : PIN_SIZE
+  const opacity = dimmed ? DIMMED_OPACITY : 1
+  const items = socialItems(event, !!detailsOpen)
 
   const pin = (
     <Pressable
@@ -115,7 +153,7 @@ function SingleMarker({
     </Pressable>
   )
 
-  if (attendees.length === 0) {
+  if (items.length === 0) {
     return (
       <Mapbox.MarkerView
         id={`event-${event.id}`}
@@ -126,21 +164,6 @@ function SingleMarker({
         <View style={{ opacity }}>{pin}</View>
       </Mapbox.MarkerView>
     )
-  }
-
-  const items: StackItem[] = attendees.map((attendee, index) => ({
-    key: attendee.user.id,
-    index,
-    kind: 'avatar',
-    attendee,
-  }))
-  if (hasMore) {
-    items.push({
-      key: 'more',
-      index: attendees.length,
-      kind: 'more',
-      count: moreCount,
-    })
   }
 
   const layout = friendStackLayout(size, items.length)
@@ -272,7 +295,13 @@ function CoincidentMarker({
   )
 }
 
-export function EventMarkers({ events, selectedId, onPress, dimmed }: Props) {
+export function EventMarkers({
+  events,
+  selectedId,
+  onPress,
+  dimmed,
+  detailsOpen,
+}: Props) {
   const groups = groupCoincidentEvents(events)
 
   return (
@@ -285,6 +314,7 @@ export function EventMarkers({ events, selectedId, onPress, dimmed }: Props) {
             selected={selectedId === group[0].id}
             onPress={onPress}
             dimmed={dimmed}
+            detailsOpen={detailsOpen}
           />
         ) : (
           <CoincidentMarker

@@ -106,6 +106,7 @@ export default function RootLayout() {
   const isAuthenticated = useAuthStore(s => s.isAuthenticated)
   const profileIncomplete = useAuthStore(s => s.profileIncomplete)
   const userId = useAuthStore(s => s.userId)
+  const segments = useSegments() as string[]
   useFonts(Ionicons.font)
 
   useEffect(() => {
@@ -129,7 +130,13 @@ export default function RootLayout() {
   )
   const onConsentFlow =
     !consentHydrated || needsConsentRoot || needsVersionBumpRoot
-  const showHeader = isAuthenticated && !profileIncomplete && !onConsentFlow
+  // Detalhe do evento usa hero imersivo (sob a status bar) com botões
+  // flutuantes próprios — esconde o header global e tira o inset do topo só
+  // nessa rota (events/[id], sem subrotas como edit/invites).
+  const isEventDetail =
+    segments[0] === 'events' && segments[1] === '[id]' && segments.length === 2
+  const showHeader =
+    isAuthenticated && !profileIncomplete && !onConsentFlow && !isEventDetail
   const chatActive = isAuthenticated && !profileIncomplete && !!userId
 
   // Publishable key é pública por natureza (pk_) — sem ela a PaymentSheet
@@ -148,7 +155,7 @@ export default function RootLayout() {
                   <StatusBar style="light" />
                   <SafeAreaView
                     style={{ flex: 1, backgroundColor: colors.background }}
-                    edges={['top']}
+                    edges={isEventDetail ? [] : ['top']}
                   >
                     {showHeader && <GlobalHeader />}
                     <View className="flex-1 bg-background">

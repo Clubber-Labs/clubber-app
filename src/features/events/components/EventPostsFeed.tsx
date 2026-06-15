@@ -41,7 +41,11 @@ export function EventPostsFeed({
     <FlatList<EventPost>
       data={posts}
       keyExtractor={item => item.id}
-      contentContainerStyle={{ padding: 16, gap: 10, paddingBottom: 60 }}
+      contentContainerStyle={{
+        paddingHorizontal: 16,
+        gap: 10,
+        paddingBottom: 60,
+      }}
       ListHeaderComponent={
         <View className="gap-3">
           {ListHeaderComponent}

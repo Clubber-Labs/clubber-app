@@ -21,14 +21,16 @@ function StatItem({
     <Pressable
       onPress={onPress}
       disabled={!onPress}
-      className="items-center flex-1"
+      className="flex-1 items-center py-1"
     >
-      <Text className="text-content font-bold text-lg">{value}</Text>
-      <Text className="text-content-muted text-xs mt-0.5">{label}</Text>
+      <Text className="text-content text-lg font-extrabold">{value}</Text>
+      <Text className="text-content-muted mt-0.5 text-xs">{label}</Text>
     </Pressable>
   )
 }
 
+// Stats inline, ao lado do avatar (sem divisórias/borda) — densidade de perfil
+// moderno; o header fica curto e a grade de eventos sobe.
 export function ProfileStats({
   eventsCount,
   followersCount,
@@ -37,15 +39,13 @@ export function ProfileStats({
   onFollowingPress,
 }: Props) {
   return (
-    <View className="flex-row py-4 border-b border-line-subtle">
+    <View className="flex-1 flex-row">
       <StatItem value={eventsCount} label="Eventos" />
-      <View className="w-px bg-surface-elevated" />
       <StatItem
         value={followersCount}
         label="Seguidores"
         onPress={onFollowersPress}
       />
-      <View className="w-px bg-surface-elevated" />
       <StatItem
         value={followingCount}
         label="Seguindo"

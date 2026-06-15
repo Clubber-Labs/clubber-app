@@ -38,17 +38,19 @@ export function EventAttendanceButton({ eventId, current }: Props) {
           <Pressable
             key={type}
             onPress={() => handlePress(type)}
-            className={`flex-1 flex-row items-center justify-center gap-1 py-3 rounded-xl border ${
-              active ? 'bg-brand border-brand' : 'bg-surface border-line'
+            accessibilityRole="button"
+            accessibilityState={{ selected: active }}
+            className={`flex-1 items-center justify-center gap-1 rounded-lg border py-3 ${
+              active ? 'bg-brand border-brand' : 'bg-surface border-line-strong'
             }`}
           >
             <Ionicons
               name={icon}
-              size={18}
-              color={active ? colors.content : colors.lineStrong}
+              size={20}
+              color={active ? colors.content : colors.contentSecondary}
             />
             <Text
-              className={`text-xs font-semibold ${active ? 'text-content' : 'text-content-secondary'}`}
+              className={`text-xs font-bold ${active ? 'text-content' : 'text-content-secondary'}`}
             >
               {label}
             </Text>

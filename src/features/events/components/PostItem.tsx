@@ -6,6 +6,7 @@ import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useDeletePost } from '../hooks/usePosts'
 import { formatRelative } from '@/shared/utils/dateFormat'
+import { formatFullName } from '@/shared/utils/fullName'
 import type { EventPost } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
@@ -33,7 +34,7 @@ export function PostItem({ eventId, post }: Props) {
   }
 
   return (
-    <View className="bg-surface rounded-2xl p-4 border border-line gap-3">
+    <View className="bg-surface rounded-xl p-4 border border-line gap-3">
       <View className="flex-row items-start justify-between">
         <Pressable
           onPress={() => navigateToProfile(post.author.id)}
@@ -46,7 +47,7 @@ export function PostItem({ eventId, post }: Props) {
           />
           <View className="flex-1">
             <Text className="text-sm font-semibold text-content">
-              {post.author.name} {post.author.lastname}
+              {formatFullName(post.author.name, post.author.lastname)}
             </Text>
             <Text className="text-xs text-content-subtle">
               @{post.author.username} · {formatRelative(post.createdAt)}

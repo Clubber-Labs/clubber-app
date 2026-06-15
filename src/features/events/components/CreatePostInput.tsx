@@ -43,7 +43,7 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
   }
 
   return (
-    <View className="bg-surface border border-line rounded-2xl p-3 gap-2">
+    <View className="bg-surface border border-line rounded-xl p-3 gap-2">
       <View className="flex-row gap-2 items-start">
         <View className="w-9 h-9 rounded-full bg-brand-surface-strong items-center justify-center">
           <Text className="text-brand-text-strong font-semibold">
@@ -66,7 +66,7 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
         <Pressable
           onPress={handleSend}
           disabled={!text.trim() || addPost.isPending}
-          className={`flex-row items-center gap-1 px-4 py-2 rounded-full ${text.trim() && !addPost.isPending ? 'bg-brand' : 'bg-surface-higher'}`}
+          className={`flex-row items-center gap-1 px-4 py-2 rounded-lg ${text.trim() && !addPost.isPending ? 'bg-brand' : 'bg-surface-higher'}`}
         >
           {addPost.isPending ? (
             <ActivityIndicator size="small" color={colors.content} />

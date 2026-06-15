@@ -30,13 +30,13 @@ import { EventMarkers } from '@/features/map/components/EventMarkers'
 import { EventPreviewCard } from '@/features/map/components/EventPreviewCard'
 import { MapStatusBanner } from '@/features/map/components/MapStatusBanner'
 import { MapSearchBar } from '@/features/map/components/MapSearchBar'
+import { MapCategoryChips } from '@/features/map/components/MapCategoryChips'
 import { MapFiltersSheet } from '@/features/map/components/MapFiltersSheet'
-import { FloatingCreateButton } from '@/features/events/components/FloatingCreateButton'
+import { MapCreateButton } from '@/features/map/components/MapCreateButton'
 import { useViewportSpots } from '@/features/spots/hooks/useViewportSpots'
 import { useSuggestSpots } from '@/features/spots/hooks/useSuggestSpots'
 import { SpotMarkers } from '@/features/spots/components/SpotMarkers'
 import { SpotPreviewCard } from '@/features/spots/components/SpotPreviewCard'
-import { GenerateSpotsButton } from '@/features/spots/components/GenerateSpotsButton'
 import { SpotSuggestionsPanel } from '@/features/spots/components/SpotSuggestionsPanel'
 import { SuggestionMarkers } from '@/features/spots/components/SuggestionMarkers'
 import type { Spot, SpotSuggestion } from '@/features/spots/types'
@@ -218,6 +218,7 @@ export default function MapScreen() {
             selectedId={selectedEvent?.id}
             onPress={openEvent}
             dimmed={densityVisible}
+            detailsOpen={!!selectedEvent || !!selectedSpot}
           />
         )}
         <SpotMarkers
@@ -234,18 +235,24 @@ export default function MapScreen() {
         )}
       </Mapbox.MapView>
 
-      <View className="absolute top-3 left-3 right-3">
-        <MapSearchBar onSelect={openEvent} />
+      <View
+        className="absolute top-3 left-0 right-0 gap-2"
+        pointerEvents="box-none"
+      >
+        <View className="px-3">
+          <MapSearchBar onSelect={openEvent} />
+        </View>
+        <MapCategoryChips />
       </View>
 
       {isLoading && !error && (
-        <View className="absolute top-24 self-center bg-surface/90 px-3 py-1.5 rounded-full border border-line">
+        <View className="absolute top-24 self-center bg-surface/90 px-3 py-1.5 rounded-lg border border-line-strong">
           <ActivityIndicator size="small" color={colors.brandEmphasis} />
         </View>
       )}
 
       {!isLoading && truncated && !error && (
-        <View className="absolute top-24 self-center bg-surface/90 px-3 py-1.5 rounded-full border border-line">
+        <View className="absolute top-24 self-center bg-surface/90 px-3 py-1.5 rounded-lg border border-line-strong">
           <Text className="text-content-tertiary text-xs">
             Aproxime para ver mais eventos
           </Text>
@@ -259,19 +266,20 @@ export default function MapScreen() {
         />
       )}
 
-      <MapZoomControls
-        onZoomIn={() => adjustZoom(ZOOM_STEP)}
-        onZoomOut={() => adjustZoom(-ZOOM_STEP)}
-        onRecenter={recenter}
-        showRecenter
-        densityActive={densityVisible}
-        onToggleDensity={() => setDensityVisible(v => !v)}
-      />
-
       {!selectedEvent && !selectedSpot && !suggestionsOpen && (
         <>
-          <FloatingCreateButton />
-          <GenerateSpotsButton onPress={() => setSuggestionsOpen(true)} />
+          <MapZoomControls
+            onZoomIn={() => adjustZoom(ZOOM_STEP)}
+            onZoomOut={() => adjustZoom(-ZOOM_STEP)}
+            onRecenter={recenter}
+            showRecenter
+            densityActive={densityVisible}
+            onToggleDensity={() => setDensityVisible(v => !v)}
+          />
+          <MapCreateButton
+            onCreateEvent={() => router.push('/events/create')}
+            onCreateSpot={() => setSuggestionsOpen(true)}
+          />
         </>
       )}
 
@@ -286,6 +294,7 @@ export default function MapScreen() {
       {selectedEvent && (
         <EventPreviewCard
           event={selectedEvent}
+          userCoords={myPos}
           onClose={() => setSelectedEvent(null)}
           onSeeDetails={() => router.push(`/events/${selectedEvent.id}`)}
         />
@@ -294,6 +303,7 @@ export default function MapScreen() {
       {selectedSpot && (
         <SpotPreviewCard
           spot={selectedSpot}
+          userCoords={myPos}
           onClose={() => setSelectedSpot(null)}
           onSeeDetails={() => router.push(`/spots/${selectedSpot.id}`)}
         />

@@ -49,7 +49,7 @@ export function EventStatusBadge({ status, date }: Props) {
   if (!status || !Object.hasOwn(STYLES, status)) return null
   const style = STYLES[status]
   return (
-    <View className={`px-2.5 py-1 rounded-full ${style.bg}`}>
+    <View className={`px-2.5 py-1 rounded-md ${style.bg}`}>
       <Text
         className={`text-xs font-semibold ${style.text} ${style.strike ? 'line-through' : ''}`}
       >

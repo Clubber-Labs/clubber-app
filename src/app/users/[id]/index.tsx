@@ -13,10 +13,10 @@ import { useUserEvents } from '@/features/users/hooks/useUserEvents'
 import { useFollowUser } from '@/features/users/hooks/useFollowUser'
 import { useCreateConversation } from '@/features/chat/hooks/useCreateConversation'
 import { ProfileHeader } from '@/features/users/components/ProfileHeader'
-import { ProfileStats } from '@/features/users/components/ProfileStats'
 import { FollowButton } from '@/features/users/components/FollowButton'
 import { MessageButton } from '@/features/users/components/MessageButton'
 import { ProfileEventsList } from '@/features/users/components/ProfileEventsList'
+import { ProfileEventsEmpty } from '@/features/users/components/ProfileEventsEmpty'
 import { ProfileLoading } from '@/features/users/components/ProfileLoading'
 import { ProfileEmpty } from '@/features/users/components/ProfileEmpty'
 import { ReportButton } from '@/features/reports/components/ReportButton'
@@ -92,43 +92,48 @@ export default function UserProfileScreen() {
         hasNextPage={eventsQuery.hasNextPage ?? false}
         isFetchingNextPage={eventsQuery.isFetchingNextPage}
         onLoadMore={eventsQuery.fetchNextPage}
-        emptyMessage={
-          !canSeeContent
-            ? 'Este perfil é privado. Siga para ver os eventos.'
-            : 'Nenhum evento ainda.'
+        empty={
+          <ProfileEventsEmpty variant={canSeeContent ? 'other' : 'private'} />
         }
         header={
           <>
-            <ProfileHeader profile={profile} isOwnProfile={isOwnProfile} />
-            {!isOwnProfile && (
-              <View className="mt-3 mb-1 flex-row items-center gap-2">
-                <View className="flex-1">{followButton}</View>
-                {canMessage && (
-                  <MessageButton
-                    onPress={openConversation}
-                    loading={createConversation.isPending}
-                  />
-                )}
-                <ReportButton
-                  target={{ type: 'user', id: profile.id }}
-                  variant="ghost"
-                />
-              </View>
-            )}
-            <ProfileStats
-              eventsCount={profile.eventsCount}
-              followersCount={profile.followersCount}
-              followingCount={profile.followingCount}
+            <ProfileHeader
+              profile={profile}
+              isOwnProfile={isOwnProfile}
               onFollowersPress={() =>
                 router.push(`/users/${profile.id}/followers`)
               }
               onFollowingPress={() =>
                 router.push(`/users/${profile.id}/following`)
               }
+              actions={
+                !isOwnProfile ? (
+                  <View className="flex-row items-center gap-2">
+                    <View className="flex-1">{followButton}</View>
+                    {canMessage && (
+                      <MessageButton
+                        onPress={openConversation}
+                        loading={createConversation.isPending}
+                      />
+                    )}
+                    <ReportButton
+                      target={{ type: 'user', id: profile.id }}
+                      variant="ghost"
+                    />
+                  </View>
+                ) : undefined
+              }
             />
-            <Text className="text-content-muted text-xs font-semibold uppercase tracking-wider mt-4 mb-3">
-              Eventos
-            </Text>
+            <View className="flex-row items-center gap-2 px-4 pb-3 pt-5">
+              <Text className="text-content-secondary text-sm font-extrabold uppercase tracking-wide">
+                Eventos
+              </Text>
+              {profile.eventsCount > 0 && (
+                <Text className="text-content-subtle text-xs font-bold">
+                  {profile.eventsCount}
+                </Text>
+              )}
+            </View>
           </>
         }
       />

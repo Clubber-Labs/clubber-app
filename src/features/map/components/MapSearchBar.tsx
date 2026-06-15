@@ -40,6 +40,7 @@ export function MapSearchBar({ onSelect }: Props) {
         onChange={setQuery}
         loading={open && isLoading}
         placeholder="Buscar eventos..."
+        variant="overlay"
       />
 
       {open && (

@@ -11,8 +11,9 @@ import { useLogout } from '@/features/auth/hooks/useLogout'
 import { useFollowRequests } from '@/features/follows/hooks/useFollowRequests'
 import { useConfirm } from '@/shared/lib/confirm'
 import { ProfileHeader } from '@/features/users/components/ProfileHeader'
-import { ProfileStats } from '@/features/users/components/ProfileStats'
+import { EditProfileButton } from '@/features/users/components/EditProfileButton'
 import { ProfileEventsList } from '@/features/users/components/ProfileEventsList'
+import { ProfileEventsEmpty } from '@/features/users/components/ProfileEventsEmpty'
 import { ProfileLoading } from '@/features/users/components/ProfileLoading'
 import { ProfileEmpty } from '@/features/users/components/ProfileEmpty'
 import {
@@ -125,6 +126,12 @@ export default function ProfileScreen() {
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
         onLoadMore={fetchNextPage}
+        empty={
+          <ProfileEventsEmpty
+            variant="own"
+            onCreate={() => router.push('/events/create')}
+          />
+        }
         header={
           <>
             <ProfileHeader
@@ -132,23 +139,27 @@ export default function ProfileScreen() {
               isOwnProfile
               avatarUploading={uploadAvatar.isPending}
               onAvatarPress={handlePickAvatar}
-              onEditPress={() => router.push('/profile/edit')}
-            />
-            <ProfileStats
-              eventsCount={profile.eventsCount}
-              followersCount={profile.followersCount}
-              followingCount={profile.followingCount}
               onFollowersPress={() =>
                 router.push(`/users/${profile.id}/followers`)
               }
               onFollowingPress={() =>
                 router.push(`/users/${profile.id}/following`)
               }
+              actions={
+                <EditProfileButton
+                  onPress={() => router.push('/profile/edit')}
+                />
+              }
             />
-            <View className="mt-4 mb-3">
-              <Text className="text-content-muted text-xs font-semibold uppercase tracking-wider">
+            <View className="flex-row items-center gap-2 px-4 pb-3 pt-5">
+              <Text className="text-content-secondary text-sm font-extrabold uppercase tracking-wide">
                 Eventos
               </Text>
+              {profile.eventsCount > 0 && (
+                <Text className="text-content-subtle text-xs font-bold">
+                  {profile.eventsCount}
+                </Text>
+              )}
             </View>
           </>
         }

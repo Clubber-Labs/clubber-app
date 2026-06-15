@@ -147,6 +147,9 @@ export type EventDetail = {
   updatedAt: string
   authorId: string
   author: FeedAuthor
+  // Participantes em destaque (amigos primeiro) para a prova social "quem vai".
+  // Espelha o que o mapa/feed já trazem; o backend popula em GET /events/:id.
+  topAttendances?: FriendAttendance[]
   userLiked: boolean
   userAttendance: AttendanceType | null
   _count: {
