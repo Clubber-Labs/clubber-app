@@ -1,7 +1,17 @@
-import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import type { ReactNode } from 'react'
+import {
+  View,
+  Text,
+  Pressable,
+  ActivityIndicator,
+  StyleSheet,
+} from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg'
 import { UserAvatar } from '@/shared/components/UserAvatar'
+import { ProfileStats } from './ProfileStats'
 import { ProfilePreferredCategories } from './ProfilePreferredCategories'
+import { formatFullName } from '@/shared/utils/fullName'
 import type { UserProfile } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
@@ -10,77 +20,117 @@ type Props = {
   isOwnProfile?: boolean
   avatarUploading?: boolean
   onAvatarPress?: () => void
-  onEditPress?: () => void
+  onFollowersPress?: () => void
+  onFollowingPress?: () => void
+  // Editar (perfil próprio) ou Seguir/Mensagem (de outro) — definido pela tela.
+  actions?: ReactNode
 }
 
-const AVATAR_SIZE = 88
+const AVATAR_SIZE = 80
 
 export function ProfileHeader({
   profile,
   isOwnProfile,
   avatarUploading,
   onAvatarPress,
-  onEditPress,
+  onFollowersPress,
+  onFollowingPress,
+  actions,
 }: Props) {
-  const fullName = `${profile.name} ${profile.lastname}`.trim()
+  const fullName = formatFullName(profile.name, profile.lastname)
   const editable = isOwnProfile && !!onAvatarPress
+  // id por perfil: evita colisão de gradiente entre o perfil próprio e o de
+  // outro usuário coexistindo durante a transição de navegação.
+  const backdropId = `profile-backdrop-${profile.id}`
 
   return (
-    <View className="items-center pt-6 pb-4 px-6">
-      <Pressable
-        onPress={editable ? onAvatarPress : undefined}
-        disabled={!editable || avatarUploading}
-        accessibilityLabel={editable ? 'Alterar foto de perfil' : undefined}
-      >
-        <View
-          style={{
-            width: AVATAR_SIZE,
-            height: AVATAR_SIZE,
-            borderRadius: AVATAR_SIZE / 2,
-            overflow: 'hidden',
-          }}
-        >
-          <UserAvatar
-            name={fullName}
-            avatarUrl={profile.avatarUrl}
-            size={AVATAR_SIZE}
+    <View className="relative">
+      {/* Backdrop sutil da marca — identidade sem foto de capa. */}
+      <View className="absolute left-0 right-0 top-0" style={{ height: 190 }}>
+        <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
+          <Defs>
+            <RadialGradient id={backdropId} cx="0.2" cy="0" r="0.95">
+              <Stop offset="0" stopColor={colors.brand} stopOpacity={0.26} />
+              <Stop offset="0.7" stopColor={colors.brand} stopOpacity={0} />
+            </RadialGradient>
+          </Defs>
+          <Rect
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+            fill={`url(#${backdropId})`}
           />
-          {editable && !avatarUploading && (
-            <View className="absolute bottom-0 left-0 right-0 bg-background/50 items-center py-1">
-              <Ionicons name="camera" size={14} color={colors.content} />
+        </Svg>
+      </View>
+
+      <View className="px-4 pt-4">
+        <View className="flex-row items-center gap-4">
+          <Pressable
+            onPress={editable ? onAvatarPress : undefined}
+            disabled={!editable || avatarUploading}
+            accessibilityLabel={editable ? 'Alterar foto de perfil' : undefined}
+            className="relative"
+          >
+            <View
+              style={{
+                width: AVATAR_SIZE,
+                height: AVATAR_SIZE,
+                borderRadius: AVATAR_SIZE / 2,
+                overflow: 'hidden',
+              }}
+              className={
+                isOwnProfile
+                  ? 'border-2 border-brand'
+                  : 'border-2 border-line-strong'
+              }
+            >
+              <UserAvatar
+                name={fullName}
+                avatarUrl={profile.avatarUrl}
+                size={AVATAR_SIZE}
+              />
+              {avatarUploading && (
+                <View className="absolute inset-0 items-center justify-center bg-background/60">
+                  <ActivityIndicator color={colors.content} />
+                </View>
+              )}
             </View>
-          )}
-          {avatarUploading && (
-            <View className="absolute inset-0 bg-background/60 items-center justify-center">
-              <ActivityIndicator color={colors.content} />
-            </View>
-          )}
+            {editable && !avatarUploading && (
+              <View className="absolute -bottom-0.5 -right-0.5 h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-brand">
+                <Ionicons name="camera" size={13} color={colors.content} />
+              </View>
+            )}
+          </Pressable>
+
+          <ProfileStats
+            eventsCount={profile.eventsCount}
+            followersCount={profile.followersCount}
+            followingCount={profile.followingCount}
+            onFollowersPress={onFollowersPress}
+            onFollowingPress={onFollowingPress}
+          />
         </View>
-      </Pressable>
 
-      <Text className="text-content font-bold text-xl mt-3">{fullName}</Text>
-      <Text className="text-content-muted text-sm mt-0.5">
-        @{profile.username}
-      </Text>
-
-      {!!profile.bio && (
-        <Text className="text-content-tertiary text-sm text-center mt-2 leading-5">
-          {profile.bio}
+        <Text className="text-content mt-3 text-xl font-extrabold">
+          {fullName}
         </Text>
-      )}
+        <Text className="text-content-muted mt-0.5 text-sm">
+          @{profile.username}
+        </Text>
 
-      <ProfilePreferredCategories values={profile.preferredCategories ?? []} />
-
-      {isOwnProfile && onEditPress && (
-        <Pressable
-          onPress={onEditPress}
-          className="mt-4 border border-line-strong rounded-lg px-6 py-2"
-        >
-          <Text className="text-content-secondary font-medium text-sm">
-            Editar perfil
+        {!!profile.bio && (
+          <Text className="text-content-tertiary mt-2 text-sm leading-5">
+            {profile.bio}
           </Text>
-        </Pressable>
-      )}
+        )}
+
+        <ProfilePreferredCategories
+          values={profile.preferredCategories ?? []}
+        />
+
+        {actions && <View className="mt-4">{actions}</View>}
+      </View>
     </View>
   )
 }

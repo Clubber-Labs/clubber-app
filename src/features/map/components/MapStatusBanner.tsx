@@ -10,7 +10,7 @@ type Props = {
 export function MapStatusBanner({ message, variant = 'info' }: Props) {
   const isError = variant === 'error'
   return (
-    <View className="absolute top-16 self-center px-3 py-1.5 rounded-full border flex-row items-center gap-1.5 bg-surface/90 border-line">
+    <View className="absolute top-16 self-center px-3 py-1.5 rounded-lg border flex-row items-center gap-1.5 bg-surface/90 border-line-strong">
       <Ionicons
         name={isError ? 'alert-circle' : 'information-circle'}
         size={14}

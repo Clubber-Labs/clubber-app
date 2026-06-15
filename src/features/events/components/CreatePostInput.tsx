@@ -8,9 +8,12 @@ import {
   Keyboard,
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { useAddPost } from '../hooks/usePosts'
+import { useAddPost, useUploadPostImages } from '../hooks/usePosts'
+import { EventImagePicker } from './EventImagePicker'
 import { useMe } from '@/features/auth/hooks/useMe'
 import { colors } from '@/shared/theme'
+
+const MAX_POST_IMAGES = 4
 
 type Props = {
   eventId: string
@@ -20,15 +23,27 @@ type Props = {
 
 export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
   const [text, setText] = useState('')
+  const [imageUris, setImageUris] = useState<string[]>([])
   const { data: me } = useMe()
   const addPost = useAddPost(eventId)
+  const uploadImages = useUploadPostImages(eventId)
 
   function handleSend() {
     const content = text.trim()
     if (!content) return
     Keyboard.dismiss()
+    // Texto-first: cria o post e, com sucesso, sobe as imagens contra o id
+    // criado (mesmo padrão do create de evento). A navegação/limpeza não
+    // espera o upload terminar.
+    const uris = imageUris
     addPost.mutate(content, {
-      onSuccess: () => setText(''),
+      onSuccess: post => {
+        if (uris.length > 0) {
+          uploadImages.mutate({ postId: post.id, uris })
+        }
+        setText('')
+        setImageUris([])
+      },
     })
   }
 
@@ -43,7 +58,7 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
   }
 
   return (
-    <View className="bg-surface border border-line rounded-2xl p-3 gap-2">
+    <View className="bg-surface border border-line rounded-xl p-3 gap-2">
       <View className="flex-row gap-2 items-start">
         <View className="w-9 h-9 rounded-full bg-brand-surface-strong items-center justify-center">
           <Text className="text-brand-text-strong font-semibold">
@@ -61,12 +76,21 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
         />
       </View>
 
+      <View className="pl-11">
+        <EventImagePicker
+          uris={imageUris}
+          onChange={setImageUris}
+          maxCount={MAX_POST_IMAGES}
+          label="Fotos da publicação"
+        />
+      </View>
+
       <View className="flex-row items-center justify-between pl-11">
         <Text className="text-xs text-content-subtle">{text.length}/1000</Text>
         <Pressable
           onPress={handleSend}
           disabled={!text.trim() || addPost.isPending}
-          className={`flex-row items-center gap-1 px-4 py-2 rounded-full ${text.trim() && !addPost.isPending ? 'bg-brand' : 'bg-surface-higher'}`}
+          className={`flex-row items-center gap-1 px-4 py-2 rounded-lg ${text.trim() && !addPost.isPending ? 'bg-brand' : 'bg-surface-higher'}`}
         >
           {addPost.isPending ? (
             <ActivityIndicator size="small" color={colors.content} />

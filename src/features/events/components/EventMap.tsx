@@ -9,7 +9,7 @@ type Props = {
 
 export function EventMap({ latitude, longitude, height = 200 }: Props) {
   return (
-    <View style={{ height }} className="rounded-2xl overflow-hidden">
+    <View style={{ height }} className="rounded-xl overflow-hidden">
       <Mapbox.MapView
         style={{ flex: 1 }}
         styleURL="mapbox://styles/mapbox/streets-v12"

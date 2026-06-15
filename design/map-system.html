@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ConnectAI · Redesign do Mapa (card flutuante)</title>
+<style>
+  :root{
+    --background:#000;--surface-sunken:#0a0a0a;--surface:#18181b;--surface-elevated:#27272a;
+    --surface-high:#3f3f46;--surface-higher:#52525b;
+    --content:#fff;--content-bright:#f4f4f5;--content-secondary:#e4e4e7;--content-tertiary:#d4d4d8;
+    --content-muted:#a1a1aa;--content-subtle:#71717a;--content-faint:#52525b;
+    --line:#27272a;--line-strong:#3f3f46;--line-subtle:#1c1c1f;
+    --brand:#7c3aed;--brand-emphasis:#8b5cf6;--brand-strong:#6d28d9;--brand-text:#a78bfa;
+    --brand-text-strong:#c4b5fd;--brand-text-bright:#ddd6fe;--brand-surface:#2e1065;--brand-surface-strong:#4c1d95;
+    --success:#22c55e;--success-text:#4ade80;--warning-text:#fde68a;--danger:#ef4444;--danger-text:#f87171;
+    --loc-blue:#007AFF;
+    -webkit-font-smoothing:antialiased;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#050505;color:var(--content);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,sans-serif;line-height:1.4;padding:48px 24px 120px}
+  .wrap{max-width:1240px;margin:0 auto}
+  .doc-head{text-align:center;margin-bottom:46px}
+  .doc-head .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--brand-text);font-weight:700}
+  .doc-head h1{font-size:38px;font-weight:800;letter-spacing:-.02em;margin:10px 0 8px}
+  .doc-head p{color:var(--content-muted);font-size:15px;max-width:700px;margin:0 auto}
+
+  .row{display:flex;gap:40px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .col{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .col .label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--content-subtle);font-weight:700}
+
+  .phone{width:344px;background:var(--background);border:10px solid #1a1a1d;border-radius:38px;overflow:hidden;box-shadow:0 10px 28px rgba(0,0,0,.45)}
+  .screen{height:760px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+  .statusbar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:13px;font-weight:700;color:#fff;flex:none;z-index:30;background:var(--background)}
+  .statusbar .dots{display:flex;gap:5px}
+
+  /* ---- top chrome ---- */
+  .gh{display:flex;align-items:center;justify-content:center;position:relative;padding:10px 14px;background:var(--background);border-bottom:1px solid var(--line-subtle);flex:none;z-index:20}
+  .gh .brand{display:flex;align-items:center;gap:8px}
+  .gh .blogo{width:30px;height:30px;border-radius:999px;background:var(--brand);display:grid;place-items:center;font-weight:800;font-size:14px}
+  .gh .bname{font-size:19px;font-weight:800}
+  .gh .l,.gh .r{position:absolute;top:0;bottom:0;display:flex;align-items:center;gap:4px}
+  .gh .l{left:12px}.gh .r{right:12px}
+  .ghbtn{width:38px;height:38px;display:grid;place-items:center;color:var(--content-bright);position:relative}
+  .ghbtn .dot{position:absolute;top:7px;right:7px;width:8px;height:8px;border-radius:999px;background:var(--brand-emphasis)}
+
+  /* search + chips overlaid on the map */
+  .overlay-top{position:absolute;top:0;left:0;right:0;z-index:15;padding:10px 12px 0;display:flex;flex-direction:column;gap:10px}
+  .search{display:flex;align-items:center;gap:10px;background:rgba(24,24,27,.94);border:1px solid var(--line-strong);border-radius:12px;padding:11px 14px}
+  .search svg{color:var(--content-secondary);flex:none}
+  .search span{color:var(--content-muted);font-size:14.5px;flex:1}
+  .chips{display:flex;gap:8px;overflow:hidden;padding-bottom:2px}
+  .chip{font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:8px;background:rgba(24,24,27,.94);border:1px solid var(--line-strong);color:var(--content-secondary);white-space:nowrap;flex:none}
+  .chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+
+  /* ---- map canvas ---- */
+  .map{flex:1;position:relative;overflow:hidden;background:#08080b}
+  .mapbg{position:absolute;inset:0;background:radial-gradient(115% 90% at 50% 26%,#15151d 0%,#0c0c11 55%,#08080b 100%)}
+  .road{position:absolute;background:#16161d;border-radius:10px}
+
+  /* event pin */
+  .pin{position:absolute;transform:translate(-50%,-50%)}
+  .pinface{width:44px;height:44px;border-radius:999px;border:3px solid #fff;background:#fff;overflow:hidden;display:grid;place-items:center}
+  .pinface.sel{width:56px;height:56px;outline:3px solid rgba(124,58,237,.42);outline-offset:1px}
+  .pinface .ph{width:100%;height:100%;object-fit:cover}
+  .pinface .noimg{width:100%;height:100%;display:grid;place-items:center;background:var(--surface-elevated);color:var(--content-faint)}
+
+  /* cluster */
+  .cluster{position:absolute;transform:translate(-50%,-50%);background:var(--brand);border:2px solid #fff;color:#fff;border-radius:999px;display:grid;place-items:center;font-weight:800}
+
+  /* user location */
+  .userdot{position:absolute;transform:translate(-50%,-50%)}
+  .userdot .ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:999px;background:rgba(0,122,255,.18)}
+  .userdot .av{position:relative;width:38px;height:38px;border-radius:999px;border:3px solid #fff;background:#fff;overflow:hidden}
+  .userdot .blue{position:relative;width:16px;height:16px;border-radius:999px;background:var(--loc-blue);border:3px solid #fff}
+
+  /* map controls — one cohesive pill (heatmap · zoom · locate) */
+  .ctrl{position:absolute;right:16px;display:flex;flex-direction:column;background:rgba(24,24,27,.96);border:1px solid var(--line-strong);border-radius:14px;overflow:hidden;width:44px;z-index:12}
+  .ctrlbtn{width:44px;height:44px;display:grid;place-items:center;color:var(--content-bright)}
+  .ctrlbtn+.ctrlbtn{border-top:1px solid var(--line)}
+  .ctrlbtn.heat.on{background:var(--brand);color:#fff}
+  .ctrlbtn.locate{color:var(--brand-text)}
+  /* single create FAB */
+  .fab{position:absolute;right:18px;bottom:22px;width:56px;height:56px;border-radius:999px;display:grid;place-items:center;background:var(--brand);color:#fff;z-index:12;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+
+  /* status pill */
+  .statuspill{position:absolute;top:108px;left:50%;transform:translateX(-50%);background:rgba(24,24,27,.94);border:1px solid var(--line-strong);border-radius:8px;padding:6px 12px;display:flex;align-items:center;gap:7px;font-size:12px;color:var(--content-tertiary);font-weight:600;z-index:14}
+
+  /* ===== preview card ===== */
+  .pcard{position:absolute;left:12px;right:12px;bottom:14px;background:rgba(24,24,27,.97);border:1px solid var(--line-strong);border-radius:14px;padding:12px;z-index:16}
+  .pclose{position:absolute;top:10px;right:10px;width:26px;height:26px;border-radius:8px;display:grid;place-items:center;color:var(--content-muted);background:var(--surface-elevated)}
+  .prow{display:flex;gap:12px}
+  .pthumb{width:84px;height:84px;border-radius:10px;overflow:hidden;position:relative;flex:none}
+  .pthumb img{width:100%;height:100%;object-fit:cover}
+  .pdate{position:absolute;left:5px;bottom:5px;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.18);border-radius:7px;width:34px;text-align:center;overflow:hidden}
+  .pdate b{display:block;background:var(--brand);font-size:8px;font-weight:800;letter-spacing:.06em;padding:1px 0}
+  .pdate span{display:block;font-size:15px;font-weight:800;padding:1px 0 2px;line-height:1}
+  .pinfo{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;padding-right:22px}
+  .ptitle{font-size:16px;font-weight:800;letter-spacing:-.01em;line-height:1.15;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .pmeta{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--content-muted);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  .pmeta svg{flex:none;color:var(--content-subtle)}
+  .pattend{display:flex;align-items:center;gap:8px;margin-top:1px}
+  .pstack{display:flex}
+  .pstack .av{width:22px;height:22px;border-radius:999px;border:2px solid var(--surface);margin-left:-8px}
+  .pstack .av:first-child{margin-left:0}
+  .pstack .more{width:22px;height:22px;border-radius:999px;border:2px solid var(--surface);margin-left:-8px;background:var(--surface-elevated);display:grid;place-items:center;font-size:9px;font-weight:800;color:var(--content-secondary)}
+  .pattend .who{font-size:12px;color:var(--content-secondary)}
+  .pattend .who b{color:var(--content);font-weight:700}
+  .pcta{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:12px;height:44px;border-radius:10px;background:var(--brand);color:#fff;font-size:14px;font-weight:700}
+
+  /* ===== create chooser (NEW) ===== */
+  .backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:24}
+  .chooser{position:absolute;left:0;right:0;bottom:0;background:var(--surface-sunken);border-top:1px solid var(--line);border-top-left-radius:24px;border-top-right-radius:24px;padding:10px 0 26px;z-index:25}
+  .chooser .grab{width:38px;height:5px;border-radius:999px;background:var(--surface-high);margin:0 auto 8px}
+  .chooser h3{font-size:18px;font-weight:800;padding:8px 18px 6px}
+  .crow{display:flex;align-items:center;gap:14px;padding:15px 18px}
+  .crow+.crow{border-top:1px solid var(--line-subtle)}
+  .cicon{width:48px;height:48px;border-radius:12px;background:var(--brand-surface);color:var(--brand-text-bright);display:grid;place-items:center;flex:none}
+  .cinfo{flex:1}
+  .cinfo b{font-size:16px;font-weight:700;display:block}
+  .cinfo span{font-size:13px;color:var(--content-muted)}
+  .cchev{color:var(--content-subtle);flex:none}
+
+  /* pills + badges */
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:4px 8px;border-radius:6px;align-self:flex-start}
+  .pill-soon{background:rgba(251,191,36,.16);color:var(--warning-text);border:1px solid rgba(251,191,36,.3)}
+  .pill-priv{background:var(--surface-elevated);color:var(--content-tertiary)}
+
+  /* spot variant */
+  .spotby{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--content-muted)}
+  .spotby .av{width:24px;height:24px;border-radius:999px}
+
+  svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block}
+  svg.i.sm{width:14px;height:14px}svg.i.lg{width:22px;height:22px}svg.i.xl{width:26px;height:26px}svg.i.xxl{width:24px;height:24px}
+
+  .g1{background:linear-gradient(135deg,#7c3aed,#ec4899)}.g2{background:linear-gradient(135deg,#06b6d4,#3b82f6)}
+  .g3{background:linear-gradient(135deg,#f59e0b,#ef4444)}.g4{background:linear-gradient(135deg,#10b981,#84cc16)}.g5{background:linear-gradient(135deg,#8b5cf6,#6366f1)}
+  .photo-night{background:linear-gradient(165deg,#3b1d6e,#1e1b4b 55%,#0f0a1f)}
+  .photo-warm{background:linear-gradient(160deg,#7c2d12,#b45309 50%,#1c1917)}
+  .photo-cool{background:linear-gradient(160deg,#0e7490,#155e75 55%,#0c1a22)}
+  .hero-grad{background:radial-gradient(125% 110% at 0% 0%,#4c1d95 0%,#18181b 62%)}
+
+  .cap{font-size:11px;color:var(--content-subtle);text-align:center;max-width:300px}
+  .notes{margin:32px auto 0;max-width:1000px;display:grid;grid-template-columns:1fr 1fr;gap:10px 28px}
+  .note{display:flex;gap:10px;font-size:13px;color:var(--content-tertiary);align-items:flex-start}
+  .note .k{flex:none;width:22px;height:22px;border-radius:999px;background:rgba(34,197,94,.16);color:var(--success-text);display:grid;place-items:center;font-size:11px;font-weight:800}
+  .note.warn .k{background:rgba(251,191,36,.16);color:var(--warning-text)}
+  .note b{color:var(--content);font-weight:700}
+  .pill-inline{display:inline-block;background:var(--surface-elevated);border:1px solid var(--line-strong);border-radius:6px;padding:1px 7px;font-size:12px;color:var(--content-tertiary)}
+  .caption-foot{text-align:center;color:var(--content-faint);font-size:13px;margin-top:50px}
+  .closeups{display:flex;gap:32px;flex-wrap:wrap;justify-content:center;align-items:flex-start;margin-top:8px}
+  .cu{display:flex;flex-direction:column;gap:12px;align-items:center}
+  .stage{width:316px;padding:22px;border-radius:20px;background:#0d0d10;border:1px solid var(--line);position:relative;overflow:hidden}
+  .stage.mapstage{background:#08080b}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="doc-head">
+    <div class="eyebrow">ConnectAI · Design System</div>
+    <h1>Redesign do Mapa · card flutuante</h1>
+    <p>Mapa enxuto. Os controles (mapa de calor, zoom e locate) ficam numa <b>pílula única e discreta</b> — não mais 4 círculos soltos de 64px. E a criação de <b>evento</b> e <b>rolê</b> é unificada num <b>"+"</b> que abre um seletor. O card de preview do pin segue como mini-hero. Tokens reais de <span class="pill-inline">global.css</span>.</p>
+  </div>
+
+  <!-- ============ PHONES ============ -->
+  <div class="row">
+
+    <!-- Phone A — estado padrão -->
+    <div class="col">
+      <div class="label">Estado padrão</div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><div class="dots"><span>●</span><span>●</span><span>▰</span></div></div>
+        <div class="gh">
+          <div class="l"><div class="ghbtn"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span class="dot"></span></div></div>
+          <div class="brand"><div class="blogo">C</div><div class="bname">ConnectAI</div></div>
+          <div class="r"><div class="ghbtn"><svg class="i" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div></div>
+        </div>
+
+        <div class="map">
+          <div class="mapbg"></div>
+          <div class="road" style="top:32%;left:-8%;width:116%;height:6px;transform:rotate(-6deg)"></div>
+          <div class="road" style="top:0;left:40%;width:6px;height:62%"></div>
+
+          <div class="overlay-top">
+            <div class="search">
+              <svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              <span>Buscar eventos…</span>
+            </div>
+            <div class="chips">
+              <span class="chip on">Todas</span><span class="chip">Festas</span><span class="chip">Música</span><span class="chip">Esportes</span><span class="chip">Gastronomia</span>
+            </div>
+          </div>
+
+          <div class="cluster" style="top:30%;left:26%;width:42px;height:42px;font-size:14px">12</div>
+          <div class="userdot" style="top:62%;left:56%"><div class="ring"></div><div class="av g1"></div></div>
+          <div class="pin" style="top:46%;left:62%"><div class="pinface"><div class="ph photo-night"></div></div></div>
+          <div class="pin" style="top:38%;left:80%"><div class="pinface"><div class="noimg"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></div></div></div>
+          <div class="pin" style="top:74%;left:30%"><div class="pinface"><div class="ph photo-warm"></div></div></div>
+
+          <!-- controls pill (heatmap · zoom · locate) + single create -->
+          <div class="ctrl" style="bottom:92px">
+            <div class="ctrlbtn heat"><svg class="i" viewBox="0 0 24 24"><path d="M12 3c3 3 4 5 4 8a4 4 0 1 1-8 0c0-1.5.5-2.5 1.5-3.5C10 8 12 6 12 3z"/></svg></div>
+            <div class="ctrlbtn"><svg class="i lg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+            <div class="ctrlbtn"><svg class="i lg" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></div>
+            <div class="ctrlbtn locate"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div>
+          </div>
+          <div class="fab"><svg class="i xl" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+        </div>
+      </div></div>
+      <div class="cap">Controles numa pílula só (calor · zoom · locate). O <b>"+"</b> (marca) abre o seletor de criação.</div>
+    </div>
+
+    <!-- Phone B — seletor de criação (NOVO) -->
+    <div class="col">
+      <div class="label">"+" · seletor de criação</div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><div class="dots"><span>●</span><span>●</span><span>▰</span></div></div>
+        <div class="gh">
+          <div class="l"><div class="ghbtn"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg></div></div>
+          <div class="brand"><div class="blogo">C</div><div class="bname">ConnectAI</div></div>
+          <div class="r"><div class="ghbtn"><svg class="i" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div></div>
+        </div>
+
+        <div class="map">
+          <div class="mapbg"></div>
+          <div class="road" style="top:28%;left:-8%;width:116%;height:6px;transform:rotate(5deg)"></div>
+          <div class="cluster" style="top:24%;left:30%;width:40px;height:40px;font-size:13px">12</div>
+          <div class="pin" style="top:34%;left:66%"><div class="pinface"><div class="ph photo-cool"></div></div></div>
+
+          <div class="backdrop"></div>
+          <div class="chooser">
+            <div class="grab"></div>
+            <h3>Criar</h3>
+            <div class="crow">
+              <div class="cicon"><svg class="i xxl" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></div>
+              <div class="cinfo"><b>Evento</b><span>Com data, local e lista de presença</span></div>
+              <svg class="i cchev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+            <div class="crow">
+              <div class="cicon"><svg class="i xxl" viewBox="0 0 24 24"><path d="m12 3 1.9 5L19 9.7l-5 1.8L12 17l-1.9-5.5L5 9.7 10.1 8z"/><path d="M19 14.5l.7 2 2 .7-2 .8-.7 2-.8-2-2-.8 2-.7z"/></svg></div>
+              <div class="cinfo"><b>Rolê</b><span>Um encontro rápido perto de você</span></div>
+              <svg class="i cchev" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+            </div>
+          </div>
+        </div>
+      </div></div>
+      <div class="cap">O "+" abre um seletor (novo componente, dark, sobre <span class="pill-inline">SheetModal</span>): <b>Evento</b> (form) ou <b>Rolê</b> (fluxo de spot).</div>
+    </div>
+
+    <!-- Phone C — evento selecionado -->
+    <div class="col">
+      <div class="label">Pin tocado · card</div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><div class="dots"><span>●</span><span>●</span><span>▰</span></div></div>
+        <div class="gh">
+          <div class="l"><div class="ghbtn"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg></div></div>
+          <div class="brand"><div class="blogo">C</div><div class="bname">ConnectAI</div></div>
+          <div class="r"><div class="ghbtn"><svg class="i" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div></div>
+        </div>
+
+        <div class="map">
+          <div class="mapbg"></div>
+          <div class="road" style="top:30%;left:-8%;width:116%;height:6px;transform:rotate(-5deg)"></div>
+          <div class="overlay-top">
+            <div class="search"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span>Buscar eventos…</span></div>
+            <div class="chips"><span class="chip">Todas</span><span class="chip on">Festas</span><span class="chip">Música</span><span class="chip">Esportes</span></div>
+          </div>
+          <div class="pin" style="top:36%;left:50%"><div class="pinface sel"><div class="ph photo-night"></div></div></div>
+
+          <div class="pcard">
+            <button class="pclose"><svg class="i sm" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+            <div class="prow">
+              <div class="pthumb photo-night"><div class="pdate"><b>JUN</b><span>14</span></div></div>
+              <div class="pinfo">
+                <span class="pill pill-soon">● Em breve · sáb</span>
+                <div class="ptitle">Sunset no Rooftop</div>
+                <div class="pmeta"><svg class="i sm" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg> Rooftop Pinheiros · 1,2 km</div>
+                <div class="pattend">
+                  <div class="pstack"><div class="av g2"></div><div class="av g3"></div><div class="av g4"></div><div class="more">+12</div></div>
+                  <span class="who"><b>Ana</b> e mais 124 vão</span>
+                </div>
+              </div>
+            </div>
+            <button class="pcta">Ver detalhes <svg class="i sm" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+          </div>
+        </div>
+      </div></div>
+      <div class="cap">Tocar num pin abre o card mini-hero. Os flutuantes (locate/criar) somem enquanto o card está aberto.</div>
+    </div>
+  </div>
+
+  <!-- ============ CLOSE-UPS ============ -->
+  <div class="closeups">
+
+    <!-- card no photo -->
+    <div class="cu">
+      <div class="label">Card · sem foto</div>
+      <div class="stage">
+        <div class="pcard" style="position:relative;left:0;right:0;bottom:0">
+          <button class="pclose"><svg class="i sm" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+          <div class="prow">
+            <div class="pthumb hero-grad"><div class="pdate"><b>JUL</b><span>02</span></div></div>
+            <div class="pinfo">
+              <span class="pill pill-priv"><svg class="i sm" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Privado</span>
+              <div class="ptitle">Aniversário da Lê</div>
+              <div class="pmeta"><svg class="i sm" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg> Vila Madalena · 3,4 km</div>
+              <div class="pattend">
+                <div class="pstack"><div class="av g2"></div><div class="av g4"></div><div class="more">+7</div></div>
+                <span class="who"><b>Você</b> e mais 8 vão</span>
+              </div>
+            </div>
+          </div>
+          <button class="pcta">Ver detalhes <svg class="i sm" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+        </div>
+      </div>
+      <div class="cap">Sem capa → gradiente da marca no thumb.</div>
+    </div>
+
+    <!-- card spot -->
+    <div class="cu">
+      <div class="label">Card · rolê (spot)</div>
+      <div class="stage">
+        <div class="pcard" style="position:relative;left:0;right:0;bottom:0">
+          <button class="pclose"><svg class="i sm" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+          <div class="prow">
+            <div class="pthumb" style="background:radial-gradient(120% 110% at 20% 10%,#4c1d95,#18181b);display:grid;place-items:center">
+              <svg class="i lg" viewBox="0 0 24 24" style="color:var(--brand-text)"><path d="m12 3 1.9 5L19 9.7l-5 1.8L12 17l-1.9-5.5L5 9.7 10.1 8z"/></svg>
+            </div>
+            <div class="pinfo">
+              <div class="spotby"><div class="av g5"></div>@lucas sugeriu um rolê</div>
+              <div class="ptitle" style="-webkit-line-clamp:1">Happy hour no Bar do Zé</div>
+              <div class="pmeta"><svg class="i sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Hoje, 19h — 23h · 0,5 km</div>
+              <div class="pmeta" style="color:var(--content-subtle)">Gastronomia · 4 no grupo</div>
+            </div>
+          </div>
+          <button class="pcta">Ver rolê <svg class="i sm" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button>
+        </div>
+      </div>
+      <div class="cap">Rolê espelha o card de evento: criador como assinatura, janela e grupo.</div>
+    </div>
+
+    <!-- pins + you -->
+    <div class="cu">
+      <div class="label">Pins · você</div>
+      <div class="stage mapstage" style="height:300px">
+        <div class="mapbg"></div>
+        <div class="road" style="top:40%;left:-8%;width:116%;height:6px;transform:rotate(-7deg)"></div>
+        <div class="pin" style="top:34%;left:34%"><div class="pinface sel"><div class="ph photo-night"></div></div></div>
+        <div class="pin" style="top:60%;left:66%"><div class="pinface"><div class="ph photo-warm"></div></div></div>
+        <div class="cluster" style="top:66%;left:28%;width:40px;height:40px;font-size:13px">8</div>
+        <div class="userdot" style="top:30%;left:70%"><div class="ring"></div><div class="av g2"></div></div>
+      </div>
+      <div class="cap">Pin = só a capa, anel branco; selecionado cresce + halo da marca. Cluster = círculo da marca + número. "Você" = avatar com anel (ou ponto azul sem foto).</div>
+    </div>
+
+    <!-- controls pill -->
+    <div class="cu">
+      <div class="label">Controles</div>
+      <div class="stage mapstage" style="height:300px;display:flex;align-items:center;justify-content:center;gap:44px">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:9px">
+          <div class="ctrl" style="position:relative;right:auto">
+            <div class="ctrlbtn heat"><svg class="i" viewBox="0 0 24 24"><path d="M12 3c3 3 4 5 4 8a4 4 0 1 1-8 0c0-1.5.5-2.5 1.5-3.5C10 8 12 6 12 3z"/></svg></div>
+            <div class="ctrlbtn"><svg class="i lg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+            <div class="ctrlbtn"><svg class="i lg" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></div>
+            <div class="ctrlbtn locate"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div>
+          </div>
+          <span style="font-size:10px;color:var(--content-subtle);font-weight:700;letter-spacing:.08em">CALOR OFF</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:9px">
+          <div class="ctrl" style="position:relative;right:auto">
+            <div class="ctrlbtn heat on"><svg class="i" viewBox="0 0 24 24"><path d="M12 3c3 3 4 5 4 8a4 4 0 1 1-8 0c0-1.5.5-2.5 1.5-3.5C10 8 12 6 12 3z"/></svg></div>
+            <div class="ctrlbtn"><svg class="i lg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+            <div class="ctrlbtn"><svg class="i lg" viewBox="0 0 24 24"><path d="M5 12h14"/></svg></div>
+            <div class="ctrlbtn locate"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></div>
+          </div>
+          <span style="font-size:10px;color:var(--content-subtle);font-weight:700;letter-spacing:.08em">CALOR ON</span>
+        </div>
+      </div>
+      <div class="cap">Pílula única: mapa de calor · zoom +/− · locate. Calor ativo = marca (não mais vermelho-danger). 44px, cantos do sistema.</div>
+    </div>
+  </div>
+
+  <!-- ============ NOTES ============ -->
+  <div class="notes">
+    <div class="note"><span class="k">1</span><span><b>Controles numa pílula única</b>: mapa de calor + zoom (+/−) + locate, num módulo só (<span class="pill-inline">rounded-xl</span>, 44px) — não mais 4 círculos soltos de 64px. Mapa de calor ativo = <b>marca</b> (era vermelho-danger, que lia como erro).</span></div>
+    <div class="note"><span class="k">2</span><span><b>Criação unificada</b>: um "+" só (marca) no lugar dos dois FABs. Abre um <b>seletor novo</b> — <span class="pill-inline">CreateChooserSheet</span> sobre o <span class="pill-inline">SheetModal</span> — com <b>Evento</b> (→ <span class="pill-inline">/events/create</span>) e <b>Rolê</b> (→ fluxo de spot que já existe).</span></div>
+    <div class="note"><span class="k">3</span><span><b>Card de preview = mini-hero</b>: capa + bloco-data + status + título + local · distância + prova social. Reusa <span class="pill-inline">EventDateChip</span> / <span class="pill-inline">EventStatusBadge</span> / <span class="pill-inline">EventAttendeesStack</span>. CTA <span class="pill-inline">rounded-lg</span>.</span></div>
+    <div class="note"><span class="k">4</span><span><b>Rolê espelha o evento</b>: o <span class="pill-inline">SpotPreviewCard</span> ganha o mesmo layout (assinatura do criador + janela + grupo), mantendo a paridade.</span></div>
+    <div class="note warn"><span class="k">5</span><span><b>Falta confirmar</b>: chips de categoria sobre o mapa (sincronizam com o modal de filtro) ou só no modal, deixando o topo mais limpo? E a pílula de controles some quando um card de pin abre, ou fica? Me diz.</span></div>
+  </div>
+
+  <div class="caption-foot">
+    Tokens reais · tema dark · marca violet #7c3aed · controles numa pílula única · criação unificada num "+" · reusa bloco-data, status e prova social · sem glow/blur.
+  </div>
+
+</div>
+</body>
+</html>

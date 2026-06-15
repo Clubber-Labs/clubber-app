@@ -11,6 +11,9 @@ type Props = {
   onToggleDensity: () => void
 }
 
+// Controles do mapa numa pílula única (mapa de calor · zoom · locate) em vez de
+// círculos soltos. Botões de 56px (alinham com o FAB de criar). O calor ativo usa
+// a cor da marca — é um modo de visualização, não um alerta.
 export function MapZoomControls({
   onZoomIn,
   onZoomOut,
@@ -20,38 +23,43 @@ export function MapZoomControls({
   onToggleDensity,
 }: Props) {
   return (
-    <View className="absolute bottom-32 right-4 gap-2">
+    <View className="absolute bottom-28 right-4 w-14 overflow-hidden rounded-xl border border-line-strong bg-surface/95">
       <Pressable
         onPress={onToggleDensity}
+        accessibilityRole="button"
+        accessibilityState={{ selected: densityActive }}
         accessibilityLabel={
-          densityActive ? 'Ocultar densidade' : 'Mostrar densidade'
+          densityActive ? 'Ocultar mapa de calor' : 'Mostrar mapa de calor'
         }
-        className={`w-16 h-16 rounded-full items-center justify-center border ${densityActive ? 'bg-danger-strong border-danger' : 'bg-surface border-line'}`}
+        className={`h-14 items-center justify-center ${densityActive ? 'bg-brand' : ''}`}
       >
         <Ionicons
           name="flame"
-          size={28}
-          color={densityActive ? colors.content : colors.dangerStrong}
+          size={24}
+          color={densityActive ? colors.content : colors.contentBright}
         />
       </Pressable>
       <Pressable
         onPress={onZoomIn}
-        className="w-16 h-16 rounded-full bg-surface border border-line items-center justify-center"
+        accessibilityLabel="Aproximar"
+        className="h-14 items-center justify-center border-t border-line"
       >
-        <Ionicons name="add" size={28} color={colors.contentBright} />
+        <Ionicons name="add" size={26} color={colors.contentBright} />
       </Pressable>
       <Pressable
         onPress={onZoomOut}
-        className="w-16 h-16 rounded-full bg-surface border border-line items-center justify-center"
+        accessibilityLabel="Afastar"
+        className="h-14 items-center justify-center border-t border-line"
       >
-        <Ionicons name="remove" size={28} color={colors.contentBright} />
+        <Ionicons name="remove" size={26} color={colors.contentBright} />
       </Pressable>
       {showRecenter && (
         <Pressable
           onPress={onRecenter}
-          className="w-16 h-16 rounded-full bg-surface border border-line items-center justify-center"
+          accessibilityLabel="Centralizar em você"
+          className="h-14 items-center justify-center border-t border-line"
         >
-          <Ionicons name="locate" size={28} color={colors.brandEmphasis} />
+          <Ionicons name="locate" size={24} color={colors.brandText} />
         </Pressable>
       )}
     </View>

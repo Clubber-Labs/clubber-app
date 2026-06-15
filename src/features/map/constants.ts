@@ -21,5 +21,6 @@ export const LOCATION_BLUE = '#007AFF'
 
 // Debounce da captura de bbox ao arrastar o mapa (carga por viewport).
 export const BBOX_DEBOUNCE_MS = 300
-// Teto de eventos carregados por viewport (o backend também limita).
-export const VIEWPORT_LIMIT = 200
+// Teto de eventos carregados por viewport. Alinhado ao cap do backend
+// (GET /events/map/events aceita limit <= 150); acima disso o backend retorna 400.
+export const VIEWPORT_LIMIT = 150

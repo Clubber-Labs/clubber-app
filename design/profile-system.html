@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ConnectAI · Redesign do Perfil</title>
+<style>
+  :root {
+    --background:#000; --surface-sunken:#0a0a0a; --surface:#18181b; --surface-elevated:#27272a;
+    --surface-high:#3f3f46; --surface-higher:#52525b;
+    --content:#fff; --content-bright:#f4f4f5; --content-secondary:#e4e4e7; --content-tertiary:#d4d4d8;
+    --content-muted:#a1a1aa; --content-subtle:#71717a; --content-faint:#52525b;
+    --line:#27272a; --line-strong:#3f3f46;
+    --brand:#7c3aed; --brand-emphasis:#8b5cf6; --brand-strong:#6d28d9; --brand-text:#a78bfa;
+    --brand-text-strong:#c4b5fd; --brand-text-bright:#ddd6fe; --brand-surface:#2e1065; --brand-surface-strong:#4c1d95;
+    --danger:#ef4444; --danger-text:#f87171; --success:#22c55e; --success-text:#4ade80; --warning-text:#fde68a;
+    --r-card:12px; --r-btn:10px;
+    -webkit-font-smoothing:antialiased; font-synthesis:none;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#050505;color:var(--content);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Roboto,sans-serif;line-height:1.4;padding:48px 24px 120px}
+  .wrap{max-width:1180px;margin:0 auto}
+  .doc-head{text-align:center;margin-bottom:52px}
+  .doc-head .eyebrow{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--brand-text);font-weight:700}
+  .doc-head h1{font-size:40px;font-weight:800;letter-spacing:-.02em;margin:10px 0 8px}
+  .doc-head p{color:var(--content-muted);font-size:15px;max-width:680px;margin:0 auto}
+
+  section{margin-bottom:64px}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .sec-head .num{font-size:13px;font-weight:800;color:var(--brand-text);background:var(--brand-surface);border:1px solid var(--brand-surface-strong);width:28px;height:28px;border-radius:999px;display:grid;place-items:center;flex:none}
+  .sec-head h2{font-size:24px;font-weight:800;letter-spacing:-.01em}
+  .sec-sub{color:var(--content-muted);font-size:15px;margin:0 0 28px 40px;max-width:760px}
+
+  .row{display:flex;gap:36px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .col{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .col .label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--content-subtle);font-weight:700}
+
+  /* phone */
+  .phone{width:340px;background:var(--background);border:10px solid #1a1a1d;border-radius:36px;overflow:hidden;box-shadow:0 10px 28px rgba(0,0,0,.45)}
+  .screen{height:730px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+  .statusbar{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:13px;font-weight:700;position:relative;z-index:5}
+  .statusbar .dots{display:flex;gap:5px}
+  .scroll{flex:1;overflow-y:auto;position:relative}
+  .scroll::-webkit-scrollbar{width:0}
+
+  /* top bar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:4px 16px 10px;position:relative;z-index:5}
+  .topbar .uname{font-size:17px;font-weight:800;display:flex;align-items:center;gap:5px}
+  .topbar .ic{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:var(--content-secondary)}
+  .topbar .ic.bg{background:var(--surface-elevated)}
+
+  /* brand backdrop atrás do header */
+  .backdrop{position:absolute;top:0;left:0;right:0;height:200px;z-index:0;
+    background:radial-gradient(120% 90% at 18% 0%, rgba(124,58,237,.28) 0%, rgba(124,58,237,.05) 40%, transparent 68%);}
+
+  /* header */
+  .phead{position:relative;z-index:2;padding:6px 16px 0}
+  .phead .toprow{display:flex;align-items:center;gap:16px}
+  .avatar{width:84px;height:84px;border-radius:999px;flex:none;border:2px solid var(--line-strong)}
+  .avatar.ring{border:2px solid var(--brand)}
+  .stats{flex:1;display:flex;justify-content:space-around;gap:6px}
+  .stat{align-items:center;display:flex;flex-direction:column}
+  .stat b{font-size:19px;font-weight:800;letter-spacing:-.01em}
+  .stat span{font-size:12px;color:var(--content-muted);margin-top:1px}
+
+  .pname{font-size:19px;font-weight:800;margin-top:12px;letter-spacing:-.01em}
+  .puser{font-size:13px;color:var(--content-muted);margin-top:1px}
+  .pbio{font-size:14px;color:var(--content-tertiary);margin-top:8px;line-height:1.45}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .chip{font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--brand-surface);color:var(--brand-text-strong)}
+
+  .actions{display:flex;gap:8px;margin-top:14px}
+  .btn{flex:1;min-height:42px;border-radius:var(--r-btn);display:flex;align-items:center;justify-content:center;gap:7px;font-size:14px;font-weight:700;border:none;cursor:pointer}
+  .btn-primary{background:var(--brand);color:#fff}
+  .btn-ghost{background:var(--surface-elevated);color:var(--content-secondary)}
+  .btn-following{background:transparent;border:1px solid var(--line-strong);color:var(--content-secondary)}
+  .btn-icon{flex:none;width:42px;min-height:42px;border-radius:var(--r-btn);background:var(--surface-elevated);display:grid;place-items:center;color:var(--content-secondary);border:none}
+
+  /* segmento / título da seção */
+  .seclabel{display:flex;align-items:center;gap:8px;padding:18px 16px 12px;position:relative;z-index:2}
+  .seclabel .t{font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--content-secondary)}
+  .seclabel .c{font-size:12px;color:var(--content-subtle);font-weight:700}
+  .seclabel .ic{margin-left:auto;color:var(--content-subtle)}
+
+  /* grade de eventos */
+  .egrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 16px;position:relative;z-index:2}
+  .etile{position:relative;aspect-ratio:3/4;border-radius:var(--r-card);overflow:hidden;background:var(--surface)}
+  .etile .img{position:absolute;inset:0}
+  .etile .scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,transparent 42%)}
+  .etile .date{position:absolute;top:8px;left:8px;width:42px;border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.15);background:rgba(0,0,0,.72);text-align:center}
+  .etile .date .m{background:var(--brand);font-size:9px;font-weight:800;letter-spacing:.06em;padding:2px 0}
+  .etile .date .d{font-size:17px;font-weight:800;padding:2px 0 3px;line-height:1}
+  .etile .date.muted .m{background:var(--surface-higher)}
+  .etile .cap{position:absolute;bottom:9px;left:10px;right:10px}
+  .etile .cap b{font-size:13px;font-weight:800;line-height:1.15;display:block}
+  .etile .cap .meta{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11px;color:var(--content-tertiary);font-weight:600}
+  .etile .statusdot{position:absolute;top:9px;right:9px;font-size:10px;font-weight:700;padding:3px 7px;border-radius:6px;backdrop-filter:none}
+  .pill-soon{background:rgba(251,191,36,.16);color:var(--warning-text)}
+  .pill-live{background:rgba(34,197,94,.18);color:var(--success-text)}
+
+  /* gradiente "sem foto" nas tiles */
+  .g-night{background:radial-gradient(120% 120% at 0% 0%,#4c1d95 0%,#18181b 62%)}
+  .photo-show{background:linear-gradient(160deg,#831843,#7c2d12 55%,#1c1917)}
+  .photo-sport{background:linear-gradient(160deg,#064e3b,#065f46 45%,#0c1f1a)}
+  .photo-food{background:linear-gradient(160deg,#7c2d12,#b45309 50%,#1c1410)}
+  .photo-music{background:linear-gradient(160deg,#1e1b4b,#4c1d95 55%,#0f0a1f)}
+
+  /* avatares (gradiente representando foto) */
+  .a1{background:linear-gradient(135deg,#7c3aed,#ec4899)}
+  .a2{background:linear-gradient(135deg,#06b6d4,#3b82f6)}
+  .a3{background:linear-gradient(135deg,#f59e0b,#ef4444)}
+
+  /* tab bar */
+  .tabbar{height:64px;background:var(--surface-sunken);border-top:1px solid var(--line);display:flex;align-items:flex-start;padding-top:11px;position:relative;z-index:5}
+  .tabbar .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--content-faint)}
+  .tabbar .tab span{font-size:10px;font-weight:600}
+  .tabbar .tab.active{color:var(--brand-text)}
+  .tabbar .center{width:48px;height:48px;border-radius:999px;background:var(--brand);display:grid;place-items:center;margin-top:-16px}
+
+  svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block}
+  svg.i.sm{width:13px;height:13px}svg.i.lg{width:22px;height:22px}
+
+  /* states */
+  .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 32px;gap:8px;position:relative;z-index:2}
+  .empty .ico{width:64px;height:64px;border-radius:999px;background:var(--surface);display:grid;place-items:center;color:var(--content-subtle);margin-bottom:6px}
+  .empty b{font-size:16px;font-weight:700}
+  .empty p{font-size:13px;color:var(--content-muted);max-width:230px}
+  .empty .cta{margin-top:10px;background:var(--brand);color:#fff;font-size:13px;font-weight:700;padding:10px 18px;border-radius:var(--r-btn)}
+  .lock{position:absolute;inset:0;background:var(--background);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:40px;text-align:center;z-index:3}
+
+  .sk{background:linear-gradient(90deg,var(--surface) 0%,var(--surface-elevated) 50%,var(--surface) 100%);background-size:200% 100%;animation:sh 1.3s infinite;border-radius:8px}
+  @keyframes sh{to{background-position:-200% 0}}
+
+  .notes{margin:18px auto 0;max-width:1000px;display:grid;grid-template-columns:1fr 1fr;gap:10px 28px}
+  .note{display:flex;gap:10px;font-size:13px;color:var(--content-tertiary);align-items:flex-start}
+  .note .k{flex:none;width:22px;height:22px;border-radius:999px;background:rgba(34,197,94,.16);color:var(--success-text);display:grid;place-items:center;font-size:11px;font-weight:800}
+  .note b{color:var(--content);font-weight:700}
+  .pill-inline{display:inline-block;background:var(--surface-elevated);border:1px solid var(--line-strong);border-radius:6px;padding:1px 7px;font-size:12px;color:var(--content-tertiary)}
+  .caption-foot{text-align:center;color:var(--content-faint);font-size:13px;margin-top:56px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="doc-head">
+    <div class="eyebrow">ConnectAI · Design System</div>
+    <h1>Redesign do Perfil</h1>
+    <p>Mesma linguagem do feed: bloco-data, gradiente sutil da marca, cantos retos. O perfil vira uma <b>vitrine de eventos</b> — header enxuto no topo, grade de eventos protagonista. Tokens reais de <span class="pill-inline">global.css</span>.</p>
+  </div>
+
+  <!-- ============ 1. PERFIL PRÓPRIO ============ -->
+  <section>
+    <div class="sec-head"><div class="num">1</div><h2>Perfil próprio</h2></div>
+    <p class="sec-sub">Header compacto com stats inline (mais denso que o centralizado atual — traz a grade pra cima), backdrop sutil da marca, e a grade de eventos como protagonista.</p>
+
+    <div class="row">
+      <div class="col">
+        <div class="label">Próprio · com eventos</div>
+        <div class="phone"><div class="screen">
+          <div class="backdrop"></div>
+          <div class="statusbar"><span>9:41</span><div class="dots"><span>●</span><span>●</span><span>▰</span></div></div>
+          <div class="scroll">
+            <div class="topbar">
+              <div class="uname">@marina <svg class="i sm" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div>
+              <div style="display:flex;gap:6px">
+                <div class="ic"><svg class="i lg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+                <div class="ic bg"><svg class="i lg" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
+              </div>
+            </div>
+            <div class="phead">
+              <div class="toprow">
+                <div class="avatar ring a1"></div>
+                <div class="stats">
+                  <div class="stat"><b>24</b><span>eventos</span></div>
+                  <div class="stat"><b>892</b><span>seguidores</span></div>
+                  <div class="stat"><b>301</b><span>seguindo</span></div>
+                </div>
+              </div>
+              <div class="pname">Marina Costa</div>
+              <div class="puser">@marina · São Paulo</div>
+              <div class="pbio">Organizo encontros e rolês pela cidade ✦ próximo: Sunset no Rooftop</div>
+              <div class="chips"><span class="chip">Festas</span><span class="chip">Música</span><span class="chip">Gastronomia</span></div>
+              <div class="actions">
+                <button class="btn btn-ghost"><svg class="i" viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg> Editar perfil</button>
+                <button class="btn-icon"><svg class="i lg" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg></button>
+              </div>
+            </div>
+            <div class="seclabel"><span class="t">Eventos</span><span class="c">24</span>
+              <svg class="i ic" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            </div>
+            <div class="egrid">
+              <div class="etile"><div class="img photo-night g-night"></div><div class="scrim"></div><div class="date"><div class="m">JUN</div><div class="d">14</div></div><span class="statusdot pill-soon">● Sáb</span><div class="cap"><b>Sunset no Rooftop</b><div class="meta"><svg class="i sm" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg> 18 vão</div></div></div>
+              <div class="etile"><div class="img photo-show"></div><div class="scrim"></div><div class="date"><div class="m">JUN</div><div class="d">20</div></div><div class="cap"><b>Festa Aurora · Open Air</b><div class="meta"><svg class="i sm" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2"/></svg> 124 interessados</div></div></div>
+              <div class="etile"><div class="img g-night"></div><div class="scrim"></div><div class="date"><div class="m">JUL</div><div class="d">02</div></div><div class="cap"><b>Aniversário da Lê</b><div class="meta"><svg class="i sm" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Privado · 9</div></div></div>
+              <div class="etile"><div class="img photo-food"></div><div class="scrim"></div><div class="date muted"><div class="m">MAI</div><div class="d">30</div></div><div class="cap" style="opacity:.85"><b>Jantar coletivo</b><div class="meta">encerrado · 32 foram</div></div></div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Feed</span></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg><span>Mapa</span></div>
+            <div class="tab" style="flex:0 0 auto"><div class="center"><svg class="i lg" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 5v14M5 12h14"/></svg></div></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg><span>Chat</span></div>
+            <div class="tab active"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg><span>Perfil</span></div>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="col">
+        <div class="label">Vazio · sem eventos</div>
+        <div class="phone"><div class="screen">
+          <div class="backdrop"></div>
+          <div class="statusbar"><span>9:41</span><div class="dots"><span>●</span><span>●</span><span>▰</span></div></div>
+          <div class="scroll">
+            <div class="topbar">
+              <div class="uname">@joao <svg class="i sm" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></div>
+              <div style="display:flex;gap:6px"><div class="ic"><svg class="i lg" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div><div class="ic bg"><svg class="i lg" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div></div>
+            </div>
+            <div class="phead">
+              <div class="toprow">
+                <div class="avatar ring a2"></div>
+                <div class="stats"><div class="stat"><b>0</b><span>eventos</span></div><div class="stat"><b>12</b><span>seguidores</span></div><div class="stat"><b>48</b><span>seguindo</span></div></div>
+              </div>
+              <div class="pname">João Bonato</div>
+              <div class="puser">@joao</div>
+              <div class="actions">
+                <button class="btn btn-ghost"><svg class="i" viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg> Editar perfil</button>
+                <button class="btn-icon"><svg class="i lg" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg></button>
+              </div>
+            </div>
+            <div class="seclabel"><span class="t">Eventos</span></div>
+            <div class="empty">
+              <div class="ico"><svg class="i lg" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+              <b>Nenhum evento ainda</b>
+              <p>Crie seu primeiro rolê e ele aparece aqui pra todo mundo descobrir.</p>
+              <div class="cta">＋ Criar evento</div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Feed</span></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg><span>Mapa</span></div>
+            <div class="tab" style="flex:0 0 auto"><div class="center"><svg class="i lg" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 5v14M5 12h14"/></svg></div></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg><span>Chat</span></div>
+            <div class="tab active"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg><span>Perfil</span></div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="notes">
+      <div class="note"><span class="k">1</span><span><b>Stats inline ao lado do avatar</b> (estilo IG) em vez de centralizado — header ~40% mais curto, a grade sobe pra cima da dobra.</span></div>
+      <div class="note"><span class="k">2</span><span><b>Backdrop sutil da marca</b> dá identidade sem foto de capa. Mesma cor do hero sem-imagem do feed.</span></div>
+      <div class="note"><span class="k">3</span><span><b>Grade de eventos = vitrine.</b> Cada tile reusa bloco-data + scrim + título do card do feed. Coerência total.</span></div>
+      <div class="note"><span class="k">4</span><span><b>Estados</b>: tiles sem foto usam o gradiente da marca; passados esmaecem; vazio tem CTA pra criar.</span></div>
+    </div>
+  </section>
+
+  <!-- ============ 2. PERFIL DE OUTRO USUÁRIO ============ -->
+  <section>
+    <div class="sec-head"><div class="num">2</div><h2>Perfil de outro usuário</h2></div>
+    <p class="sec-sub">Mesmo layout; troca o "Editar" por <b>Seguir</b> (primário) + <b>Mensagem</b>. Privado mostra os números mas tranca a grade até você seguir.</p>
+
+    <div class="row">
+      <div class="col">
+        <div class="label">Público</div>
+        <div class="phone"><div class="screen">
+          <div class="backdrop"></div>
+          <div class="statusbar"><span>9:41</span><div class="dots"><span>●</span><span>●</span><span>▰</span></div></div>
+          <div class="scroll">
+            <div class="topbar">
+              <div class="ic"><svg class="i lg" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+              <div class="uname">@pedro</div>
+              <div class="ic"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="19" r="1.4"/></svg></div>
+            </div>
+            <div class="phead">
+              <div class="toprow">
+                <div class="avatar a3"></div>
+                <div class="stats"><div class="stat"><b>8</b><span>eventos</span></div><div class="stat"><b>2.1k</b><span>seguidores</span></div><div class="stat"><b>180</b><span>seguindo</span></div></div>
+              </div>
+              <div class="pname">Pedro Alves</div>
+              <div class="puser">@pedro</div>
+              <div class="pbio">Pelada todo sábado no Ibira ⚽ bora?</div>
+              <div class="chips"><span class="chip">Esporte</span><span class="chip">Ar livre</span></div>
+              <div class="actions">
+                <button class="btn btn-primary">Seguir</button>
+                <button class="btn-icon"><svg class="i lg" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></button>
+              </div>
+            </div>
+            <div class="seclabel"><span class="t">Eventos</span><span class="c">8</span></div>
+            <div class="egrid">
+              <div class="etile"><div class="img photo-sport"></div><div class="scrim"></div><div class="date"><div class="m">JUN</div><div class="d">20</div></div><span class="statusdot pill-live">● agora</span><div class="cap"><b>Pelada no Ibirapuera</b><div class="meta">22 vão</div></div></div>
+              <div class="etile"><div class="img photo-music"></div><div class="scrim"></div><div class="date"><div class="m">JUN</div><div class="d">28</div></div><div class="cap"><b>Samba no quintal</b><div class="meta">56 interessados</div></div></div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Feed</span></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg><span>Mapa</span></div>
+            <div class="tab" style="flex:0 0 auto"><div class="center"><svg class="i lg" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 5v14M5 12h14"/></svg></div></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg><span>Chat</span></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg><span>Perfil</span></div>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="col">
+        <div class="label">Privado · não seguido</div>
+        <div class="phone"><div class="screen">
+          <div class="backdrop"></div>
+          <div class="statusbar"><span>9:41</span><div class="dots"><span>●</span><span>●</span><span>▰</span></div></div>
+          <div class="scroll">
+            <div class="topbar">
+              <div class="ic"><svg class="i lg" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></div>
+              <div class="uname">@helena <svg class="i sm" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+              <div class="ic"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="19" r="1.4"/></svg></div>
+            </div>
+            <div class="phead">
+              <div class="toprow">
+                <div class="avatar a1"></div>
+                <div class="stats"><div class="stat"><b>15</b><span>eventos</span></div><div class="stat"><b>430</b><span>seguidores</span></div><div class="stat"><b>210</b><span>seguindo</span></div></div>
+              </div>
+              <div class="pname">Helena Dias</div>
+              <div class="puser">@helena</div>
+              <div class="actions">
+                <button class="btn btn-primary">Seguir</button>
+                <button class="btn-icon" style="opacity:.4"><svg class="i lg" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></button>
+              </div>
+            </div>
+            <div class="seclabel"><span class="t">Eventos</span></div>
+            <div class="empty">
+              <div class="ico"><svg class="i lg" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+              <b>Este perfil é privado</b>
+              <p>Siga @helena para ver os eventos que ela organiza.</p>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Feed</span></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg><span>Mapa</span></div>
+            <div class="tab" style="flex:0 0 auto"><div class="center"><svg class="i lg" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 5v14M5 12h14"/></svg></div></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg><span>Chat</span></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg><span>Perfil</span></div>
+          </div>
+        </div></div>
+      </div>
+
+      <div class="col">
+        <div class="label">Carregando (skeleton)</div>
+        <div class="phone"><div class="screen">
+          <div class="statusbar"><span>9:41</span><div class="dots"><span>●</span><span>●</span><span>▰</span></div></div>
+          <div class="scroll">
+            <div class="topbar"><div class="sk" style="width:90px;height:18px"></div><div class="sk" style="width:38px;height:38px;border-radius:10px"></div></div>
+            <div class="phead">
+              <div class="toprow">
+                <div class="sk" style="width:84px;height:84px;border-radius:999px"></div>
+                <div class="stats">
+                  <div class="stat"><div class="sk" style="width:34px;height:18px"></div><div class="sk" style="width:46px;height:11px;margin-top:5px"></div></div>
+                  <div class="stat"><div class="sk" style="width:34px;height:18px"></div><div class="sk" style="width:54px;height:11px;margin-top:5px"></div></div>
+                  <div class="stat"><div class="sk" style="width:34px;height:18px"></div><div class="sk" style="width:46px;height:11px;margin-top:5px"></div></div>
+                </div>
+              </div>
+              <div class="sk" style="width:150px;height:18px;margin-top:14px"></div>
+              <div class="sk" style="width:90px;height:13px;margin-top:8px"></div>
+              <div class="sk" style="width:100%;height:42px;border-radius:10px;margin-top:14px"></div>
+            </div>
+            <div class="seclabel"><div class="sk" style="width:70px;height:13px"></div></div>
+            <div class="egrid">
+              <div class="sk" style="aspect-ratio:3/4;border-radius:12px"></div>
+              <div class="sk" style="aspect-ratio:3/4;border-radius:12px"></div>
+              <div class="sk" style="aspect-ratio:3/4;border-radius:12px"></div>
+              <div class="sk" style="aspect-ratio:3/4;border-radius:12px"></div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Feed</span></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg><span>Mapa</span></div>
+            <div class="tab" style="flex:0 0 auto"><div class="center"><svg class="i lg" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 5v14M5 12h14"/></svg></div></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg><span>Chat</span></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg><span>Perfil</span></div>
+          </div>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="caption-foot">
+    Tokens reais · tema dark · marca violet #7c3aed · grade reusa o bloco-data e o scrim do EventCard · toque ≥44px · contraste AA.
+  </div>
+
+</div>
+</body>
+</html>

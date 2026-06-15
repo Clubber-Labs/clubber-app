@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ConnectAI · Sistema do EventCard</title>
+<style>
+  /* ───────────────────────────────────────────────────────────
+     TOKENS — espelho exato de src/global.css (tema dark único)
+     ─────────────────────────────────────────────────────────── */
+  :root {
+    --background: #000000;
+    --surface-sunken: #0a0a0a;
+    --surface: #18181b;
+    --surface-elevated: #27272a;
+    --surface-high: #3f3f46;
+    --surface-higher: #52525b;
+
+    --content: #ffffff;
+    --content-bright: #f4f4f5;
+    --content-secondary: #e4e4e7;
+    --content-tertiary: #d4d4d8;
+    --content-muted: #a1a1aa;
+    --content-subtle: #71717a;
+    --content-faint: #52525b;
+
+    --line: #27272a;
+    --line-strong: #3f3f46;
+    --line-subtle: #18181b;
+
+    --brand: #7c3aed;
+    --brand-emphasis: #8b5cf6;
+    --brand-strong: #6d28d9;
+    --brand-text: #a78bfa;
+    --brand-text-strong: #c4b5fd;
+    --brand-text-bright: #ddd6fe;
+    --brand-surface: #2e1065;
+    --brand-surface-strong: #4c1d95;
+
+    --danger: #ef4444;
+    --danger-text: #f87171;
+    --warning: #fbbf24;
+    --warning-text: #fde68a;
+    --success: #22c55e;
+    --success-text: #4ade80;
+    --success-strong: #16a34a;
+    --info: #7dd3fc;
+
+    /* régua tipográfica proposta */
+    --t-display: 28px;
+    --t-title: 20px;
+    --t-section: 17px;
+    --t-body: 15px;
+    --t-meta: 13px;
+    --t-caption: 11px;
+
+    /* raios */
+    --r-card: 12px;
+    --r-btn: 10px;
+    --r-chip: 999px;
+
+    font-synthesis: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #050505;
+    color: var(--content);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.4;
+    padding: 48px 24px 120px;
+  }
+
+  .wrap { max-width: 1180px; margin: 0 auto; }
+
+  /* cabeçalho do doc */
+  .doc-head { text-align: center; margin-bottom: 56px; }
+  .doc-head .eyebrow {
+    font-size: var(--t-caption); letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--brand-text); font-weight: 700;
+  }
+  .doc-head h1 { font-size: 40px; font-weight: 800; letter-spacing: -0.02em; margin: 10px 0 8px; }
+  .doc-head p { color: var(--content-muted); font-size: var(--t-body); max-width: 640px; margin: 0 auto; }
+
+  /* seções */
+  section { margin-bottom: 72px; }
+  .sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+  .sec-head .num {
+    font-size: var(--t-meta); font-weight: 800; color: var(--brand-text);
+    background: var(--brand-surface); border: 1px solid var(--brand-surface-strong);
+    width: 28px; height: 28px; border-radius: 999px; display: grid; place-items: center; flex: none;
+  }
+  .sec-head h2 { font-size: 24px; font-weight: 800; letter-spacing: -0.01em; }
+  .sec-sub { color: var(--content-muted); font-size: var(--t-body); margin: 0 0 28px 40px; max-width: 720px; }
+
+  .grid { display: grid; gap: 28px; }
+  .cols-2 { grid-template-columns: 1fr 1fr; }
+  .cols-3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 900px) { .cols-2, .cols-3 { grid-template-columns: 1fr; } }
+
+  .label {
+    font-size: var(--t-caption); letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--content-subtle); font-weight: 700; margin-bottom: 12px;
+  }
+  .label.bad { color: var(--danger-text); }
+  .label.good { color: var(--success-text); }
+
+  /* painel */
+  .panel {
+    background: var(--surface-sunken); border: 1px solid var(--line);
+    border-radius: 12px; padding: 24px;
+  }
+
+  /* ──────────── FOUNDATIONS ──────────── */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap: 10px; }
+  .sw { border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
+  .sw .chip { height: 56px; }
+  .sw .meta { padding: 8px 10px; background: var(--surface); }
+  .sw .meta b { display: block; font-size: var(--t-meta); font-weight: 600; }
+  .sw .meta span { font-size: var(--t-caption); color: var(--content-subtle); font-variant-numeric: tabular-nums; }
+
+  .type-row { display: flex; align-items: baseline; gap: 18px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .type-row:last-child { border-bottom: none; }
+  .type-row .tag { font-size: var(--t-caption); color: var(--content-subtle); width: 130px; flex: none; font-variant-numeric: tabular-nums; }
+
+  /* botões canônicos */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 0 20px; border-radius: var(--r-btn);
+    font-size: var(--t-body); font-weight: 700; border: none; cursor: pointer;
+    width: 100%;
+  }
+  .btn-primary { background: var(--brand); color: #fff; }
+  .btn-primary:active { background: var(--brand-strong); }
+  .btn-confirmed { background: var(--brand-surface); color: var(--brand-text-bright); border: 1px solid var(--brand-surface-strong); }
+  .btn-ghost { background: var(--surface-elevated); color: var(--content-secondary); }
+  .btn-row { display: grid; gap: 12px; }
+
+  /* ──────────── PHONE FRAME ──────────── */
+  .phone {
+    width: 340px; margin: 0 auto; background: var(--background);
+    border: 10px solid #1a1a1d; border-radius: 36px; overflow: hidden;
+    box-shadow: 0 10px 28px rgba(0,0,0,.45);
+    position: relative;
+  }
+  .phone-screen { height: 720px; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+  .statusbar { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 22px; font-size: 13px; font-weight: 700; }
+  .statusbar .dots { display: flex; gap: 5px; align-items: center; }
+  .topbar { padding: 6px 16px 12px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar h3 { font-size: var(--t-display); font-weight: 800; letter-spacing: -0.02em; }
+  .scrollarea { flex: 1; overflow-y: auto; padding: 0 12px 12px; }
+  .scrollarea::-webkit-scrollbar { width: 0; }
+
+  /* tab bar */
+  .tabbar {
+    height: 72px; background: var(--surface-sunken); border-top: 1px solid var(--line);
+    display: flex; align-items: flex-start; padding-top: 12px;
+  }
+  .tabbar .tab { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--content-faint); }
+  .tabbar .tab .ic { width: 24px; height: 24px; }
+  .tabbar .tab span { font-size: 10px; font-weight: 600; }
+  .tabbar .tab.active { color: var(--brand-text); }
+  .tabbar .center {
+    width: 52px; height: 52px; border-radius: 999px; background: var(--brand);
+    display: grid; place-items: center; margin-top: -18px;
+  }
+
+  /* ──────────── EVENT CARD (sistema) ──────────── */
+  .ecard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); overflow: hidden; margin-bottom: 14px; }
+
+  /* reason banner */
+  .reason { display: flex; align-items: center; gap: 7px; padding: 9px 14px; font-size: var(--t-meta); color: var(--brand-text); background: linear-gradient(90deg, var(--brand-surface) 0%, transparent 100%); border-bottom: 1px solid var(--line); }
+
+  /* HERO */
+  .hero { position: relative; aspect-ratio: 16/10; }
+  .hero .img { position: absolute; inset: 0; }
+  .hero .scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.82) 0%, rgba(0,0,0,.15) 45%, rgba(0,0,0,.35) 100%); }
+  .hero .top { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; align-items: flex-start; }
+  .hero .bottom { position: absolute; bottom: 12px; left: 12px; right: 12px; }
+
+  /* date chip — bloco calendário */
+  .datechip { background: rgba(0,0,0,.72); border: 1px solid rgba(255,255,255,.16); border-radius: 8px; width: 52px; text-align: center; overflow: hidden; }
+  .datechip .m { background: var(--brand); font-size: 10px; font-weight: 800; letter-spacing: .08em; padding: 3px 0; text-transform: uppercase; }
+  .datechip .d { font-size: 22px; font-weight: 800; padding: 4px 0 5px; line-height: 1; }
+
+  .pill { display: inline-flex; align-items: center; gap: 5px; font-size: var(--t-caption); font-weight: 700; padding: 5px 10px; border-radius: 6px; }
+  .pill-live { background: rgba(34,197,94,.18); color: var(--success-text); border: 1px solid rgba(34,197,94,.35); }
+  .pill-soon { background: rgba(251,191,36,.16); color: var(--warning-text); border: 1px solid rgba(251,191,36,.32); }
+  .pill-private { background: rgba(0,0,0,.5); color: var(--content-tertiary); border: 1px solid rgba(255,255,255,.14); }
+  .pill-past { background: rgba(0,0,0,.5); color: var(--content-subtle); border: 1px solid rgba(255,255,255,.1); }
+
+  .byline { display: flex; align-items: center; gap: 8px; }
+  .byline .av { width: 26px; height: 26px; border-radius: 999px; border: 1.5px solid rgba(255,255,255,.5); flex: none; }
+  .byline .txt { font-size: var(--t-meta); font-weight: 600; text-shadow: 0 1px 4px rgba(0,0,0,.6); }
+  .byline .txt small { display: block; font-size: 10px; color: var(--content-tertiary); font-weight: 500; }
+
+  /* corpo */
+  .ebody { padding: 14px 16px 4px; }
+  .etitle { font-size: var(--t-title); font-weight: 800; letter-spacing: -0.01em; line-height: 1.18; }
+  .emeta { display: flex; align-items: center; gap: 14px; margin-top: 9px; color: var(--content-muted); font-size: var(--t-meta); }
+  .emeta .it { display: inline-flex; align-items: center; gap: 5px; }
+
+  /* prova social */
+  .social { display: flex; align-items: center; gap: 10px; padding: 12px 16px; }
+  .stack { display: flex; }
+  .stack .av { width: 28px; height: 28px; border-radius: 999px; border: 2px solid var(--surface); margin-left: -9px; flex: none; }
+  .stack .av:first-child { margin-left: 0; }
+  .social .txt { font-size: var(--t-meta); color: var(--content-secondary); }
+  .social .txt b { color: var(--content); font-weight: 700; }
+
+  /* footer ações */
+  .efoot { display: flex; align-items: center; gap: 10px; padding: 4px 14px 14px; }
+  .efoot .rsvp { flex: 1; }
+  .iconbtn { width: 44px; height: 44px; border-radius: 10px; background: var(--surface-elevated); display: grid; place-items: center; color: var(--content-secondary); border: none; cursor: pointer; flex: none; }
+  .iconbtn.on { color: var(--danger-text); }
+
+  /* engajamento leve (like/comment counts) */
+  .engage { display: flex; gap: 18px; padding: 0 16px 14px; color: var(--content-subtle); font-size: var(--t-meta); }
+  .engage .it { display: inline-flex; align-items: center; gap: 5px; }
+
+  /* avatar gradients (placeholder de fotos) */
+  .g1 { background: linear-gradient(135deg,#7c3aed,#ec4899); }
+  .g2 { background: linear-gradient(135deg,#06b6d4,#3b82f6); }
+  .g3 { background: linear-gradient(135deg,#f59e0b,#ef4444); }
+  .g4 { background: linear-gradient(135deg,#10b981,#84cc16); }
+  .g5 { background: linear-gradient(135deg,#8b5cf6,#6366f1); }
+  /* hero "fotos" */
+  .photo-night { background: linear-gradient(160deg,#3b1d6e 0%,#1e1b4b 50%,#0f0a1f 100%); }
+  .photo-show  { background: linear-gradient(160deg,#831843 0%,#7c2d12 55%,#1c1917 100%); }
+  .photo-sport { background: linear-gradient(160deg,#064e3b 0%,#065f46 45%,#0c1f1a 100%); }
+  .photo-food  { background: linear-gradient(160deg,#7c2d12 0%,#b45309 50%,#1c1410 100%); }
+
+  /* card SEM imagem — hero tipográfico */
+  .hero-text { aspect-ratio: 16/9; display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; position: relative; }
+  .hero-text.t1 { background: radial-gradient(120% 120% at 0% 0%, #4c1d95 0%, #18181b 60%); }
+  .hero-text .top { position: static; margin-bottom: auto; }
+
+  /* skeleton */
+  .sk { background: linear-gradient(90deg, var(--surface) 0%, var(--surface-elevated) 50%, var(--surface) 100%); background-size: 200% 100%; animation: shimmer 1.3s infinite; border-radius: 8px; }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  /* annotation callouts */
+  .notes { margin-top: 16px; display: grid; gap: 10px; }
+  .note { display: flex; gap: 10px; font-size: var(--t-meta); color: var(--content-tertiary); align-items: flex-start; }
+  .note .k { flex: none; width: 22px; height: 22px; border-radius: 999px; display: grid; place-items: center; font-size: 11px; font-weight: 800; }
+  .note.minus .k { background: rgba(239,68,68,.16); color: var(--danger-text); }
+  .note.plus .k { background: rgba(34,197,94,.16); color: var(--success-text); }
+  .note b { color: var(--content); font-weight: 700; }
+
+  /* map preview */
+  .mapbg { position: absolute; inset: 0; background:
+      repeating-linear-gradient(0deg, #0d0d10 0 1px, transparent 1px 38px),
+      repeating-linear-gradient(90deg, #0d0d10 0 1px, transparent 1px 38px),
+      #08080a; }
+  .pin { position: absolute; width: 40px; height: 40px; border-radius: 999px 999px 999px 2px; transform: rotate(45deg); display: grid; place-items: center; box-shadow: 0 2px 6px rgba(0,0,0,.45); }
+  .pin > * { transform: rotate(-45deg); font-weight: 800; font-size: 12px; }
+  .pin.brand { background: var(--brand); }
+  .pin.cluster { background: var(--surface-elevated); border: 2px solid var(--brand-emphasis); }
+
+  /* search bar (map) */
+  .searchbar { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px; padding: 12px 16px; color: var(--content-muted); font-size: var(--t-body); }
+  .filterchips { display: flex; gap: 8px; overflow: hidden; padding-top: 10px; }
+  .fchip { font-size: var(--t-meta); font-weight: 600; padding: 8px 14px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line-strong); color: var(--content-tertiary); white-space: nowrap; }
+  .fchip.on { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+  /* profile grid */
+  .pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .pcell { aspect-ratio: 1; border-radius: 10px; overflow: hidden; position: relative; }
+  .pcell .ov { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.8), transparent 55%); }
+  .pcell .cap { position: absolute; bottom: 8px; left: 9px; right: 9px; }
+  .pcell .cap b { font-size: var(--t-meta); font-weight: 700; display: block; line-height: 1.15; }
+  .pcell .cap small { font-size: 10px; color: var(--content-tertiary); }
+  .pcell .mini-date { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,.72); border-radius: 6px; padding: 3px 7px; font-size: 10px; font-weight: 800; }
+
+  /* icons (inline svg helper sizing) */
+  svg.i { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; display: block; }
+  svg.i.sm { width: 14px; height: 14px; }
+  svg.i.lg { width: 22px; height: 22px; }
+
+  .caption-foot { text-align: center; color: var(--content-faint); font-size: var(--t-meta); margin-top: 64px; }
+  .pill-inline { display:inline-block; background: var(--surface-elevated); border:1px solid var(--line-strong); border-radius:6px; padding:1px 7px; font-size:12px; color:var(--content-tertiary); font-variant-numeric: tabular-nums;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="doc-head">
+    <div class="eyebrow">ConnectAI · Design System</div>
+    <h1>O EventCard como âncora</h1>
+    <p>Uma única peça — o card de evento — refeita para vender o evento e a ação, não o post. Acertá-la propaga coerência para feed, mapa e perfil. Todas as cores são os tokens reais de <span class="pill-inline">global.css</span>.</p>
+  </div>
+
+  <!-- ════════════ 1. FUNDAMENTOS ════════════ -->
+  <section>
+    <div class="sec-head"><div class="num">1</div><h2>Fundamentos</h2></div>
+    <p class="sec-sub">Antes das telas, a régua. Mesma escala tipográfica, mesmo botão, mesmos raios em toda superfície.</p>
+
+    <div class="grid cols-3">
+      <!-- type scale -->
+      <div class="panel">
+        <div class="label">Escala tipográfica</div>
+        <div class="type-row"><span class="tag">Display · 28/800</span><span style="font-size:var(--t-display);font-weight:800;letter-spacing:-.02em">Mensagens</span></div>
+        <div class="type-row"><span class="tag">Título · 20/800</span><span style="font-size:var(--t-title);font-weight:800">Sunset no Rooftop</span></div>
+        <div class="type-row"><span class="tag">Seção · 17/700</span><span style="font-size:var(--t-section);font-weight:700">Quem vai</span></div>
+        <div class="type-row"><span class="tag">Corpo · 15/400</span><span style="font-size:var(--t-body)">Encontro aberto, traga quem quiser.</span></div>
+        <div class="type-row"><span class="tag">Meta · 13/600</span><span style="font-size:var(--t-meta);font-weight:600;color:var(--content-muted)">12 jun · 19h · Pinheiros</span></div>
+        <div class="type-row"><span class="tag">Caption · 11/700</span><span style="font-size:var(--t-caption);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--content-subtle)">Privado</span></div>
+      </div>
+
+      <!-- botões -->
+      <div class="panel">
+        <div class="label">Botão canônico — 1 componente, estados</div>
+        <div class="btn-row">
+          <button class="btn btn-primary"><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Vou</button>
+          <button class="btn btn-confirmed"><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Presença confirmada</button>
+          <button class="btn btn-ghost">Talvez</button>
+          <button class="btn btn-primary" style="opacity:.5">Carregando…</button>
+        </div>
+        <div class="notes">
+          <div class="note plus"><span class="k">↑</span><span>Altura <b>48px</b> (toque ≥44). Press: <b>brand → brand-strong</b>. Hoje cada tela inventa o seu — aqui é um só.</span></div>
+        </div>
+      </div>
+
+      <!-- raios + cor marca -->
+      <div class="panel">
+        <div class="label">Marca & superfícies</div>
+        <div class="swatches">
+          <div class="sw"><div class="chip" style="background:var(--brand)"></div><div class="meta"><b>brand</b><span>#7c3aed</span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--brand-emphasis)"></div><div class="meta"><b>emphasis</b><span>#8b5cf6</span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--brand-text)"></div><div class="meta"><b>brand-text</b><span>#a78bfa</span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--surface)"></div><div class="meta"><b>surface</b><span>#18181b</span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--surface-elevated)"></div><div class="meta"><b>elevated</b><span>#27272a</span></div></div>
+          <div class="sw"><div class="chip" style="background:var(--success)"></div><div class="meta"><b>success</b><span>#22c55e</span></div></div>
+        </div>
+        <div class="notes">
+          <div class="note plus"><span class="k">r</span><span>Card <b>20px</b> · botão <b>14px</b> · chip <b>full</b>. Grade de <b>4px</b>, padding de card <b>16px</b>.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ 2. ANTES vs DEPOIS ════════════ -->
+  <section>
+    <div class="sec-head"><div class="num">2</div><h2>O card: antes &amp; depois</h2></div>
+    <p class="sec-sub">Mesmos dados, mesma paleta. A diferença é a <b>hierarquia</b>: o evento e o RSVP vêm primeiro; o autor vira assinatura.</p>
+
+    <div class="grid cols-2">
+      <!-- ANTES -->
+      <div class="panel">
+        <div class="label bad">Hoje — card de "post social"</div>
+        <div style="max-width:312px;margin:0 auto">
+          <div class="ecard">
+            <div style="padding:14px 14px 0;display:flex;align-items:center;justify-content:space-between">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div class="g1" style="width:36px;height:36px;border-radius:999px"></div>
+                <div><div style="font-size:14px;font-weight:600">Marina Costa</div><div style="font-size:12px;color:var(--content-subtle)">há 2 h</div></div>
+              </div>
+              <div style="font-size:11px;color:var(--content-muted);background:var(--surface-elevated);padding:3px 9px;border-radius:999px">Em breve</div>
+            </div>
+            <div style="padding:12px 14px 0">
+              <div style="font-size:16px;font-weight:700">Sunset no Rooftop</div>
+              <div style="font-size:14px;color:var(--content-muted);margin-top:2px">Encontro aberto pra ver o pôr do sol, traga quem quiser.</div>
+            </div>
+            <div class="photo-night" style="height:150px;margin-top:12px"></div>
+            <div style="display:flex;gap:16px;padding:12px 14px 0;color:var(--content-muted);font-size:12px">
+              <span>📅 12 jun</span><span>👥 18 indo</span>
+            </div>
+            <div style="display:flex;gap:6px;padding:8px 10px 12px">
+              <span style="font-size:13px;color:var(--content-secondary)">♡ 42</span>
+              <span style="font-size:13px;color:var(--content-secondary);margin-left:12px">💬 7</span>
+            </div>
+          </div>
+        </div>
+        <div class="notes">
+          <div class="note minus"><span class="k">1</span><span>O <b>rosto do autor</b> domina o topo. O olho vai pra pessoa, não pro evento.</span></div>
+          <div class="note minus"><span class="k">2</span><span>Título do evento em <b>16px</b>, igual a um post qualquer. Sem peso de manchete.</span></div>
+          <div class="note minus"><span class="k">3</span><span><b>Data, local e quem vai</b> — o que decide o RSVP — em 12px, no rodapé.</span></div>
+          <div class="note minus"><span class="k">4</span><span><b>Não há botão de confirmar presença.</b> Só curtir e comentar. A ação central exige abrir o detalhe.</span></div>
+        </div>
+      </div>
+
+      <!-- DEPOIS -->
+      <div class="panel">
+        <div class="label good">Proposto — card de evento</div>
+        <div style="max-width:312px;margin:0 auto">
+          <div class="ecard">
+            <div class="reason">
+              <svg class="i sm" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg>
+              Marina, que você segue, criou
+            </div>
+            <div class="hero">
+              <div class="img photo-night"></div>
+              <div class="scrim"></div>
+              <div class="top">
+                <div class="datechip"><div class="m">JUN</div><div class="d">12</div></div>
+                <div class="pill pill-soon">● Em breve</div>
+              </div>
+              <div class="bottom">
+                <div class="byline">
+                  <div class="av g1"></div>
+                  <div class="txt">Marina Costa<small>organizadora</small></div>
+                </div>
+              </div>
+            </div>
+            <div class="ebody">
+              <div class="etitle">Sunset no Rooftop</div>
+              <div class="emeta">
+                <span class="it"><svg class="i sm" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg> Pinheiros</span>
+                <span class="it"><svg class="i sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> 19h00</span>
+              </div>
+            </div>
+            <div class="social">
+              <div class="stack"><div class="av g2"></div><div class="av g3"></div><div class="av g4"></div></div>
+              <div class="txt"><b>Ana, Júlia +16</b> vão</div>
+            </div>
+            <div class="efoot">
+              <button class="btn btn-primary rsvp"><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Vou</button>
+              <button class="iconbtn"><svg class="i lg" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+              <button class="iconbtn"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="12" cy="19" r="1.4"/></svg></button>
+            </div>
+            <div class="engage">
+              <span class="it"><svg class="i sm" viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 3-3.3 3-5.5A4.5 4.5 0 0 0 12 5 4.5 4.5 0 0 0 2 8.5c0 2.2 1.5 4 3 5.5l7 7z"/></svg> 42</span>
+              <span class="it"><svg class="i sm" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg> 7</span>
+            </div>
+          </div>
+        </div>
+        <div class="notes">
+          <div class="note plus"><span class="k">1</span><span><b>Hero do evento</b> ancora o card. Data em bloco-calendário, status como pill. Decisão em 0,5s.</span></div>
+          <div class="note plus"><span class="k">2</span><span>Título em <b>20px/800</b> — manchete. Local e hora logo abaixo, legíveis.</span></div>
+          <div class="note plus"><span class="k">3</span><span><b>Prova social elevada</b>: stack de amigos + "Ana, Júlia +16 vão". É o coração social, tratado como tal.</span></div>
+          <div class="note plus"><span class="k">4</span><span><b>RSVP "Vou" no card</b> + salvar. A ação central acontece na descoberta, sem abrir o detalhe.</span></div>
+          <div class="note plus"><span class="k">5</span><span>Autor vira <b>assinatura</b> sobre o hero. Like/comentário descem pra um rodapé leve.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ 3. VARIANTES & ESTADOS ════════════ -->
+  <section>
+    <div class="sec-head"><div class="num">3</div><h2>Variantes &amp; estados</h2></div>
+    <p class="sec-sub">Um componente, regras claras: com foto, sem foto, já confirmado, encerrado, e carregando.</p>
+
+    <div class="grid cols-3">
+      <!-- sem imagem -->
+      <div class="panel">
+        <div class="label">Sem foto — hero tipográfico</div>
+        <div class="ecard" style="max-width:300px;margin:0 auto">
+          <div class="hero-text t1">
+            <div class="top" style="display:flex;justify-content:space-between">
+              <div class="datechip"><div class="m">JUN</div><div class="d">15</div></div>
+              <div class="pill pill-private"><svg class="i sm" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg> Privado</div>
+            </div>
+            <div class="etitle" style="font-size:22px">Aniversário da Lê</div>
+          </div>
+          <div class="ebody">
+            <div class="emeta">
+              <span class="it"><svg class="i sm" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg> Casa da Letícia</span>
+              <span class="it"><svg class="i sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> 21h</span>
+            </div>
+          </div>
+          <div class="social"><div class="stack"><div class="av g5"></div><div class="av g3"></div></div><div class="txt"><b>Você + 8</b> convidados</div></div>
+          <div class="efoot"><button class="btn btn-primary rsvp"><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Vou</button><button class="iconbtn"><svg class="i lg" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button></div>
+        </div>
+        <div class="notes"><div class="note plus"><span class="k">✓</span><span>Sem foto, o título <b>vira o hero</b> sobre gradiente da marca. Nunca uma faixa cinza vazia.</span></div></div>
+      </div>
+
+      <!-- confirmado + encerrado -->
+      <div class="panel">
+        <div class="label">Confirmado &amp; encerrado</div>
+        <div class="ecard" style="max-width:300px;margin:0 auto 14px">
+          <div class="hero" style="aspect-ratio:16/9">
+            <div class="img photo-sport"></div><div class="scrim"></div>
+            <div class="top"><div class="datechip"><div class="m">JUN</div><div class="d">20</div></div><div class="pill pill-live">● Acontecendo</div></div>
+            <div class="bottom"><div class="byline"><div class="av g4"></div><div class="txt">Pedro Alves</div></div></div>
+          </div>
+          <div class="ebody"><div class="etitle" style="font-size:18px">Pelada no Ibirapuera</div></div>
+          <div class="efoot"><button class="btn btn-confirmed rsvp"><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Presença confirmada</button></div>
+        </div>
+        <div class="ecard" style="max-width:300px;margin:0 auto;opacity:.72">
+          <div class="hero" style="aspect-ratio:16/9">
+            <div class="img photo-food" style="filter:grayscale(.5)"></div><div class="scrim"></div>
+            <div class="top"><div class="datechip" style="opacity:.8"><div class="m" style="background:var(--surface-higher)">MAI</div><div class="d">30</div></div><div class="pill pill-past">Encerrado</div></div>
+          </div>
+          <div class="ebody"><div class="etitle" style="font-size:18px">Jantar coletivo</div><div class="emeta"><span class="it">Vila Madalena · 32 foram</span></div></div>
+          <div class="efoot"><button class="btn btn-ghost rsvp">Ver registro</button></div>
+        </div>
+        <div class="notes"><div class="note plus"><span class="k">✓</span><span>Confirmado → botão vira <b>brand-surface</b> com check. Encerrado → card esmaecido, CTA muda pra "ver registro".</span></div></div>
+      </div>
+
+      <!-- loading -->
+      <div class="panel">
+        <div class="label">Carregando (skeleton)</div>
+        <div class="ecard" style="max-width:300px;margin:0 auto">
+          <div class="sk" style="height:168px;border-radius:0"></div>
+          <div class="ebody" style="padding-bottom:14px">
+            <div class="sk" style="height:20px;width:75%;margin-bottom:10px"></div>
+            <div class="sk" style="height:13px;width:55%"></div>
+          </div>
+          <div class="social"><div class="sk" style="width:74px;height:28px;border-radius:999px"></div><div class="sk" style="height:13px;width:90px"></div></div>
+          <div class="efoot"><div class="sk rsvp" style="height:48px"></div><div class="sk" style="width:44px;height:44px;border-radius:12px"></div></div>
+        </div>
+        <div class="notes"><div class="note plus"><span class="k">✓</span><span>Skeleton com <b>shimmer</b> reproduz o layout exato — sem "pulo" quando o conteúdo chega.</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════ 4. EM CONTEXTO ════════════ -->
+  <section>
+    <div class="sec-head"><div class="num">4</div><h2>O mesmo card nas três superfícies</h2></div>
+    <p class="sec-sub">Coerência: o card do feed, o preview do mapa e a grade do perfil falam a mesma língua visual.</p>
+
+    <div class="grid cols-3">
+
+      <!-- FEED -->
+      <div>
+        <div class="label" style="text-align:center">Feed</div>
+        <div class="phone"><div class="phone-screen">
+          <div class="statusbar"><span>9:41</span><div class="dots"><span>●</span><span>●</span><span>▰</span></div></div>
+          <div class="topbar"><h3>Eventos</h3>
+            <div style="display:flex;gap:6px"><div class="iconbtn" style="width:40px;height:40px"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg></div></div>
+          </div>
+          <div class="scrollarea">
+            <!-- card 1 -->
+            <div class="ecard">
+              <div class="reason"><svg class="i sm" viewBox="0 0 24 24"><path d="m22 11-3-3m0 0-3 3m3-3v12"/><path d="M2 13l3 3m0 0 3-3m-3 3V4"/></svg> Popular perto de você</div>
+              <div class="hero" style="aspect-ratio:16/10">
+                <div class="img photo-show"></div><div class="scrim"></div>
+                <div class="top"><div class="datechip"><div class="m">JUN</div><div class="d">14</div></div><div class="pill pill-soon">● Sábado</div></div>
+                <div class="bottom"><div class="byline"><div class="av g3"></div><div class="txt">Coletivo Aurora<small>organizador</small></div></div></div>
+              </div>
+              <div class="ebody"><div class="etitle">Festa Aurora · Open Air</div>
+                <div class="emeta"><span class="it"><svg class="i sm" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg> Lapa</span><span class="it"><svg class="i sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> 22h</span></div>
+              </div>
+              <div class="social"><div class="stack"><div class="av g1"></div><div class="av g2"></div><div class="av g5"></div></div><div class="txt"><b>+124</b> interessados</div></div>
+              <div class="efoot"><button class="btn btn-primary rsvp"><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Vou</button><button class="iconbtn"><svg class="i lg" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button></div>
+            </div>
+            <!-- card 2 (compacto, sem foto) -->
+            <div class="ecard">
+              <div class="hero-text t1" style="aspect-ratio:16/7">
+                <div class="top" style="display:flex;justify-content:space-between"><div class="datechip"><div class="m">JUN</div><div class="d">13</div></div></div>
+                <div class="etitle" style="font-size:19px">Bar do Zé — happy hour</div>
+              </div>
+              <div class="ebody"><div class="emeta"><span class="it"><svg class="i sm" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg> Vila Madalena</span><span class="it">Hoje · 18h</span></div></div>
+              <div class="social"><div class="stack"><div class="av g4"></div><div class="av g3"></div></div><div class="txt"><b>Bruno +5</b> vão</div></div>
+              <div class="efoot"><button class="btn btn-confirmed rsvp"><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Confirmado</button><button class="iconbtn"><svg class="i lg" viewBox="0 0 24 24"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button></div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab active"><svg class="i lg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Feed</span></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg><span>Mapa</span></div>
+            <div class="tab" style="flex:0 0 auto"><div class="center"><svg class="i lg" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 5v14M5 12h14"/></svg></div></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg><span>Chat</span></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg><span>Perfil</span></div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- MAPA -->
+      <div>
+        <div class="label" style="text-align:center">Mapa</div>
+        <div class="phone"><div class="phone-screen">
+          <div class="mapbg"></div>
+          <div class="statusbar" style="position:relative;z-index:2"><span>9:41</span><div class="dots"><span>●</span><span>●</span><span>▰</span></div></div>
+          <!-- search overlay -->
+          <div style="position:relative;z-index:2;padding:4px 14px 0">
+            <div class="searchbar"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg> Buscar eventos, locais…</div>
+            <div class="filterchips"><div class="fchip on">Hoje</div><div class="fchip">Música</div><div class="fchip">Esporte</div><div class="fchip">Grátis</div></div>
+          </div>
+          <!-- pins -->
+          <div class="pin brand" style="top:240px;left:90px"><span>5</span></div>
+          <div class="pin cluster" style="top:330px;left:200px"><span>12</span></div>
+          <div class="pin brand" style="top:190px;left:230px"><span>3</span></div>
+          <!-- preview card (mesmo sistema, compacto) -->
+          <div style="position:absolute;bottom:88px;left:12px;right:12px;z-index:3">
+            <div class="ecard" style="margin:0;box-shadow:0 4px 12px rgba(0,0,0,.5)">
+              <div style="display:flex;gap:12px;padding:12px">
+                <div class="photo-show" style="width:84px;height:84px;border-radius:10px;flex:none;position:relative">
+                  <div class="datechip" style="position:absolute;top:6px;left:6px;width:38px;transform:scale(.82);transform-origin:top left"><div class="m">JUN</div><div class="d">14</div></div>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div class="etitle" style="font-size:17px;line-height:1.2">Festa Aurora · Open Air</div>
+                  <div class="emeta" style="margin-top:6px"><span class="it"><svg class="i sm" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg> Lapa · 1,2 km</span></div>
+                  <div class="social" style="padding:8px 0 0"><div class="stack"><div class="av" style="width:22px;height:22px" class="g1"></div><div class="av g2" style="width:22px;height:22px"></div></div><div class="txt" style="font-size:12px"><b>+124</b> interessados</div></div>
+                </div>
+              </div>
+              <div class="efoot" style="padding:0 12px 12px"><button class="btn btn-primary rsvp" style="min-height:44px"><svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Vou</button><button class="iconbtn" style="width:44px;height:44px"><svg class="i lg" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div>
+            </div>
+          </div>
+          <div class="tabbar" style="position:relative;z-index:2">
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Feed</span></div>
+            <div class="tab active"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg><span>Mapa</span></div>
+            <div class="tab" style="flex:0 0 auto"><div class="center"><svg class="i lg" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 5v14M5 12h14"/></svg></div></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg><span>Chat</span></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg><span>Perfil</span></div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- PERFIL -->
+      <div>
+        <div class="label" style="text-align:center">Perfil</div>
+        <div class="phone"><div class="phone-screen">
+          <div class="statusbar"><span>9:41</span><div class="dots"><span>●</span><span>●</span><span>▰</span></div></div>
+          <div class="scrollarea" style="padding-top:6px">
+            <div style="display:flex;align-items:center;gap:14px;padding:8px 4px 16px">
+              <div class="g5" style="width:72px;height:72px;border-radius:999px;border:2px solid var(--brand)"></div>
+              <div style="flex:1">
+                <div style="font-size:20px;font-weight:800">Marina Costa</div>
+                <div style="font-size:13px;color:var(--content-muted)">@marina</div>
+              </div>
+              <button class="iconbtn"><svg class="i lg" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+            </div>
+            <!-- stats -->
+            <div style="display:flex;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 0;margin-bottom:18px">
+              <div style="flex:1;text-align:center;border-right:1px solid var(--line)"><div style="font-size:18px;font-weight:800">24</div><div style="font-size:12px;color:var(--content-muted)">Eventos</div></div>
+              <div style="flex:1;text-align:center;border-right:1px solid var(--line)"><div style="font-size:18px;font-weight:800">892</div><div style="font-size:12px;color:var(--content-muted)">Seguidores</div></div>
+              <div style="flex:1;text-align:center"><div style="font-size:18px;font-weight:800">301</div><div style="font-size:12px;color:var(--content-muted)">Seguindo</div></div>
+            </div>
+            <button class="btn btn-ghost" style="margin-bottom:18px"><svg class="i" viewBox="0 0 24 24"><path d="M11 4H4v16h16v-7"/><path d="M18.5 2.5a2.1 2.1 0 0 1 3 3L12 15l-4 1 1-4z"/></svg> Editar perfil</button>
+            <div class="label">Eventos</div>
+            <!-- grade reusa o sistema de card, em formato cell -->
+            <div class="pgrid">
+              <div class="pcell"><div class="photo-show" style="position:absolute;inset:0"></div><div class="ov"></div><div class="mini-date">14 JUN</div><div class="cap"><b>Festa Aurora</b><small>+124 · Lapa</small></div></div>
+              <div class="pcell"><div class="photo-sport" style="position:absolute;inset:0"></div><div class="ov"></div><div class="mini-date">20 JUN</div><div class="cap"><b>Pelada Ibira</b><small>22 vão</small></div></div>
+              <div class="pcell"><div class="photo-night" style="position:absolute;inset:0"></div><div class="ov"></div><div class="mini-date">12 JUN</div><div class="cap"><b>Sunset Rooftop</b><small>18 vão</small></div></div>
+              <div class="pcell"><div class="photo-food" style="position:absolute;inset:0;filter:grayscale(.5)"></div><div class="ov"></div><div class="mini-date" style="opacity:.7">30 MAI</div><div class="cap"><b>Jantar coletivo</b><small>encerrado</small></div></div>
+            </div>
+          </div>
+          <div class="tabbar">
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Feed</span></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="10" r="3"/><path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z"/></svg><span>Mapa</span></div>
+            <div class="tab" style="flex:0 0 auto"><div class="center"><svg class="i lg" viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 5v14M5 12h14"/></svg></div></div>
+            <div class="tab"><svg class="i lg" viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.2A8.4 8.4 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg><span>Chat</span></div>
+            <div class="tab active"><svg class="i lg" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 12 0v1"/></svg><span>Perfil</span></div>
+          </div>
+        </div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="caption-foot">
+    Tokens reais de <span class="pill-inline">src/global.css</span> · tema dark único · marca violet #7c3aed · toque ≥44px · contraste WCAG AA.<br>
+    Próximos: fluxo de criação de evento, RSVP completo no detalhe, chat e onboarding.
+  </div>
+
+</div>
+</body>
+</html>
