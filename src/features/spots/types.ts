@@ -43,7 +43,6 @@ export type SpotSuggestion = {
   name: string
   latitude: number
   longitude: number
-  category: string
   address: string | null
   // Sinais do lugar — opcionais: o backend pode omitir (não só mandar null),
   // inclusive durante o rollout. O card só exibe os que vierem como número/bool.
