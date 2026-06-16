@@ -65,14 +65,35 @@ export type FeedReason =
  * rótulo traduzido apenas para exibição. Fonte única de rótulos — nunca
  * hardcodar labels no app.
  */
+export type Subcategory = {
+  value: string
+  label: string
+}
+
 export type Category = {
   value: string
   label: string
+  // 2º nível: refina o tipo de venue (ex.: GASTRONOMY_JAPONESA). Pode vir [] e
+  // é opcional para tolerar backend antigo que ainda não expõe o aninhamento.
+  subcategories?: Subcategory[]
+}
+
+/**
+ * Gênero musical — dimensão transversal à vida noturna (não pertence a uma
+ * categoria só). `appliesTo` lista as categorias a que se aplica (ex.: PARTY,
+ * MUSIC, NIGHTLIFE), permitindo gating dinâmico sem lista hardcoded no app.
+ */
+export type Genre = {
+  value: string
+  label: string
+  appliesTo: string[]
 }
 
 export type CategoriesResponse = {
   locale: string
   data: Category[]
+  // Lista plana de gêneros. Opcional para degradar se o backend ainda não a expõe.
+  genres?: Genre[]
 }
 
 export type CommentAuthor = FeedAuthor
@@ -111,6 +132,8 @@ export type FeedEvent = {
   longitude: number
   address?: string
   categories: string[]
+  // Chaves de 2º nível (subcategorias/gêneros). Aditivo — pode não vir.
+  subcategories?: string[]
   author: FeedAuthor
   // /feed inclui friendAttendances e reason (personalizados); /events não
   // retorna esses campos. Optional pra refletir o contrato real da API.
@@ -141,6 +164,8 @@ export type EventDetail = {
   longitude: number
   address?: string
   categories: string[]
+  // Chaves de 2º nível (subcategorias/gêneros). Aditivo — pode não vir.
+  subcategories?: string[]
   isPublic: boolean
   images: EventImage[]
   maxCapacity?: number
@@ -222,6 +247,9 @@ export type UserProfile = {
   // Values do enum EventCategory (MAIÚSCULAS). Sempre array; vazio = []. Não
   // incluído nos selects reduzidos (/users e /users/search), por isso opcional.
   preferredCategories?: string[]
+  // Interesses de 2º nível (subcategorias + gêneros) na mesma lista. Mesma
+  // semântica de presença/ausência de preferredCategories.
+  preferredSubcategories?: string[]
   // Raio de interesse das notificações de proximidade (km). Presente só em
   // /users/me e só em backends que já expõem o campo no select privado.
   notifyRadiusKm?: number

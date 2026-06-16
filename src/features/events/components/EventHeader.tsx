@@ -175,10 +175,15 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
 
       {/* META */}
       <View className="gap-4 pt-4">
-        {(event.categories.length > 0 || !event.isPublic) && (
+        {(event.categories.length > 0 ||
+          (event.subcategories?.length ?? 0) > 0 ||
+          !event.isPublic) && (
           <View className="flex-row flex-wrap items-center gap-2">
             {event.categories.map(category => (
               <CategoryBadge key={category} value={category} />
+            ))}
+            {(event.subcategories ?? []).map(subcategory => (
+              <CategoryBadge key={subcategory} value={subcategory} />
             ))}
             {!event.isPublic && (
               <View className="flex-row items-center gap-1 rounded-md bg-surface-elevated px-2.5 py-1">

@@ -20,6 +20,7 @@ export type UpdateMePayload = {
   // PUT substitui o estado completo: enviar a lista (incl. []) recria as
   // preferências; omitir a chave não altera. Por isso é opcional aqui.
   preferredCategories?: string[]
+  preferredSubcategories?: string[]
 }
 
 export const usersService = {

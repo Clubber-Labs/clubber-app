@@ -126,7 +126,12 @@ export function ProfileHeader({
         )}
 
         <ProfilePreferredCategories
-          values={profile.preferredCategories ?? []}
+          values={[
+            ...new Set([
+              ...(profile.preferredCategories ?? []),
+              ...(profile.preferredSubcategories ?? []),
+            ]),
+          ]}
         />
 
         {actions && <View className="mt-4">{actions}</View>}

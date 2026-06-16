@@ -15,6 +15,7 @@ import {
 import { OsPermissionWarning } from '@/features/notifications/components/OsPermissionWarning'
 import { RadiusSlider } from '@/shared/components/RadiusSlider'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
+import { InterestsMultiSelect } from '@/shared/components/InterestsMultiSelect'
 import { SettingsRow } from '@/shared/components/SettingsRow'
 
 export default function NotificationSettingsScreen() {
@@ -36,6 +37,12 @@ export default function NotificationSettingsScreen() {
   const [localCategories, setLocalCategories] = useState<string[] | null>(null)
   const categories = localCategories ?? profile?.preferredCategories ?? []
 
+  const [localSubcategories, setLocalSubcategories] = useState<string[] | null>(
+    null,
+  )
+  const subcategories =
+    localSubcategories ?? profile?.preferredSubcategories ?? []
+
   function handleCategoriesChange(next: string[]) {
     if (!profile) return
     setLocalCategories(next)
@@ -43,6 +50,18 @@ export default function NotificationSettingsScreen() {
       { preferredCategories: next },
       {
         onError: () => setLocalCategories(profile.preferredCategories ?? []),
+      },
+    )
+  }
+
+  function handleSubcategoriesChange(next: string[]) {
+    if (!profile) return
+    setLocalSubcategories(next)
+    updateProfile.mutate(
+      { preferredSubcategories: next },
+      {
+        onError: () =>
+          setLocalSubcategories(profile.preferredSubcategories ?? []),
       },
     )
   }
@@ -107,6 +126,18 @@ export default function NotificationSettingsScreen() {
         <CategoryMultiSelect
           value={categories}
           onChange={handleCategoriesChange}
+        />
+      </View>
+
+      <View className="mx-4 mt-4 bg-surface-sunken border border-line rounded-xl px-4 py-4 gap-2">
+        <Text className="text-sm font-semibold text-content">Interesses</Text>
+        <Text className="text-xs text-content-subtle">
+          Refine os avisos por subcategoria e gênero — eventos do seu interesse
+          perto de você te alcançam com mais precisão.
+        </Text>
+        <InterestsMultiSelect
+          value={subcategories}
+          onChange={handleSubcategoriesChange}
         />
       </View>
 

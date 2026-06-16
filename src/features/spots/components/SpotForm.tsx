@@ -15,6 +15,7 @@ import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { DatePicker } from '@/shared/components/DatePicker'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
+import { SubcategorySelect } from '@/shared/components/SubcategorySelect'
 import {
   createSpotSchema,
   SPOT_MAX_WINDOW_MS,
@@ -62,6 +63,7 @@ export function SpotForm({
   })
 
   const startsAt = watch('startsAt')
+  const selectedCategories = watch('categories')
 
   return (
     <KeyboardAvoidingView
@@ -197,6 +199,29 @@ export function SpotForm({
           {errors.categories && (
             <Text className="text-content text-xs">
               {errors.categories.message}
+            </Text>
+          )}
+        </View>
+
+        <View className="gap-1">
+          <Text className="text-sm font-medium text-content-tertiary">
+            Interesses{' '}
+            <Text className="text-content-subtle text-xs">(opcional)</Text>
+          </Text>
+          <Controller
+            control={control}
+            name="subcategories"
+            render={({ field: { onChange, value } }) => (
+              <SubcategorySelect
+                selectedCategories={selectedCategories}
+                value={value ?? []}
+                onChange={onChange}
+              />
+            )}
+          />
+          {errors.subcategories && (
+            <Text className="text-content text-xs">
+              {errors.subcategories.message}
             </Text>
           )}
         </View>

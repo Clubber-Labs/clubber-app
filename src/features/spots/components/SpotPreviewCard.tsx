@@ -24,7 +24,9 @@ export function SpotPreviewCard({
   onSeeDetails,
 }: Props) {
   const { labelFor } = useCategories()
-  const categoriesText = spot.categories.map(labelFor).join(', ')
+  const categoriesText = [...spot.categories, ...(spot.subcategories ?? [])]
+    .map(labelFor)
+    .join(', ')
   const memberLabel =
     spot.memberCount === 1 ? '1 no grupo' : `${spot.memberCount} no grupo`
   const distance = userCoords

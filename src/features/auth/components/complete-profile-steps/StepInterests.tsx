@@ -2,6 +2,7 @@ import { View, Text, TextInput, Switch, Pressable } from 'react-native'
 import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
+import { InterestsMultiSelect } from '@/shared/components/InterestsMultiSelect'
 import type { CompleteProfileInput } from '../../schemas/completeProfileSchema'
 import { colors } from '@/shared/theme'
 
@@ -39,6 +40,19 @@ export function StepInterests({ control, errors }: Props) {
           {errors.preferredCategories && (
             <Text className="text-content text-xs">
               {errors.preferredCategories.message}
+            </Text>
+          )}
+
+          <Controller
+            control={control}
+            name="preferredSubcategories"
+            render={({ field: { onChange, value } }) => (
+              <InterestsMultiSelect value={value ?? []} onChange={onChange} />
+            )}
+          />
+          {errors.preferredSubcategories && (
+            <Text className="text-content text-xs">
+              {errors.preferredSubcategories.message}
             </Text>
           )}
         </View>

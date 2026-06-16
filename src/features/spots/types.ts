@@ -10,6 +10,8 @@ export type Spot = {
   title: string
   description: string | null
   categories: string[]
+  // Chaves de 2º nível (subcategorias/gêneros). Aditivo — imutável após criar.
+  subcategories?: string[]
   visibility: SpotVisibility
   placeId: string
   latitude: number

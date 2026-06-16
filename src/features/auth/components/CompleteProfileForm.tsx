@@ -25,7 +25,7 @@ type Props = {
 const STEPS: (keyof CompleteProfileInput)[][] = [
   ['name', 'lastname', 'birthdate'],
   ['username', 'phone'],
-  ['bio', 'isPrivate', 'preferredCategories'],
+  ['bio', 'isPrivate', 'preferredCategories', 'preferredSubcategories'],
 ]
 
 const FIELD_TO_STEP: Partial<Record<keyof CompleteProfileInput, number>> = {
@@ -37,6 +37,7 @@ const FIELD_TO_STEP: Partial<Record<keyof CompleteProfileInput, number>> = {
   bio: 2,
   isPrivate: 2,
   preferredCategories: 2,
+  preferredSubcategories: 2,
 }
 
 const CONFLICT_FIELD_MAP: {
@@ -75,6 +76,7 @@ function defaultsFromProfile(
       ? parseLocalDate(profile.birthdate)
       : undefined,
     preferredCategories: profile.preferredCategories ?? [],
+    preferredSubcategories: profile.preferredSubcategories ?? [],
   }
 }
 
@@ -161,6 +163,7 @@ export function CompleteProfileForm({ profile }: Props) {
         isPrivate: values.isPrivate,
         birthdate: toLocalIsoDate(values.birthdate),
         preferredCategories: values.preferredCategories,
+        preferredSubcategories: values.preferredSubcategories,
       },
       { onError: handleApiError },
     )

@@ -34,6 +34,7 @@ function toDefaults(candidate: SpotSuggestion): Partial<CreateSpotInput> {
     title: candidate.suggestedTitle,
     description: candidate.suggestedDescription ?? '',
     categories: [candidate.category],
+    subcategories: [],
     visibility: 'PUBLIC',
     placeId: candidate.placeId,
     latitude: candidate.latitude,
