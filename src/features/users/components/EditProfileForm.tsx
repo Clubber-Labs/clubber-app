@@ -11,6 +11,7 @@ import { Button } from '@/shared/components/Button'
 import { DatePicker } from '@/shared/components/DatePicker'
 import { FormError } from '@/shared/components/FormError'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
+import { InterestsMultiSelect } from '@/shared/components/InterestsMultiSelect'
 import { parseLocalDate } from '@/shared/utils/dateFormat'
 import type { UserProfile } from '@/shared/types'
 import { colors } from '@/shared/theme'
@@ -41,6 +42,7 @@ function defaultsFromProfile(profile: UserProfile): EditProfileInput {
       ? parseLocalDate(profile.birthdate)
       : undefined,
     preferredCategories: profile.preferredCategories ?? [],
+    preferredSubcategories: profile.preferredSubcategories ?? [],
   }
 }
 
@@ -187,6 +189,16 @@ export function EditProfileForm({
           name="preferredCategories"
           render={({ field: { onChange, value } }) => (
             <CategoryMultiSelect value={value} onChange={onChange} />
+          )}
+        />
+      </Field>
+
+      <Field label="Interesses" error={errors.preferredSubcategories?.message}>
+        <Controller
+          control={control}
+          name="preferredSubcategories"
+          render={({ field: { onChange, value } }) => (
+            <InterestsMultiSelect value={value} onChange={onChange} />
           )}
         />
       </Field>

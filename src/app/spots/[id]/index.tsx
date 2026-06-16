@@ -160,6 +160,9 @@ export default function SpotDetailScreen() {
         {spot.categories.map(category => (
           <CategoryBadge key={category} value={category} />
         ))}
+        {(spot.subcategories ?? []).map(subcategory => (
+          <CategoryBadge key={subcategory} value={subcategory} />
+        ))}
       </View>
 
       <View className="gap-2">

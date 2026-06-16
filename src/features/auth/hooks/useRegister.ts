@@ -31,6 +31,9 @@ function toPayload(data: RegisterInput): RegisterPayload {
     ...(data.preferredCategories?.length
       ? { preferredCategories: data.preferredCategories }
       : {}),
+    ...(data.preferredSubcategories?.length
+      ? { preferredSubcategories: data.preferredSubcategories }
+      : {}),
   }
 }
 

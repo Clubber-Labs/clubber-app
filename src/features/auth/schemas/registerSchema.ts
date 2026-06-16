@@ -56,6 +56,10 @@ export const registerSchema = z
       .array(z.string())
       .max(10, 'No máximo 10 categorias')
       .optional(),
+    preferredSubcategories: z
+      .array(z.string())
+      .max(30, 'No máximo 30 interesses')
+      .optional(),
     termsAccepted: z.boolean(),
     consents: consentFieldsSchema,
   })

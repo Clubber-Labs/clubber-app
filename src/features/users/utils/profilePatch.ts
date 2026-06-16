@@ -24,6 +24,14 @@ export function buildProfilePatch(
   )
     patch.preferredCategories = form.preferredCategories
 
+  if (
+    !sameCategories(
+      form.preferredSubcategories,
+      profile.preferredSubcategories ?? [],
+    )
+  )
+    patch.preferredSubcategories = form.preferredSubcategories
+
   // form.birthdate undefined = user não tocou no campo; não sobrescreve.
   if (form.birthdate) {
     const formDate = toLocalIsoDate(form.birthdate)

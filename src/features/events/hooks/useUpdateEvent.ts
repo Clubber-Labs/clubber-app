@@ -31,6 +31,7 @@ export function useUpdateEvent(id: string) {
           latitude: data.latitude,
           longitude: data.longitude,
           categories: data.categories,
+          subcategories: data.subcategories,
           isPublic: data.isPublic,
         })
       }

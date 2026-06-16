@@ -20,6 +20,10 @@ export const createSpotSchema = z
       .array(z.string())
       .min(1, 'Selecione ao menos uma categoria')
       .max(5, 'Selecione no máximo 5 categorias'),
+    // Subcategorias/gêneros (chaves de 2º nível). Coerência garantida na UI
+    // (SubcategorySelect). Imutável após a criação — não há edição. O form provê
+    // o default [] (como categories, é sempre presente nos values).
+    subcategories: z.array(z.string()).max(10, 'No máximo 10 interesses'),
     visibility: z.enum(['PUBLIC', 'FRIENDS']),
     // Herdados do candidato escolhido — não são editáveis no form.
     placeId: z.string().min(1),
@@ -45,21 +49,23 @@ export type CreateSpotInput = z.infer<typeof createSpotSchema>
 
 export type CreateSpotPayload = Omit<
   CreateSpotInput,
-  'startsAt' | 'endsAt' | 'description'
+  'startsAt' | 'endsAt' | 'description' | 'subcategories'
 > & {
   startsAt: string
   endsAt: string
   description?: string
+  subcategories?: string[]
 }
 
 export function toSpotPayload(data: CreateSpotInput): CreateSpotPayload {
-  const { description, ...rest } = data
+  const { description, subcategories, ...rest } = data
   const trimmed = description?.trim()
   return {
     ...rest,
     startsAt: data.startsAt.toISOString(),
     endsAt: data.endsAt.toISOString(),
-    // Campo opcional no POST — omite quando vazio em vez de mandar ''.
+    // Campos opcionais no POST — omite quando vazios em vez de mandar vazio.
     ...(trimmed ? { description: trimmed } : {}),
+    ...(subcategories.length ? { subcategories } : {}),
   }
 }
