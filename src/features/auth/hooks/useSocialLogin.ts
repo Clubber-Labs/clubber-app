@@ -103,9 +103,14 @@ export function useSocialLogin(provider: SocialProvider) {
 
       // Login social cria a conta sem passar pelo cadastro, então pode nascer
       // sem preferência. Força completar perfil também quando há menos de 2
-      // categorias de rolê — não só pelo flag do backend.
+      // categorias de rolê — não só pelo flag do backend. Só considera o campo
+      // quando ele vem na resposta (selects reduzidos o omitem): um perfil sem o
+      // campo é confirmado pelo /users/me completo no próximo boot, evitando
+      // mandar de volta quem já tem categorias.
       const incomplete =
-        response.profileIncomplete || needsRolePreferences(response.user)
+        response.profileIncomplete ||
+        (Array.isArray(response.user.preferredCategories) &&
+          needsRolePreferences(response.user))
 
       await saveToken(response.token)
       await saveRefreshToken(response.refreshToken)

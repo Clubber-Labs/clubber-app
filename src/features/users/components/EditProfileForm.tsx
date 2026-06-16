@@ -13,7 +13,10 @@ import { FormError } from '@/shared/components/FormError'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import { InterestsMultiSelect } from '@/shared/components/InterestsMultiSelect'
 import { parseLocalDate } from '@/shared/utils/dateFormat'
-import { MIN_PREFERRED_CATEGORIES } from '@/shared/utils/rolePreferences'
+import {
+  MIN_PREFERRED_CATEGORIES,
+  MIN_PREFERRED_CATEGORIES_MESSAGE,
+} from '@/shared/utils/rolePreferences'
 import type { UserProfile } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
@@ -191,9 +194,7 @@ export function EditProfileForm({
         label="Categorias de rolê"
         error={
           errors.preferredCategories?.message ??
-          (categoriesBelowMin
-            ? 'Escolha ao menos 2 categorias de rolê'
-            : undefined)
+          (categoriesBelowMin ? MIN_PREFERRED_CATEGORIES_MESSAGE : undefined)
         }
       >
         <Controller

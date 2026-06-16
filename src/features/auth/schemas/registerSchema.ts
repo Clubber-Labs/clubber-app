@@ -1,6 +1,9 @@
 import { z } from 'zod'
 import { DEFAULT_CONSENT_FIELDS } from '@/features/privacy/constants'
-import { MIN_PREFERRED_CATEGORIES } from '@/shared/utils/rolePreferences'
+import {
+  MIN_PREFERRED_CATEGORIES,
+  MIN_PREFERRED_CATEGORIES_MESSAGE,
+} from '@/shared/utils/rolePreferences'
 import type { ConsentFields } from '@/features/privacy/services/consentService'
 
 export const DEFAULT_REGISTER_CONSENTS: ConsentFields = DEFAULT_CONSENT_FIELDS
@@ -55,7 +58,7 @@ export const registerSchema = z
     isPrivate: z.boolean(),
     preferredCategories: z
       .array(z.string())
-      .min(MIN_PREFERRED_CATEGORIES, 'Escolha ao menos 2 categorias de rolê')
+      .min(MIN_PREFERRED_CATEGORIES, MIN_PREFERRED_CATEGORIES_MESSAGE)
       .max(10, 'No máximo 10 categorias'),
     preferredSubcategories: z
       .array(z.string())
