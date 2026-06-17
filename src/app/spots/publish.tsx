@@ -33,7 +33,9 @@ function toDefaults(candidate: SpotSuggestion): Partial<CreateSpotInput> {
     // Copy da IA pré-preenchida — o usuário edita à vontade.
     title: candidate.suggestedTitle,
     description: candidate.suggestedDescription ?? '',
-    categories: [candidate.category],
+    // A sugestão não traz mais categoria (era um palpite do tipo do Places). O
+    // usuário confirma a categoria de verdade no SpotForm ao publicar.
+    categories: [],
     subcategories: [],
     visibility: 'PUBLIC',
     placeId: candidate.placeId,

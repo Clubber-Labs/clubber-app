@@ -1,6 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import { CategoryBadge } from '@/shared/components/CategoryBadge'
 import { formatDistance } from '@/shared/utils/distance'
 import { formatRating, priceLevelSymbol } from '../utils/suggestionMeta'
 import type { SpotSuggestion } from '../types'
@@ -33,19 +32,16 @@ export function SpotSuggestionCard({ suggestion, rank, onChoose }: Props) {
       accessibilityLabel={`Escolher ${suggestion.name}`}
       className="bg-surface border border-line rounded-2xl p-4 gap-2"
     >
-      <View className="flex-row items-center justify-between gap-2">
-        <View className="flex-row items-center gap-2 flex-1">
-          <View className="bg-brand rounded-full w-5 h-5 items-center justify-center">
-            <Text className="text-content text-[10px] font-bold">{rank}</Text>
-          </View>
-          <Text
-            className="text-content-tertiary text-sm font-medium flex-1"
-            numberOfLines={1}
-          >
-            {suggestion.name}
-          </Text>
+      <View className="flex-row items-center gap-2">
+        <View className="bg-brand rounded-full w-5 h-5 items-center justify-center">
+          <Text className="text-content text-[10px] font-bold">{rank}</Text>
         </View>
-        <CategoryBadge value={suggestion.category} />
+        <Text
+          className="text-content-tertiary text-sm font-medium flex-1"
+          numberOfLines={1}
+        >
+          {suggestion.name}
+        </Text>
       </View>
 
       <Text className="text-content text-base font-bold">
