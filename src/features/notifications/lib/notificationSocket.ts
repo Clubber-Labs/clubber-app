@@ -1,4 +1,5 @@
 import Constants from 'expo-constants'
+import { isTerminalRefreshError, refreshAccessToken } from '@/shared/lib/api'
 import { notificationWsFrameSchema } from '../schemas/notificationSchema'
 import type { AppNotification } from '../schemas/notificationSchema'
 
@@ -7,7 +8,9 @@ type Handlers = {
   // Disparado após uma RECONEXÃO bem-sucedida (não na 1ª conexão) — o socket
   // não faz replay do que se perdeu offline, então o consumidor rebusca via REST.
   onReconnect: () => void
-  // Token inválido/expirado (close 4401) — sem rota de refresh no app, vira logout.
+  // Refresh do token falhou de forma TERMINAL (refresh expirado/revogado) — a
+  // sessão acabou de verdade. Só é chamado depois de tentar renovar (ver
+  // handleAuthClose), nunca direto no 4401.
   onAuthError: () => void
 }
 
@@ -34,6 +37,10 @@ class NotificationSocket {
   // stop(): retomar após um stop (foreground voltando do background OU queda
   // de rede) conta como RECONEXÃO e dispara onReconnect → re-sync via REST.
   private hadConnected = false
+  // Renovou o token desde a última conexão ABERTA com sucesso. Zerado no onopen.
+  // Guarda contra loop de refresh: se mesmo após renovar o servidor fechar de
+  // novo com 4401, a sessão é de fato inválida → desloga.
+  private refreshedSinceOpen = false
   private attempt = 0
   private timer: ReturnType<typeof setTimeout> | null = null
 
@@ -75,8 +82,9 @@ class NotificationSocket {
     const token = await this.getToken?.()
     if (!this.shouldRun) return
     if (!token) {
-      this.handlers?.onAuthError()
-      this.stop()
+      // Sem access token (expirou ou foi limpo): tenta renovar antes de
+      // deslogar — só encerra a sessão se o refresh for terminal.
+      void this.handleAuthClose()
       return
     }
 
@@ -99,6 +107,7 @@ class NotificationSocket {
       const wasReconnect = this.hadConnected
       this.hadConnected = true
       this.attempt = 0
+      this.refreshedSinceOpen = false
       if (wasReconnect) this.handlers?.onReconnect()
     }
 
@@ -125,12 +134,44 @@ class NotificationSocket {
       this.ws = null
       if (!this.shouldRun) return
       if ((event as { code?: number }).code === 4401) {
-        this.handlers?.onAuthError()
-        this.stop()
+        // Token expirado/inválido: renova e reconecta em vez de deslogar.
+        void this.handleAuthClose()
         return
       }
       this.scheduleReconnect()
     }
+  }
+
+  // 4401 (ou ausência de token) = o servidor rejeitou o access token. Em vez de
+  // encerrar a sessão na hora, renova via o MESMO refresh single-flight do HTTP
+  // (api.ts) e reconecta. Só desloga se o refresh falhar de forma TERMINAL
+  // (refresh expirado/revogado, ou sessão já limpa); falha transitória (rede)
+  // faz backoff sem deslogar. refreshedSinceOpen evita loop de refresh.
+  private async handleAuthClose() {
+    try {
+      await refreshAccessToken()
+    } catch (err) {
+      // Parado durante o refresh (background/logout): fica quieto, não desloga.
+      if (!this.shouldRun) return
+      if (isTerminalRefreshError(err)) {
+        this.handlers?.onAuthError()
+        this.stop()
+        return
+      }
+      // Transitório (rede/5xx): mantém a sessão e tenta de novo com backoff.
+      this.scheduleReconnect()
+      return
+    }
+    if (!this.shouldRun) return
+    if (this.refreshedSinceOpen) {
+      // Já renovamos desde a última conexão aberta e ainda assim caímos: a
+      // sessão é de fato inválida.
+      this.handlers?.onAuthError()
+      this.stop()
+      return
+    }
+    this.refreshedSinceOpen = true
+    void this.open()
   }
 
   private scheduleReconnect() {
