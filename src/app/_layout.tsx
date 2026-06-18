@@ -115,8 +115,9 @@ export default function RootLayout() {
     initFacebookSDK()
   }, [])
 
-  // 4401 em qualquer socket (chat/notificações) = token inválido e sem rota
-  // de refresh → encerra a sessão (mesmo caminho do interceptor REST 401).
+  // Chamado SÓ quando o refresh do socket falha de forma terminal (o socket
+  // tenta renovar o token no 4401 antes de desistir — ver handleAuthClose): a
+  // sessão acabou de verdade → encerra (mesmo caminho do interceptor REST 401).
   const handleSocketAuthError = useCallback(() => {
     endSession({ expired: true })
   }, [])
