@@ -43,6 +43,9 @@ type Handlers = {
 }
 
 const MAX_BACKOFF_MS = 30_000
+// Tempo aberto que a conexão precisa sustentar pra ser considerada "estável" e
+// baixar a guarda anti-loop de refresh.
+const STABLE_CONNECTION_MS = 10_000
 // readyState OPEN (igual em todas as libs de WebSocket).
 const WS_OPEN = 1
 
@@ -67,12 +70,18 @@ class ChatSocket {
   // Só a 1ª conexão fria (valor inicial false) não dispara, pois as telas já
   // buscam dados frescos ao montar.
   private hadConnected = false
-  // Renovou o token desde a última conexão ABERTA com sucesso. Zerado no onopen.
-  // Guarda contra loop de refresh: se mesmo após renovar o servidor fechar de
-  // novo com 4401, a sessão é de fato inválida → desloga.
+  // Renovou o token desde a última conexão ABERTA com sucesso. Guarda contra
+  // loop de refresh: se mesmo após renovar o servidor fechar de novo com 4401, a
+  // sessão é de fato inválida → desloga. Só é zerado depois da conexão ficar
+  // estável (ver stableTimer) — assim um socket que abre e cai logo (aceito e
+  // fechado com 4401) mantém a guarda e cai no logout no 2º ciclo, em vez de
+  // martelar /auth/refresh sem backoff.
   private refreshedSinceOpen = false
   private attempt = 0
   private timer: ReturnType<typeof setTimeout> | null = null
+  // Agenda o reset de refreshedSinceOpen quando a conexão se prova estável.
+  // Limpo no onclose e no stop (conexão que cai antes não baixa a guarda).
+  private stableTimer: ReturnType<typeof setTimeout> | null = null
 
   start(getToken: () => Promise<string | null>, handlers: Handlers) {
     this.getToken = getToken
@@ -86,6 +95,7 @@ class ChatSocket {
   stop() {
     this.shouldRun = false
     this.clearTimer()
+    this.clearStableTimer()
     if (this.ws) {
       // Zera o onclose pra não agendar reconexão num fechamento intencional.
       this.ws.onclose = null
@@ -121,6 +131,13 @@ class ChatSocket {
     }
   }
 
+  private clearStableTimer() {
+    if (this.stableTimer) {
+      clearTimeout(this.stableTimer)
+      this.stableTimer = null
+    }
+  }
+
   private async open() {
     if (!this.shouldRun) return
     this.handlers?.onStatus(this.hadConnected ? 'reconnecting' : 'connecting')
@@ -153,7 +170,13 @@ class ChatSocket {
       const wasReconnect = this.hadConnected
       this.hadConnected = true
       this.attempt = 0
-      this.refreshedSinceOpen = false
+      // Só baixa a guarda depois que a conexão provar estável: se cair antes
+      // (flap de 4401), refreshedSinceOpen continua true e o 2º ciclo desloga.
+      this.clearStableTimer()
+      this.stableTimer = setTimeout(() => {
+        this.refreshedSinceOpen = false
+        this.stableTimer = null
+      }, STABLE_CONNECTION_MS)
       this.handlers?.onStatus('connected')
       if (wasReconnect) this.handlers?.onReconnect()
     }
@@ -182,6 +205,7 @@ class ChatSocket {
 
     ws.onclose = event => {
       this.ws = null
+      this.clearStableTimer()
       if (!this.shouldRun) return
       if ((event as { code?: number }).code === 4401) {
         // Token expirado/inválido: renova e reconecta em vez de deslogar.
