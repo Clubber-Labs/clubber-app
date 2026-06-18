@@ -46,20 +46,12 @@ api.interceptors.request.use(async config => {
 })
 
 // ── Refresh de sessão (rotação transparente) ─────────────────────────────────
-// O access token é curto; quando expira, o backend responde 401. Em vez de
-// derrubar a sessão na hora, trocamos o refresh token por um par novo e
-// re-tentamos o request original. 401s concorrentes esperam num único refresh
-// (fila) pra não disparar N rotações em paralelo (a 2ª invalidaria a 1ª).
-let isRefreshing = false
-let pendingQueue: { resolve: () => void; reject: (err: unknown) => void }[] = []
-
-function flushQueue(error: unknown) {
-  for (const p of pendingQueue) {
-    if (error) p.reject(error)
-    else p.resolve()
-  }
-  pendingQueue = []
-}
+// O access token é curto; quando expira, o backend responde 401 (HTTP) ou fecha
+// o socket com 4401 (WS). Em vez de derrubar a sessão, trocamos o refresh token
+// por um par novo e re-tentamos. O refresh é SINGLE-FLIGHT: todos os caminhos
+// (interceptor HTTP e os WebSockets) coalescem na MESMA rotação — duas rotações
+// em paralelo invalidariam uma à outra (reuso de token rotacionado fora da
+// janela de carência → o backend revoga a família INTEIRA → logout geral).
 
 // Falha IRRECUPERÁVEL do refresh — não há mais refresh token guardado. Marcada
 // como terminal (encerra a sessão), ao contrário de uma falha de rede.
@@ -67,13 +59,13 @@ class MissingRefreshTokenError extends Error {}
 
 // Distingue "sessão de fato perdida" (refresh ausente ou rejeitado com 401) de
 // "falha transitória" (rede/5xx/429). Só a primeira deve deslogar o usuário —
-// o contrato manda encerrar a sessão SÓ quando o refresh volta 401.
-function isTerminalRefreshError(error: unknown): boolean {
+// o contrato manda encerrar a sessão SÓ quando o refresh volta 401. Exportada
+// para os sockets classificarem o desfecho do refresh igual ao interceptor.
+export function isTerminalRefreshError(error: unknown): boolean {
   return error instanceof MissingRefreshTokenError || isUnauthorizedError(error)
 }
 
-// Troca o refresh atual por um par novo e persiste. O backend rotaciona o
-// refresh a cada uso; por isso salvamos o novo refresh também.
+// Troca o refresh atual por um par novo e persiste.
 async function refreshSession(): Promise<void> {
   const refreshToken = await getRefreshToken()
   if (!refreshToken) throw new MissingRefreshTokenError('no refresh token')
@@ -84,8 +76,28 @@ async function refreshSession(): Promise<void> {
     // skipAuthHeader: rota pública — não enviar o access (expirado) no header.
     { skipAuthHandler: true, skipAuthHeader: true },
   )
-  await saveToken(data.token)
+  // Persiste o REFRESH novo ANTES do access. O backend já revogou o refresh
+  // antigo ao responder; se o app for morto/suspenso entre os dois saves, o
+  // estado intermediário (refresh NOVO + access ANTIGO) é RECUPERÁVEL — o access
+  // antigo expira e renova com o refresh novo. A ordem inversa deixaria
+  // (access novo + refresh ANTIGO já revogado): o próximo refresh apresentaria
+  // um token rotacionado e, fora da janela de carência, o backend derrubaria a
+  // família inteira — deslogando o usuário "sem motivo".
   await saveRefreshToken(data.refreshToken)
+  await saveToken(data.token)
+}
+
+// Single-flight: enquanto um refresh está em curso, todos os chamadores
+// (HTTP/WS) recebem a MESMA promise e disparam só UMA rotação.
+let refreshInFlight: Promise<void> | null = null
+
+export function refreshAccessToken(): Promise<void> {
+  if (!refreshInFlight) {
+    refreshInFlight = refreshSession().finally(() => {
+      refreshInFlight = null
+    })
+  }
+  return refreshInFlight
 }
 
 api.interceptors.response.use(
@@ -103,37 +115,19 @@ api.interceptors.response.use(
       return Promise.reject(err)
     }
 
-    // Já há um refresh em curso: enfileira e re-tenta quando ele terminar.
-    if (isRefreshing) {
-      return new Promise((resolve, reject) => {
-        pendingQueue.push({
-          resolve: () => {
-            original._retry = true
-            resolve(api(original))
-          },
-          reject,
-        })
-      })
-    }
-
+    // _retry marca ANTES do refresh: se o retry também voltar 401, este guard
+    // o rejeita de cara (sem novo refresh) — evita loop. 401s concorrentes
+    // coalescem no mesmo refreshAccessToken() e cada um re-tenta ao terminar.
     original._retry = true
-    isRefreshing = true
     try {
-      await refreshSession()
+      await refreshAccessToken()
     } catch (refreshErr) {
-      isRefreshing = false
-      flushQueue(refreshErr)
       // Só encerra a sessão se o refresh foi de fato rejeitado (401) ou não há
       // mais refresh token. Falha de rede/5xx/429 é transitória: mantém a sessão
       // e deixa o request original falhar normalmente (o usuário pode retentar).
       if (isTerminalRefreshError(refreshErr)) unauthorizedHandler?.()
       return Promise.reject(refreshErr)
     }
-    // Baixa o flag e drena a fila ANTES de re-tentar: um 401 que chegue durante
-    // o round-trip do retry inicia um ciclo novo (com token já fresco) em vez de
-    // entrar numa fila que já foi drenada e ficar pendurado pra sempre.
-    isRefreshing = false
-    flushQueue(null)
     // O request interceptor relê o token novo do SecureStore no retry.
     return api(original)
   },

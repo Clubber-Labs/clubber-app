@@ -1,4 +1,5 @@
 import Constants from 'expo-constants'
+import { isTerminalRefreshError, refreshAccessToken } from '@/shared/lib/api'
 import {
   isMessageFrame,
   isMessageUpdateFrame,
@@ -35,11 +36,16 @@ type Handlers = {
   // Disparado após uma RECONEXÃO bem-sucedida (não na 1ª conexão) — o socket
   // não faz replay do que se perdeu offline, então o consumidor rebusca via REST.
   onReconnect: () => void
-  // Token inválido/expirado (close 4401) — sem rota de refresh no app, vira logout.
+  // Refresh do token falhou de forma TERMINAL (refresh expirado/revogado) — a
+  // sessão acabou de verdade. Só é chamado depois de tentar renovar (ver
+  // handleAuthClose), nunca direto no 4401.
   onAuthError: () => void
 }
 
 const MAX_BACKOFF_MS = 30_000
+// Tempo aberto que a conexão precisa sustentar pra ser considerada "estável" e
+// baixar a guarda anti-loop de refresh.
+const STABLE_CONNECTION_MS = 10_000
 // readyState OPEN (igual em todas as libs de WebSocket).
 const WS_OPEN = 1
 
@@ -64,8 +70,18 @@ class ChatSocket {
   // Só a 1ª conexão fria (valor inicial false) não dispara, pois as telas já
   // buscam dados frescos ao montar.
   private hadConnected = false
+  // Renovou o token desde a última conexão ABERTA com sucesso. Guarda contra
+  // loop de refresh: se mesmo após renovar o servidor fechar de novo com 4401, a
+  // sessão é de fato inválida → desloga. Só é zerado depois da conexão ficar
+  // estável (ver stableTimer) — assim um socket que abre e cai logo (aceito e
+  // fechado com 4401) mantém a guarda e cai no logout no 2º ciclo, em vez de
+  // martelar /auth/refresh sem backoff.
+  private refreshedSinceOpen = false
   private attempt = 0
   private timer: ReturnType<typeof setTimeout> | null = null
+  // Agenda o reset de refreshedSinceOpen quando a conexão se prova estável.
+  // Limpo no onclose e no stop (conexão que cai antes não baixa a guarda).
+  private stableTimer: ReturnType<typeof setTimeout> | null = null
 
   start(getToken: () => Promise<string | null>, handlers: Handlers) {
     this.getToken = getToken
@@ -79,6 +95,7 @@ class ChatSocket {
   stop() {
     this.shouldRun = false
     this.clearTimer()
+    this.clearStableTimer()
     if (this.ws) {
       // Zera o onclose pra não agendar reconexão num fechamento intencional.
       this.ws.onclose = null
@@ -114,6 +131,13 @@ class ChatSocket {
     }
   }
 
+  private clearStableTimer() {
+    if (this.stableTimer) {
+      clearTimeout(this.stableTimer)
+      this.stableTimer = null
+    }
+  }
+
   private async open() {
     if (!this.shouldRun) return
     this.handlers?.onStatus(this.hadConnected ? 'reconnecting' : 'connecting')
@@ -121,8 +145,9 @@ class ChatSocket {
     const token = await this.getToken?.()
     if (!this.shouldRun) return
     if (!token) {
-      this.handlers?.onAuthError()
-      this.stop()
+      // Sem access token (expirou ou foi limpo): tenta renovar antes de
+      // deslogar — só encerra a sessão se o refresh for terminal.
+      void this.handleAuthClose()
       return
     }
 
@@ -145,6 +170,13 @@ class ChatSocket {
       const wasReconnect = this.hadConnected
       this.hadConnected = true
       this.attempt = 0
+      // Só baixa a guarda depois que a conexão provar estável: se cair antes
+      // (flap de 4401), refreshedSinceOpen continua true e o 2º ciclo desloga.
+      this.clearStableTimer()
+      this.stableTimer = setTimeout(() => {
+        this.refreshedSinceOpen = false
+        this.stableTimer = null
+      }, STABLE_CONNECTION_MS)
       this.handlers?.onStatus('connected')
       if (wasReconnect) this.handlers?.onReconnect()
     }
@@ -173,15 +205,49 @@ class ChatSocket {
 
     ws.onclose = event => {
       this.ws = null
+      this.clearStableTimer()
       if (!this.shouldRun) return
       if ((event as { code?: number }).code === 4401) {
-        this.handlers?.onAuthError()
-        this.stop()
+        // Token expirado/inválido: renova e reconecta em vez de deslogar.
+        this.handlers?.onStatus('reconnecting')
+        void this.handleAuthClose()
         return
       }
       this.handlers?.onStatus('reconnecting')
       this.scheduleReconnect()
     }
+  }
+
+  // 4401 (ou ausência de token) = o servidor rejeitou o access token. Em vez de
+  // encerrar a sessão na hora, renova via o MESMO refresh single-flight do HTTP
+  // (api.ts) e reconecta. Só desloga se o refresh falhar de forma TERMINAL
+  // (refresh expirado/revogado, ou sessão já limpa); falha transitória (rede)
+  // faz backoff sem deslogar. refreshedSinceOpen evita loop de refresh.
+  private async handleAuthClose() {
+    try {
+      await refreshAccessToken()
+    } catch (err) {
+      // Parado durante o refresh (background/logout): fica quieto, não desloga.
+      if (!this.shouldRun) return
+      if (isTerminalRefreshError(err)) {
+        this.handlers?.onAuthError()
+        this.stop()
+        return
+      }
+      // Transitório (rede/5xx): mantém a sessão e tenta de novo com backoff.
+      this.scheduleReconnect()
+      return
+    }
+    if (!this.shouldRun) return
+    if (this.refreshedSinceOpen) {
+      // Já renovamos desde a última conexão aberta e ainda assim caímos: a
+      // sessão é de fato inválida.
+      this.handlers?.onAuthError()
+      this.stop()
+      return
+    }
+    this.refreshedSinceOpen = true
+    void this.open()
   }
 
   private scheduleReconnect() {
