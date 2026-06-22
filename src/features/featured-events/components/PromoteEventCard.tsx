@@ -14,6 +14,12 @@ import { useCancelPromotion } from '../hooks/useCancelPromotion'
 import { useFeaturedEvent } from '../hooks/useFeaturedEvent'
 import { SponsoredBadge } from './SponsoredBadge'
 
+// Espelha PROMOTION_MAX_DURATION_DAYS do backend: teto de duração de um destaque.
+// O backend é a fonte da verdade (rejeita com mensagem se divergir); aqui é só
+// pra limitar o picker e avisar o usuário.
+const MAX_PROMOTION_DAYS = 7
+const MAX_PROMOTION_MS = MAX_PROMOTION_DAYS * 24 * 60 * 60 * 1000
+
 type Props = {
   eventId: string
   eventDate: string // ISO datetime — upper bound for endsAt picker
@@ -40,7 +46,10 @@ export function PromoteEventCard({
   function handlePromote() {
     if (!startsAt || !endsAt) return
     if (startsAt >= endsAt) return
-    promote.mutate({ startsAt: startsAt.toISOString(), endsAt: endsAt.toISOString() })
+    promote.mutate({
+      startsAt: startsAt.toISOString(),
+      endsAt: endsAt.toISOString(),
+    })
   }
 
   async function handleCancel() {
@@ -67,7 +76,9 @@ export function PromoteEventCard({
           <View className="flex-row items-center gap-2">
             <Ionicons name="star" size={18} color={colors.brandText} />
             <Text className="text-content font-semibold text-base">
-              {featuredEvent.kind === 'active' ? 'Em promoção' : 'Promoção agendada'}
+              {featuredEvent.kind === 'active'
+                ? 'Em promoção'
+                : 'Promoção agendada'}
             </Text>
           </View>
           <SponsoredBadge />
@@ -75,11 +86,15 @@ export function PromoteEventCard({
         <View className="gap-0.5">
           <Text className="text-content-muted text-sm">
             De{' '}
-            <Text className="text-content">{formatDateTime(feature.startsAt)}</Text>
+            <Text className="text-content">
+              {formatDateTime(feature.startsAt)}
+            </Text>
           </Text>
           <Text className="text-content-muted text-sm">
             Até{' '}
-            <Text className="text-content">{formatDateTime(feature.endsAt)}</Text>
+            <Text className="text-content">
+              {formatDateTime(feature.endsAt)}
+            </Text>
           </Text>
         </View>
         <Button
@@ -142,7 +157,11 @@ export function PromoteEventCard({
             Destaque o evento para mais pessoas no feed e no mapa.
           </Text>
         </View>
-        <Ionicons name="chevron-forward" size={18} color={colors.contentSubtle} />
+        <Ionicons
+          name="chevron-forward"
+          size={18}
+          color={colors.contentSubtle}
+        />
       </Pressable>
     )
   }
@@ -150,6 +169,12 @@ export function PromoteEventCard({
   // Case 4: Premium, no active feature — show promotion form
   const now = new Date()
   const maxDate = new Date(eventDate)
+  // Fim no máximo em início + MAX_PROMOTION_DAYS (e nunca além da data do evento).
+  const endMaxDate = startsAt
+    ? new Date(
+        Math.min(startsAt.getTime() + MAX_PROMOTION_MS, maxDate.getTime()),
+      )
+    : maxDate
 
   return (
     <View className="bg-surface-sunken border border-line rounded-xl px-4 py-4 gap-4">
@@ -188,9 +213,12 @@ export function PromoteEventCard({
           onChange={setEndsAt}
           placeholder="Selecione data e hora"
           minimumDate={startsAt ?? now}
-          maximumDate={maxDate}
+          maximumDate={endMaxDate}
           mode="datetime"
         />
+        <Text className="text-content-subtle text-xs">
+          Máximo de {MAX_PROMOTION_DAYS} dias por destaque.
+        </Text>
       </View>
 
       {promote.isError && (
