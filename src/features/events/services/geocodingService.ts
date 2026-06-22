@@ -45,13 +45,22 @@ export const geocodingService = {
 
     const json = (await res.json()) as MapboxResponse
 
-    return json.features.map(feature => ({
-      id: feature.id,
-      placeName: feature.place_name,
-      shortName: feature.text,
-      longitude: feature.center[0],
-      latitude: feature.center[1],
-      isPoi: feature.place_type?.includes('poi') ?? false,
-    }))
+    const seen = new Set<string>()
+
+    return json.features.reduce<GeocodingResult[]>((acc, feature) => {
+      if (seen.has(feature.id)) return acc
+      seen.add(feature.id)
+
+      acc.push({
+        id: feature.id,
+        placeName: feature.place_name,
+        shortName: feature.text,
+        longitude: feature.center[0],
+        latitude: feature.center[1],
+        isPoi: feature.place_type?.includes('poi') ?? false,
+      })
+
+      return acc
+    }, [])
   },
 }
