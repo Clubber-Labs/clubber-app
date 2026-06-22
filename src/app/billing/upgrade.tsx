@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import {
   View,
   Text,
@@ -8,9 +7,7 @@ import {
 } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
-import { useMyProfile } from '@/features/users/hooks/useProfile'
-import { useSubscribePremium } from '@/features/billing/hooks/useSubscribePremium'
-import { useSubscription } from '@/features/billing/hooks/useSubscription'
+import { useActivationFlow } from '@/features/billing/hooks/useActivationFlow'
 import { usePlan } from '@/features/billing/hooks/usePlan'
 import { PremiumBenefits } from '@/features/billing/components/PremiumBenefits'
 import { PlanPriceCard } from '@/features/billing/components/PlanPriceCard'
@@ -18,78 +15,18 @@ import { Button } from '@/shared/components/Button'
 import { getApiError } from '@/shared/lib/apiError'
 import { colors } from '@/shared/theme'
 
-const ACTIVATION_POLL_MS = 2000
-// Teto pra esperar o webhook ativar o premium. Ao estourar, libera a saída —
-// webhook lento/perdido não pode prender o usuário (que já foi cobrado no
-// fluxo de pagamento) num spinner sem volta.
-const ACTIVATION_TIMEOUT_MS = 35000
-// Status terminais que não vão virar premium: para o polling e dá saída.
-const TERMINAL_STATUSES = ['CANCELED', 'INCOMPLETE_EXPIRED', 'UNPAID']
-
 export default function UpgradeScreen() {
   const router = useRouter()
-  const { data: profile } = useMyProfile()
   const { data: plan, isLoading: planLoading } = usePlan()
-  const subscribe = useSubscribePremium()
-
-  // Pós-pagamento: a ativação chega via webhook no backend. Polla a
-  // assinatura até ela existir como TRIALING/ACTIVE e então segue pra
-  // tela de gerenciamento. `stalled` corta o polling e troca pra UI de saída.
-  const [activating, setActivating] = useState(false)
-  const [stalled, setStalled] = useState(false)
-  const { data: subscription } = useSubscription({
-    refetchInterval: activating && !stalled ? ACTIVATION_POLL_MS : false,
-  })
-
-  const activated =
-    activating &&
-    !!subscription &&
-    (subscription.status === 'TRIALING' || subscription.status === 'ACTIVE')
-
-  useEffect(() => {
-    if (activated) router.replace('/billing/manage')
-  }, [activated, router])
-
-  // Já é premium e não veio do fluxo de pagamento: nada a vender aqui.
-  useEffect(() => {
-    if (profile?.isPremium && !activating) router.replace('/billing/manage')
-  }, [profile?.isPremium, activating, router])
-
-  // Timeout: se o webhook não confirmar a tempo, sai do spinner pra UI de saída.
-  useEffect(() => {
-    if (!activating || stalled) return
-    const timer = setTimeout(() => setStalled(true), ACTIVATION_TIMEOUT_MS)
-    return () => clearTimeout(timer)
-  }, [activating, stalled])
-
-  // Status terminal (pagamento falhou/expirou): para o spinner de imediato.
-  useEffect(() => {
-    if (
-      activating &&
-      subscription &&
-      TERMINAL_STATUSES.includes(subscription.status)
-    ) {
-      setStalled(true)
-    }
-  }, [activating, subscription])
+  const { phase, start, isStarting, error } = useActivationFlow()
 
   const ctaLabel =
     plan?.trialEligible && plan.trialDays > 0
       ? `Começar ${plan.trialDays} dias grátis`
       : 'Assinar Premium'
 
-  function handleSubscribe() {
-    subscribe.mutate(undefined, {
-      onSuccess: outcome => {
-        if (outcome.kind === 'completed') setActivating(true)
-        // dismissed: user fechou a sheet — sem feedback textual, o botão
-        // voltar ao normal é o sinal (padrão do app).
-      },
-    })
-  }
-
   // Ativação demorou ou terminou em estado não-ativo: dá saída ao usuário.
-  if (activating && stalled) {
+  if (phase === 'stalled') {
     return (
       <View className="flex-1 bg-background items-center justify-center gap-5 px-8">
         <Ionicons name="time-outline" size={44} color={colors.brandText} />
@@ -115,7 +52,7 @@ export default function UpgradeScreen() {
     )
   }
 
-  if (activating) {
+  if (phase === 'activating') {
     return (
       <View className="flex-1 bg-background items-center justify-center gap-4 px-8">
         <ActivityIndicator size="large" color={colors.brand} />
@@ -175,18 +112,14 @@ export default function UpgradeScreen() {
       </View>
 
       <View className="mt-9 gap-3">
-        <Button
-          label={ctaLabel}
-          onPress={handleSubscribe}
-          loading={subscribe.isPending}
-        />
+        <Button label={ctaLabel} onPress={start} loading={isStarting} />
         <Text className="text-content-subtle text-xs text-center leading-5">
           Cancele quando quiser — o acesso continua até o fim do período pago.
           Renovação automática.
         </Text>
-        {subscribe.isError && (
+        {error && (
           <Text className="text-danger text-sm text-center">
-            {getApiError(subscribe.error).message}
+            {getApiError(error).message}
           </Text>
         )}
       </View>
