@@ -7,7 +7,7 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>CFBundleDisplayName</key>
-    <string>connectai-mobile</string>
+    <string>Clubber</string>
     <key>CFBundleExecutable</key>
     <string>$(EXECUTABLE_NAME)</string>
     <key>CFBundleIdentifier</key>
@@ -27,8 +27,8 @@
       <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-          <string>connectai</string>
-          <string>com.netobonato.connectaimobile</string>
+          <string>clubber</string>
+          <string>com.netobonato.clubber</string>
         </array>
       </dict>
       <dict>
@@ -57,7 +57,7 @@
     <key>FacebookClientToken</key>
     <string>694b4c4dc27b712b8659cc7263cfe4c8</string>
     <key>FacebookDisplayName</key>
-    <string>ConnectAI</string>
+    <string>Clubber</string>
     <key>LSApplicationQueriesSchemes</key>
     <array>
       <string>fbapi</string>

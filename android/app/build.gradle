@@ -95,9 +95,9 @@ packagingOptions {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.netobonato.connectaimobile'
+    namespace 'com.netobonato.clubber'
     defaultConfig {
-        applicationId 'com.netobonato.connectaimobile'
+        applicationId 'com.netobonato.clubber'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

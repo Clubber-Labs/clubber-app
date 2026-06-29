@@ -43,7 +43,7 @@ export function useSubscribePremium() {
       const intent = await billingService.subscribe()
 
       const { error: initError } = await initPaymentSheet({
-        merchantDisplayName: 'ConnectAI',
+        merchantDisplayName: 'Clubber',
         customerId: intent.customerId,
         customerEphemeralKeySecret: intent.ephemeralKey,
         ...(intent.intentType === 'payment'

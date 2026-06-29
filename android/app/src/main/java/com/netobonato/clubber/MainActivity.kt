@@ -1,4 +1,4 @@
-package com.netobonato.connectaimobile
+package com.netobonato.clubber
 
 import android.os.Build
 import android.os.Bundle

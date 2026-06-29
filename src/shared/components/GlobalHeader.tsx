@@ -103,7 +103,7 @@ export function GlobalHeader({
         <View className="w-8 h-8 rounded-full bg-brand items-center justify-center">
           <Text className="text-content font-bold text-sm">C</Text>
         </View>
-        <Text className="text-xl font-bold text-content">ConnectAI</Text>
+        <Text className="text-xl font-bold text-content">Clubber</Text>
       </View>
 
       <View className="absolute right-4 top-0 bottom-0 flex-row items-center gap-2">

@@ -71,7 +71,7 @@ export default function PrivacyScreen() {
     try {
       const data = await exportData()
       await Share.share({
-        title: 'Meus dados LGPD — ConnectAI',
+        title: 'Meus dados LGPD — Clubber',
         message: JSON.stringify(data, null, 2),
       })
     } catch {
@@ -85,7 +85,7 @@ export default function PrivacyScreen() {
     try {
       const data = await auditLog()
       await Share.share({
-        title: 'Histórico de consentimentos — ConnectAI',
+        title: 'Histórico de consentimentos — Clubber',
         message: JSON.stringify(data, null, 2),
       })
     } catch {
@@ -105,7 +105,7 @@ export default function PrivacyScreen() {
         <View className="px-4 pt-6 pb-4 border-b border-line">
           <Text className="text-xl font-bold text-content">Privacidade</Text>
           <Text className="text-content-muted text-sm mt-1">
-            Controle como o ConnectAI usa seus dados — LGPD nº 13.709/2018.
+            Controle como o Clubber usa seus dados — LGPD nº 13.709/2018.
           </Text>
 
           {!isSynced && (
@@ -184,7 +184,7 @@ export default function PrivacyScreen() {
           </View>
 
           <Pressable
-            onPress={() => Linking.openURL('https://connectai.app/privacidade')}
+            onPress={() => Linking.openURL('https://clubber.app/privacidade')}
             className="flex-row items-center justify-between px-4 py-4 border-b border-line active:opacity-70"
           >
             <View className="flex-1">
@@ -250,7 +250,7 @@ export default function PrivacyScreen() {
           </Pressable>
 
           <Pressable
-            onPress={() => Linking.openURL('mailto:privacidade@connectai.app')}
+            onPress={() => Linking.openURL('mailto:privacidade@clubber.app')}
             className="flex-row items-center justify-between px-4 py-4 border-b border-line active:opacity-70"
           >
             <View className="flex-1">
@@ -258,7 +258,7 @@ export default function PrivacyScreen() {
                 Falar com a equipe de privacidade
               </Text>
               <Text className="text-xs text-content-subtle mt-0.5">
-                privacidade@connectai.app
+                privacidade@clubber.app
               </Text>
             </View>
             <Ionicons

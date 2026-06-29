@@ -6,11 +6,11 @@ Pendências e configurações que precisam ser revisadas antes do primeiro build
 
 ### `aps-environment` — Debug vs Release
 
-**Problema:** o entitlements gerado pelo `expo prebuild` (`ios/connectaimobile/connectaimobile.entitlements`) tem `aps-environment` hardcoded como `development`. O `CODE_SIGN_ENTITLEMENTS` aponta pro mesmo arquivo em ambas as configurações (Debug e Release), então builds de Release vão pra App Store/TestFlight com `development` em vez de `production` — push notifications vão falhar em produção.
+**Problema:** o entitlements gerado pelo `expo prebuild` (`ios/Clubber/Clubber.entitlements`) tem `aps-environment` hardcoded como `development`. O `CODE_SIGN_ENTITLEMENTS` aponta pro mesmo arquivo em ambas as configurações (Debug e Release), então builds de Release vão pra App Store/TestFlight com `development` em vez de `production` — push notifications vão falhar em produção.
 
 **Fix idiomático:** uma das alternativas:
 
-1. **Entitlements separados por configuração** — criar `connectaimobile.Debug.entitlements` e `connectaimobile.Release.entitlements`, configurar `CODE_SIGN_ENTITLEMENTS` com variável `$(CONFIGURATION)` no Xcode project settings.
+1. **Entitlements separados por configuração** — criar `Clubber.Debug.entitlements` e `Clubber.Release.entitlements`, configurar `CODE_SIGN_ENTITLEMENTS` com variável `$(CONFIGURATION)` no Xcode project settings.
 
 2. **Build setting parametrizado** — definir `APS_ENVIRONMENT` como build setting (Debug=`development`, Release=`production`), e referenciar via `$(APS_ENVIRONMENT)` no entitlements.
 
@@ -35,7 +35,7 @@ Pendências e configurações que precisam ser revisadas antes do primeiro build
 **Quando assinar o Apple Developer Program:**
 
 1. Remover `IOS_DISABLE_PUSH` do `.env.local` e rodar `pnpm exec expo prebuild`
-2. Registrar a capability: Xcode → target → Signing & Capabilities → **+ Capability → Push Notifications** (ou portal: Identifiers → `com.netobonato.connectaimobile` → Push Notifications; ou um `eas build`, que sincroniza capabilities sozinho)
+2. Registrar a capability: Xcode → target → Signing & Capabilities → **+ Capability → Push Notifications** (ou portal: Identifiers → `com.netobonato.clubber` → Push Notifications; ou um `eas build`, que sincroniza capabilities sozinho)
 3. Subir a APNs key pro serviço de push do Expo: `eas credentials -p ios`
 4. **Resolver o item acima** (`aps-environment` Debug vs Release) ANTES do primeiro build de produção, senão push falha em release
 
@@ -47,7 +47,7 @@ Pendências e configurações que precisam ser revisadas antes do primeiro build
 
 **Setup (uma vez):**
 
-1. [console.firebase.google.com](https://console.firebase.google.com) → criar projeto → adicionar app **Android** com package `com.netobonato.connectaimobile` → baixar `google-services.json` pra **raiz do repo** (está no `.gitignore` — não commitar)
+1. [console.firebase.google.com](https://console.firebase.google.com) → criar projeto → adicionar app **Android** com package `com.netobonato.clubber` → baixar `google-services.json` pra **raiz do repo** (está no `.gitignore` — não commitar)
 2. No `.env.local`: `GOOGLE_SERVICES_JSON=./google-services.json` (o `app.config.js` injeta no prebuild via `android.googleServicesFile`)
 3. Entrega via serviço de push do Expo: Firebase → ⚙️ Configurações do projeto → **Contas de serviço** → gerar chave privada (JSON) → `eas credentials -p android` → upload da **FCM V1 service account key**
 4. `pnpm exec expo prebuild` + `pnpm exec expo run:android`
@@ -93,12 +93,12 @@ Formato esperado: string base64 de ~28 chars terminando em `=`.
 **Registros a fazer nos painéis:**
 
 1. **Google Cloud Console** → APIs & Services → Credentials → criar **OAuth Client ID** tipo **Android**:
-   - Package name: `com.netobonato.connectaimobile`
+   - Package name: `com.netobonato.clubber`
    - SHA-1 fingerprint: o valor do passo anterior
    - Não precisa adicionar nada no `.env.local` — o SDK Android usa o `GOOGLE_WEB_CLIENT_ID` como `serverClientId` e descobre o Android Client pelo SHA-1.
 
 2. **Facebook Developer Portal** → App → Settings → Basic → **+ Add Platform → Android**:
-   - Google Play Package Name: `com.netobonato.connectaimobile`
+   - Google Play Package Name: `com.netobonato.clubber`
    - Class Name: vazio
    - Key Hashes: o valor base64 do passo anterior
 
@@ -129,7 +129,7 @@ Cenários a testar (mesmos do iOS):
 
 **Problema:** com `appleTeamId` setado em `app.config.js`, o `expo prebuild --clean` aplica `CODE_SIGN_IDENTITY = "Apple Development"` **em ambas** as configs (Debug e Release) do target principal no `project.pbxproj`. Isso pode quebrar archive/IPA local de produção via Xcode — Release deveria usar Automatic Signing (vazio) ou `"Apple Distribution"`.
 
-**Fix manual após cada `prebuild --clean`:** remover a linha `CODE_SIGN_IDENTITY = "Apple Development";` apenas do bloco `13B07F95... /* Release */` no `ios/connectaimobile.xcodeproj/project.pbxproj` (manter no Debug). Manter `DEVELOPMENT_TEAM` e `CODE_SIGN_STYLE = Automatic` — o Xcode escolhe a identity correta.
+**Fix manual após cada `prebuild --clean`:** remover a linha `CODE_SIGN_IDENTITY = "Apple Development";` apenas do bloco `13B07F95... /* Release */` no `ios/Clubber.xcodeproj/project.pbxproj` (manter no Debug). Manter `DEVELOPMENT_TEAM` e `CODE_SIGN_STYLE = Automatic` — o Xcode escolhe a identity correta.
 
 **Quando isso importa:** apenas pra archive local via Xcode (TestFlight manual). **EAS Build não é afetado** — ele tem seu próprio fluxo de assinatura com credenciais armazenadas no servidor; o pbxproj local é sobrescrito.
 

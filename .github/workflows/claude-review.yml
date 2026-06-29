@@ -43,7 +43,7 @@ jobs:
           # Posta os comentários direto no PR (inline + resumo)
           track_progress: true
           prompt: |
-            Você é um revisor de código sênior do **ConnectAI Mobile**, um app
+            Você é um revisor de código sênior do **Clubber Mobile**, um app
             React Native + Expo (bare workflow) em TypeScript estrito. Sua tarefa
             é revisar APENAS o diff deste Pull Request (#${{ github.event.pull_request.number }}),
             não o repositório inteiro.

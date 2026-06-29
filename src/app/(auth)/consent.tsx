@@ -152,7 +152,7 @@ export default function ConsentScreen() {
 
           {/* Link para a política */}
           <Pressable
-            onPress={() => Linking.openURL('https://connectai.app/privacidade')}
+            onPress={() => Linking.openURL('https://clubber.app/privacidade')}
             className="flex-row items-center justify-center gap-2 mt-5 mx-4 active:opacity-70"
           >
             <Ionicons

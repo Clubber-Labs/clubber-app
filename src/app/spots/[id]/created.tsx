@@ -35,7 +35,7 @@ export default function SpotCreatedScreen() {
       const url = Linking.createURL(`/spots/${spot.id}`)
       await Share.share({
         title: spot.title,
-        message: `Bora nesse rolê? "${spot.title}" — entra no ConnectAI: ${url}`,
+        message: `Bora nesse rolê? "${spot.title}" — entra no Clubber: ${url}`,
       })
     } catch {
       // Compartilhamento cancelado/indisponível — silencioso (padrão do app).
