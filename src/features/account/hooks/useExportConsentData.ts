@@ -14,7 +14,7 @@ export function useExportConsentData() {
     try {
       const data = await consentService.export()
       await Share.share({
-        title: 'Meu histórico de consentimentos — ConnectAI',
+        title: 'Meu histórico de consentimentos — Clubber',
         message: JSON.stringify(data, null, 2),
       })
     } catch {

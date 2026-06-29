@@ -115,7 +115,7 @@ export const useConsentStore = create<ConsentState & ConsentActions>()(
       },
     }),
     {
-      name: 'connectai-consent-v1',
+      name: 'clubber-consent-v1',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: ({ isSynced: _s, hydrated: _h, ...state }) => state,
       onRehydrateStorage: () => state => {

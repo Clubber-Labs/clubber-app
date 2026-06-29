@@ -15,7 +15,7 @@ export function useExportEventAnalytics(eventId: string) {
     try {
       const csv = await eventAnalyticsService.exportCsv(eventId)
       await Share.share({
-        title: 'Analytics do evento — ConnectAI',
+        title: 'Analytics do evento — Clubber',
         message: csv,
       })
     } catch {

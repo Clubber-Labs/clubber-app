@@ -23,7 +23,7 @@ export const useNotificationPrefsStore = create<NotificationPrefsState>()(
       reset: () => set({ notifyRadiusKm: NOTIFY_RADIUS_DEFAULT_KM }),
     }),
     {
-      name: 'connectai-notification-prefs-v1',
+      name: 'clubber-notification-prefs-v1',
       storage: createJSONStorage(() => AsyncStorage),
     },
   ),

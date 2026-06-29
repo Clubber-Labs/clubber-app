@@ -48,7 +48,7 @@ function BirthdateForm({ profile, save, saving }: FormProps) {
       canSave={canSave}
     >
       <Text className="text-content-muted text-[12.5px] leading-5 mb-6">
-        Sua idade confirma que você pode usar o ConnectAI. Não aparece no seu
+        Sua idade confirma que você pode usar o Clubber. Não aparece no seu
         perfil.
       </Text>
 

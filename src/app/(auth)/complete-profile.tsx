@@ -57,7 +57,7 @@ export default function CompleteProfileScreen() {
             Complete seu perfil
           </Text>
           <Text className="text-content-muted mb-8">
-            Faltam algumas informações pra você começar a usar o ConnectAI.
+            Faltam algumas informações pra você começar a usar o Clubber.
           </Text>
 
           {isLoading ? (

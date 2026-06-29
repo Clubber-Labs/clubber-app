@@ -119,7 +119,7 @@ export function StepPrivacy({ control, errors }: Props) {
       })}
 
       <Pressable
-        onPress={() => Linking.openURL('https://connectai.app/privacidade')}
+        onPress={() => Linking.openURL('https://clubber.app/privacidade')}
         className="flex-row items-center justify-center gap-2 active:opacity-70"
       >
         <Ionicons name="document-text-outline" size={14} color={colors.brand} />

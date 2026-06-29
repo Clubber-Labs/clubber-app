@@ -1,4 +1,4 @@
-# ConnectAI Mobile — Guia de Colaboração
+# Clubber Mobile — Guia de Colaboração
 
 ## Stack
 

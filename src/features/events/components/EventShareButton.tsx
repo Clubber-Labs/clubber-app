@@ -19,7 +19,7 @@ export function EventShareButton({ eventId, title, onShared }: Props) {
       const url = Linking.createURL(`/events/${eventId}`)
       const result = await Share.share({
         title,
-        message: `${title}\n\nConfira no ConnectAI: ${url}`,
+        message: `${title}\n\nConfira no Clubber: ${url}`,
       })
       if (result.action === Share.sharedAction) onShared?.()
     } catch {

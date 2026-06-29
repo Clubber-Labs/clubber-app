@@ -33,7 +33,7 @@ export default function AboutScreen() {
       contentContainerStyle={{ padding: 20, gap: 24 }}
     >
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-content">ConnectAI</Text>
+        <Text className="text-2xl font-bold text-content">Clubber</Text>
         <Text className="text-sm text-content-muted">Versão {VERSION}</Text>
       </View>
 

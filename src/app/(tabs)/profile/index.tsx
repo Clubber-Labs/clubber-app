@@ -80,7 +80,7 @@ export default function ProfileScreen() {
         ]
       : []),
     {
-      label: profile.isPremium ? 'Assinatura' : 'ConnectAI Premium',
+      label: profile.isPremium ? 'Assinatura' : 'Clubber Premium',
       icon: 'diamond-outline',
       onPress: () =>
         router.push(profile.isPremium ? '/billing/manage' : '/billing/upgrade'),

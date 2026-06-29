@@ -88,7 +88,7 @@ export function DataLossWarning({
       </Pressable>
 
       <Pressable
-        onPress={() => Linking.openURL('https://connectai.app/privacidade')}
+        onPress={() => Linking.openURL('https://clubber.app/privacidade')}
         className="flex-row items-center gap-2 px-1"
       >
         <Ionicons name="open-outline" size={14} color={colors.brandText} />

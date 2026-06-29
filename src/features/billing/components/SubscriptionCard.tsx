@@ -28,7 +28,7 @@ export function SubscriptionCard({ subscription }: Props) {
         <View className="flex-row items-center gap-2">
           <Ionicons name="diamond-outline" size={20} color={colors.brandText} />
           <Text className="text-content font-bold text-lg">
-            ConnectAI Premium
+            Clubber Premium
           </Text>
         </View>
         <View

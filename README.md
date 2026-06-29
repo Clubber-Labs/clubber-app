@@ -1,6 +1,6 @@
-# ConnectAI Mobile
+# Clubber Mobile
 
-Aplicativo mobile do ConnectAI — plataforma para descoberta e criação de eventos, conexão entre pessoas e feed social com mapa integrado.
+Aplicativo mobile do Clubber — plataforma para descoberta e criação de eventos, conexão entre pessoas e feed social com mapa integrado.
 
 ## Stack
 

@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "connectaimobile.app"
-               BlueprintName = "connectaimobile"
-               ReferencedContainer = "container:connectaimobile.xcodeproj">
+               BuildableName = "Clubber.app"
+               BlueprintName = "Clubber"
+               ReferencedContainer = "container:Clubber.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "connectaimobileTests.xctest"
-               BlueprintName = "connectaimobileTests"
-               ReferencedContainer = "container:connectaimobile.xcodeproj">
+               BuildableName = "ClubberTests.xctest"
+               BlueprintName = "ClubberTests"
+               ReferencedContainer = "container:Clubber.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "connectaimobile.app"
-            BlueprintName = "connectaimobile"
-            ReferencedContainer = "container:connectaimobile.xcodeproj">
+            BuildableName = "Clubber.app"
+            BlueprintName = "Clubber"
+            ReferencedContainer = "container:Clubber.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "connectaimobile.app"
-            BlueprintName = "connectaimobile"
-            ReferencedContainer = "container:connectaimobile.xcodeproj">
+            BuildableName = "Clubber.app"
+            BlueprintName = "Clubber"
+            ReferencedContainer = "container:Clubber.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -16,7 +16,7 @@ export function StepAccount({ control, errors }: Props) {
       <View className="gap-1">
         <Text className="text-2xl font-bold text-content">Sua conta</Text>
         <Text className="text-sm text-content-muted">
-          Esses dados são usados para acessar o ConnectAI.
+          Esses dados são usados para acessar o Clubber.
         </Text>
       </View>
 

@@ -89,7 +89,7 @@ export default function UpgradeScreen() {
           </View>
         </View>
         <View className="flex-row items-center gap-2">
-          <Text className="text-content font-bold text-2xl">ConnectAI</Text>
+          <Text className="text-content font-bold text-2xl">Clubber</Text>
           <View className="px-2 py-0.5 rounded-md bg-brand/20 border border-brand-emphasis/40">
             <Text className="text-brand-text-strong text-xs font-bold tracking-wide">
               PREMIUM

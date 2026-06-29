@@ -48,7 +48,7 @@ function socialAuthPlugins() {
       {
         appID: fbAppId,
         clientToken: fbToken,
-        displayName: 'ConnectAI',
+        displayName: 'Clubber',
         scheme: `fb${fbAppId}`,
         advertiserIDCollectionEnabled: false,
         autoLogAppEventsEnabled: false,
@@ -66,13 +66,13 @@ function socialAuthPlugins() {
 
 export default {
   expo: {
-    name: "connectai-mobile",
-    slug: "connectai-mobile",
+    name: "Clubber",
+    slug: "clubber",
     version: "1.0.0",
-    scheme: "connectai",
+    scheme: "clubber",
     userInterfaceStyle: "automatic",
     ios: {
-      bundleIdentifier: 'com.netobonato.connectaimobile',
+      bundleIdentifier: 'com.netobonato.clubber',
       // Team ID da Apple Developer (Team ID é público, vai no binário publicado).
       // O prebuild --clean reseta o DEVELOPMENT_TEAM no project.pbxproj se essa
       // chave não estiver no config — quebrava code sign local no Xcode.
@@ -80,7 +80,7 @@ export default {
       appleTeamId: process.env.APPLE_TEAM_ID || 'K238P4B9K4',
     },
     android: {
-      package: 'com.netobonato.connectaimobile',
+      package: 'com.netobonato.clubber',
       // FCM v1 (push). O arquivo vem do Firebase console e é registrado via
       // `eas credentials` / env GOOGLE_SERVICES_JSON — sem ele o push Android
       // não chega, mas o build local segue funcionando.

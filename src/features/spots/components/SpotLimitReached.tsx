@@ -36,7 +36,7 @@ export function SpotLimitReached({ isPremium, onUpgrade, onBack }: Props) {
           <View className="flex-row items-center gap-2">
             <Ionicons name="sparkles" size={16} color={colors.brandText} />
             <Text className="text-brand-text-bright text-sm font-bold">
-              ConnectAI Premium
+              Clubber Premium
             </Text>
           </View>
           <Text className="text-content-tertiary text-xs">

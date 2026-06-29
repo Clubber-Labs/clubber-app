@@ -52,7 +52,7 @@ export const registerSchema = z
         )
         return date <= minimum
       },
-      { message: 'Você precisa ter pelo menos 16 anos para usar o ConnectAI.' },
+      { message: 'Você precisa ter pelo menos 16 anos para usar o Clubber.' },
     ),
     bio: z.string().max(255, 'Máximo 255 caracteres').optional(),
     isPrivate: z.boolean(),
