@@ -44,6 +44,17 @@ pnpm exec tsc --noEmit      # verificação de tipos
 
 ---
 
+## Comentários — só os realmente úteis
+
+O código deve se explicar sozinho (nomes, tipos, asserções). Comentário é exceção, não hábito — **na dúvida, não comente**.
+
+- **Comente apenas o "porquê" não-óbvio** que o leitor não deduz do código: invariante sutil, decisão de design, regra de negócio, gotcha de lib, ou cross-reference que precisa ficar em sincronia com outro ponto.
+- **Nunca** comente o "o quê" óbvio (`// busca o usuário`), o raciocínio de uma correção de review/PR (`// atende o review`, `// documenta o gate X`), nem separadores decorativos (`// ─── X ───`).
+- Quando comentar, **1 linha enxuta**. O raciocínio longo de uma mudança pertence ao commit/PR, não ao código.
+- **Nunca remova** comentários funcionais.
+
+---
+
 ## Variáveis de ambiente
 
 Variáveis em runtime são lidas via `expo-constants` — o React Native não suporta `.env` nativamente.
