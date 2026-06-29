@@ -2,12 +2,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { InfiniteData } from '@tanstack/react-query'
 import { followsService } from '@/features/follows/services/followsService'
-import type {
-  CursorPaginatedResponse,
-  FollowStatus,
-  UserProfile,
-} from '@/shared/types'
+import type { CursorPaginatedResponse, FollowStatus } from '@/shared/types'
 import type { SearchUserItem } from '../schemas/searchUserSchema'
+import type { UserProfileResponse } from '../schemas/userProfileResponse'
 import { userKeys } from './cacheKeys'
 
 type SearchCache = InfiniteData<CursorPaginatedResponse<SearchUserItem>>
@@ -16,7 +13,7 @@ type SearchSnapshot = ReadonlyArray<
 >
 
 type Snapshot = {
-  profile: UserProfile | undefined
+  profile: UserProfileResponse | undefined
   searches: SearchSnapshot
 }
 
@@ -27,8 +24,10 @@ export function useFollowUser(userId: string) {
   const queryKey = userKeys.profile(userId)
 
   function applyStatus(status: FollowStatus, deltaFollowers: number) {
-    queryClient.setQueryData<UserProfile>(queryKey, prev => {
+    queryClient.setQueryData<UserProfileResponse>(queryKey, prev => {
       if (!prev) return prev
+      // O card reduzido não traz followersCount — só atualiza o status.
+      if (prev.kind === 'reduced') return { ...prev, followStatus: status }
       return {
         ...prev,
         followStatus: status,
@@ -60,7 +59,7 @@ export function useFollowUser(userId: string) {
 
   function snapshot(): Snapshot {
     return {
-      profile: queryClient.getQueryData<UserProfile>(queryKey),
+      profile: queryClient.getQueryData<UserProfileResponse>(queryKey),
       searches: queryClient.getQueriesData<SearchCache>({
         queryKey: SEARCH_PREFIX,
       }),

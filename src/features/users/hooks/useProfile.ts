@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { usersService, type UpdateMePayload } from '../services/usersService'
 import { userKeys } from './cacheKeys'
 import type { UserProfile } from '@/shared/types'
+import type { UserProfileResponse } from '../schemas/userProfileResponse'
 
 export function useMyProfile() {
   return useQuery({
@@ -24,10 +25,16 @@ export function mergeProfileCache(
   queryClient: ReturnType<typeof useQueryClient>,
   updated: UserProfile,
 ) {
-  const merge = (prev: UserProfile | undefined): UserProfile =>
-    prev ? { ...prev, ...updated } : updated
-  queryClient.setQueryData<UserProfile>(userKeys.me, merge)
-  queryClient.setQueryData<UserProfile>(userKeys.profile(updated.id), merge)
+  queryClient.setQueryData<UserProfile>(userKeys.me, prev =>
+    prev ? { ...prev, ...updated } : updated,
+  )
+  // userKeys.profile(id) guarda a união discriminada de GET /users/:id. Aqui é
+  // sempre o perfil próprio (logo, full) — funde sobre a variante full.
+  queryClient.setQueryData<UserProfileResponse>(
+    userKeys.profile(updated.id),
+    prev =>
+      prev?.kind === 'reduced' ? prev : { ...prev, ...updated, kind: 'full' },
+  )
 }
 
 export function useUpdateProfile(userId: string) {

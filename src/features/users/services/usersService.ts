@@ -6,6 +6,7 @@ import type {
   UserEventSummary,
 } from '@/shared/types'
 import type { SearchUserItem } from '../schemas/searchUserSchema'
+import type { UserProfileResponse } from '../schemas/userProfileResponse'
 
 type ListParams = { limit?: number; cursor?: string }
 
@@ -26,7 +27,7 @@ export type UpdateMePayload = {
 export const usersService = {
   getMe: (): Promise<UserProfile> => api.get('/users/me').then(r => r.data),
 
-  getById: (id: string): Promise<UserProfile> =>
+  getById: (id: string): Promise<UserProfileResponse> =>
     api.get(`/users/${id}`).then(r => r.data),
 
   // PUT /users/me cai no handler de /users/:id no Fastify (ordem de registro

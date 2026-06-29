@@ -19,6 +19,8 @@ import { ProfileEventsList } from '@/features/users/components/ProfileEventsList
 import { ProfileEventsEmpty } from '@/features/users/components/ProfileEventsEmpty'
 import { ProfileLoading } from '@/features/users/components/ProfileLoading'
 import { ProfileEmpty } from '@/features/users/components/ProfileEmpty'
+import { ProfilePrivateCard } from '@/features/users/components/ProfilePrivateCard'
+import { isReducedProfile } from '@/features/users/schemas/userProfileResponse'
 import { ReportButton } from '@/features/reports/components/ReportButton'
 
 export default function UserProfileScreen() {
@@ -72,10 +74,6 @@ export default function UserProfileScreen() {
   if (profileLoading) return <ProfileLoading />
   if (!profile) return <ProfileEmpty message="Usuário não encontrado." />
 
-  // Pré-validação (UX): só libera DM se o alvo é público OU você o segue (aceito)
-  // — direção VOCÊ→alvo. Bloqueio o client não sabe; fica pro 403 do POST.
-  const canMessage = !profile.isPrivate || profile.followStatus === 'ACCEPTED'
-
   const followButton = (
     <FollowButton
       status={profile.followStatus ?? null}
@@ -84,6 +82,31 @@ export default function UserProfileScreen() {
       onUnfollow={() => unfollow.mutate()}
     />
   )
+
+  // Conta privada vista por não-seguidor: backend devolve o card reduzido (sem
+  // bio/contadores/eventos/preferências). Só o estado privado + CTA de seguir.
+  if (isReducedProfile(profile)) {
+    return (
+      <ProfilePrivateCard
+        profile={profile}
+        actions={
+          <View className="flex-row items-center gap-2">
+            <View className="flex-1">{followButton}</View>
+            <ReportButton
+              target={{ type: 'user', id: profile.id }}
+              variant="ghost"
+            />
+          </View>
+        }
+      />
+    )
+  }
+
+  // Daqui pra baixo o TS estreita profile para a variante full — acesso a
+  // eventsCount/bio/contadores/preferências é seguro.
+  // Pré-validação (UX): só libera DM se o alvo é público OU você o segue (aceito)
+  // — direção VOCÊ→alvo. Bloqueio o client não sabe; fica pro 403 do POST.
+  const canMessage = !profile.isPrivate || profile.followStatus === 'ACCEPTED'
 
   return (
     <View className="flex-1 bg-background">
