@@ -21,7 +21,7 @@ import { DatePicker } from '@/shared/components/DatePicker'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import { SubcategorySelect } from '@/shared/components/SubcategorySelect'
 import { LocationPicker } from './LocationPicker'
-import { VenuePicker, type VenuePickerValue } from './VenuePicker'
+import { VenuePicker, type VenueSelection } from './VenuePicker'
 import { useUserLocation } from '@/shared/hooks/useUserLocation'
 import { colors } from '@/shared/theme'
 
@@ -73,11 +73,9 @@ export function EventForm({
   const address = watch('address')
   const venueName = watch('venueName')
   const placeId = watch('placeId')
-  const latitude = watch('latitude')
-  const longitude = watch('longitude')
   const { coords } = useUserLocation()
 
-  function patchLocation(patch: Partial<VenuePickerValue>) {
+  function patchLocation(patch: Partial<VenueSelection>) {
     if ('address' in patch)
       setValue('address', patch.address ?? '', { shouldValidate: true })
     if ('venueName' in patch) setValue('venueName', patch.venueName)
@@ -246,8 +244,6 @@ export function EventForm({
               address: address ?? '',
               venueName: venueName ?? null,
               placeId: placeId ?? null,
-              latitude: typeof latitude === 'number' ? latitude : undefined,
-              longitude: typeof longitude === 'number' ? longitude : undefined,
             }}
             onChange={patchLocation}
             coords={coords}
@@ -283,6 +279,7 @@ export function EventForm({
                       onLng(coords.longitude)
                     }}
                     hasError={!!errors.latitude || !!errors.longitude}
+                    editable={!venueName}
                   />
                 )}
               />

@@ -6,24 +6,28 @@ import { SelectedVenueCard } from './SelectedVenueCard'
 import { AddressAutocomplete } from './AddressAutocomplete'
 import { colors } from '@/shared/theme'
 
-export type VenuePickerValue = {
+export type VenueSelection = {
   address: string
   venueName: string | null
   placeId: string | null
-  latitude?: number
-  longitude?: number
+  latitude: number
+  longitude: number
 }
 
+// O picker só lê address/venueName/placeId; latitude/longitude ele apenas
+// escreve via onChange (o mapa é quem as consome no EventForm).
+type VenueValue = Pick<VenueSelection, 'address' | 'venueName' | 'placeId'>
+
 type Props = {
-  value: VenuePickerValue
-  onChange: (patch: Partial<VenuePickerValue>) => void
+  value: VenueValue
+  onChange: (patch: Partial<VenueSelection>) => void
   coords: [number, number] | null
   hasError?: boolean
 }
 
 type Mode = 'search' | 'selected' | 'manual'
 
-function initialMode(value: VenuePickerValue): Mode {
+function initialMode(value: VenueValue): Mode {
   if (value.venueName) return 'selected'
   if (value.address.trim().length > 0) return 'manual'
   return 'search'

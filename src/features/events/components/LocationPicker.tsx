@@ -11,6 +11,9 @@ type Props = {
   onChange: (coords: Coords) => void
   initialCenter?: [number, number]
   hasError?: boolean
+  // Com estabelecimento escolhido, as coordenadas vêm do Google e o pin fica
+  // só visual — evita mover o marcador pra longe do venueName gravado.
+  editable?: boolean
 }
 
 const DEFAULT_CENTER: [number, number] = [-46.6333, -23.5505]
@@ -20,6 +23,7 @@ export function LocationPicker({
   onChange,
   initialCenter = DEFAULT_CENTER,
   hasError,
+  editable = true,
 }: Props) {
   const [center, setCenter] = useState<[number, number]>(
     value ? [value.longitude, value.latitude] : initialCenter,
@@ -45,7 +49,7 @@ export function LocationPicker({
         <Mapbox.MapView
           style={{ flex: 1 }}
           styleURL="mapbox://styles/mapbox/streets-v12"
-          onPress={handlePress}
+          onPress={editable ? handlePress : undefined}
           scaleBarEnabled={false}
           compassEnabled={false}
         >
@@ -70,7 +74,9 @@ export function LocationPicker({
         <Text className="text-xs text-content-muted">
           {value
             ? `${value.latitude.toFixed(5)}, ${value.longitude.toFixed(5)}`
-            : 'Toque no mapa para escolher o local'}
+            : editable
+              ? 'Toque no mapa para escolher o local'
+              : ''}
         </Text>
       </View>
     </View>

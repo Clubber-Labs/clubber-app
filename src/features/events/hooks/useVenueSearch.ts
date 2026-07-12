@@ -82,5 +82,5 @@ export function useVenueSearch(coords: [number, number] | null) {
     setStatus('idle')
   }
 
-  return { query, setQuery, suggestions, status, selectPlace, resetSession }
+  return { query, setQuery, suggestions, status, selectPlace }
 }
