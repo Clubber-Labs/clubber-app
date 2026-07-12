@@ -17,6 +17,8 @@ function toDefaults(event: EventDetail): Partial<CreateEventInput> {
     address: event.address ?? '',
     latitude: event.latitude,
     longitude: event.longitude,
+    placeId: event.placeId ?? null,
+    venueName: event.venueName ?? null,
     categories: event.categories,
     subcategories: event.subcategories ?? [],
     isPublic: event.isPublic,

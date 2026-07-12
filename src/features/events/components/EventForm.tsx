@@ -20,8 +20,9 @@ import { FormError } from '@/shared/components/FormError'
 import { DatePicker } from '@/shared/components/DatePicker'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import { SubcategorySelect } from '@/shared/components/SubcategorySelect'
-import { LocationPicker } from './LocationPicker'
-import { AddressAutocomplete } from './AddressAutocomplete'
+import { LocationPreview } from './LocationPreview'
+import { VenuePicker, type VenueSelection } from './VenuePicker'
+import { useUserLocation } from '@/shared/hooks/useUserLocation'
 import { colors } from '@/shared/theme'
 
 const DEFAULTS: Partial<CreateEventInput> = {
@@ -31,6 +32,8 @@ const DEFAULTS: Partial<CreateEventInput> = {
   categories: [],
   subcategories: [],
   isPublic: true,
+  placeId: null,
+  venueName: null,
 }
 
 type Props = {
@@ -67,6 +70,23 @@ export function EventForm({
 
   const startDate = watch('date')
   const selectedCategories = watch('categories')
+  const address = watch('address')
+  const venueName = watch('venueName')
+  const placeId = watch('placeId')
+  const latitude = watch('latitude')
+  const longitude = watch('longitude')
+  const { coords } = useUserLocation()
+
+  function patchLocation(patch: Partial<VenueSelection>) {
+    if ('address' in patch)
+      setValue('address', patch.address ?? '', { shouldValidate: true })
+    if ('venueName' in patch) setValue('venueName', patch.venueName)
+    if ('placeId' in patch) setValue('placeId', patch.placeId)
+    if (typeof patch.latitude === 'number')
+      setValue('latitude', patch.latitude, { shouldValidate: true })
+    if (typeof patch.longitude === 'number')
+      setValue('longitude', patch.longitude, { shouldValidate: true })
+  }
 
   return (
     <KeyboardAvoidingView
@@ -219,27 +239,17 @@ export function EventForm({
 
         <View className="gap-1">
           <Text className="text-sm font-medium text-content-tertiary">
-            Endereço
+            Local
           </Text>
-          <Controller
-            control={control}
-            name="address"
-            render={({ field: { onChange, value } }) => (
-              <AddressAutocomplete
-                value={value}
-                onChange={onChange}
-                onSelect={result => {
-                  onChange(result.placeName)
-                  setValue('latitude', result.latitude, {
-                    shouldValidate: true,
-                  })
-                  setValue('longitude', result.longitude, {
-                    shouldValidate: true,
-                  })
-                }}
-                hasError={!!errors.address}
-              />
-            )}
+          <VenuePicker
+            value={{
+              address: address ?? '',
+              venueName: venueName ?? null,
+              placeId: placeId ?? null,
+            }}
+            onChange={patchLocation}
+            coords={coords}
+            hasError={!!errors.address}
           />
           {errors.address && (
             <Text className="text-content text-xs">
@@ -252,33 +262,17 @@ export function EventForm({
           <Text className="text-sm font-medium text-content-tertiary">
             Local no mapa
           </Text>
-          <Controller
-            control={control}
-            name="latitude"
-            render={({ field: { onChange: onLat, value: lat } }) => (
-              <Controller
-                control={control}
-                name="longitude"
-                render={({ field: { onChange: onLng, value: lng } }) => (
-                  <LocationPicker
-                    value={
-                      typeof lat === 'number' && typeof lng === 'number'
-                        ? { latitude: lat, longitude: lng }
-                        : null
-                    }
-                    onChange={coords => {
-                      onLat(coords.latitude)
-                      onLng(coords.longitude)
-                    }}
-                    hasError={!!errors.latitude || !!errors.longitude}
-                  />
-                )}
-              />
-            )}
+          <LocationPreview
+            value={
+              typeof latitude === 'number' && typeof longitude === 'number'
+                ? { latitude, longitude }
+                : null
+            }
+            hasError={!!errors.latitude || !!errors.longitude}
           />
           {(errors.latitude || errors.longitude) && (
             <Text className="text-content text-xs">
-              Toque no mapa para escolher o local
+              Escolha um local no campo acima
             </Text>
           )}
         </View>

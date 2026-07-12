@@ -131,6 +131,9 @@ export type FeedEvent = {
   latitude: number
   longitude: number
   address?: string
+  // Estabelecimento (Google Places). Quando presente, é o local principal e o
+  // address vira secundário na exibição. Ausente = evento com endereço de rua.
+  venueName?: string | null
   categories: string[]
   // Chaves de 2º nível (subcategorias/gêneros). Aditivo — pode não vir.
   subcategories?: string[]
@@ -163,6 +166,11 @@ export type EventDetail = {
   latitude: number
   longitude: number
   address?: string
+  // Estabelecimento (Google Places). placeId é reenviado no PUT para preservar
+  // o vínculo quando o usuário edita sem trocar de local; venueName é o rótulo
+  // principal na exibição. Ambos ausentes/null = endereço de rua.
+  placeId?: string | null
+  venueName?: string | null
   categories: string[]
   // Chaves de 2º nível (subcategorias/gêneros). Aditivo — pode não vir.
   subcategories?: string[]

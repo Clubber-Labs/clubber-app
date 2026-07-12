@@ -17,8 +17,6 @@ export function useUpdateEvent(id: string) {
     onMutate: async data => {
       // Optimistic na detail pra refletir edição na tela ao voltar.
       // Padrão canônico: ver CLAUDE.md → "Tratamento de erros e feedback".
-      // `address` fica de fora: o PUT não atualiza endereço, então não
-      // mostramos uma mudança que o backend vai descartar.
       await queryClient.cancelQueries({ queryKey: detailKey })
       const prev = queryClient.getQueryData<EventDetail>(detailKey)
       if (prev) {
@@ -28,8 +26,11 @@ export function useUpdateEvent(id: string) {
           description: data.description?.trim() ?? '',
           date: data.date.toISOString(),
           endDate: data.endDate ? data.endDate.toISOString() : null,
+          address: data.address,
           latitude: data.latitude,
           longitude: data.longitude,
+          placeId: data.placeId ?? null,
+          venueName: data.venueName ?? null,
           categories: data.categories,
           subcategories: data.subcategories,
           isPublic: data.isPublic,

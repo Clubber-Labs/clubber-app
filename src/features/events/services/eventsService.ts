@@ -12,7 +12,10 @@ import type {
   FeedAuthor,
   FeedEvent,
 } from '@/shared/types'
-import type { CreateEventPayload } from '../schemas/createEventSchema'
+import type {
+  CreateEventPayload,
+  UpdateEventPayload,
+} from '../schemas/createEventSchema'
 
 type ListParams = { limit?: number; cursor?: string }
 
@@ -70,10 +73,8 @@ export const eventsService = {
   create: (data: CreateEventPayload): Promise<EventDetail> =>
     api.post('/events', data).then(r => r.data),
 
-  update: (
-    id: string,
-    data: Partial<CreateEventPayload>,
-  ): Promise<EventDetail> => api.put(`/events/${id}`, data).then(r => r.data),
+  update: (id: string, data: UpdateEventPayload): Promise<EventDetail> =>
+    api.put(`/events/${id}`, data).then(r => r.data),
 
   delete: (id: string): Promise<void> =>
     api.delete(`/events/${id}`).then(() => undefined),

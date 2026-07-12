@@ -33,7 +33,9 @@ export function EventPreviewCard({
   const distance = userCoords
     ? formatDistance(distanceKm(userCoords, [event.longitude, event.latitude]))
     : null
-  const locationText = [event.address, distance].filter(Boolean).join(' · ')
+  const locationText = [event.venueName ?? event.address, distance]
+    .filter(Boolean)
+    .join(' · ')
 
   return (
     <View className="absolute bottom-4 left-3 right-3 rounded-xl border border-line-strong bg-surface p-3">

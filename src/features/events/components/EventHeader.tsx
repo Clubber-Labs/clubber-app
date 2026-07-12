@@ -211,9 +211,17 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
             longitude={event.longitude}
           >
             <MetaRow
-              icon="location-outline"
-              title={event.address ?? 'Ver localização no mapa'}
-              subtitle={event.address ? 'Abrir no mapa' : undefined}
+              icon={event.venueName ? 'business-outline' : 'location-outline'}
+              title={
+                event.venueName ?? event.address ?? 'Ver localização no mapa'
+              }
+              subtitle={
+                event.venueName
+                  ? (event.address ?? 'Abrir no mapa')
+                  : event.address
+                    ? 'Abrir no mapa'
+                    : undefined
+              }
               chevron
             />
           </AddressLink>
