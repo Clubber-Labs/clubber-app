@@ -16,7 +16,7 @@ export const createEventSchema = z
     address: z
       .string()
       .max(255, 'Endereço deve ter no máximo 255 caracteres')
-      .min(1, 'Selecione um local no campo de busca'),
+      .min(1, 'Selecione o local no campo de busca'),
     latitude: z.number().min(-90).max(90),
     longitude: z.number().min(-180).max(180),
     categories: z.array(z.string()).min(1, 'Selecione ao menos uma categoria'),
