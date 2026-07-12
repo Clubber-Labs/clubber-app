@@ -81,7 +81,9 @@ export function MapSearchBar({ onSelect }: Props) {
                         numberOfLines={1}
                         className="text-content-subtle text-xs flex-1"
                       >
-                        {event.address || labelsFor(event.categories)}
+                        {event.venueName ||
+                          event.address ||
+                          labelsFor(event.categories)}
                       </Text>
                     </View>
                   </View>

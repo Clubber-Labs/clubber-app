@@ -93,10 +93,12 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
           )}
 
           <View className="flex-row items-center gap-4">
-            {!!event.address && (
+            {!!(event.venueName ?? event.address) && (
               <View className="flex-1 flex-row items-center gap-1">
                 <Ionicons
-                  name="location-outline"
+                  name={
+                    event.venueName ? 'business-outline' : 'location-outline'
+                  }
                   size={14}
                   color={colors.contentMuted}
                 />
@@ -104,7 +106,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
                   className="flex-1 text-xs text-content-muted"
                   numberOfLines={1}
                 >
-                  {event.address}
+                  {event.venueName ?? event.address}
                 </Text>
               </View>
             )}
