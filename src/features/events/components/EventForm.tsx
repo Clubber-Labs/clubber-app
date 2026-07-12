@@ -20,7 +20,7 @@ import { FormError } from '@/shared/components/FormError'
 import { DatePicker } from '@/shared/components/DatePicker'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import { SubcategorySelect } from '@/shared/components/SubcategorySelect'
-import { LocationPicker } from './LocationPicker'
+import { LocationPreview } from './LocationPreview'
 import { VenuePicker, type VenueSelection } from './VenuePicker'
 import { useUserLocation } from '@/shared/hooks/useUserLocation'
 import { colors } from '@/shared/theme'
@@ -73,6 +73,8 @@ export function EventForm({
   const address = watch('address')
   const venueName = watch('venueName')
   const placeId = watch('placeId')
+  const latitude = watch('latitude')
+  const longitude = watch('longitude')
   const { coords } = useUserLocation()
 
   function patchLocation(patch: Partial<VenueSelection>) {
@@ -260,34 +262,17 @@ export function EventForm({
           <Text className="text-sm font-medium text-content-tertiary">
             Local no mapa
           </Text>
-          <Controller
-            control={control}
-            name="latitude"
-            render={({ field: { onChange: onLat, value: lat } }) => (
-              <Controller
-                control={control}
-                name="longitude"
-                render={({ field: { onChange: onLng, value: lng } }) => (
-                  <LocationPicker
-                    value={
-                      typeof lat === 'number' && typeof lng === 'number'
-                        ? { latitude: lat, longitude: lng }
-                        : null
-                    }
-                    onChange={coords => {
-                      onLat(coords.latitude)
-                      onLng(coords.longitude)
-                    }}
-                    hasError={!!errors.latitude || !!errors.longitude}
-                    editable={!venueName}
-                  />
-                )}
-              />
-            )}
+          <LocationPreview
+            value={
+              typeof latitude === 'number' && typeof longitude === 'number'
+                ? { latitude, longitude }
+                : null
+            }
+            hasError={!!errors.latitude || !!errors.longitude}
           />
           {(errors.latitude || errors.longitude) && (
             <Text className="text-content text-xs">
-              Toque no mapa para escolher o local
+              Escolha um local no campo acima
             </Text>
           )}
         </View>
