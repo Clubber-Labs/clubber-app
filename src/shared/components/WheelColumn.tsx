@@ -37,6 +37,7 @@ export function WheelColumn({
 }: Props) {
   const ref = useRef<ScrollView>(null)
   const lastReported = useRef(selectedValue)
+  const scrollIdleTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const initialIndex = Math.max(
     0,
     items.findIndex(i => i.value === selectedValue),
@@ -55,6 +56,14 @@ export function WheelColumn({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // Limpa o debounce de scroll-parado ao desmontar.
+  useEffect(
+    () => () => {
+      if (scrollIdleTimer.current) clearTimeout(scrollIdleTimer.current)
+    },
+    [],
+  )
+
   // Sincroniza quando o valor muda de fora (ex.: dia clampado ao trocar de mês).
   useEffect(() => {
     if (selectedValue === lastReported.current) return
@@ -67,12 +76,23 @@ export function WheelColumn({
   }, [selectedValue, items])
 
   function handleScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
-    const index = Math.round(e.nativeEvent.contentOffset.y / WHEEL_ITEM_HEIGHT)
+    const y = e.nativeEvent.contentOffset.y
+    const index = Math.round(y / WHEEL_ITEM_HEIGHT)
     const clamped = Math.max(0, Math.min(items.length - 1, index))
     setCenterIndex(prev => (prev === clamped ? prev : clamped))
+    // Rodinha do mouse / trackpad rolam sem gerar drag-end nem momentum-end, então
+    // a seleção nunca comitava (ficava no valor inicial). Debounce: quando o scroll
+    // para, encaixa no item central e comita. Drag/flick comitam pelos handlers
+    // próprios (que cancelam este timer).
+    if (scrollIdleTimer.current) clearTimeout(scrollIdleTimer.current)
+    scrollIdleTimer.current = setTimeout(() => settleTo(y), 140)
   }
 
   function settleTo(offsetY: number) {
+    if (scrollIdleTimer.current) {
+      clearTimeout(scrollIdleTimer.current)
+      scrollIdleTimer.current = null
+    }
     const index = Math.max(
       0,
       Math.min(items.length - 1, Math.round(offsetY / WHEEL_ITEM_HEIGHT)),

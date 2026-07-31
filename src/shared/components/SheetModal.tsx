@@ -1,7 +1,11 @@
 import { useEffect } from 'react'
 import { Modal, Pressable, View } from 'react-native'
 import type { ReactNode } from 'react'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler'
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -20,11 +24,7 @@ type Props = {
 
 // Bottom sheet imperativo simples (dark theme), no espírito do confirm.tsx.
 // Tap no backdrop fecha; tap no conteúdo não propaga. Genérico — qualquer feature.
-export function SheetModal({
-  visible,
-  onClose,
-  children,
-}: Props) {
+export function SheetModal({ visible, onClose, children }: Props) {
   // Arrastar a alça pra baixo fecha: segue o dedo; além do limiar (ou num flick),
   // fecha — o slide do Modal cuida da saída. Reseta ao reabrir.
   const dragY = useSharedValue(0)
@@ -51,24 +51,27 @@ export function SheetModal({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <Pressable
-        className="flex-1 justify-end"
-        onPress={onClose}
-      >
-        <Animated.View style={sheetStyle}>
-          <Pressable
-            className="bg-surface-sunken rounded-t-3xl border-t border-line pb-8 pt-2"
-            onPress={() => {}}
-          >
-            <GestureDetector gesture={dragGesture}>
-              <View className="pt-1 pb-2">
-                <View className="w-10 h-1 bg-surface-high rounded-full self-center" />
-              </View>
-            </GestureDetector>
-            {children}
-          </Pressable>
-        </Animated.View>
-      </Pressable>
+      {/* Gestos do RNGH (a ScrollView das rodas no WheelColumn, o GestureDetector
+          da alça) não funcionam dentro do <Modal> nativo: ele renderiza numa
+          árvore nativa separada, fora do GestureHandlerRootView da raiz do app.
+          Reembrulha aqui pra reativar os gestos dentro da folha. */}
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Pressable className="flex-1 justify-end" onPress={onClose}>
+          <Animated.View style={sheetStyle}>
+            <Pressable
+              className="bg-surface-sunken rounded-t-3xl border-t border-line pb-8 pt-2"
+              onPress={() => {}}
+            >
+              <GestureDetector gesture={dragGesture}>
+                <View className="pt-1 pb-2">
+                  <View className="w-10 h-1 bg-surface-high rounded-full self-center" />
+                </View>
+              </GestureDetector>
+              {children}
+            </Pressable>
+          </Animated.View>
+        </Pressable>
+      </GestureHandlerRootView>
     </Modal>
   )
 }
