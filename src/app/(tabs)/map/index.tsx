@@ -90,34 +90,36 @@ export default function MapScreen() {
   })
   const { data: heatmapPoints = [] } = useHeatmap(bbox, filters, densityVisible)
 
-  // Um pedido de foco tem prioridade sobre o recentro automático no usuário
-  // (o fix de GPS pode chegar depois do voo e roubaria a câmera).
-  const focusKey =
-    focusLat && focusLng ? `${focusSpotId}|${focusLat}|${focusLng}` : null
-
+  // Voa até o pedido de foco e o APAGA da rota: param grudado na tab
+  // bloquearia o recentro automático pra sempre e impediria um segundo
+  // pedido pro mesmo rolê. Limpa com string vazia (não undefined) porque
+  // "undefined" serializado viraria coordenada NaN no próximo ciclo.
+  const focusConsumedRef = useRef(false)
+  const [spotToOpen, setSpotToOpen] = useState<string | null>(null)
   useEffect(() => {
-    if (userCoords && !focusKey) flyTo(userCoords, USER_ZOOM, 800)
-  }, [userCoords, flyTo, focusKey])
-
-  // Voa assim que os params chegam; refs porque eles persistem na rota da tab
-  // e cada pedido deve ser consumido uma vez só.
-  const focusFlownRef = useRef<string | null>(null)
-  useEffect(() => {
-    if (!focusKey || focusFlownRef.current === focusKey) return
-    focusFlownRef.current = focusKey
+    if (!focusLat || !focusLng) return
+    focusConsumedRef.current = true
     focusOnEvent([Number(focusLng), Number(focusLat)])
-  }, [focusKey, focusLat, focusLng, focusOnEvent])
+    if (focusSpotId) setSpotToOpen(focusSpotId)
+    router.setParams({ focusSpotId: '', focusLat: '', focusLng: '' })
+  }, [focusSpotId, focusLat, focusLng, focusOnEvent, router])
+
+  // Recentro automático só sem foco pedido — o fix de GPS chega depois do
+  // voo e roubaria a câmera (o ref cobre a janela após limpar os params).
+  useEffect(() => {
+    if (!userCoords || focusLat || focusConsumedRef.current) return
+    flyTo(userCoords, USER_ZOOM, 800)
+  }, [userCoords, flyTo, focusLat])
 
   // O card do rolê abre quando os spots do viewport incluírem o focado.
-  const focusSelectedRef = useRef<string | null>(null)
   useEffect(() => {
-    if (!focusSpotId || focusSelectedRef.current === focusSpotId) return
-    const found = spots.find(spot => spot.id === focusSpotId)
+    if (!spotToOpen) return
+    const found = spots.find(spot => spot.id === spotToOpen)
     if (!found) return
-    focusSelectedRef.current = focusSpotId
+    setSpotToOpen(null)
     setSelectedEvent(null)
     setSelectedSpot(found)
-  }, [focusSpotId, spots])
+  }, [spotToOpen, spots])
 
   // Sugestões geradas → enquadra os rascunhos na metade visível do mapa (o
   // padding inferior do fitToCoords compensa o painel aberto por cima).
