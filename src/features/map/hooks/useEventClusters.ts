@@ -16,14 +16,40 @@ export type EventCluster = {
 type PointProps = { eventId: string; attendees: number }
 type ClusterProps = { attendees: number }
 
+// Evento "quente" fura o agrupamento: promovido (isFeatured) ou com
+// engajamento bem acima da média da região visível — um eventão nunca some
+// dentro de um badge. O piso mínimo evita disparar em regiões onde a média
+// é quase zero (2 pessoas já seriam "o dobro da média").
+const HOT_MULTIPLIER = 2
+const HOT_MIN_ATTENDEES = 5
+
+function isHotEvent(event: FeedEvent, meanAttendees: number): boolean {
+  if (event.isFeatured) return true
+  const attendees = event._count.attendances
+  return (
+    attendees >= HOT_MIN_ATTENDEES &&
+    attendees >= meanAttendees * HOT_MULTIPLIER
+  )
+}
+
 // Clusterização em JS (mesma lib do Mapbox GL) em vez do cluster nativo do
 // ShapeSource: assim sabemos QUAIS eventos ficaram de fora dos grupos e
 // podemos renderizá-los como MarkerView completo (emoji + confirmados) em
 // qualquer zoom — pilha de avatares com foto remota não existe em style
 // layer. Grupos continuam como badges nativos.
 export function useEventClusters(events: FeedEvent[], zoom: number) {
-  const { index, byId } = useMemo(() => {
-    const byId = new Map(events.map(event => [event.id, event]))
+  const { index, byId, hot } = useMemo(() => {
+    const mean = events.length
+      ? events.reduce((sum, e) => sum + e._count.attendances, 0) / events.length
+      : 0
+    const hot: FeedEvent[] = []
+    const clusterable: FeedEvent[] = []
+    for (const event of events) {
+      if (isHotEvent(event, mean)) hot.push(event)
+      else clusterable.push(event)
+    }
+
+    const byId = new Map(clusterable.map(event => [event.id, event]))
     const index = new Supercluster<PointProps, ClusterProps>({
       radius: CLUSTER_RADIUS,
       maxZoom: CLUSTER_MAX_ZOOM - 1,
@@ -33,7 +59,7 @@ export function useEventClusters(events: FeedEvent[], zoom: number) {
       },
     })
     index.load(
-      events.map(event => ({
+      clusterable.map(event => ({
         type: 'Feature' as const,
         geometry: {
           type: 'Point' as const,
@@ -45,7 +71,7 @@ export function useEventClusters(events: FeedEvent[], zoom: number) {
         },
       })),
     )
-    return { index, byId }
+    return { index, byId, hot }
   }, [events])
 
   return useMemo(() => {
@@ -69,6 +95,8 @@ export function useEventClusters(events: FeedEvent[], zoom: number) {
         if (event) singles.push(event)
       }
     }
+    // Quentes por último → MarkerView deles renderiza por cima dos comuns.
+    singles.push(...hot)
     return { clusters, singles }
-  }, [index, byId, zoom])
+  }, [index, byId, hot, zoom])
 }
