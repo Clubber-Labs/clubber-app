@@ -248,7 +248,11 @@ export default function SpotDetailScreen() {
         </View>
 
         <View className="relative">
-          <EventMap latitude={spot.latitude} longitude={spot.longitude} />
+          <EventMap
+            latitude={spot.latitude}
+            longitude={spot.longitude}
+            marker="spot"
+          />
           <Pressable
             onPress={() =>
               openInMaps({ latitude: spot.latitude, longitude: spot.longitude })

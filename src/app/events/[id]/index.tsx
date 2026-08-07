@@ -84,7 +84,11 @@ function DetailHeader({ event, isAuthor, isPremium, onShared }: HeaderProps) {
             current={event.userAttendance}
           />
         )}
-        <EventMap latitude={event.latitude} longitude={event.longitude} />
+        <EventMap
+          latitude={event.latitude}
+          longitude={event.longitude}
+          categories={event.categories}
+        />
       </View>
       <View className="border-t border-line" />
     </View>

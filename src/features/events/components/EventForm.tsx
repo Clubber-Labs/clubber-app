@@ -269,6 +269,7 @@ export function EventForm({
                 : null
             }
             hasError={!!errors.latitude || !!errors.longitude}
+            categories={selectedCategories}
           />
           {(errors.latitude || errors.longitude) && (
             <Text className="text-content text-xs">

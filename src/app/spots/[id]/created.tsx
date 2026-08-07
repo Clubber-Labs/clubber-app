@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons'
 import * as Linking from 'expo-linking'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 import { Button } from '@/shared/components/Button'
+import { EventMap } from '@/features/events/components/EventMap'
 import { useSpot } from '@/features/spots/hooks/useSpot'
 import { formatSpotWindow } from '@/features/spots/utils/spotWindow'
 import { colors } from '@/shared/theme'
@@ -88,7 +89,16 @@ export default function SpotCreatedScreen() {
           }
         />
         <Pressable
-          onPress={() => router.replace('/(tabs)/map')}
+          onPress={() =>
+            router.replace({
+              pathname: '/(tabs)/map',
+              params: {
+                focusSpotId: spot.id,
+                focusLat: String(spot.latitude),
+                focusLng: String(spot.longitude),
+              },
+            })
+          }
           accessibilityRole="button"
           className="items-center py-2"
         >
@@ -96,6 +106,12 @@ export default function SpotCreatedScreen() {
             Ver no mapa
           </Text>
         </Pressable>
+        <EventMap
+          latitude={spot.latitude}
+          longitude={spot.longitude}
+          height={160}
+          marker="spot"
+        />
       </View>
     </View>
   )

@@ -1,14 +1,20 @@
-import { View, Pressable, Text, Image } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { View, Pressable, Text } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
+import Svg, { Circle, Path } from 'react-native-svg'
 import type { FeedEvent, FriendAttendance } from '@/shared/types'
 import { UserAvatar } from '@/shared/components/UserAvatar'
+import { EmojiPinFace } from '@/shared/components/EmojiPinFace'
 import { featuredAttendees } from '@/shared/utils/featuredAttendees'
+import { eventCategoryEmoji } from '@/shared/utils/eventCategoryEmoji'
 import {
   groupCoincidentEvents,
   fanoutOffset,
   fanoutRadius,
   friendStackLayout,
+  pinTailHeight,
+  pinTailPath,
+  PIN_RIM_COLOR,
+  PIN_RIM_WIDTH,
 } from '../utils/markerLayout'
 import { colors } from '@/shared/theme'
 
@@ -29,8 +35,9 @@ const FANOUT_GAP = 10
 const MAX_FRIENDS = 3
 const DIMMED_OPACITY = 0.5
 
-// Pin do evento: capa do banner (images[0]). Sem capa, cai no ícone de
-// calendário — mesma convenção de "evento sem imagem" do EventCard.
+// Pin do evento em gota invertida: a cabeça mostra SEMPRE o emoji da
+// categoria sobre campo violeta — a capa do banner fica pro card de preview
+// e pro avatar do organizador pendurado (socialItems), nunca na cabeça.
 function EventPin({
   event,
   size,
@@ -40,46 +47,54 @@ function EventPin({
   size: number
   selected: boolean
 }) {
-  const cover = event.images[0]?.url
   const inner = size - 6
+  const height = size + pinTailHeight(size)
+  const shell = event.isFeatured
+    ? colors.brandEmphasis
+    : selected
+      ? colors.contentBright
+      : colors.content
   return (
     <View
       style={{
         width: size,
-        height: size,
-        borderRadius: size / 2,
-        borderWidth: 3,
-        borderColor: event.isFeatured
-          ? colors.brandEmphasis
-          : selected
-            ? colors.contentBright
-            : colors.content,
-        backgroundColor: event.isFeatured ? colors.brandEmphasis : colors.content,
-        overflow: 'hidden',
-        alignItems: 'center',
-        justifyContent: 'center',
+        height,
         // Encerrados ficam esmaecidos (status vem do backend).
         opacity: event.status === 'PAST' ? 0.55 : 1,
       }}
     >
-      {cover ? (
-        <Image
-          source={{ uri: cover }}
-          style={{ width: inner, height: inner, borderRadius: inner / 2 }}
-          resizeMode="cover"
+      <Svg
+        width={size + 4}
+        height={height + 4}
+        viewBox={`-2 -2 ${size + 4} ${height + 4}`}
+        style={{ position: 'absolute', left: -2, top: -2 }}
+      >
+        <Circle
+          cx={size / 2}
+          cy={size / 2}
+          r={size / 2 + PIN_RIM_WIDTH}
+          fill={PIN_RIM_COLOR}
         />
-      ) : (
-        <View
-          style={{ width: inner, height: inner, borderRadius: inner / 2 }}
-          className="bg-surface-elevated items-center justify-center"
-        >
-          <Ionicons
-            name="calendar-outline"
-            size={Math.round(inner * 0.45)}
-            color={colors.contentFaint}
-          />
-        </View>
-      )}
+        <Path d={pinTailPath(size, PIN_RIM_WIDTH)} fill={PIN_RIM_COLOR} />
+        <Circle cx={size / 2} cy={size / 2} r={size / 2} fill={shell} />
+        <Path d={pinTailPath(size)} fill={shell} />
+      </Svg>
+      <View
+        style={{
+          position: 'absolute',
+          left: 3,
+          top: 3,
+          width: inner,
+          height: inner,
+          borderRadius: inner / 2,
+          overflow: 'hidden',
+        }}
+      >
+        <EmojiPinFace
+          size={inner}
+          emoji={eventCategoryEmoji(event.categories)}
+        />
+      </View>
     </View>
   )
 }
@@ -159,7 +174,7 @@ function SingleMarker({
       <Mapbox.MarkerView
         id={`event-${event.id}`}
         coordinate={[event.longitude, event.latitude]}
-        anchor={{ x: 0.5, y: 0.5 }}
+        anchor={{ x: 0.5, y: 1 }}
         allowOverlap
       >
         <View style={{ opacity }}>{pin}</View>
@@ -167,7 +182,7 @@ function SingleMarker({
     )
   }
 
-  const layout = friendStackLayout(size, items.length)
+  const layout = friendStackLayout(size, pinTailHeight(size), items.length)
   const f = layout.avatarSize
 
   return (
@@ -190,7 +205,7 @@ function SingleMarker({
         {[...items].reverse().map(item => {
           const base = {
             position: 'absolute' as const,
-            left: layout.centerX + item.index * layout.step - f / 2,
+            left: layout.firstAvatarX + item.index * layout.step - f / 2,
             top: layout.friendTop,
             width: f,
             height: f,
@@ -254,18 +269,21 @@ function CoincidentMarker({
   const anchor = group[0]
   const radius = fanoutRadius(group.length, PIN_SIZE_SELECTED, FANOUT_GAP)
   const frame = PIN_SIZE_SELECTED + radius * 2
+  // O quadro cresce pra baixo pra caber o rabinho das gotas; a âncora mantém
+  // o centro do leque sobre a coordenada compartilhada.
+  const frameHeight = frame + pinTailHeight(PIN_SIZE_SELECTED)
 
   return (
     <Mapbox.MarkerView
       id={`event-group-${anchor.id}`}
       coordinate={[anchor.longitude, anchor.latitude]}
-      anchor={{ x: 0.5, y: 0.5 }}
+      anchor={{ x: 0.5, y: frame / 2 / frameHeight }}
       allowOverlap
     >
       <View
         style={{
           width: frame,
-          height: frame,
+          height: frameHeight,
           opacity: dimmed ? DIMMED_OPACITY : 1,
         }}
         pointerEvents="box-none"

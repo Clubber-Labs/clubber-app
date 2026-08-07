@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { View, Text, ActivityIndicator, Keyboard, Linking } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import type { FeedEvent } from '@/shared/types'
 import {
   BRAZIL_CENTER,
@@ -16,6 +16,7 @@ import { useMapEvents } from '@/features/map/hooks/useMapEvents'
 import { useMapCamera } from '@/features/map/hooks/useMapCamera'
 import { useUserLocation } from '@/shared/hooks/useUserLocation'
 import { useUserLiveLocation } from '@/shared/hooks/useUserLiveLocation'
+import { useMapLightPreset } from '@/shared/hooks/useMapLightPreset'
 import { useBanner } from '@/shared/lib/banner'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { UserLocationLayer } from '@/features/map/components/UserLocationLayer'
@@ -36,6 +37,7 @@ import { MapCreateButton } from '@/features/map/components/MapCreateButton'
 import { useViewportSpots } from '@/features/spots/hooks/useViewportSpots'
 import { useSuggestSpots } from '@/features/spots/hooks/useSuggestSpots'
 import { SpotMarkers } from '@/features/spots/components/SpotMarkers'
+import { SpotBalloonLayer } from '@/features/spots/components/SpotBalloonLayer'
 import { SpotPreviewCard } from '@/features/spots/components/SpotPreviewCard'
 import { SpotSuggestionsPanel } from '@/features/spots/components/SpotSuggestionsPanel'
 import { SuggestionMarkers } from '@/features/spots/components/SuggestionMarkers'
@@ -46,6 +48,12 @@ const COINCIDENT_FOCUS_ZOOM = 20
 
 export default function MapScreen() {
   const router = useRouter()
+  // Pedido de foco vindo de fora (ex.: "Ver no mapa" pós-publicação de spot).
+  const { focusSpotId, focusLat, focusLng } = useLocalSearchParams<{
+    focusSpotId?: string
+    focusLat?: string
+    focusLng?: string
+  }>()
   const { coords: userCoords, status: locationStatus } = useUserLocation()
   const livePos = useUserLiveLocation(locationStatus === 'ready')
   const myPos = livePos ?? userCoords
@@ -57,6 +65,7 @@ export default function MapScreen() {
 
   const filters = useMapUiStore(s => s.filters)
   const showBanner = useBanner()
+  const lightPreset = useMapLightPreset()
 
   const [selectedEvent, setSelectedEvent] = useState<FeedEvent | null>(null)
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null)
@@ -82,9 +91,34 @@ export default function MapScreen() {
   })
   const { data: heatmapPoints = [] } = useHeatmap(bbox, filters, densityVisible)
 
+  // Um pedido de foco tem prioridade sobre o recentro automático no usuário
+  // (o fix de GPS pode chegar depois do voo e roubaria a câmera).
+  const focusKey =
+    focusLat && focusLng ? `${focusSpotId}|${focusLat}|${focusLng}` : null
+
   useEffect(() => {
-    if (userCoords) flyTo(userCoords, USER_ZOOM, 800)
-  }, [userCoords, flyTo])
+    if (userCoords && !focusKey) flyTo(userCoords, USER_ZOOM, 800)
+  }, [userCoords, flyTo, focusKey])
+
+  // Voa assim que os params chegam; refs porque eles persistem na rota da tab
+  // e cada pedido deve ser consumido uma vez só.
+  const focusFlownRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!focusKey || focusFlownRef.current === focusKey) return
+    focusFlownRef.current = focusKey
+    focusOnEvent([Number(focusLng), Number(focusLat)])
+  }, [focusKey, focusLat, focusLng, focusOnEvent])
+
+  // O card do rolê abre quando os spots do viewport incluírem o focado.
+  const focusSelectedRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!focusSpotId || focusSelectedRef.current === focusSpotId) return
+    const found = spots.find(spot => spot.id === focusSpotId)
+    if (!found) return
+    focusSelectedRef.current = focusSpotId
+    setSelectedEvent(null)
+    setSelectedSpot(found)
+  }, [focusSpotId, spots])
 
   // Sugestões geradas → enquadra os rascunhos na metade visível do mapa (o
   // padding inferior do fitToCoords compensa o painel aberto por cima).
@@ -188,6 +222,8 @@ export default function MapScreen() {
           onRegionChange()
         }}
       >
+        {/* Luz do Standard acompanha a hora local (dia/tarde/noite). */}
+        <Mapbox.StyleImport id="basemap" existing config={{ lightPreset }} />
         <Mapbox.Camera
           ref={cameraRef}
           zoomLevel={BRAZIL_ZOOM}
@@ -206,27 +242,38 @@ export default function MapScreen() {
           />
         )}
         {!showMarkers ? (
-          <EventClustersLayer
-            ref={shapeSourceRef}
-            shape={eventsGeoJson}
-            onPress={handleClusterShapePress}
-            dimmed={densityVisible}
-          />
+          <>
+            {/* Spots ANTES dos eventos: ambos são style layers no zoom baixo,
+                e a ordem de montagem deixa as gotas de evento por cima. */}
+            <SpotBalloonLayer
+              spots={spots}
+              onPress={openSpot}
+              dimmed={densityVisible}
+            />
+            <EventClustersLayer
+              ref={shapeSourceRef}
+              shape={eventsGeoJson}
+              onPress={handleClusterShapePress}
+              dimmed={densityVisible}
+            />
+          </>
         ) : (
-          <EventMarkers
-            events={events}
-            selectedId={selectedEvent?.id}
-            onPress={openEvent}
-            dimmed={densityVisible}
-            detailsOpen={!!selectedEvent || !!selectedSpot}
-          />
+          <>
+            <EventMarkers
+              events={events}
+              selectedId={selectedEvent?.id}
+              onPress={openEvent}
+              dimmed={densityVisible}
+              detailsOpen={!!selectedEvent || !!selectedSpot}
+            />
+            <SpotMarkers
+              spots={spots}
+              selectedId={selectedSpot?.id}
+              onPress={openSpot}
+              dimmed={densityVisible}
+            />
+          </>
         )}
-        <SpotMarkers
-          spots={spots}
-          selectedId={selectedSpot?.id}
-          onPress={openSpot}
-          dimmed={densityVisible}
-        />
         {suggestionsOpen && (
           <SuggestionMarkers
             suggestions={suggest.suggestions}
