@@ -6,13 +6,16 @@ import type { FeedEvent } from '@/shared/types'
 import {
   BRAZIL_CENTER,
   BRAZIL_ZOOM,
-  CLUSTER_MAX_ZOOM,
   MAP_STYLE_URL,
   MAX_ZOOM,
   USER_ZOOM,
   ZOOM_STEP,
 } from '@/features/map/constants'
 import { useMapEvents } from '@/features/map/hooks/useMapEvents'
+import {
+  useEventClusters,
+  type EventCluster,
+} from '@/features/map/hooks/useEventClusters'
 import { useMapCamera } from '@/features/map/hooks/useMapCamera'
 import { useUserLocation } from '@/shared/hooks/useUserLocation'
 import { useUserLiveLocation } from '@/shared/hooks/useUserLiveLocation'
@@ -44,8 +47,6 @@ import { SuggestionMarkers } from '@/features/spots/components/SuggestionMarkers
 import type { Spot, SpotSuggestion } from '@/features/spots/types'
 import { colors } from '@/shared/theme'
 
-const COINCIDENT_FOCUS_ZOOM = 20
-
 export default function MapScreen() {
   const router = useRouter()
   // Pedido de foco vindo de fora (ex.: "Ver no mapa" pós-publicação de spot).
@@ -60,7 +61,7 @@ export default function MapScreen() {
   const profile = useMyProfile()
   const { cameraRef, mapRef, flyTo, adjustZoom, focusOnEvent, fitToCoords } =
     useMapCamera()
-  const { showMarkers, onCameraZoomChange } = useMapZoomState()
+  const { showMarkers, zoomBucket, onCameraZoomChange } = useMapZoomState()
   const { bbox, onRegionChange } = useViewportBbox(mapRef)
 
   const filters = useMapUiStore(s => s.filters)
@@ -76,12 +77,10 @@ export default function MapScreen() {
   // sem perder as sugestões já geradas — reabrir não gasta outra geração.
   const suggest = useSuggestSpots()
 
-  const shapeSourceRef = useRef<Mapbox.ShapeSource>(null)
-
-  const { events, eventsGeoJson, truncated, isLoading, error } = useMapEvents(
-    bbox,
-    filters,
-  )
+  const { events, truncated, isLoading, error } = useMapEvents(bbox, filters)
+  // Clusterização em JS: agrupados viram badges nativos; os que sobram são
+  // MarkerViews completos (emoji + confirmados) em qualquer zoom.
+  const { clusters, singles } = useEventClusters(events, zoomBucket)
   // Spots sempre visíveis, sem o gate de zoom dos pins de evento: o zoom
   // padrão (USER_ZOOM) fica abaixo do threshold e esconderia os balões. O
   // volume é baixo (máx. 5 ativos por usuário, vida de 24h) — não clusteriza.
@@ -164,36 +163,13 @@ export default function MapScreen() {
     }
   }
 
-  async function expandCluster(feature: GeoJSON.Feature) {
-    if (feature.geometry.type !== 'Point') return
-    const source = shapeSourceRef.current
-    if (!source) return
-    const [lng, lat] = feature.geometry.coordinates
-
-    try {
-      const expansionZoom = await source.getClusterExpansionZoom(feature)
-      setSelectedEvent(null)
-      const targetZoom =
-        expansionZoom > CLUSTER_MAX_ZOOM
-          ? COINCIDENT_FOCUS_ZOOM
-          : Math.min(expansionZoom + 0.5, MAX_ZOOM)
-      flyTo([lng, lat], targetZoom, 600)
-    } catch {
-      focusOnEvent([lng, lat])
-    }
-  }
-
-  function handleClusterShapePress(event: { features: GeoJSON.Feature[] }) {
-    const feature = event.features[0]
-    if (!feature) return
-    const props = feature.properties as Record<string, unknown> | null
-    if (props?.cluster) {
-      expandCluster(feature)
-      return
-    }
-    const eventId = props?.eventId as string | undefined
-    const found = events.find(e => e.id === eventId)
-    if (found) openEvent(found)
+  function expandCluster(cluster: EventCluster) {
+    setSelectedEvent(null)
+    flyTo(
+      cluster.coordinate,
+      Math.min(cluster.expansionZoom + 0.5, MAX_ZOOM),
+      600,
+    )
   }
 
   return (
@@ -241,38 +217,35 @@ export default function MapScreen() {
             avatarUrl={profile.data?.avatarUrl}
           />
         )}
-        {!showMarkers ? (
-          <>
-            {/* Spots ANTES dos eventos: ambos são style layers no zoom baixo,
-                e a ordem de montagem deixa as gotas de evento por cima. */}
-            <SpotBalloonLayer
-              spots={spots}
-              onPress={openSpot}
-              dimmed={densityVisible}
-            />
-            <EventClustersLayer
-              ref={shapeSourceRef}
-              shape={eventsGeoJson}
-              onPress={handleClusterShapePress}
-              dimmed={densityVisible}
-            />
-          </>
-        ) : (
-          <>
-            <EventMarkers
-              events={events}
-              selectedId={selectedEvent?.id}
-              onPress={openEvent}
-              dimmed={densityVisible}
-              detailsOpen={!!selectedEvent || !!selectedSpot}
-            />
-            <SpotMarkers
-              spots={spots}
-              selectedId={selectedSpot?.id}
-              onPress={openSpot}
-              dimmed={densityVisible}
-            />
-          </>
+        {/* Mini-balões de spot ANTES dos badges: ambos style layers, a ordem
+            de montagem deixa os eventos por cima. MarkerViews (pins e balões
+            completos) ficam acima de qualquer layer por natureza. */}
+        {!showMarkers && (
+          <SpotBalloonLayer
+            spots={spots}
+            onPress={openSpot}
+            dimmed={densityVisible}
+          />
+        )}
+        <EventClustersLayer
+          clusters={clusters}
+          onPress={expandCluster}
+          dimmed={densityVisible}
+        />
+        <EventMarkers
+          events={singles}
+          selectedId={selectedEvent?.id}
+          onPress={openEvent}
+          dimmed={densityVisible}
+          detailsOpen={!!selectedEvent || !!selectedSpot}
+        />
+        {showMarkers && (
+          <SpotMarkers
+            spots={spots}
+            selectedId={selectedSpot?.id}
+            onPress={openSpot}
+            dimmed={densityVisible}
+          />
         )}
         {suggestionsOpen && (
           <SuggestionMarkers
