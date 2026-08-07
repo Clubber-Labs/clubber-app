@@ -10,27 +10,47 @@ type Props = {
   dimmed?: boolean
 }
 
+// Raio do badge: base pela quantidade de eventos + bônus pela soma de
+// pessoas confirmadas/interessadas no grupo — um grupo pequeno mas lotado
+// pesa mais que um grupo grande vazio.
+function clusterRadius(count: number, attendees: number): number {
+  const byEvents =
+    count <= 10
+      ? 13 + ((Math.max(count, 2) - 2) / 8) * 9
+      : Math.min(30, 22 + ((count - 10) / 40) * 8)
+  const byPeople = Math.min(10, Math.sqrt(attendees) * 1.1)
+  return Math.round(Math.min(38, byEvents + byPeople))
+}
+
+function clusterCountSize(radius: number): number {
+  if (radius >= 24) return 15
+  if (radius >= 18) return 13
+  return 12
+}
+
 // Badge de cluster: resumo de área, não lugar exato — círculo CENTRADO na
 // coordenada, sem rabinho (a gota com emoji fica exclusiva do evento único,
-// renderizada como MarkerView pelo EventMarkers). O raio cresce contínuo
-// com a contagem, dando hierarquia visual.
+// renderizada como MarkerView pelo EventMarkers).
 export function EventClustersLayer({ clusters, onPress, dimmed }: Props) {
   const opacity = dimmed ? 0.5 : 1
 
   const shape = useMemo<GeoJSON.FeatureCollection>(
     () => ({
       type: 'FeatureCollection',
-      features: clusters.map(cluster => ({
-        type: 'Feature',
-        id: cluster.id,
-        geometry: { type: 'Point', coordinates: cluster.coordinate },
-        properties: {
-          clusterId: cluster.id,
-          count: cluster.count,
-          countLabel: cluster.countLabel,
-          expansionZoom: cluster.expansionZoom,
-        },
-      })),
+      features: clusters.map(cluster => {
+        const radius = clusterRadius(cluster.count, cluster.attendees)
+        return {
+          type: 'Feature',
+          id: cluster.id,
+          geometry: { type: 'Point', coordinates: cluster.coordinate },
+          properties: {
+            clusterId: cluster.id,
+            countLabel: cluster.countLabel,
+            radius,
+            countSize: clusterCountSize(radius),
+          },
+        }
+      }),
     }),
     [clusters],
   )
@@ -49,17 +69,7 @@ export function EventClustersLayer({ clusters, onPress, dimmed }: Props) {
           circleColor: colors.brand,
           circleStrokeColor: colors.content,
           circleStrokeWidth: 1.5,
-          circleRadius: [
-            'interpolate',
-            ['linear'],
-            ['get', 'count'],
-            2,
-            13,
-            10,
-            24,
-            50,
-            34,
-          ],
+          circleRadius: ['get', 'radius'],
           circleOpacity: opacity,
           circleStrokeOpacity: opacity,
           // Ignora a iluminação do tema (lightPreset) → cor fiel.
@@ -70,7 +80,7 @@ export function EventClustersLayer({ clusters, onPress, dimmed }: Props) {
         id="cluster-count"
         style={{
           textField: ['get', 'countLabel'],
-          textSize: ['step', ['get', 'count'], 12, 5, 13, 10, 15],
+          textSize: ['get', 'countSize'],
           textColor: colors.content,
           // Halo fino + número sempre opaco: legível mesmo com o badge
           // esmaecido sobre o pico claro do heatmap.

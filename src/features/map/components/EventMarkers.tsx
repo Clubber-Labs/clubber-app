@@ -32,7 +32,7 @@ type Props = {
 const PIN_SIZE = 54
 const PIN_SIZE_SELECTED = 66
 const FANOUT_GAP = 10
-const MAX_FRIENDS = 3
+const MAX_FRIENDS = 2
 const DIMMED_OPACITY = 0.5
 
 // Pin do evento em gota invertida: a cabeça mostra SEMPRE o emoji da
