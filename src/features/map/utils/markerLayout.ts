@@ -1,5 +1,32 @@
 import type { FeedEvent } from '@/shared/types'
 
+// ── Geometria da gota (EventPin do zoom alto + imagens de pin do zoom baixo) ──
+
+const PIN_TAIL_RATIO = 0.26
+// Contorno escuro sutil na casca: define a silhueta nos lightPresets claros
+// (day/dawn), onde branco sobre chão claro some; à noite é imperceptível.
+export const PIN_RIM_WIDTH = 1.6
+export const PIN_RIM_COLOR = 'rgba(0,0,0,0.30)'
+
+export function pinTailHeight(size: number): number {
+  return Math.round(size * PIN_TAIL_RATIO)
+}
+
+// Afunilamento da gota: começa no equador do círculo com tangente vertical
+// (une sem degrau) e converge em curva até a ponta, que marca a coordenada
+// exata do evento. `grow` expande a silhueta pro contorno do rim.
+export function pinTailPath(size: number, grow = 0): string {
+  const r = size / 2
+  const tipY = size + pinTailHeight(size) + grow
+  const ctrlY = r + (tipY - r) * 0.5
+  return [
+    `M ${-grow} ${r}`,
+    `Q ${-grow} ${ctrlY} ${r} ${tipY}`,
+    `Q ${size + grow} ${ctrlY} ${size + grow} ${r}`,
+    'Z',
+  ].join(' ')
+}
+
 const COINCIDENT_GRID = 0.0001
 
 export function groupCoincidentEvents(events: FeedEvent[]): FeedEvent[][] {
@@ -45,17 +72,18 @@ const FRIEND_AVATAR_SIZE = 28
 const FRIEND_OVERLAP_STEP = FRIEND_AVATAR_SIZE * 0.6
 const FRIEND_TUCK = FRIEND_AVATAR_SIZE * 0.28
 
-// Pilha de avatares de amigos na BASE do pin: começa no centro e vai pra direita,
-// sobrepostos (face-pile). `anchor` mantém o CENTRO DO PIN sobre a coordenada do
-// evento, com os amigos pendurados abaixo. `friendTop` deixa o topo levemente
-// escondido sob o pin. Item i fica em x = centerX + i*step (centro do avatar).
+// Pilha de avatares na base da CABEÇA da gota, deslocada um passo pra direita
+// pra não cobrir o rabinho. `anchor` mantém a PONTA da gota sobre a coordenada
+// do evento. `friendTop` deixa o topo levemente escondido sob a cabeça. Item i
+// fica em x = firstAvatarX + i*step (centro do avatar).
 export function friendStackLayout(
   pinSize: number,
+  tailHeight: number,
   count: number,
 ): {
   avatarSize: number
   step: number
-  centerX: number
+  firstAvatarX: number
   friendTop: number
   frameWidth: number
   frameHeight: number
@@ -63,18 +91,20 @@ export function friendStackLayout(
 } {
   const avatarSize = FRIEND_AVATAR_SIZE
   const step = FRIEND_OVERLAP_STEP
-  const centerX = pinSize / 2
-  const rightEdge = centerX + (count - 1) * step + avatarSize / 2
+  const pinCenterX = pinSize / 2
+  const firstAvatarX = pinCenterX + step
+  const rightEdge = firstAvatarX + (count - 1) * step + avatarSize / 2
   const frameWidth = Math.max(pinSize, rightEdge)
   const friendTop = pinSize - FRIEND_TUCK
-  const frameHeight = friendTop + avatarSize
+  const pinHeight = pinSize + tailHeight
+  const frameHeight = Math.max(pinHeight, friendTop + avatarSize)
   return {
     avatarSize,
     step,
-    centerX,
+    firstAvatarX,
     friendTop,
     frameWidth,
     frameHeight,
-    anchor: { x: centerX / frameWidth, y: pinSize / 2 / frameHeight },
+    anchor: { x: pinCenterX / frameWidth, y: pinHeight / frameHeight },
   }
 }

@@ -1,21 +1,25 @@
 import { useEffect, useRef, useState } from 'react'
 import { View, Text, ActivityIndicator, Keyboard, Linking } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
 import type { FeedEvent } from '@/shared/types'
 import {
   BRAZIL_CENTER,
   BRAZIL_ZOOM,
-  CLUSTER_MAX_ZOOM,
   MAP_STYLE_URL,
   MAX_ZOOM,
   USER_ZOOM,
   ZOOM_STEP,
 } from '@/features/map/constants'
 import { useMapEvents } from '@/features/map/hooks/useMapEvents'
+import {
+  useEventClusters,
+  type EventCluster,
+} from '@/features/map/hooks/useEventClusters'
 import { useMapCamera } from '@/features/map/hooks/useMapCamera'
 import { useUserLocation } from '@/shared/hooks/useUserLocation'
 import { useUserLiveLocation } from '@/shared/hooks/useUserLiveLocation'
+import { useMapLightPreset } from '@/shared/hooks/useMapLightPreset'
 import { useBanner } from '@/shared/lib/banner'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { UserLocationLayer } from '@/features/map/components/UserLocationLayer'
@@ -36,27 +40,33 @@ import { MapCreateButton } from '@/features/map/components/MapCreateButton'
 import { useViewportSpots } from '@/features/spots/hooks/useViewportSpots'
 import { useSuggestSpots } from '@/features/spots/hooks/useSuggestSpots'
 import { SpotMarkers } from '@/features/spots/components/SpotMarkers'
+import { SpotBalloonLayer } from '@/features/spots/components/SpotBalloonLayer'
 import { SpotPreviewCard } from '@/features/spots/components/SpotPreviewCard'
 import { SpotSuggestionsPanel } from '@/features/spots/components/SpotSuggestionsPanel'
 import { SuggestionMarkers } from '@/features/spots/components/SuggestionMarkers'
 import type { Spot, SpotSuggestion } from '@/features/spots/types'
 import { colors } from '@/shared/theme'
 
-const COINCIDENT_FOCUS_ZOOM = 20
-
 export default function MapScreen() {
   const router = useRouter()
+  // Pedido de foco vindo de fora (ex.: "Ver no mapa" pós-publicação de spot).
+  const { focusSpotId, focusLat, focusLng } = useLocalSearchParams<{
+    focusSpotId?: string
+    focusLat?: string
+    focusLng?: string
+  }>()
   const { coords: userCoords, status: locationStatus } = useUserLocation()
   const livePos = useUserLiveLocation(locationStatus === 'ready')
   const myPos = livePos ?? userCoords
   const profile = useMyProfile()
   const { cameraRef, mapRef, flyTo, adjustZoom, focusOnEvent, fitToCoords } =
     useMapCamera()
-  const { showMarkers, onCameraZoomChange } = useMapZoomState()
+  const { showMarkers, zoomBucket, onCameraZoomChange } = useMapZoomState()
   const { bbox, onRegionChange } = useViewportBbox(mapRef)
 
   const filters = useMapUiStore(s => s.filters)
   const showBanner = useBanner()
+  const lightPreset = useMapLightPreset()
 
   const [selectedEvent, setSelectedEvent] = useState<FeedEvent | null>(null)
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null)
@@ -67,12 +77,10 @@ export default function MapScreen() {
   // sem perder as sugestões já geradas — reabrir não gasta outra geração.
   const suggest = useSuggestSpots()
 
-  const shapeSourceRef = useRef<Mapbox.ShapeSource>(null)
-
-  const { events, eventsGeoJson, truncated, isLoading, error } = useMapEvents(
-    bbox,
-    filters,
-  )
+  const { events, truncated, isLoading, error } = useMapEvents(bbox, filters)
+  // Clusterização em JS: agrupados viram badges nativos; os que sobram são
+  // MarkerViews completos (emoji + confirmados) em qualquer zoom.
+  const { clusters, singles } = useEventClusters(events, zoomBucket)
   // Spots sempre visíveis, sem o gate de zoom dos pins de evento: o zoom
   // padrão (USER_ZOOM) fica abaixo do threshold e esconderia os balões. O
   // volume é baixo (máx. 5 ativos por usuário, vida de 24h) — não clusteriza.
@@ -82,9 +90,36 @@ export default function MapScreen() {
   })
   const { data: heatmapPoints = [] } = useHeatmap(bbox, filters, densityVisible)
 
+  // Voa até o pedido de foco e o APAGA da rota: param grudado na tab
+  // bloquearia o recentro automático pra sempre e impediria um segundo
+  // pedido pro mesmo rolê. Limpa com string vazia (não undefined) porque
+  // "undefined" serializado viraria coordenada NaN no próximo ciclo.
+  const focusConsumedRef = useRef(false)
+  const [spotToOpen, setSpotToOpen] = useState<string | null>(null)
   useEffect(() => {
-    if (userCoords) flyTo(userCoords, USER_ZOOM, 800)
-  }, [userCoords, flyTo])
+    if (!focusLat || !focusLng) return
+    focusConsumedRef.current = true
+    focusOnEvent([Number(focusLng), Number(focusLat)])
+    if (focusSpotId) setSpotToOpen(focusSpotId)
+    router.setParams({ focusSpotId: '', focusLat: '', focusLng: '' })
+  }, [focusSpotId, focusLat, focusLng, focusOnEvent, router])
+
+  // Recentro automático só sem foco pedido — o fix de GPS chega depois do
+  // voo e roubaria a câmera (o ref cobre a janela após limpar os params).
+  useEffect(() => {
+    if (!userCoords || focusLat || focusConsumedRef.current) return
+    flyTo(userCoords, USER_ZOOM, 800)
+  }, [userCoords, flyTo, focusLat])
+
+  // O card do rolê abre quando os spots do viewport incluírem o focado.
+  useEffect(() => {
+    if (!spotToOpen) return
+    const found = spots.find(spot => spot.id === spotToOpen)
+    if (!found) return
+    setSpotToOpen(null)
+    setSelectedEvent(null)
+    setSelectedSpot(found)
+  }, [spotToOpen, spots])
 
   // Sugestões geradas → enquadra os rascunhos na metade visível do mapa (o
   // padding inferior do fitToCoords compensa o painel aberto por cima).
@@ -130,36 +165,13 @@ export default function MapScreen() {
     }
   }
 
-  async function expandCluster(feature: GeoJSON.Feature) {
-    if (feature.geometry.type !== 'Point') return
-    const source = shapeSourceRef.current
-    if (!source) return
-    const [lng, lat] = feature.geometry.coordinates
-
-    try {
-      const expansionZoom = await source.getClusterExpansionZoom(feature)
-      setSelectedEvent(null)
-      const targetZoom =
-        expansionZoom > CLUSTER_MAX_ZOOM
-          ? COINCIDENT_FOCUS_ZOOM
-          : Math.min(expansionZoom + 0.5, MAX_ZOOM)
-      flyTo([lng, lat], targetZoom, 600)
-    } catch {
-      focusOnEvent([lng, lat])
-    }
-  }
-
-  function handleClusterShapePress(event: { features: GeoJSON.Feature[] }) {
-    const feature = event.features[0]
-    if (!feature) return
-    const props = feature.properties as Record<string, unknown> | null
-    if (props?.cluster) {
-      expandCluster(feature)
-      return
-    }
-    const eventId = props?.eventId as string | undefined
-    const found = events.find(e => e.id === eventId)
-    if (found) openEvent(found)
+  function expandCluster(cluster: EventCluster) {
+    setSelectedEvent(null)
+    flyTo(
+      cluster.coordinate,
+      Math.min(cluster.expansionZoom + 0.5, MAX_ZOOM),
+      600,
+    )
   }
 
   return (
@@ -188,6 +200,8 @@ export default function MapScreen() {
           onRegionChange()
         }}
       >
+        {/* Luz do Standard acompanha a hora local (dia/tarde/noite). */}
+        <Mapbox.StyleImport id="basemap" existing config={{ lightPreset }} />
         <Mapbox.Camera
           ref={cameraRef}
           zoomLevel={BRAZIL_ZOOM}
@@ -205,28 +219,36 @@ export default function MapScreen() {
             avatarUrl={profile.data?.avatarUrl}
           />
         )}
-        {!showMarkers ? (
-          <EventClustersLayer
-            ref={shapeSourceRef}
-            shape={eventsGeoJson}
-            onPress={handleClusterShapePress}
+        {/* Mini-balões de spot ANTES dos badges: ambos style layers, a ordem
+            de montagem deixa os eventos por cima. MarkerViews (pins e balões
+            completos) ficam acima de qualquer layer por natureza. */}
+        {!showMarkers && (
+          <SpotBalloonLayer
+            spots={spots}
+            onPress={openSpot}
             dimmed={densityVisible}
-          />
-        ) : (
-          <EventMarkers
-            events={events}
-            selectedId={selectedEvent?.id}
-            onPress={openEvent}
-            dimmed={densityVisible}
-            detailsOpen={!!selectedEvent || !!selectedSpot}
           />
         )}
-        <SpotMarkers
-          spots={spots}
-          selectedId={selectedSpot?.id}
-          onPress={openSpot}
+        <EventClustersLayer
+          clusters={clusters}
+          onPress={expandCluster}
           dimmed={densityVisible}
         />
+        <EventMarkers
+          events={singles}
+          selectedId={selectedEvent?.id}
+          onPress={openEvent}
+          dimmed={densityVisible}
+          detailsOpen={!!selectedEvent || !!selectedSpot}
+        />
+        {showMarkers && (
+          <SpotMarkers
+            spots={spots}
+            selectedId={selectedSpot?.id}
+            onPress={openSpot}
+            dimmed={densityVisible}
+          />
+        )}
         {suggestionsOpen && (
           <SuggestionMarkers
             suggestions={suggest.suggestions}

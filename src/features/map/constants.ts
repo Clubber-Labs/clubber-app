@@ -1,6 +1,7 @@
 import { colors } from '@/shared/theme'
-export const MAP_STYLE_URL =
-  'mapbox://styles/bonatoneto/cmoz3l4fa003601qrd130bk09'
+// Fonte única do estilo em shared/theme — os previews informativos (fora
+// desta feature) usam o mesmo tema.
+export { MAP_STYLE_URL } from '@/shared/theme'
 export const BRAZIL_CENTER: [number, number] = [-47.9292, -15.7801]
 export const BRAZIL_ZOOM = 4
 export const USER_ZOOM = 13

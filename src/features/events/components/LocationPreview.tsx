@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import { View, Text } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
 import { Ionicons } from '@expo/vector-icons'
-import { colors } from '@/shared/theme'
+import { colors, MAP_STYLE_URL } from '@/shared/theme'
+import { useMapLightPreset } from '@/shared/hooks/useMapLightPreset'
+import { LocationDropMarker } from './LocationDropMarker'
 
 type Coords = { latitude: number; longitude: number }
 
@@ -10,6 +12,8 @@ type Props = {
   value: Coords | null
   initialCenter?: [number, number]
   hasError?: boolean
+  // Categorias escolhidas no form — definem o emoji no miolo da gota.
+  categories?: string[]
 }
 
 const DEFAULT_CENTER: [number, number] = [-46.6333, -23.5505]
@@ -20,10 +24,12 @@ export function LocationPreview({
   value,
   initialCenter = DEFAULT_CENTER,
   hasError,
+  categories,
 }: Props) {
   const [center, setCenter] = useState<[number, number]>(
     value ? [value.longitude, value.latitude] : initialCenter,
   )
+  const lightPreset = useMapLightPreset()
 
   useEffect(() => {
     if (value) setCenter([value.longitude, value.latitude])
@@ -37,7 +43,7 @@ export function LocationPreview({
       >
         <Mapbox.MapView
           style={{ flex: 1 }}
-          styleURL="mapbox://styles/mapbox/streets-v12"
+          styleURL={MAP_STYLE_URL}
           scaleBarEnabled={false}
           compassEnabled={false}
           scrollEnabled={false}
@@ -45,14 +51,14 @@ export function LocationPreview({
           rotateEnabled={false}
           pitchEnabled={false}
         >
+          <Mapbox.StyleImport id="basemap" existing config={{ lightPreset }} />
           <Mapbox.Camera zoomLevel={13} centerCoordinate={center} />
           {value && (
-            <Mapbox.PointAnnotation
+            <LocationDropMarker
               id="event-location"
               coordinate={[value.longitude, value.latitude]}
-            >
-              <View className="w-8 h-8 rounded-full bg-brand border-2 border-content" />
-            </Mapbox.PointAnnotation>
+              categories={categories}
+            />
           )}
         </Mapbox.MapView>
       </View>

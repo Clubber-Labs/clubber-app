@@ -1,5 +1,5 @@
 import { useCallback, useRef } from 'react'
-import Mapbox from '@rnmapbox/maps'
+import type Mapbox from '@rnmapbox/maps'
 import { MARKERS_ZOOM_THRESHOLD, MAX_ZOOM, MIN_ZOOM } from '../constants'
 
 const FOCUS_ZOOM = MARKERS_ZOOM_THRESHOLD + 1
