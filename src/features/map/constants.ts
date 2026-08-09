@@ -19,6 +19,9 @@ export const VIOLET_400 = colors.brandText
 // não um token do design system.
 // eslint-disable-next-line no-restricted-syntax
 export const LOCATION_BLUE = '#007AFF'
+// Avatar do indicador de posição (dp): diâmetro total e espessura do anel.
+export const USER_AVATAR_SIZE = 40
+export const USER_AVATAR_RING = 3
 
 // Debounce da captura de bbox ao arrastar o mapa (carga por viewport).
 export const BBOX_DEBOUNCE_MS = 300

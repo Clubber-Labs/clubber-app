@@ -23,6 +23,7 @@ import { useMapLightPreset } from '@/shared/hooks/useMapLightPreset'
 import { useBanner } from '@/shared/lib/banner'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { UserLocationLayer } from '@/features/map/components/UserLocationLayer'
+import { UserAvatarIconCapture } from '@/features/map/components/UserAvatarIconCapture'
 import { useMapZoomState } from '@/features/map/hooks/useMapZoomState'
 import { useHeatmap } from '@/features/map/hooks/useHeatmap'
 import { useViewportBbox } from '@/features/map/hooks/useViewportBbox'
@@ -69,6 +70,7 @@ export default function MapScreen() {
   const lightPreset = useMapLightPreset()
 
   const [selectedEvent, setSelectedEvent] = useState<FeedEvent | null>(null)
+  const [avatarIconUri, setAvatarIconUri] = useState<string | null>(null)
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null)
   const [densityVisible, setDensityVisible] = useState(false)
   const [suggestionsOpen, setSuggestionsOpen] = useState(false)
@@ -176,6 +178,12 @@ export default function MapScreen() {
 
   return (
     <View className="flex-1 bg-background">
+      {/* Antes do MapView de propósito: fica coberto pelo mapa (invisível),
+          mas on-screen — condição pra foto carregar e a captura funcionar. */}
+      <UserAvatarIconCapture
+        avatarUrl={profile.data?.avatarUrl}
+        onCaptured={setAvatarIconUri}
+      />
       <Mapbox.MapView
         ref={mapRef}
         style={{ flex: 1 }}
@@ -214,10 +222,7 @@ export default function MapScreen() {
             NUNCA captura toque e fica abaixo dos pins — então nunca bloqueia a
             interação com eles (o MarkerView bloqueava, mesmo com pointerEvents). */}
         {locationStatus === 'ready' && myPos && (
-          <UserLocationLayer
-            coordinate={myPos}
-            avatarUrl={profile.data?.avatarUrl}
-          />
+          <UserLocationLayer coordinate={myPos} avatarIconUri={avatarIconUri} />
         )}
         {/* Mini-balões de spot ANTES dos badges: ambos style layers, a ordem
             de montagem deixa os eventos por cima. MarkerViews (pins e balões
