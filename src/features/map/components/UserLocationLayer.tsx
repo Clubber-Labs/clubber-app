@@ -46,18 +46,22 @@ export function UserLocationLayer({ coordinate, avatarIconUri }: Props) {
   const showAvatar = !!avatarIconUri
   const pulseBase = showAvatar ? USER_AVATAR_SIZE / 2 : DOT_RADIUS
 
+  // Identidade estável: o tick do pulse re-renderiza ~20×/s e um literal novo
+  // furaria o PureComponent do Images, re-registrando o PNG no nativo à toa.
+  const avatarImages = useMemo(
+    () =>
+      avatarIconUri
+        ? { [AVATAR_IMAGE]: { url: avatarIconUri, scale: PixelRatio.get() } }
+        : null,
+    [avatarIconUri],
+  )
+
   return (
     <>
       {/* Registro NATIVO do arquivo (não snapshot de View) — determinístico no
           cold start. O scale devolve o PNG capturado em pixels físicos pro
           tamanho em dp. */}
-      {avatarIconUri && (
-        <Mapbox.Images
-          images={{
-            [AVATAR_IMAGE]: { url: avatarIconUri, scale: PixelRatio.get() },
-          }}
-        />
-      )}
+      {avatarImages && <Mapbox.Images images={avatarImages} />}
 
       <Mapbox.ShapeSource id="user-location-source" shape={shape}>
         <Mapbox.CircleLayer
