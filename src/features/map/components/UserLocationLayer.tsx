@@ -1,23 +1,22 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { View, Image } from 'react-native'
+import { useEffect, useMemo, useState } from 'react'
+import { PixelRatio } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
-import { LOCATION_BLUE } from '../constants'
+import { LOCATION_BLUE, USER_AVATAR_SIZE } from '../constants'
 import { colors } from '@/shared/theme'
 
 type Props = {
   // [longitude, latitude] (convenção Mapbox).
   coordinate: [number, number]
-  avatarUrl?: string | null
+  // PNG local já circular, pré-capturado pelo UserAvatarIconCapture.
+  avatarIconUri?: string | null
 }
 
 const DOT_RADIUS = 7
 const PULSE_MAX = 48
 const PULSE_MS = 2000
-const AVATAR_SIZE = 40
-const RING = 3
 const AVATAR_IMAGE = 'user-location-avatar'
 
-export function UserLocationLayer({ coordinate, avatarUrl }: Props) {
+export function UserLocationLayer({ coordinate, avatarIconUri }: Props) {
   const [lng, lat] = coordinate
   const shape = useMemo<GeoJSON.FeatureCollection>(
     () => ({
@@ -44,54 +43,20 @@ export function UserLocationLayer({ coordinate, avatarUrl }: Props) {
     return () => clearInterval(interval)
   }, [])
 
-  const imageRef = useRef<{ refresh: () => void }>(null)
-  const innerSize = AVATAR_SIZE - RING * 2
-  const [avatarReady, setAvatarReady] = useState(false)
-  useEffect(() => {
-    if (!avatarUrl) {
-      setAvatarReady(false)
-      return
-    }
-    let active = true
-    Image.prefetch(avatarUrl)
-      .then(ok => active && setAvatarReady(ok))
-      .catch(() => active && setAvatarReady(false))
-    return () => {
-      active = false
-    }
-  }, [avatarUrl])
-
-  const showAvatar = !!avatarUrl && avatarReady
-  const pulseBase = showAvatar ? AVATAR_SIZE / 2 : DOT_RADIUS
+  const showAvatar = !!avatarIconUri
+  const pulseBase = showAvatar ? USER_AVATAR_SIZE / 2 : DOT_RADIUS
 
   return (
     <>
-      {showAvatar && (
-        <Mapbox.Images>
-          <Mapbox.Image ref={imageRef} name={AVATAR_IMAGE}>
-            <View
-              style={{
-                width: AVATAR_SIZE,
-                height: AVATAR_SIZE,
-                borderRadius: AVATAR_SIZE / 2,
-                borderWidth: RING,
-                borderColor: colors.content,
-                backgroundColor: colors.content,
-                overflow: 'hidden',
-              }}
-            >
-              <Image
-                source={{ uri: avatarUrl }}
-                style={{
-                  width: innerSize,
-                  height: innerSize,
-                  borderRadius: innerSize / 2,
-                }}
-                onLoad={() => imageRef.current?.refresh()}
-              />
-            </View>
-          </Mapbox.Image>
-        </Mapbox.Images>
+      {/* Registro NATIVO do arquivo (não snapshot de View) — determinístico no
+          cold start. O scale devolve o PNG capturado em pixels físicos pro
+          tamanho em dp. */}
+      {avatarIconUri && (
+        <Mapbox.Images
+          images={{
+            [AVATAR_IMAGE]: { url: avatarIconUri, scale: PixelRatio.get() },
+          }}
+        />
       )}
 
       <Mapbox.ShapeSource id="user-location-source" shape={shape}>
