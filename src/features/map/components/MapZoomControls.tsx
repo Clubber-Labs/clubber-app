@@ -1,5 +1,6 @@
 import { View, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { GlassSurface } from '@/shared/components/GlassSurface'
 import { colors } from '@/shared/theme'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 
@@ -11,6 +12,9 @@ type Props = {
   densityActive: boolean
   onToggleDensity: () => void
 }
+
+// Divisores entre os botões no mesmo hairline da borda do vidro.
+const GLASS_DIVIDER = { borderTopColor: 'rgba(255, 255, 255, 0.13)' }
 
 // Controles do mapa numa pílula única (mapa de calor · zoom · locate) em vez de
 // círculos soltos. Botões de 56px (alinham com o FAB de criar). O calor ativo usa
@@ -27,48 +31,61 @@ export function MapZoomControls({
 
   return (
     <View
-      className="absolute right-4 w-14 overflow-hidden rounded-xl border border-line-strong bg-surface/95"
-      // Acima do FAB de criar (56) + o mesmo respiro visual do layout antigo.
-      style={{ bottom: tabBarClearance + 88 }}
+      className="absolute right-4"
+      // Acima do FAB de criar (56) + o mesmo respiro visual do layout antigo;
+      // sombra idêntica à da tab bar (mesmo sistema de vidro flutuante).
+      style={{
+        bottom: tabBarClearance + 88,
+        shadowColor: 'rgb(0, 0, 0)',
+        shadowOpacity: 0.7,
+        shadowRadius: 16,
+        shadowOffset: { width: 0, height: 8 },
+        elevation: 12,
+      }}
     >
-      <Pressable
-        onPress={onToggleDensity}
-        accessibilityRole="button"
-        accessibilityState={{ selected: densityActive }}
-        accessibilityLabel={
-          densityActive ? 'Ocultar mapa de calor' : 'Mostrar mapa de calor'
-        }
-        className={`h-14 items-center justify-center ${densityActive ? 'bg-brand' : ''}`}
-      >
-        <Ionicons
-          name="flame"
-          size={24}
-          color={densityActive ? colors.content : colors.contentBright}
-        />
-      </Pressable>
-      <Pressable
-        onPress={onZoomIn}
-        accessibilityLabel="Aproximar"
-        className="h-14 items-center justify-center border-t border-line"
-      >
-        <Ionicons name="add" size={26} color={colors.contentBright} />
-      </Pressable>
-      <Pressable
-        onPress={onZoomOut}
-        accessibilityLabel="Afastar"
-        className="h-14 items-center justify-center border-t border-line"
-      >
-        <Ionicons name="remove" size={26} color={colors.contentBright} />
-      </Pressable>
-      {showRecenter && (
+      <GlassSurface style={{ width: 56, borderRadius: 12 }}>
         <Pressable
-          onPress={onRecenter}
-          accessibilityLabel="Centralizar em você"
-          className="h-14 items-center justify-center border-t border-line"
+          onPress={onToggleDensity}
+          accessibilityRole="button"
+          accessibilityState={{ selected: densityActive }}
+          accessibilityLabel={
+            densityActive ? 'Ocultar mapa de calor' : 'Mostrar mapa de calor'
+          }
+          className={`h-14 items-center justify-center ${densityActive ? 'bg-brand' : ''}`}
         >
-          <Ionicons name="locate" size={24} color={colors.brandText} />
+          <Ionicons
+            name="flame"
+            size={24}
+            color={densityActive ? colors.content : colors.contentBright}
+          />
         </Pressable>
-      )}
+        <Pressable
+          onPress={onZoomIn}
+          accessibilityLabel="Aproximar"
+          className="h-14 items-center justify-center border-t"
+          style={GLASS_DIVIDER}
+        >
+          <Ionicons name="add" size={26} color={colors.contentBright} />
+        </Pressable>
+        <Pressable
+          onPress={onZoomOut}
+          accessibilityLabel="Afastar"
+          className="h-14 items-center justify-center border-t"
+          style={GLASS_DIVIDER}
+        >
+          <Ionicons name="remove" size={26} color={colors.contentBright} />
+        </Pressable>
+        {showRecenter && (
+          <Pressable
+            onPress={onRecenter}
+            accessibilityLabel="Centralizar em você"
+            className="h-14 items-center justify-center border-t"
+            style={GLASS_DIVIDER}
+          >
+            <Ionicons name="locate" size={24} color={colors.brandText} />
+          </Pressable>
+        )}
+      </GlassSurface>
     </View>
   )
 }

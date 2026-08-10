@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from 'react-native'
-import { BlurView } from 'expo-blur'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs'
+import { GlassSurface } from '@/shared/components/GlassSurface'
 import { colors } from '@/shared/theme'
 
 export const TAB_BAR_HEIGHT = 64
@@ -30,25 +30,17 @@ export function GlassTabBar({
         right: TAB_BAR_SIDE_MARGIN,
         bottom: insets.bottom + TAB_BAR_BOTTOM_MARGIN,
         shadowColor: 'rgb(0, 0, 0)',
-        shadowOpacity: 0.35,
+        shadowOpacity: 0.7,
         shadowRadius: 16,
         shadowOffset: { width: 0, height: 8 },
         elevation: 12,
       }}
     >
-      <BlurView
-        tint="dark"
-        intensity={60}
-        experimentalBlurMethod="dimezisBlurView"
+      <GlassSurface
         style={{
           height: TAB_BAR_HEIGHT,
           borderRadius: TAB_BAR_HEIGHT / 2,
-          overflow: 'hidden',
           flexDirection: 'row',
-          // Véu neutro por cima do blur — vidro cinza, não preto chapado.
-          backgroundColor: 'rgba(120, 120, 128, 0.13)',
-          borderWidth: 1,
-          borderColor: 'rgba(255, 255, 255, 0.13)',
         }}
       >
         {state.routes.map((route, index) => {
@@ -101,7 +93,7 @@ export function GlassTabBar({
             </Pressable>
           )
         })}
-      </BlurView>
+      </GlassSurface>
     </View>
   )
 }
