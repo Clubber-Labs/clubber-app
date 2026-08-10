@@ -34,11 +34,11 @@ export default function InboxScreen() {
 
       <Pressable
         onPress={goNew}
-        className="absolute right-6 w-14 h-14 rounded-full bg-brand items-center justify-center"
+        className="absolute right-6 w-14 h-14 rounded-full bg-content items-center justify-center"
         style={{ bottom: tabBarClearance }}
         accessibilityLabel="Nova conversa"
       >
-        <Ionicons name="create" size={24} color={colors.content} />
+        <Ionicons name="create" size={24} color={colors.background} />
       </Pressable>
     </View>
   )

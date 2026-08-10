@@ -31,7 +31,7 @@ export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
         onPress={() => setOpen(true)}
         accessibilityRole="button"
         accessibilityLabel="Criar"
-        className="absolute right-4 h-14 w-14 items-center justify-center rounded-full bg-brand"
+        className="absolute right-4 h-14 w-14 items-center justify-center rounded-full bg-content"
         style={{
           bottom: tabBarClearance,
           shadowColor: colors.background,
@@ -41,7 +41,7 @@ export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
           elevation: 6,
         }}
       >
-        <Ionicons name="add" size={28} color={colors.content} />
+        <Ionicons name="add" size={28} color={colors.background} />
       </Pressable>
 
       <SheetModal visible={open} onClose={() => setOpen(false)}>

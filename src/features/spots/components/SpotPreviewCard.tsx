@@ -2,7 +2,8 @@ import { View, Text, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useCategories } from '@/shared/hooks/useCategories'
-import { formatSpotWindow } from '../utils/spotWindow'
+import { formatSpotWindow, isSpotLiveNow } from '../utils/spotWindow'
+import { LivePill } from '@/shared/components/LivePill'
 import { distanceKm, formatDistance } from '@/shared/utils/distance'
 import type { Spot } from '../types'
 import { colors } from '@/shared/theme'
@@ -37,6 +38,7 @@ export function SpotPreviewCard({
   const windowText = [formatSpotWindow(spot.startsAt, spot.endsAt), distance]
     .filter(Boolean)
     .join(' · ')
+  const live = isSpotLiveNow(spot.startsAt, spot.endsAt)
 
   return (
     <View
@@ -80,6 +82,7 @@ export function SpotPreviewCard({
           >
             {spot.title}
           </Text>
+          {live && <LivePill />}
           <View className="flex-row items-center gap-1.5">
             <Ionicons
               name="time-outline"

@@ -8,3 +8,4 @@ export {
   SPECTRUM_END,
 } from './spectrum'
 export { categoryHue, type CategoryHue } from './categoryHues'
+export { METAL } from './metal'
