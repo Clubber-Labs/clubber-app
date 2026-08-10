@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react'
 import { View, Text, TextInput, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  ArrowUUpLeftIcon,
+  CheckIcon,
+  MicrophoneIcon,
+  PaperPlaneTiltIcon,
+  PencilSimpleIcon,
+  PlusCircleIcon,
+  XIcon,
+} from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -84,13 +92,17 @@ export function MessageInputBar({
       {isEditing && (
         <View className="flex-row items-center justify-between px-4 py-1.5 bg-surface-sunken">
           <View className="flex-row items-center gap-2">
-            <Ionicons name="pencil" size={14} color={colors.brandEmphasis} />
+            <PencilSimpleIcon
+              size={14}
+              color={colors.brandEmphasis}
+              weight="fill"
+            />
             <Text className="text-content-tertiary text-sm">
               Editando mensagem
             </Text>
           </View>
           <Pressable onPress={cancelEdit} accessibilityLabel="Cancelar edição">
-            <Ionicons name="close" size={18} color={colors.contentMuted} />
+            <XIcon size={18} color={colors.contentMuted} />
           </Pressable>
         </View>
       )}
@@ -98,11 +110,7 @@ export function MessageInputBar({
       {replyingTo && !isEditing && (
         <View className="flex-row items-center justify-between px-4 py-1.5 bg-surface-sunken">
           <View className="flex-row items-center gap-2 flex-1">
-            <Ionicons
-              name="arrow-undo-outline"
-              size={14}
-              color={colors.brandEmphasis}
-            />
+            <ArrowUUpLeftIcon size={14} color={colors.brandEmphasis} />
             <View className="flex-1">
               <Text
                 className="text-brand-text-strong text-[12px] font-semibold"
@@ -122,7 +130,7 @@ export function MessageInputBar({
             onPress={onCancelReply}
             accessibilityLabel="Cancelar resposta"
           >
-            <Ionicons name="close" size={18} color={colors.contentMuted} />
+            <XIcon size={18} color={colors.contentMuted} />
           </Pressable>
         </View>
       )}
@@ -135,8 +143,7 @@ export function MessageInputBar({
             className="w-10 h-10 items-center justify-center"
             accessibilityLabel="Anexar imagem"
           >
-            <Ionicons
-              name="add-circle-outline"
+            <PlusCircleIcon
               size={26}
               color={disabled ? colors.lineStrong : colors.brandEmphasis}
             />
@@ -169,10 +176,10 @@ export function MessageInputBar({
             className="w-10 h-10 items-center justify-center rounded-full bg-surface-elevated"
             accessibilityLabel="Gravar áudio"
           >
-            <Ionicons
-              name="mic"
+            <MicrophoneIcon
               size={20}
               color={disabled ? colors.contentFaint : colors.brandEmphasis}
+              weight="fill"
             />
           </Pressable>
         ) : (
@@ -182,11 +189,18 @@ export function MessageInputBar({
             className={`w-10 h-10 items-center justify-center rounded-full ${canSend ? 'bg-brand' : 'bg-surface-elevated'}`}
             accessibilityLabel={isEditing ? 'Salvar edição' : 'Enviar mensagem'}
           >
-            <Ionicons
-              name={isEditing ? 'checkmark' : 'send'}
-              size={18}
-              color={canSend ? colors.content : colors.contentFaint}
-            />
+            {isEditing ? (
+              <CheckIcon
+                size={18}
+                color={canSend ? colors.content : colors.contentFaint}
+              />
+            ) : (
+              <PaperPlaneTiltIcon
+                size={18}
+                color={canSend ? colors.content : colors.contentFaint}
+                weight="fill"
+              />
+            )}
           </Pressable>
         )}
       </View>

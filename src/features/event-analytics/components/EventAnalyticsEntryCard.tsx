@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { ChartBarIcon, CaretRightIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { colors } from '@/shared/theme'
 
@@ -24,11 +24,7 @@ export function EventAnalyticsEntryCard({ eventId, isPremium }: Props) {
       className="flex-row items-center gap-3 bg-surface-sunken border border-line rounded-xl px-4 py-3 active:opacity-70"
     >
       <View className="w-10 h-10 rounded-full bg-brand/20 items-center justify-center">
-        <Ionicons
-          name="stats-chart-outline"
-          size={20}
-          color={colors.brandText}
-        />
+        <ChartBarIcon size={20} color={colors.brandText} />
       </View>
       <View className="flex-1">
         <View className="flex-row items-center gap-2">
@@ -49,7 +45,7 @@ export function EventAnalyticsEntryCard({ eventId, isPremium }: Props) {
             : 'Recurso Premium — desbloqueie as estatísticas do evento.'}
         </Text>
       </View>
-      <Ionicons name="chevron-forward" size={18} color={colors.contentSubtle} />
+      <CaretRightIcon size={18} color={colors.contentSubtle} />
     </Pressable>
   )
 }

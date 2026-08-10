@@ -9,7 +9,13 @@ import {
   View,
 } from 'react-native'
 import { Stack } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  LockIcon,
+  ArrowSquareOutIcon,
+  DownloadSimpleIcon,
+  ClockIcon,
+  EnvelopeSimpleIcon,
+} from 'phosphor-react-native'
 import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
 import { useConsent } from '@/features/privacy/hooks/useConsent'
 import {
@@ -131,7 +137,7 @@ export default function PrivacyScreen() {
         <View className="mx-4 mt-4 bg-surface-sunken border border-line rounded-xl overflow-hidden">
           <View className="flex-row items-center justify-between px-4 py-3 border-b border-line">
             <View className="flex-row items-center gap-2">
-              <Ionicons name="lock-closed" size={14} color={colors.brandText} />
+              <LockIcon weight="fill" size={14} color={colors.brandText} />
               <Text className="text-sm font-semibold text-brand-text">
                 Dados essenciais
               </Text>
@@ -196,11 +202,7 @@ export default function PrivacyScreen() {
                 02/06/2026
               </Text>
             </View>
-            <Ionicons
-              name="open-outline"
-              size={16}
-              color={colors.contentSubtle}
-            />
+            <ArrowSquareOutIcon size={16} color={colors.contentSubtle} />
           </Pressable>
 
           <Pressable
@@ -222,11 +224,7 @@ export default function PrivacyScreen() {
             {exporting ? (
               <ActivityIndicator size="small" color={colors.brandText} />
             ) : (
-              <Ionicons
-                name="download-outline"
-                size={16}
-                color={colors.contentSubtle}
-              />
+              <DownloadSimpleIcon size={16} color={colors.contentSubtle} />
             )}
           </Pressable>
 
@@ -242,11 +240,7 @@ export default function PrivacyScreen() {
                 Registro de alterações de privacidade (Art. 18, I)
               </Text>
             </View>
-            <Ionicons
-              name="time-outline"
-              size={16}
-              color={colors.contentSubtle}
-            />
+            <ClockIcon size={16} color={colors.contentSubtle} />
           </Pressable>
 
           <Pressable
@@ -261,11 +255,7 @@ export default function PrivacyScreen() {
                 privacidade@clubber.app
               </Text>
             </View>
-            <Ionicons
-              name="mail-outline"
-              size={16}
-              color={colors.contentSubtle}
-            />
+            <EnvelopeSimpleIcon size={16} color={colors.contentSubtle} />
           </Pressable>
 
           <Pressable

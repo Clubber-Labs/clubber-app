@@ -1,5 +1,5 @@
 import { Pressable, View, Text } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { CheckCircleIcon, CircleIcon } from 'phosphor-react-native'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import type { UserMini } from '@/shared/types'
 import { colors } from '@/shared/theme'
@@ -24,11 +24,11 @@ export function UserPickRow({ user, selected, onToggle }: Props) {
         </Text>
         <Text className="text-content-subtle text-sm">@{user.username}</Text>
       </View>
-      <Ionicons
-        name={selected ? 'checkmark-circle' : 'ellipse-outline'}
-        size={24}
-        color={selected ? colors.brandEmphasis : colors.contentFaint}
-      />
+      {selected ? (
+        <CheckCircleIcon size={24} color={colors.brandEmphasis} weight="fill" />
+      ) : (
+        <CircleIcon size={24} color={colors.contentFaint} />
+      )}
     </Pressable>
   )
 }

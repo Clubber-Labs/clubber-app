@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { ShieldCheckIcon } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { SpotSheetState } from './SpotSheetState'
 
@@ -13,7 +14,7 @@ type Props = {
 export function SpotConsentNeeded({ onOpenPrivacy }: Props) {
   return (
     <SpotSheetState
-      icon="shield-checkmark-outline"
+      icon={ShieldCheckIcon}
       title="Precisamos da sua localização"
       description="Pra sugerir rolês perto de você. Usada só agora — nada de rastreamento em segundo plano."
     >

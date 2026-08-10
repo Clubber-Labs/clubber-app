@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { UsersIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { useBanner } from '@/shared/lib/banner'
 import { getApiError, isForbiddenError } from '@/shared/lib/apiError'
@@ -53,7 +53,7 @@ export default function NewConversationScreen() {
             accessibilityLabel="Criar novo grupo"
           >
             <View className="w-11 h-11 rounded-full bg-brand items-center justify-center">
-              <Ionicons name="people" size={22} color={colors.content} />
+              <UsersIcon size={22} color={colors.content} weight="fill" />
             </View>
             <Text className="text-brand-text font-semibold text-base">
               Novo grupo

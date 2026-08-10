@@ -1,12 +1,9 @@
 import { Pressable, View, Text, ActivityIndicator } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
-import type { ComponentProps } from 'react'
+import { CaretRightIcon, type Icon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
-type IconName = ComponentProps<typeof Ionicons>['name']
-
 type Props = {
-  icon: IconName
+  icon: Icon
   label: string
   sublabel?: string
   onPress: () => void
@@ -20,7 +17,7 @@ type Props = {
 // Compõe a lista de gerência do rolê (dono). Sem borda própria — quem agrupa
 // (SpotOwnerActions) cuida do card e dos divisores.
 export function SpotActionRow({
-  icon,
+  icon: Icon,
   label,
   sublabel,
   onPress,
@@ -39,8 +36,7 @@ export function SpotActionRow({
           destructive ? 'bg-danger/10' : 'bg-surface-elevated'
         }`}
       >
-        <Ionicons
-          name={icon}
+        <Icon
           size={18}
           color={destructive ? colors.dangerText : colors.contentSecondary}
         />
@@ -60,11 +56,7 @@ export function SpotActionRow({
       {loading ? (
         <ActivityIndicator size="small" color={colors.contentMuted} />
       ) : (
-        <Ionicons
-          name="chevron-forward"
-          size={16}
-          color={colors.contentFaint}
-        />
+        <CaretRightIcon size={16} color={colors.contentFaint} />
       )}
     </Pressable>
   )

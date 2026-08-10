@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { PaperPlaneTiltIcon, TrashIcon } from 'phosphor-react-native'
 import { meterToAmplitude } from '@/shared/utils/waveform'
 import { formatDuration } from '@/shared/utils/formatDuration'
 import { Waveform } from './Waveform'
@@ -75,7 +75,7 @@ export function AudioRecorderBar({ onSend, onCancel }: Props) {
           className="w-10 h-10 items-center justify-center"
           accessibilityLabel="Cancelar gravação"
         >
-          <Ionicons name="trash-outline" size={22} color={colors.danger} />
+          <TrashIcon size={22} color={colors.danger} />
         </Pressable>
 
         <View className="flex-1 flex-row items-center gap-2 bg-surface rounded-2xl px-3 h-10">
@@ -98,7 +98,7 @@ export function AudioRecorderBar({ onSend, onCancel }: Props) {
           className="w-10 h-10 items-center justify-center rounded-full bg-brand"
           accessibilityLabel="Enviar áudio"
         >
-          <Ionicons name="send" size={18} color={colors.content} />
+          <PaperPlaneTiltIcon size={18} color={colors.content} weight="fill" />
         </Pressable>
       </View>
     </View>

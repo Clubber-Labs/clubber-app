@@ -1,12 +1,10 @@
 import { View, Text } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
-import type { ComponentProps, ReactNode } from 'react'
+import type { Icon } from 'phosphor-react-native'
+import type { ReactNode } from 'react'
 import { colors } from '@/shared/theme'
 
-type IconName = ComponentProps<typeof Ionicons>['name']
-
 type Props = {
-  icon: IconName
+  icon: Icon
   // brand = violeta (info/ação); warning = âmbar (limite/atenção).
   tone?: 'brand' | 'warning'
   title: string
@@ -18,7 +16,7 @@ type Props = {
 // tile, título e texto centrados, e as ações específicas como children. Mantém
 // os três caminhos infelizes com a mesma linguagem visual.
 export function SpotSheetState({
-  icon,
+  icon: Icon,
   tone = 'brand',
   title,
   description,
@@ -35,7 +33,7 @@ export function SpotSheetState({
       <View
         className={`w-16 h-16 rounded-2xl border items-center justify-center ${tile}`}
       >
-        <Ionicons name={icon} size={28} color={iconColor} />
+        <Icon size={28} color={iconColor} />
       </View>
       <Text className="text-content text-lg font-bold text-center">
         {title}

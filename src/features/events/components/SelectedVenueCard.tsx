@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { BuildingsIcon, XCircleIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -12,7 +12,7 @@ export function SelectedVenueCard({ venueName, address, onClear }: Props) {
   return (
     <View className="flex-row items-center gap-3 border border-line bg-surface rounded-xl px-4 py-3">
       <View className="h-9 w-9 items-center justify-center rounded-lg bg-surface-elevated">
-        <Ionicons name="business" size={18} color={colors.brandText} />
+        <BuildingsIcon size={18} color={colors.brandText} weight="fill" />
       </View>
       <View className="flex-1">
         <Text className="text-sm font-bold text-content" numberOfLines={1}>
@@ -29,7 +29,7 @@ export function SelectedVenueCard({ venueName, address, onClear }: Props) {
         accessibilityLabel="Remover estabelecimento"
         hitSlop={8}
       >
-        <Ionicons name="close-circle" size={22} color={colors.contentSubtle} />
+        <XCircleIcon size={22} color={colors.contentSubtle} weight="fill" />
       </Pressable>
     </View>
   )

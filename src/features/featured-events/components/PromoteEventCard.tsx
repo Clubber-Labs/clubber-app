@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { StarIcon, CaretRightIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { DatePicker } from '@/shared/components/DatePicker'
 import { Button } from '@/shared/components/Button'
@@ -101,7 +101,7 @@ export function PromoteEventCard({
       <View className="bg-surface-sunken border border-brand-emphasis/30 rounded-xl px-4 py-4 gap-3">
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-2">
-            <Ionicons name="star" size={18} color={colors.brandText} />
+            <StarIcon size={18} color={colors.brandText} weight="fill" />
             <Text className="text-content font-semibold text-base">
               {featuredEvent.kind === 'active'
                 ? 'Em promoção'
@@ -143,7 +143,7 @@ export function PromoteEventCard({
     return (
       <View className="bg-surface-sunken border border-brand-emphasis/30 rounded-xl px-4 py-4 gap-2">
         <View className="flex-row items-center gap-2">
-          <Ionicons name="star" size={18} color={colors.brandText} />
+          <StarIcon size={18} color={colors.brandText} weight="fill" />
           <Text className="text-content font-semibold text-base">
             Evento em promoção
           </Text>
@@ -167,7 +167,7 @@ export function PromoteEventCard({
         className="flex-row items-center gap-3 bg-surface-sunken border border-line rounded-xl px-4 py-3 active:opacity-70"
       >
         <View className="w-10 h-10 rounded-full bg-brand/20 items-center justify-center">
-          <Ionicons name="star-outline" size={20} color={colors.brandText} />
+          <StarIcon size={20} color={colors.brandText} />
         </View>
         <View className="flex-1">
           <View className="flex-row items-center gap-2">
@@ -184,11 +184,7 @@ export function PromoteEventCard({
             Destaque o evento para mais pessoas no feed e no mapa.
           </Text>
         </View>
-        <Ionicons
-          name="chevron-forward"
-          size={18}
-          color={colors.contentSubtle}
-        />
+        <CaretRightIcon size={18} color={colors.contentSubtle} />
       </Pressable>
     )
   }
@@ -211,7 +207,7 @@ export function PromoteEventCard({
     <View className="bg-surface-sunken border border-line rounded-xl px-4 py-4 gap-4">
       <View className="gap-1">
         <View className="flex-row items-center gap-2">
-          <Ionicons name="star-outline" size={18} color={colors.brandText} />
+          <StarIcon size={18} color={colors.brandText} />
           <Text className="text-content font-semibold text-base">
             Promover evento
           </Text>

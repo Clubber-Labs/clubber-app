@@ -1,5 +1,5 @@
 import { ScrollView, Pressable, Text } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { XCircleIcon } from 'phosphor-react-native'
 import type { UserMini } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
@@ -29,7 +29,7 @@ export function SelectedUserChips({ users, onRemove }: Props) {
           accessibilityLabel={`Remover ${user.name}`}
         >
           <Text className="text-brand-text-bright text-sm">{user.name}</Text>
-          <Ionicons name="close-circle" size={16} color={colors.brandText} />
+          <XCircleIcon size={16} color={colors.brandText} />
         </Pressable>
       ))}
     </ScrollView>

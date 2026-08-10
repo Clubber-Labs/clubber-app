@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { ArrowLeftIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { useSubscription } from '@/features/billing/hooks/useSubscription'
 import { useCancelSubscription } from '@/features/billing/hooks/useCancelSubscription'
@@ -54,7 +54,7 @@ export default function ManageSubscriptionScreen() {
     >
       <View className="flex-row items-center gap-3 mb-6">
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Ionicons name="arrow-back" size={24} color={colors.content} />
+          <ArrowLeftIcon size={24} color={colors.content} />
         </Pressable>
         <Text className="text-content font-bold text-xl">Assinatura</Text>
       </View>

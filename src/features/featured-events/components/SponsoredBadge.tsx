@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { StarIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
 // Selo de evento promovido. Cantos do sistema (rounded-md) e acento da marca,
@@ -7,7 +7,7 @@ import { colors } from '@/shared/theme'
 export function SponsoredBadge() {
   return (
     <View className="flex-row items-center gap-1 rounded-md border border-brand-emphasis/40 bg-brand/20 px-2 py-1">
-      <Ionicons name="star" size={11} color={colors.brandText} />
+      <StarIcon size={11} color={colors.brandText} weight="fill" />
       <Text className="text-brand-text text-[11px] font-semibold">
         Patrocinado
       </Text>

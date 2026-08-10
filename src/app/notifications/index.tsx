@@ -7,7 +7,7 @@ import {
   RefreshControl,
 } from 'react-native'
 import { useRouter } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
+import { CaretLeftIcon, GearIcon } from 'phosphor-react-native'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import { useNotifications } from '@/features/notifications/hooks/useNotifications'
 import { useUnreadCount } from '@/features/notifications/hooks/useUnreadCount'
@@ -47,11 +47,7 @@ export default function NotificationsScreen() {
             className="w-9 h-9 items-center justify-center"
             accessibilityLabel="Voltar"
           >
-            <Ionicons
-              name="chevron-back"
-              size={26}
-              color={colors.contentBright}
-            />
+            <CaretLeftIcon size={26} color={colors.contentBright} />
           </Pressable>
           <Text className="text-content text-xl font-extrabold">
             Notificações
@@ -73,11 +69,7 @@ export default function NotificationsScreen() {
             className="w-9 h-9 items-center justify-center"
             accessibilityLabel="Configurações de notificações"
           >
-            <Ionicons
-              name="settings-outline"
-              size={20}
-              color={colors.contentSecondary}
-            />
+            <GearIcon size={20} color={colors.contentSecondary} />
           </Pressable>
         </View>
       </View>

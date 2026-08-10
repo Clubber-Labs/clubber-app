@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { CheckCircleIcon } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { colors } from '@/shared/theme'
@@ -20,7 +20,7 @@ export function StepSuccess({
   return (
     <View className="gap-6 items-center pt-4">
       <View className="w-16 h-16 rounded-full bg-success-strong/20 items-center justify-center">
-        <Ionicons name="checkmark-circle" size={48} color={colors.success} />
+        <CheckCircleIcon size={48} color={colors.success} weight="fill" />
       </View>
 
       <View className="gap-1">

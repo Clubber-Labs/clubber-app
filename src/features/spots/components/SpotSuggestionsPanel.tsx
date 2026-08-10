@@ -9,7 +9,11 @@ import {
   Pressable,
   useWindowDimensions,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  CaretLeftIcon,
+  ArrowsClockwiseIcon,
+  XIcon,
+} from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
@@ -323,11 +327,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
                 accessibilityLabel="Voltar para as sugestões"
                 hitSlop={8}
               >
-                <Ionicons
-                  name="chevron-back"
-                  size={22}
-                  color={colors.content}
-                />
+                <CaretLeftIcon size={22} color={colors.content} />
               </Pressable>
             )}
             <Text className="text-content text-lg font-bold">
@@ -345,7 +345,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
                 accessibilityLabel="Gerar de novo"
                 hitSlop={8}
               >
-                <Ionicons name="refresh" size={16} color={colors.brandText} />
+                <ArrowsClockwiseIcon size={16} color={colors.brandText} />
                 <Text className="text-brand-text text-sm font-semibold">
                   Gerar de novo
                 </Text>
@@ -356,7 +356,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
               className="w-8 h-8 items-center justify-center"
               accessibilityLabel="Fechar sugestões"
             >
-              <Ionicons name="close" size={22} color={colors.contentMuted} />
+              <XIcon size={22} color={colors.contentMuted} />
             </Pressable>
           </View>
         </View>

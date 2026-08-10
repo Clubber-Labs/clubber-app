@@ -1,5 +1,5 @@
 import { View, Text, Pressable, ActivityIndicator } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { DownloadSimpleIcon } from 'phosphor-react-native'
 import { useExportEventAnalytics } from '../hooks/useExportEventAnalytics'
 import { colors } from '@/shared/theme'
 
@@ -23,11 +23,7 @@ export function AnalyticsExportButton({ eventId }: Props) {
         {exporting ? (
           <ActivityIndicator size="small" color={colors.lineStrong} />
         ) : (
-          <Ionicons
-            name="download-outline"
-            size={18}
-            color={colors.contentSecondary}
-          />
+          <DownloadSimpleIcon size={18} color={colors.contentSecondary} />
         )}
         <Text className="text-content-secondary font-semibold text-base">
           Exportar CSV

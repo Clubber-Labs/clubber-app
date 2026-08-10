@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { LockIcon } from 'phosphor-react-native'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { FollowButton } from './FollowButton'
 import { useFollowUser } from '../hooks/useFollowUser'
@@ -41,13 +41,7 @@ export function UserSearchCard({ user }: Props) {
             >
               {fullName}
             </Text>
-            {showLock && (
-              <Ionicons
-                name="lock-closed"
-                size={12}
-                color={colors.contentMuted}
-              />
-            )}
+            {showLock && <LockIcon size={12} color={colors.contentMuted} />}
           </View>
           <Text className="text-content-subtle text-xs" numberOfLines={1}>
             @{user.username}

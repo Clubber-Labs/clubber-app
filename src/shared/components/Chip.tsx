@@ -1,5 +1,5 @@
 import { Pressable, Text } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { CheckIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -40,11 +40,7 @@ export function Chip({
       }
     >
       {active && (
-        <Ionicons
-          name="checkmark"
-          size={14}
-          color={hue ? hue.text : colors.content}
-        />
+        <CheckIcon size={14} color={hue ? hue.text : colors.content} />
       )}
       <Text
         className={`text-[13px] font-semibold ${

@@ -6,7 +6,11 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  CaretLeftIcon,
+  CameraIcon,
+  CaretRightIcon,
+} from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { useMyProfile, useUploadAvatar } from '../../hooks/useProfile'
 import { usePickAvatar } from '../../hooks/usePickAvatar'
@@ -43,11 +47,7 @@ export function EditProfileHub() {
           className="w-9 h-9 rounded-full bg-surface-elevated items-center justify-center"
           accessibilityLabel="Voltar"
         >
-          <Ionicons
-            name="chevron-back"
-            size={22}
-            color={colors.contentSecondary}
-          />
+          <CaretLeftIcon size={22} color={colors.contentSecondary} />
         </Pressable>
         <Text className="flex-1 text-content text-lg font-extrabold">
           Editar perfil
@@ -84,7 +84,7 @@ export function EditProfileHub() {
               )}
             </View>
             <View className="absolute right-[-2px] bottom-[-2px] w-8 h-8 rounded-full bg-brand border-[3px] border-background items-center justify-center">
-              <Ionicons name="camera" size={15} color={colors.content} />
+              <CameraIcon size={15} color={colors.content} />
             </View>
           </Pressable>
           <Pressable
@@ -216,7 +216,7 @@ function Row({
       >
         {empty ? (placeholder ?? '') : value}
       </Text>
-      <Ionicons name="chevron-forward" size={18} color={colors.contentFaint} />
+      <CaretRightIcon size={18} color={colors.contentFaint} />
     </Pressable>
   )
 }

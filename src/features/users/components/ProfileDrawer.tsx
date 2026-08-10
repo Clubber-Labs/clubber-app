@@ -8,18 +8,15 @@ import {
   View,
 } from 'react-native'
 import { useFocusEffect } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
-import type { ComponentProps } from 'react'
+import type { Icon } from 'phosphor-react-native'
 import { useProfileDrawer } from '../store/profileDrawerStore'
 import { GlassSurface } from '@/shared/components/GlassSurface'
 import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 import { colors } from '@/shared/theme'
 
-type IconName = ComponentProps<typeof Ionicons>['name']
-
 export type DrawerItem = {
   label: string
-  icon: IconName
+  icon: Icon
   badge?: string | number
   onPress: () => void
 }
@@ -146,14 +143,8 @@ export function ProfileDrawer({ items, header }: Props) {
                 style={i > 0 ? GLASS_DIVIDER : undefined}
               >
                 <View className="flex-row items-center gap-3">
-                  <Ionicons
-                    name={item.icon}
-                    size={20}
-                    color={colors.contentSecondary}
-                  />
-                  <Text
-                    className="text-base font-medium text-content"
-                  >
+                  <item.icon size={20} color={colors.contentSecondary} />
+                  <Text className="text-base font-medium text-content">
                     {item.label}
                   </Text>
                 </View>

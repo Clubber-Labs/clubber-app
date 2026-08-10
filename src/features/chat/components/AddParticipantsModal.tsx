@@ -8,7 +8,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { MagnifyingGlassIcon, XIcon } from 'phosphor-react-native'
 import { useChatUserSearch } from '../hooks/useChatUserSearch'
 import { UserPickRow } from './UserPickRow'
 import type { UserMini } from '@/shared/types'
@@ -48,7 +48,7 @@ export function AddParticipantsModal({
             className="w-9 h-9 items-center justify-center"
             accessibilityLabel="Fechar"
           >
-            <Ionicons name="close" size={24} color={colors.contentSecondary} />
+            <XIcon size={24} color={colors.contentSecondary} />
           </Pressable>
           <Text className="text-content font-semibold text-lg">
             Adicionar pessoas
@@ -57,7 +57,7 @@ export function AddParticipantsModal({
 
         <View className="px-4 py-3">
           <View className="flex-row items-center gap-2 bg-surface rounded-xl px-3">
-            <Ionicons name="search" size={18} color={colors.contentSubtle} />
+            <MagnifyingGlassIcon size={18} color={colors.contentSubtle} />
             <TextInput
               value={query}
               onChangeText={setQuery}

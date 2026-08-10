@@ -1,5 +1,5 @@
 import { Pressable, Share } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { ShareNetworkIcon } from 'phosphor-react-native'
 import * as Linking from 'expo-linking'
 import { colors } from '@/shared/theme'
 
@@ -35,7 +35,7 @@ export function EventShareButton({ eventId, title, onShared }: Props) {
       accessibilityLabel="Compartilhar evento"
       className="w-10 h-10 items-center justify-center rounded-full bg-background/50"
     >
-      <Ionicons name="share-outline" size={20} color={colors.content} />
+      <ShareNetworkIcon size={20} color={colors.content} />
     </Pressable>
   )
 }

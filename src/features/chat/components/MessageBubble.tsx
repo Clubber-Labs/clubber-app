@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { WarningCircleIcon, ArrowUUpLeftIcon } from 'phosphor-react-native'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { SwipeableRow } from '@/shared/components/SwipeableRow'
 import { SenderLabel } from './SenderLabel'
@@ -166,7 +166,7 @@ export function MessageBubble({
           className="flex-row items-center gap-1 self-end mt-0.5"
           accessibilityLabel="Reenviar mensagem"
         >
-          <Ionicons name="alert-circle" size={12} color={colors.danger} />
+          <WarningCircleIcon size={12} color={colors.danger} weight="fill" />
           <Text className="text-[11px] text-danger">
             Falhou · Tentar de novo
           </Text>
@@ -228,10 +228,10 @@ export function MessageBubble({
   return (
     <SwipeableRow
       rightTrigger={
-        isMine ? { icon: 'arrow-undo-outline', onTrigger: onReply } : undefined
+        isMine ? { icon: ArrowUUpLeftIcon, onTrigger: onReply } : undefined
       }
       leftTrigger={
-        isMine ? undefined : { icon: 'arrow-undo-outline', onTrigger: onReply }
+        isMine ? undefined : { icon: ArrowUUpLeftIcon, onTrigger: onReply }
       }
     >
       {content}

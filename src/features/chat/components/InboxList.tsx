@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { TrashIcon } from 'phosphor-react-native'
 import {
   FlatList,
   View,
@@ -88,7 +89,11 @@ export function InboxList({ myId, onOpen, onNew }: Props) {
       renderItem={({ item }) => (
         <SwipeableRow
           rightActions={[
-            { icon: 'trash', label: 'Apagar', onPress: () => askDelete(item) },
+            {
+              icon: TrashIcon,
+              label: 'Apagar',
+              onPress: () => askDelete(item),
+            },
           ]}
         >
           <ConversationRow

@@ -1,5 +1,6 @@
 import { ScrollView, View, Text } from 'react-native'
 import { useRouter } from 'expo-router'
+import { PauseCircleIcon, TrashIcon } from 'phosphor-react-native'
 import { SettingsRow } from '@/shared/components/SettingsRow'
 
 export default function AccountControlScreen() {
@@ -24,13 +25,13 @@ export default function AccountControlScreen() {
         <SettingsRow
           label="Desativar conta"
           description="Oculta seu perfil; você volta quando quiser"
-          icon="pause-circle-outline"
+          icon={PauseCircleIcon}
           onPress={() => router.push('/settings/account/deactivate')}
         />
         <SettingsRow
           label="Excluir conta"
           description="Agenda a remoção definitiva (30 dias para cancelar)"
-          icon="trash-outline"
+          icon={TrashIcon}
           destructive
           onPress={() => router.push('/settings/account/delete')}
         />

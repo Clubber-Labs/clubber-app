@@ -5,7 +5,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { ClockIcon, CrownIcon, XIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { useActivationFlow } from '@/features/billing/hooks/useActivationFlow'
 import { usePlan } from '@/features/billing/hooks/usePlan'
@@ -29,7 +29,7 @@ export default function UpgradeScreen() {
   if (phase === 'stalled') {
     return (
       <View className="flex-1 bg-background items-center justify-center gap-5 px-8">
-        <Ionicons name="time-outline" size={44} color={colors.brandText} />
+        <ClockIcon size={44} color={colors.brandText} />
         <Text className="text-content font-semibold text-lg text-center">
           A confirmação está demorando
         </Text>
@@ -74,7 +74,7 @@ export default function UpgradeScreen() {
     >
       <View className="flex-row items-center justify-between mb-6">
         <Pressable onPress={() => router.back()} hitSlop={12}>
-          <Ionicons name="close" size={26} color={colors.content} />
+          <XIcon size={26} color={colors.content} />
         </Pressable>
       </View>
 
@@ -84,7 +84,7 @@ export default function UpgradeScreen() {
         <View className="w-28 h-28 rounded-full bg-brand/10 items-center justify-center mb-5">
           <View className="w-20 h-20 rounded-full bg-brand/20 items-center justify-center">
             <View className="w-14 h-14 rounded-2xl bg-brand items-center justify-center">
-              <Ionicons name="diamond" size={30} color={colors.content} />
+              <CrownIcon size={30} color={colors.content} weight="fill" />
             </View>
           </View>
         </View>

@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { SparkleIcon } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { SpotSheetState } from './SpotSheetState'
 
@@ -24,7 +25,7 @@ export function SpotEmptyResults({
 
   return (
     <SpotSheetState
-      icon="sparkles-outline"
+      icon={SparkleIcon}
       title="Nada à altura por aqui"
       description="A IA não achou bons lugares nessa busca. Tente aumentar o raio ou descrever melhor o que você quer."
     >

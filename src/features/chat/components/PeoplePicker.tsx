@@ -7,7 +7,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { MagnifyingGlassIcon } from 'phosphor-react-native'
 import { useChatUserSearch } from '../hooks/useChatUserSearch'
 import { useChatSuggestions } from '../hooks/useChatSuggestions'
 import type { UserMini } from '@/shared/types'
@@ -44,7 +44,7 @@ export function PeoplePicker({ myId, renderItem, belowSearch }: Props) {
     <>
       <View className="px-4 py-3">
         <View className="flex-row items-center gap-2 bg-surface rounded-xl px-3">
-          <Ionicons name="search" size={18} color={colors.contentSubtle} />
+          <MagnifyingGlassIcon size={18} color={colors.contentSubtle} />
           <TextInput
             value={query}
             onChangeText={setQuery}

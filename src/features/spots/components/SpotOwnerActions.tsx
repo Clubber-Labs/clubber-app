@@ -1,5 +1,10 @@
 import { View, Text } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  ClockIcon,
+  ArrowsClockwiseIcon,
+  PencilSimpleIcon,
+  TrashIcon,
+} from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { SpotActionRow } from './SpotActionRow'
@@ -37,8 +42,7 @@ export function SpotOwnerActions({
       {highlightRenew && (
         <View className="gap-2">
           <View className="flex-row items-start gap-2 bg-brand-surface border border-brand-surface-strong rounded-xl px-3 py-2.5">
-            <Ionicons
-              name="time-outline"
+            <ClockIcon
               size={16}
               color={colors.brandText}
               style={{ marginTop: 1 }}
@@ -49,7 +53,7 @@ export function SpotOwnerActions({
           </View>
           <Button
             label="Renovar por +24h"
-            icon="refresh"
+            icon={ArrowsClockwiseIcon}
             onPress={onRenew}
             loading={renewing}
           />
@@ -61,7 +65,7 @@ export function SpotOwnerActions({
         {!highlightRenew && (
           <>
             <SpotActionRow
-              icon="refresh"
+              icon={ArrowsClockwiseIcon}
               label="Renovar por +24h"
               sublabel="mantém o rolê no mapa"
               onPress={onRenew}
@@ -71,14 +75,14 @@ export function SpotOwnerActions({
           </>
         )}
         <SpotActionRow
-          icon="create-outline"
+          icon={PencilSimpleIcon}
           label="Editar rolê"
           sublabel="título e descrição"
           onPress={onEdit}
         />
         <View className="h-px bg-line mx-4" />
         <SpotActionRow
-          icon="trash-outline"
+          icon={TrashIcon}
           label="Cancelar rolê"
           sublabel="sai do mapa pra todos"
           onPress={onCancel}

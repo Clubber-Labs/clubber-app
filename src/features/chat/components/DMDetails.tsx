@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { ProhibitIcon, UserIcon } from 'phosphor-react-native'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useBanner } from '@/shared/lib/banner'
@@ -60,11 +60,7 @@ export function DMDetails({ conversation, myId, onViewProfile }: Props) {
         onPress={() => onViewProfile(other.id)}
         className="flex-row items-center gap-3 py-3.5 border-t border-line-subtle"
       >
-        <Ionicons
-          name="person-outline"
-          size={22}
-          color={colors.contentSecondary}
-        />
+        <UserIcon size={22} color={colors.contentSecondary} />
         <Text className="text-content-bright text-base">Ver perfil</Text>
       </Pressable>
 
@@ -72,7 +68,7 @@ export function DMDetails({ conversation, myId, onViewProfile }: Props) {
         onPress={toggleBlock}
         className="flex-row items-center gap-3 py-3.5 border-t border-line-subtle"
       >
-        <Ionicons name="ban-outline" size={22} color={colors.danger} />
+        <ProhibitIcon size={22} color={colors.danger} />
         <Text className="text-danger text-base">
           {isBlocked ? 'Desbloquear usuário' : 'Bloquear usuário'}
         </Text>

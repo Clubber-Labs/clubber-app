@@ -1,6 +1,6 @@
 import { forwardRef } from 'react'
 import { View, TextInput, Pressable, ActivityIndicator } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { MagnifyingGlassIcon, XCircleIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -21,7 +21,7 @@ export const UserSearchInput = forwardRef<TextInput, Props>(
       <View className="px-4 pt-3 pb-2">
         <View className="relative">
           <View className="absolute left-3 top-0 bottom-0 justify-center">
-            <Ionicons name="search" size={18} color={colors.contentSubtle} />
+            <MagnifyingGlassIcon size={18} color={colors.contentSubtle} />
           </View>
           <TextInput
             ref={ref}
@@ -43,11 +43,7 @@ export const UserSearchInput = forwardRef<TextInput, Props>(
                 hitSlop={10}
                 accessibilityLabel="Limpar busca"
               >
-                <Ionicons
-                  name="close-circle"
-                  size={20}
-                  color={colors.contentSubtle}
-                />
+                <XCircleIcon size={20} color={colors.contentSubtle} />
               </Pressable>
             ) : null}
           </View>

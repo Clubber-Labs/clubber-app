@@ -1,5 +1,5 @@
 import { View, Text, TextInput } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { ShieldCheckIcon } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { colors } from '@/shared/theme'
@@ -56,11 +56,7 @@ export function DeleteReauthStep({
         </View>
       ) : (
         <View className="flex-row items-center gap-2 bg-surface-sunken border border-line rounded-xl px-4 py-3">
-          <Ionicons
-            name="shield-checkmark-outline"
-            size={18}
-            color={colors.brandText}
-          />
+          <ShieldCheckIcon size={18} color={colors.brandText} />
           <Text className="text-content-muted text-sm flex-1">
             Nenhuma senha necessária para esta conta.
           </Text>

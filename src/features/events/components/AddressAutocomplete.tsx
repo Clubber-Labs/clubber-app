@@ -6,7 +6,11 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  MagnifyingGlassIcon,
+  BuildingsIcon,
+  MapPinIcon,
+} from 'phosphor-react-native'
 import { useAddressSearch } from '../hooks/useAddressSearch'
 import type { GeocodingResult } from '../services/geocodingService'
 import { colors } from '@/shared/theme'
@@ -60,40 +64,44 @@ export function AddressAutocomplete({
           {isFetching ? (
             <ActivityIndicator size="small" color={colors.brandEmphasis} />
           ) : (
-            <Ionicons name="search" size={18} color={colors.contentSubtle} />
+            <MagnifyingGlassIcon size={18} color={colors.contentSubtle} />
           )}
         </View>
       </View>
 
       {showSuggestions && (
         <View className="bg-surface border border-line rounded-xl overflow-hidden">
-          {results.map((result, index) => (
-            <Pressable
-              key={result.id}
-              onPress={() => handleSelect(result)}
-              className={`px-4 py-3 ${index > 0 ? 'border-t border-line' : ''}`}
-            >
-              <View className="flex-row items-start gap-2">
-                <Ionicons
-                  name={result.isPoi ? 'business-outline' : 'location-outline'}
-                  size={16}
-                  color={result.isPoi ? colors.brandText : colors.contentMuted}
-                  style={{ marginTop: 2 }}
-                />
-                <View className="flex-1">
-                  <Text className="text-sm text-content font-medium">
-                    {result.shortName}
-                  </Text>
-                  <Text
-                    className="text-xs text-content-muted"
-                    numberOfLines={1}
-                  >
-                    {result.placeName}
-                  </Text>
+          {results.map((result, index) => {
+            const LocationIcon = result.isPoi ? BuildingsIcon : MapPinIcon
+            return (
+              <Pressable
+                key={result.id}
+                onPress={() => handleSelect(result)}
+                className={`px-4 py-3 ${index > 0 ? 'border-t border-line' : ''}`}
+              >
+                <View className="flex-row items-start gap-2">
+                  <LocationIcon
+                    size={16}
+                    color={
+                      result.isPoi ? colors.brandText : colors.contentMuted
+                    }
+                    style={{ marginTop: 2 }}
+                  />
+                  <View className="flex-1">
+                    <Text className="text-sm text-content font-medium">
+                      {result.shortName}
+                    </Text>
+                    <Text
+                      className="text-xs text-content-muted"
+                      numberOfLines={1}
+                    >
+                      {result.placeName}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            </Pressable>
-          ))}
+              </Pressable>
+            )
+          })}
         </View>
       )}
     </View>

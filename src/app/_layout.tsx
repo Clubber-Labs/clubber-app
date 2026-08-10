@@ -9,8 +9,6 @@ import { StatusBar } from 'expo-status-bar'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { StripeProvider } from '@stripe/stripe-react-native'
 import Constants from 'expo-constants'
-import { useFonts } from 'expo-font'
-import { Ionicons } from '@expo/vector-icons'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { queryClient } from '@/shared/lib/queryClient'
 import { ConfirmProvider } from '@/shared/lib/confirm'
@@ -107,7 +105,6 @@ export default function RootLayout() {
   const profileIncomplete = useAuthStore(s => s.profileIncomplete)
   const userId = useAuthStore(s => s.userId)
   const segments = useSegments() as string[]
-  useFonts(Ionicons.font)
 
   useEffect(() => {
     // GoogleSignin.configure() é lazy (chamado no 1º signIn). Facebook precisa

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native'
 import { Stack, useRouter } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
+import { CircleIcon } from 'phosphor-react-native'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { useDeactivateAccount } from '@/features/account/hooks/useDeactivateAccount'
 import { useConfirm } from '@/shared/lib/confirm'
@@ -102,8 +102,8 @@ export default function DeactivateAccountScreen() {
       <View className="bg-surface-sunken border border-line rounded-xl p-4 gap-3">
         {POINTS.map(point => (
           <View key={point} className="flex-row items-start gap-2">
-            <Ionicons
-              name="ellipse"
+            <CircleIcon
+              weight="fill"
               size={6}
               color={colors.brandText}
               style={{ marginTop: 7 }}

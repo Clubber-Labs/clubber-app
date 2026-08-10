@@ -1,5 +1,5 @@
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { LockIcon } from 'phosphor-react-native'
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg'
 import { EventDateChip } from './EventDateChip'
 import { EventStatusBadge } from './EventStatusBadge'
@@ -25,7 +25,7 @@ const textShadow = {
 function PrivatePill() {
   return (
     <View className="flex-row items-center gap-1 rounded-md border border-white/15 bg-black/70 px-2 py-1">
-      <Ionicons name="lock-closed" size={11} color={colors.contentTertiary} />
+      <LockIcon size={11} color={colors.contentTertiary} />
       <Text className="text-[11px] font-semibold text-content-tertiary">
         Privado
       </Text>

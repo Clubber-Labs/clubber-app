@@ -1,5 +1,5 @@
 import { View, Text, Image, Pressable, ScrollView } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { XIcon, PlusIcon } from 'phosphor-react-native'
 import { usePickImages } from '@/shared/hooks/usePickImages'
 import { colors } from '@/shared/theme'
 
@@ -62,7 +62,7 @@ export function EventImagePicker({
               hitSlop={6}
               accessibilityLabel="Remover foto"
             >
-              <Ionicons name="close" size={14} color={colors.contentBright} />
+              <XIcon size={14} color={colors.contentBright} />
             </Pressable>
           </View>
         ))}
@@ -72,7 +72,7 @@ export function EventImagePicker({
             className="w-20 h-20 rounded-xl bg-surface border border-dashed border-line-strong items-center justify-center"
             accessibilityLabel="Adicionar fotos"
           >
-            <Ionicons name="add" size={24} color={colors.contentMuted} />
+            <PlusIcon size={24} color={colors.contentMuted} />
           </Pressable>
         )}
       </ScrollView>

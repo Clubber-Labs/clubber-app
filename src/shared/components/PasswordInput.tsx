@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { View, TextInput, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { EyeIcon, EyeSlashIcon } from 'phosphor-react-native'
 import type { ComponentProps } from 'react'
 import { colors } from '@/shared/theme'
 
@@ -50,11 +50,11 @@ export function PasswordInput({
         accessibilityRole="button"
         accessibilityLabel={visible ? 'Ocultar senha' : 'Mostrar senha'}
       >
-        <Ionicons
-          name={visible ? 'eye-off-outline' : 'eye-outline'}
-          size={20}
-          color={colors.contentSubtle}
-        />
+        {visible ? (
+          <EyeSlashIcon size={20} color={colors.contentSubtle} />
+        ) : (
+          <EyeIcon size={20} color={colors.contentSubtle} />
+        )}
       </Pressable>
     </View>
   )

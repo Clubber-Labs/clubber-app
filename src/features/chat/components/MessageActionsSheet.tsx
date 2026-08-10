@@ -1,4 +1,10 @@
 import { View, Text, Pressable } from 'react-native'
+import {
+  CopyIcon,
+  PencilSimpleIcon,
+  FlagIcon,
+  TrashIcon,
+} from 'phosphor-react-native'
 import { SheetModal } from './SheetModal'
 import { SheetRow } from './SheetRow'
 import { QUICK_REACTIONS } from '../utils/reactions'
@@ -61,7 +67,7 @@ export function MessageActionsSheet({
       )}
       {hasText && (
         <SheetRow
-          icon="copy-outline"
+          icon={CopyIcon}
           label="Copiar"
           onPress={() => {
             onClose()
@@ -71,7 +77,7 @@ export function MessageActionsSheet({
       )}
       {canEdit && (
         <SheetRow
-          icon="create-outline"
+          icon={PencilSimpleIcon}
           label="Editar"
           onPress={() => {
             onClose()
@@ -81,7 +87,7 @@ export function MessageActionsSheet({
       )}
       {canReport && (
         <SheetRow
-          icon="flag-outline"
+          icon={FlagIcon}
           label="Denunciar"
           onPress={() => {
             onClose()
@@ -91,7 +97,7 @@ export function MessageActionsSheet({
       )}
       {canDelete && (
         <SheetRow
-          icon="trash-outline"
+          icon={TrashIcon}
           label="Apagar"
           destructive
           onPress={() => {

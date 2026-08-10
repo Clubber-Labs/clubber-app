@@ -1,5 +1,5 @@
 import { Pressable, Image, View, Text, ActivityIndicator } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { PlayIcon } from 'phosphor-react-native'
 import { formatDuration } from '@/shared/utils/formatDuration'
 import { mediaBoxSize } from '../utils/mediaBox'
 import { LONG_PRESS_DELAY_MS } from '../utils/longPress'
@@ -59,7 +59,7 @@ export function VideoMessage({
       ) : (
         <View className="absolute inset-0 items-center justify-center">
           <View className="w-12 h-12 items-center justify-center rounded-full bg-background/50">
-            <Ionicons name="play" size={26} color={colors.content} />
+            <PlayIcon size={26} color={colors.content} weight="fill" />
           </View>
         </View>
       )}

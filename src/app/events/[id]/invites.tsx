@@ -6,7 +6,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { CheckSquareIcon, SquareIcon } from 'phosphor-react-native'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useEvent } from '@/features/events/hooks/useEvents'
@@ -196,11 +196,11 @@ function FollowerRow({ user, checked, onToggle }: RowProps) {
         <Text className="text-content font-semibold text-sm">{fullName}</Text>
         <Text className="text-content-muted text-xs">@{user.username}</Text>
       </View>
-      <Ionicons
-        name={checked ? 'checkbox' : 'square-outline'}
-        size={22}
-        color={checked ? colors.brand : colors.contentSubtle}
-      />
+      {checked ? (
+        <CheckSquareIcon weight="fill" size={22} color={colors.brand} />
+      ) : (
+        <SquareIcon size={22} color={colors.contentSubtle} />
+      )}
     </Pressable>
   )
 }

@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { CheckCircleIcon } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { colors } from '@/shared/theme'
 
@@ -23,11 +23,7 @@ export function AccountExitSuccess({
   return (
     <View className="flex-1 bg-background px-6 justify-center gap-8">
       <View className="items-center gap-4">
-        <Ionicons
-          name="checkmark-circle-outline"
-          size={56}
-          color={colors.brandText}
-        />
+        <CheckCircleIcon size={56} color={colors.brandText} />
         <Text className="text-content text-2xl font-bold text-center">
           {title}
         </Text>

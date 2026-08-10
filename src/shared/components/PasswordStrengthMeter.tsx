@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { CheckCircleIcon, CircleIcon } from 'phosphor-react-native'
 import {
   evaluatePasswordStrength,
   type PasswordChecks,
@@ -55,11 +55,15 @@ export function PasswordStrengthMeter({ password, email }: Props) {
           const ok = checks[key]
           return (
             <View key={key} className="flex-row items-center gap-2">
-              <Ionicons
-                name={ok ? 'checkmark-circle' : 'ellipse-outline'}
-                size={14}
-                color={ok ? colors.success : colors.contentFaint}
-              />
+              {ok ? (
+                <CheckCircleIcon
+                  size={14}
+                  color={colors.success}
+                  weight="fill"
+                />
+              ) : (
+                <CircleIcon size={14} color={colors.contentFaint} />
+              )}
               <Text
                 className={`text-xs ${ok ? 'text-content-tertiary' : 'text-content-subtle'}`}
               >

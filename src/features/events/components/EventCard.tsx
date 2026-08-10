@@ -1,6 +1,15 @@
 import { useState } from 'react'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  BuildingsIcon,
+  MapPinIcon,
+  ClockIcon,
+  UsersIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  HeartIcon,
+  ChatCircleIcon,
+} from 'phosphor-react-native'
 import { useToggleLike } from '../hooks/useToggleLike'
 import { useSetAttendance, useCancelAttendance } from '../hooks/useAttendance'
 import { EventCardHero } from './EventCardHero'
@@ -136,13 +145,11 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
           <View className="flex-row items-center gap-4">
             {!!(event.venueName ?? event.address) && (
               <View className="flex-1 flex-row items-center gap-1">
-                <Ionicons
-                  name={
-                    event.venueName ? 'business-outline' : 'location-outline'
-                  }
-                  size={14}
-                  color={colors.contentMuted}
-                />
+                {event.venueName ? (
+                  <BuildingsIcon size={14} color={colors.contentMuted} />
+                ) : (
+                  <MapPinIcon size={14} color={colors.contentMuted} />
+                )}
                 <Text
                   className="flex-1 text-xs text-content-muted"
                   numberOfLines={1}
@@ -152,11 +159,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
               </View>
             )}
             <View className="flex-row items-center gap-1">
-              <Ionicons
-                name="time-outline"
-                size={14}
-                color={colors.contentMuted}
-              />
+              <ClockIcon size={14} color={colors.contentMuted} />
               <Text className="text-xs text-content-muted">
                 {formatTime(event.date)}
               </Text>
@@ -174,11 +177,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
         ) : (
           event._count.attendances > 0 && (
             <View className="flex-row items-center gap-1.5 px-4 pt-3">
-              <Ionicons
-                name="people-outline"
-                size={14}
-                color={colors.contentMuted}
-              />
+              <UsersIcon size={14} color={colors.contentMuted} />
               <Text className="text-xs text-content-muted">
                 {event._count.attendances}{' '}
                 {event._count.attendances === 1 ? 'pessoa vai' : 'pessoas vão'}
@@ -201,11 +200,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
             accessibilityState={{ selected: true, busy: rsvpPending }}
             className="flex-row items-center gap-2 rounded-full border border-white/40 px-5 py-2.5"
           >
-            <Ionicons
-              name="checkmark-circle"
-              size={17}
-              color={colors.content}
-            />
+            <CheckCircleIcon size={17} color={colors.content} weight="fill" />
             <Text className="text-sm font-bold text-content">Confirmado</Text>
           </Pressable>
         ) : (
@@ -220,11 +215,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
               }`}
             >
               {!declined && (
-                <Ionicons
-                  name="checkmark-circle-outline"
-                  size={17}
-                  color={colors.background}
-                />
+                <CheckCircleIcon size={17} color={colors.background} />
               )}
               <Text
                 className={`text-sm font-bold ${declined ? 'text-content-muted' : 'text-background'}`}
@@ -240,10 +231,10 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
               className="flex-row items-center gap-2 rounded-full border border-line px-5 py-2.5"
             >
               {declined && (
-                <Ionicons
-                  name="close-circle"
+                <XCircleIcon
                   size={17}
                   color={colors.contentSubtle}
+                  weight="fill"
                 />
               )}
               <Text
@@ -263,10 +254,10 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
           disabled={toggleLike.isPending}
           className="flex-row items-center gap-1 rounded-full px-3 py-2"
         >
-          <Ionicons
-            name={liked ? 'heart' : 'heart-outline'}
+          <HeartIcon
             size={20}
             color={liked ? colors.danger : colors.contentSecondary}
+            weight={liked ? 'fill' : 'regular'}
           />
           <Text
             className={`text-sm ${liked ? 'text-danger' : 'text-content-secondary'}`}
@@ -279,10 +270,10 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
           onPress={() => setExpanded(v => !v)}
           className="flex-row items-center gap-1 rounded-full px-3 py-2"
         >
-          <Ionicons
-            name={expanded ? 'chatbubble' : 'chatbubble-outline'}
+          <ChatCircleIcon
             size={18}
             color={expanded ? colors.brandEmphasis : colors.contentSecondary}
+            weight={expanded ? 'fill' : 'regular'}
           />
           <Text
             className={`text-sm ${expanded ? 'text-brand-text' : 'text-content-secondary'}`}

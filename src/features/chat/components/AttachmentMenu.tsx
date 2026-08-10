@@ -1,3 +1,4 @@
+import { ImageIcon, CameraIcon } from 'phosphor-react-native'
 import { SheetModal } from './SheetModal'
 import { SheetRow } from './SheetRow'
 
@@ -17,7 +18,7 @@ export function AttachmentMenu({
   return (
     <SheetModal visible={visible} onClose={onClose}>
       <SheetRow
-        icon="image-outline"
+        icon={ImageIcon}
         label="Galeria"
         onPress={() => {
           onClose()
@@ -25,7 +26,7 @@ export function AttachmentMenu({
         }}
       />
       <SheetRow
-        icon="camera-outline"
+        icon={CameraIcon}
         label="Câmera"
         onPress={() => {
           onClose()

@@ -1,5 +1,10 @@
 import { View, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  FireIcon,
+  PlusIcon,
+  MinusIcon,
+  GpsFixIcon,
+} from 'phosphor-react-native'
 import { GlassSurface } from '@/shared/components/GlassSurface'
 import { colors } from '@/shared/theme'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
@@ -53,10 +58,10 @@ export function MapZoomControls({
           }
           className={`h-14 items-center justify-center ${densityActive ? 'bg-brand' : ''}`}
         >
-          <Ionicons
-            name="flame"
+          <FireIcon
             size={24}
             color={densityActive ? colors.content : colors.contentBright}
+            weight={densityActive ? 'fill' : 'regular'}
           />
         </Pressable>
         <Pressable
@@ -65,7 +70,7 @@ export function MapZoomControls({
           className="h-14 items-center justify-center border-t"
           style={GLASS_DIVIDER}
         >
-          <Ionicons name="add" size={26} color={colors.contentBright} />
+          <PlusIcon size={26} color={colors.contentBright} />
         </Pressable>
         <Pressable
           onPress={onZoomOut}
@@ -73,7 +78,7 @@ export function MapZoomControls({
           className="h-14 items-center justify-center border-t"
           style={GLASS_DIVIDER}
         >
-          <Ionicons name="remove" size={26} color={colors.contentBright} />
+          <MinusIcon size={26} color={colors.contentBright} />
         </Pressable>
         {showRecenter && (
           <Pressable
@@ -82,7 +87,7 @@ export function MapZoomControls({
             className="h-14 items-center justify-center border-t"
             style={GLASS_DIVIDER}
           >
-            <Ionicons name="locate" size={24} color={colors.brandText} />
+            <GpsFixIcon size={24} color={colors.brandText} />
           </Pressable>
         )}
       </GlassSurface>

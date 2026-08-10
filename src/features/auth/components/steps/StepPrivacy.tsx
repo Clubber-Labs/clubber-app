@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Linking, Pressable, Switch, Text, View } from 'react-native'
 import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
-import { Ionicons } from '@expo/vector-icons'
+import { LockIcon, FileTextIcon } from 'phosphor-react-native'
 import type { RegisterInput } from '../../schemas/registerSchema'
 import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
 import {
@@ -38,7 +38,7 @@ export function StepPrivacy({ control, errors }: Props) {
       <View className="bg-surface-sunken border border-line rounded-xl overflow-hidden">
         <View className="flex-row items-center justify-between px-4 py-3 border-b border-line">
           <View className="flex-row items-center gap-2 flex-1">
-            <Ionicons name="lock-closed" size={14} color={colors.brandText} />
+            <LockIcon size={14} color={colors.brandText} weight="fill" />
             <Text className="text-sm font-semibold text-brand-text">
               Dados essenciais
             </Text>
@@ -122,7 +122,7 @@ export function StepPrivacy({ control, errors }: Props) {
         onPress={() => Linking.openURL('https://clubber.app/privacidade')}
         className="flex-row items-center justify-center gap-2 active:opacity-70"
       >
-        <Ionicons name="document-text-outline" size={14} color={colors.brand} />
+        <FileTextIcon size={14} color={colors.brand} />
         <Text className="text-brand-text text-sm">
           Ler a Política de Privacidade completa
         </Text>

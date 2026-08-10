@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons'
+import { MagnifyingGlassIcon, XCircleIcon } from 'phosphor-react-native'
 import { forwardRef } from 'react'
 import { ActivityIndicator, Pressable, TextInput, View } from 'react-native'
 import { GlassSurface } from '@/shared/components/GlassSurface'
@@ -44,8 +44,7 @@ export const SearchInput = forwardRef<TextInput, Props>(function SearchInput(
   return (
     <View className="relative">
       <View className="absolute left-3 top-0 bottom-0 justify-center items-center z-10">
-        <Ionicons
-          name="search"
+        <MagnifyingGlassIcon
           size={18}
           color={overlay ? colors.contentSecondary : colors.content}
         />
@@ -64,11 +63,7 @@ export const SearchInput = forwardRef<TextInput, Props>(function SearchInput(
             hitSlop={10}
             accessibilityLabel="Limpar busca"
           >
-            <Ionicons
-              name="close-circle"
-              size={20}
-              color={colors.contentSubtle}
-            />
+            <XCircleIcon size={20} color={colors.contentSubtle} />
           </Pressable>
         ) : null}
       </View>

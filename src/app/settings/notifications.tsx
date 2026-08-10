@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 import { useRouter } from 'expo-router'
+import { ShieldCheckIcon } from 'phosphor-react-native'
 import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
 import {
   useMyProfile,
@@ -145,7 +146,7 @@ export default function NotificationSettingsScreen() {
         <SettingsRow
           label="Privacidade e consentimentos"
           description="Gerenciar todos os consentimentos, exportar dados e ver a política de privacidade"
-          icon="shield-checkmark-outline"
+          icon={ShieldCheckIcon}
           onPress={() => router.push('/profile/privacy')}
         />
       </View>

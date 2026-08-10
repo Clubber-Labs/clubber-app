@@ -1,5 +1,10 @@
 import { View, Text, Pressable, ActivityIndicator, Linking } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  XCircleIcon,
+  InfoIcon,
+  DownloadSimpleIcon,
+  ArrowSquareOutIcon,
+} from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { colors } from '@/shared/theme'
 
@@ -42,16 +47,12 @@ export function DataLossWarning({
         </Text>
         {LOST_ITEMS.map(item => (
           <View key={item} className="flex-row items-start gap-2">
-            <Ionicons name="close-circle" size={16} color={colors.danger} />
+            <XCircleIcon size={16} color={colors.danger} weight="fill" />
             <Text className="text-content-tertiary text-sm flex-1">{item}</Text>
           </View>
         ))}
         <View className="flex-row items-start gap-2 pt-1 border-t border-line mt-1">
-          <Ionicons
-            name="information-circle"
-            size={16}
-            color={colors.contentMuted}
-          />
+          <InfoIcon size={16} color={colors.contentMuted} weight="fill" />
           <Text className="text-content-muted text-xs flex-1 leading-4">
             Comentários e mensagens que você enviou em conteúdo de outras
             pessoas permanecem, mas anonimizados como “Usuário Excluído”.
@@ -79,11 +80,7 @@ export function DataLossWarning({
         {exporting ? (
           <ActivityIndicator size="small" color={colors.brandText} />
         ) : (
-          <Ionicons
-            name="download-outline"
-            size={18}
-            color={colors.contentSubtle}
-          />
+          <DownloadSimpleIcon size={18} color={colors.contentSubtle} />
         )}
       </Pressable>
 
@@ -91,7 +88,7 @@ export function DataLossWarning({
         onPress={() => Linking.openURL('https://clubber.app/privacidade')}
         className="flex-row items-center gap-2 px-1"
       >
-        <Ionicons name="open-outline" size={14} color={colors.brandText} />
+        <ArrowSquareOutIcon size={14} color={colors.brandText} />
         <Text className="text-brand-text text-sm">Política de Privacidade</Text>
       </Pressable>
 

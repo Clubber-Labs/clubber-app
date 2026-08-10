@@ -2,6 +2,11 @@ import { createContext, useCallback, useContext, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Linking, Platform } from 'react-native'
 import {
+  GoogleLogoIcon,
+  MapTrifoldIcon,
+  NavigationArrowIcon,
+} from 'phosphor-react-native'
+import {
   MapsChooserSheet,
   type MapsOption,
 } from '../components/MapsChooserSheet'
@@ -40,21 +45,21 @@ export function OpenInMapsProvider({ children }: { children: ReactNode }) {
     options.push({
       key: 'google',
       label: 'Google Maps',
-      icon: 'logo-google',
+      icon: GoogleLogoIcon,
       onPress: () => launch(googleMapsUrl(target)),
     })
     if (Platform.OS === 'ios') {
       options.push({
         key: 'apple',
         label: 'Apple Maps',
-        icon: 'map-outline',
+        icon: MapTrifoldIcon,
         onPress: () => launch(appleMapsUrl(target)),
       })
     }
     options.push({
       key: 'waze',
       label: 'Waze',
-      icon: 'navigate-outline',
+      icon: NavigationArrowIcon,
       onPress: () => launch(wazeUrl(target)),
     })
   }

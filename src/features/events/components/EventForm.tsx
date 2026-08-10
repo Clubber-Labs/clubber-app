@@ -7,7 +7,7 @@ import {
   Platform,
   Pressable,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { GlobeIcon, LockIcon } from 'phosphor-react-native'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -289,6 +289,7 @@ export function EventForm({
               <View className="flex-row gap-1 bg-surface border border-line rounded-xl p-1">
                 {([true, false] as const).map(option => {
                   const active = value === option
+                  const VisibilityIcon = option ? GlobeIcon : LockIcon
                   return (
                     <Pressable
                       key={String(option)}
@@ -299,8 +300,7 @@ export function EventForm({
                         active ? 'bg-surface-elevated' : ''
                       }`}
                     >
-                      <Ionicons
-                        name={option ? 'earth' : 'lock-closed'}
+                      <VisibilityIcon
                         size={16}
                         color={active ? colors.content : colors.contentMuted}
                       />

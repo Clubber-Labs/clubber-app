@@ -8,7 +8,7 @@ export const TAB_BAR_HEIGHT = 64
 export const TAB_BAR_BOTTOM_MARGIN = 8
 export const TAB_BAR_SIDE_MARGIN = 24
 
-const LENS_SIZE = 40
+const LENS_SIZE = 44
 
 // Pílula flutuante "liquid glass": blur translúcido, borda hairline e lente
 // circular no item ativo. Posicionada em absoluto — as cenas ocupam a tela
@@ -80,10 +80,10 @@ export function GlassTabBar({
                 {options.tabBarIcon?.({
                   focused,
                   color: focused ? colors.content : 'rgba(255, 255, 255, 0.55)',
-                  size: 22,
+                  size: 28,
                 })}
                 {options.tabBarBadge != null && (
-                  <View className="absolute -right-1.5 -top-0.5 h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1">
+                  <View className="absolute right-0.5 top-1.5 h-4 min-w-4 items-center justify-center rounded-full bg-danger px-1">
                     <Text className="text-[10px] font-bold text-content">
                       {options.tabBarBadge}
                     </Text>

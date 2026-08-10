@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  PencilSimpleIcon,
+  SignOutIcon,
+  UserPlusIcon,
+} from 'phosphor-react-native'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useBanner } from '@/shared/lib/banner'
 import { getApiError } from '@/shared/lib/apiError'
@@ -90,7 +94,11 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
               accessibilityLabel="Renomear grupo"
               className="p-1"
             >
-              <Ionicons name="pencil" size={16} color={colors.brandEmphasis} />
+              <PencilSimpleIcon
+                size={16}
+                color={colors.brandEmphasis}
+                weight="fill"
+              />
             </Pressable>
           )}
         </View>
@@ -118,10 +126,10 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
           className="flex-row items-center gap-3 px-4 py-3"
         >
           <View className="w-11 h-11 rounded-full bg-surface items-center justify-center">
-            <Ionicons
-              name="person-add"
+            <UserPlusIcon
               size={20}
               color={colors.brandEmphasis}
+              weight="fill"
             />
           </View>
           <Text className="text-brand-text text-base font-medium">
@@ -134,7 +142,7 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
         onPress={handleLeave}
         className="flex-row items-center gap-3 px-4 py-3.5 mt-3 border-t border-line-subtle"
       >
-        <Ionicons name="exit-outline" size={22} color={colors.danger} />
+        <SignOutIcon size={22} color={colors.danger} />
         <Text className="text-danger text-base">Sair do grupo</Text>
       </Pressable>
 

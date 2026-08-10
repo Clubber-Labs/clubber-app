@@ -1,12 +1,18 @@
 import { useId } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  PencilSimpleIcon,
+  ArrowsClockwiseIcon,
+  SparkleIcon,
+  StarIcon,
+  HeartIcon,
+  ChatCircleIcon,
+  CompassIcon,
+} from 'phosphor-react-native'
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg'
-import type { ComponentProps } from 'react'
+import type { Icon } from 'phosphor-react-native'
 import type { FeedReason } from '@/shared/types'
 import { colors, categoryHue } from '@/shared/theme'
-
-type IconName = ComponentProps<typeof Ionicons>['name']
 
 type Props = {
   reason: FeedReason
@@ -50,9 +56,9 @@ export function FeedReasonBanner({ reason, categories }: Props) {
         />
       </Svg>
       <View className="flex-row items-center gap-1.5 px-4 py-2">
-        <Ionicons
-          name={content.icon}
+        <content.icon
           size={13}
+          weight="fill"
           color={hue ? hue.chipText : colors.brandText}
         />
         <Text className="flex-1 text-xs text-content-muted" numberOfLines={1}>
@@ -63,20 +69,23 @@ export function FeedReasonBanner({ reason, categories }: Props) {
   )
 }
 
-function render(reason: FeedReason): { icon: IconName; text: string } | null {
+function render(reason: FeedReason): { icon: Icon; text: string } | null {
   switch (reason.kind) {
     case 'self_created':
-      return { icon: 'create', text: 'Você criou este evento' }
+      return { icon: PencilSimpleIcon, text: 'Você criou este evento' }
     case 'self_interaction':
-      return { icon: 'sync', text: 'Você interagiu com este evento' }
+      return {
+        icon: ArrowsClockwiseIcon,
+        text: 'Você interagiu com este evento',
+      }
     case 'friend_created':
       return {
-        icon: 'sparkles',
+        icon: SparkleIcon,
         text: `${reason.user.name} criou um evento`,
       }
     case 'friend_attending':
       return {
-        icon: 'star',
+        icon: StarIcon,
         text:
           reason.type === 'CONFIRMED'
             ? `${reason.user.name} vai a este evento`
@@ -84,16 +93,16 @@ function render(reason: FeedReason): { icon: IconName; text: string } | null {
       }
     case 'friend_reacted':
       return {
-        icon: 'heart',
+        icon: HeartIcon,
         text: `${reason.user.name} curtiu este evento`,
       }
     case 'friend_commented':
       return {
-        icon: 'chatbubble',
+        icon: ChatCircleIcon,
         text: `${reason.user.name} comentou: "${reason.preview}"`,
       }
     case 'discovery':
-      return { icon: 'compass', text: 'Recomendado para você' }
+      return { icon: CompassIcon, text: 'Recomendado para você' }
     default:
       return null
   }

@@ -1,6 +1,6 @@
 import type { ComponentProps, ReactNode } from 'react'
 import { Modal, View, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { XIcon } from 'phosphor-react-native'
 import { GestureDetector } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 import { colors } from '@/shared/theme'
@@ -41,7 +41,7 @@ export function MediaViewerModal({
           className="absolute top-12 right-5 w-10 h-10 items-center justify-center bg-background/50 rounded-full"
           accessibilityLabel={closeLabel}
         >
-          <Ionicons name="close" size={24} color={colors.content} />
+          <XIcon size={24} color={colors.content} />
         </Pressable>
       </View>
     </Modal>

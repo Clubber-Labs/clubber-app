@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { ChartBarIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { Button } from '@/shared/components/Button'
 import { colors } from '@/shared/theme'
@@ -11,7 +11,7 @@ export function PremiumAnalyticsGate() {
   return (
     <View className="flex-1 items-center justify-center px-8 gap-5">
       <View className="w-20 h-20 rounded-full bg-brand/20 items-center justify-center">
-        <Ionicons name="stats-chart" size={34} color={colors.brandText} />
+        <ChartBarIcon size={34} color={colors.brandText} weight="fill" />
       </View>
 
       <View className="items-center gap-2">

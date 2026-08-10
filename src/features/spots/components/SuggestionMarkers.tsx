@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { SparkleIcon } from 'phosphor-react-native'
 import Mapbox from '@rnmapbox/maps'
 import type { SpotSuggestion } from '../types'
 import { colors } from '@/shared/theme'
@@ -43,7 +43,7 @@ export function SuggestionMarkers({ suggestions, onPress }: Props) {
               justifyContent: 'center',
             }}
           >
-            <Ionicons name="sparkles" size={18} color={colors.contentBright} />
+            <SparkleIcon size={18} color={colors.contentBright} />
             <View
               style={{ position: 'absolute', top: -7, right: -7 }}
               className="bg-content rounded-full w-5 h-5 items-center justify-center border border-background"
