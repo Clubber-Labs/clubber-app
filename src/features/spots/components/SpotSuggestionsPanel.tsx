@@ -1,5 +1,14 @@
 import { useState } from 'react'
-import { View, Text, FlatList, Linking, Pressable } from 'react-native'
+import {
+  Keyboard,
+  TextInput,
+  View,
+  Text,
+  FlatList,
+  Linking,
+  Pressable,
+  useWindowDimensions,
+} from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
@@ -14,8 +23,8 @@ import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { RadiusSlider } from '@/shared/components/RadiusSlider'
 import { useKeyboardSheetLift } from '@/shared/hooks/useKeyboardSheetLift'
-import { GlassSurface } from '@/shared/components/GlassSurface'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
+import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 import {
   isValidationError,
   isTooManyRequestsError,
@@ -61,6 +70,8 @@ type Props = {
 export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
   const router = useRouter()
   const tabBarClearance = useTabBarClearance()
+  const headerClearance = useHeaderClearance()
+  const { height: windowHeight } = useWindowDimensions()
   // Levanta a folha acima do teclado no iOS (Android: adjustResize já resolve).
   const { ref: sheetRef, lift: keyboardLift } = useKeyboardSheetLift()
   // Volta pros controles depois de já ter resultados (ajustar raio/intenção).
@@ -76,7 +87,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
     .onEnd(e => {
       if (e.translationY > 120 || e.velocityY > 800) {
         dragY.value = withTiming(900, { duration: 200 }, finished => {
-          if (finished) runOnJS(onClose)()
+          if (finished) runOnJS(close)()
         })
       } else {
         dragY.value = withSpring(0, { damping: 22, stiffness: 220 })
@@ -130,11 +141,29 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
   // Qualquer estado dedicado esconde a intro (a folha foca no estado).
   const showTakeover = !hasLocationConsent || quotaExhausted || showEmpty
 
+  // Solta o input focado ANTES de qualquer flip de estado: desmontar OU
+  // tornar não-editável um TextInput focado deixa a lupa de seleção do iOS
+  // órfã na tela (Keyboard.dismiss sozinho é assíncrono e perde a corrida
+  // com o editable={false} do isGenerating). O blur explícito derruba a
+  // lupa na hora.
+  function releaseFocusedInput() {
+    TextInput.State.currentlyFocusedInput()?.blur()
+    Keyboard.dismiss()
+  }
+
   // Gerar a partir dos controles fecha o modo edição: quando os resultados
   // voltam, a folha recolhe sozinha pro modo compacto.
   function submitGenerate() {
+    releaseFocusedInput()
     setEditing(false)
     handleGenerate()
+  }
+
+  // Mesma razão no fechar (X, arraste, "ver mapa" da cota): a folha desmonta
+  // inteira — input focado deixaria o loupe fantasma.
+  function close() {
+    releaseFocusedInput()
+    onClose()
   }
 
   // Faixa de motivo do melhor match (assinatura da IA): a intenção digitada
@@ -161,7 +190,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
         <SpotQuotaExhausted
           isPremium={isPremium}
           onUpgrade={() => router.push('/billing/upgrade')}
-          onSeeMap={onClose}
+          onSeeMap={close}
         />
       ) : showEmpty ? (
         <SpotEmptyResults
@@ -240,6 +269,16 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
     </View>
   )
 
+  // Teto de altura dinâmico: com o teclado aberto, o lift sobe a folha até o
+  // topo do teclado — sem encolher junto, o topo estourava por baixo do
+  // header e sobrava um buraco sobre o teclado. A folha ocupa no máximo o
+  // vão entre o header flutuante e o teclado.
+  const baseMaxHeight = windowHeight * (showResults ? 0.55 : 0.85)
+  const sheetMaxHeight = Math.min(
+    baseMaxHeight,
+    Math.max(240, windowHeight - keyboardLift - headerClearance),
+  )
+
   return (
     <Animated.View
       ref={sheetRef}
@@ -249,22 +288,25 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
           left: 0,
           right: 0,
           bottom: 0,
-          maxHeight: showResults ? '55%' : '85%',
+          maxHeight: sheetMaxHeight,
         },
         sheetStyle,
       ]}
     >
-      {/* Folha inline (não Modal) sobre o mapa — aqui o blur real funciona.
-          O padding inferior mantém o conteúdo acima da pílula flutuante, que
-          fica por cima do vidro da folha. */}
-      <GlassSurface
+      {/* Folha sólida em surface + hairline, alinhada às SheetModal. O padding
+          inferior mantém o conteúdo acima da pílula flutuante — mas SÓ com o
+          teclado fechado: aberto, a pílula fica atrás dele e a folga viraria
+          uma faixa vazia roubando área de scroll. flexShrink (nunca flex: 1!):
+          o pai tem altura automática com teto — base 0 colapsaria a folha,
+          desalinhando o conteúdo e travando o scroll. */}
+      <View
+        className="bg-surface border-t border-white/10"
         style={{
-          flex: 1,
-          paddingBottom: tabBarClearance,
+          flexShrink: 1,
+          paddingBottom: keyboardLift > 0 ? 16 : tabBarClearance,
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
-          borderWidth: 0,
-          borderTopWidth: 1,
+          overflow: 'hidden',
         }}
       >
         <GestureDetector gesture={dragGesture}>
@@ -310,7 +352,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
               </Pressable>
             )}
             <Pressable
-              onPress={onClose}
+              onPress={close}
               className="w-8 h-8 items-center justify-center"
               accessibilityLabel="Fechar sugestões"
             >
@@ -346,7 +388,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
             />
           )}
         />
-      </GlassSurface>
+      </View>
     </Animated.View>
   )
 }
