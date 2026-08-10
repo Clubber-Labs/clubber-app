@@ -6,7 +6,14 @@ import {
   ActivityIndicator,
   Pressable,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  CaretRightIcon,
+  XCircleIcon,
+  ClockIcon,
+  UsersIcon,
+  NavigationArrowIcon,
+  ChatCircleDotsIcon,
+} from 'phosphor-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useConfirm } from '@/shared/lib/confirm'
@@ -155,11 +162,7 @@ export default function SpotDetailScreen() {
               @{spot.creator.username} sugeriu esse rolê
             </Text>
           </View>
-          <Ionicons
-            name="chevron-forward"
-            size={16}
-            color={colors.contentFaint}
-          />
+          <CaretRightIcon size={16} color={colors.contentFaint} />
         </Pressable>
 
         <View className="gap-2.5">
@@ -169,8 +172,8 @@ export default function SpotDetailScreen() {
           <View className="flex-row items-center">
             {isCanceled ? (
               <View className="flex-row items-center gap-1.5 rounded-md bg-danger/10 border border-danger/30 px-2.5 py-1">
-                <Ionicons
-                  name="close-circle"
+                <XCircleIcon
+                  weight="fill"
                   size={12}
                   color={colors.dangerText}
                 />
@@ -212,11 +215,7 @@ export default function SpotDetailScreen() {
         <View className="bg-surface border border-line rounded-2xl overflow-hidden">
           <View className="flex-row items-center gap-3 px-4 py-3.5">
             <View className="w-10 h-10 rounded-xl bg-brand-surface border border-brand-surface-strong items-center justify-center">
-              <Ionicons
-                name="time-outline"
-                size={20}
-                color={colors.brandText}
-              />
+              <ClockIcon size={20} color={colors.brandText} />
             </View>
             <View className="flex-1">
               <Text className="text-content-subtle text-[11px] font-semibold">
@@ -230,11 +229,7 @@ export default function SpotDetailScreen() {
           <View className="h-px bg-line mx-4" />
           <View className="flex-row items-center gap-3 px-4 py-3.5">
             <View className="w-10 h-10 rounded-xl bg-brand-surface border border-brand-surface-strong items-center justify-center">
-              <Ionicons
-                name="people-outline"
-                size={20}
-                color={colors.brandText}
-              />
+              <UsersIcon size={20} color={colors.brandText} />
             </View>
             <View className="flex-1">
               <Text className="text-content-subtle text-[11px] font-semibold">
@@ -260,11 +255,7 @@ export default function SpotDetailScreen() {
             accessibilityRole="button"
             className="absolute bottom-3 right-3 flex-row items-center gap-1.5 bg-surface-sunken/95 border border-line-strong rounded-lg px-3 py-2"
           >
-            <Ionicons
-              name="navigate-outline"
-              size={14}
-              color={colors.contentSecondary}
-            />
+            <NavigationArrowIcon size={14} color={colors.contentSecondary} />
             <Text className="text-content-secondary text-xs font-bold">
               Como chegar
             </Text>
@@ -277,7 +268,7 @@ export default function SpotDetailScreen() {
               label={
                 isCreator ? 'Abrir chat do grupo' : 'Entrar no chat do rolê'
               }
-              icon="chatbubble-ellipses-outline"
+              icon={ChatCircleDotsIcon}
               onPress={handleJoin}
               loading={join.isPending}
             />

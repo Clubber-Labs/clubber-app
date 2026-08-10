@@ -1,5 +1,5 @@
 import { Pressable, Text, ActivityIndicator } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { FacebookLogoIcon } from 'phosphor-react-native'
 import { useSocialLogin } from '../hooks/useSocialLogin'
 import { colors } from '@/shared/theme'
 
@@ -15,7 +15,7 @@ export function FacebookLoginButton() {
       {isPending ? (
         <ActivityIndicator size="small" color={colors.content} />
       ) : (
-        <Ionicons name="logo-facebook" size={20} color={colors.content} />
+        <FacebookLogoIcon size={20} color={colors.content} weight="fill" />
       )}
       <Text className="font-semibold text-base text-content">
         {isPending ? 'Conectando…' : 'Continuar com Facebook'}

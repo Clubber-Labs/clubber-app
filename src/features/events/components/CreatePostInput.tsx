@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   Keyboard,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { PaperPlaneTiltIcon } from 'phosphor-react-native'
 import { useAddPost, useUploadPostImages } from '../hooks/usePosts'
 import { EventImagePicker } from './EventImagePicker'
 import { useMe } from '@/features/auth/hooks/useMe'
@@ -95,7 +95,11 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
           {addPost.isPending ? (
             <ActivityIndicator size="small" color={colors.content} />
           ) : (
-            <Ionicons name="send" size={14} color={colors.content} />
+            <PaperPlaneTiltIcon
+              size={14}
+              weight="fill"
+              color={colors.content}
+            />
           )}
           <Text className="text-sm font-semibold text-content">Publicar</Text>
         </Pressable>

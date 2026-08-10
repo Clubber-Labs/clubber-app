@@ -1,3 +1,8 @@
+import {
+  MinusCircleIcon,
+  ShieldCheckIcon,
+  UserMinusIcon,
+} from 'phosphor-react-native'
 import { SheetModal } from './SheetModal'
 import { SheetRow } from './SheetRow'
 import type { Participant } from '../types'
@@ -21,7 +26,7 @@ export function ParticipantActionsSheet({
   return (
     <SheetModal visible={visible} onClose={onClose}>
       <SheetRow
-        icon={isAdmin ? 'remove-circle-outline' : 'shield-checkmark-outline'}
+        icon={isAdmin ? MinusCircleIcon : ShieldCheckIcon}
         label={isAdmin ? 'Remover admin' : 'Tornar admin'}
         onPress={() => {
           onClose()
@@ -29,7 +34,7 @@ export function ParticipantActionsSheet({
         }}
       />
       <SheetRow
-        icon="person-remove-outline"
+        icon={UserMinusIcon}
         label="Remover do grupo"
         destructive
         onPress={() => {

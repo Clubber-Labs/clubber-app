@@ -1,5 +1,5 @@
 import { View, Text, Pressable, Image, StyleSheet } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { XIcon, MapPinIcon, CaretRightIcon } from 'phosphor-react-native'
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg'
 import type { FeedEvent } from '@/shared/types'
 import { EventDateChip } from '@/features/events/components/EventDateChip'
@@ -50,7 +50,7 @@ export function EventPreviewCard({
         hitSlop={8}
         className="absolute right-2.5 top-2.5 z-10 h-7 w-7 items-center justify-center rounded-lg bg-surface-elevated"
       >
-        <Ionicons name="close" size={16} color={colors.contentMuted} />
+        <XIcon size={16} color={colors.contentMuted} />
       </Pressable>
 
       <View className="flex-row gap-3">
@@ -96,11 +96,7 @@ export function EventPreviewCard({
           </Text>
           {!!locationText && (
             <View className="flex-row items-center gap-1.5">
-              <Ionicons
-                name="location-outline"
-                size={13}
-                color={colors.contentSubtle}
-              />
+              <MapPinIcon size={13} color={colors.contentSubtle} />
               <Text
                 className="flex-1 text-xs text-content-muted"
                 numberOfLines={1}
@@ -123,7 +119,7 @@ export function EventPreviewCard({
         className="mt-3 h-11 flex-row items-center justify-center gap-1.5 rounded-lg bg-brand"
       >
         <Text className="text-sm font-bold text-content">Ver detalhes</Text>
-        <Ionicons name="chevron-forward" size={16} color={colors.content} />
+        <CaretRightIcon size={16} color={colors.content} />
       </Pressable>
     </View>
   )

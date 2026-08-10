@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { DotsThreeVerticalIcon } from 'phosphor-react-native'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { RoleBadge } from './RoleBadge'
 import type { Participant } from '../types'
@@ -36,10 +36,10 @@ export function ParticipantRow({
           className="w-9 h-9 items-center justify-center"
           accessibilityLabel={`Gerenciar ${user.name}`}
         >
-          <Ionicons
-            name="ellipsis-vertical"
+          <DotsThreeVerticalIcon
             size={18}
             color={colors.contentMuted}
+            weight="bold"
           />
         </Pressable>
       )}

@@ -9,7 +9,12 @@ import {
 } from 'react-native'
 import { Stack, useRouter } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  CaretDownIcon,
+  CaretUpIcon,
+  FileTextIcon,
+  LockIcon,
+} from 'phosphor-react-native'
 import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
 import { useConsent } from '@/features/privacy/hooks/useConsent'
 import {
@@ -91,11 +96,7 @@ export default function ConsentScreen() {
           <View className="mx-4 mt-4 bg-surface-sunken border border-line rounded-xl overflow-hidden">
             <View className="flex-row items-center justify-between px-4 py-3 border-b border-line">
               <View className="flex-row items-center gap-2">
-                <Ionicons
-                  name="lock-closed"
-                  size={14}
-                  color={colors.brandText}
-                />
+                <LockIcon size={14} color={colors.brandText} weight="fill" />
                 <Text className="text-sm font-semibold text-brand-text">
                   Dados essenciais
                 </Text>
@@ -128,11 +129,11 @@ export default function ConsentScreen() {
                   <Text className="text-sm font-semibold text-content">
                     {CATEGORY_LABELS[cat]}
                   </Text>
-                  <Ionicons
-                    name={expanded ? 'chevron-up' : 'chevron-down'}
-                    size={16}
-                    color={colors.contentSubtle}
-                  />
+                  {expanded ? (
+                    <CaretUpIcon size={16} color={colors.contentSubtle} />
+                  ) : (
+                    <CaretDownIcon size={16} color={colors.contentSubtle} />
+                  )}
                 </Pressable>
 
                 {expanded &&
@@ -155,11 +156,7 @@ export default function ConsentScreen() {
             onPress={() => Linking.openURL('https://clubber.app/privacidade')}
             className="flex-row items-center justify-center gap-2 mt-5 mx-4 active:opacity-70"
           >
-            <Ionicons
-              name="document-text-outline"
-              size={14}
-              color={colors.brand}
-            />
+            <FileTextIcon size={14} color={colors.brand} />
             <Text className="text-brand-text text-sm">
               Ler a Política de Privacidade completa
             </Text>

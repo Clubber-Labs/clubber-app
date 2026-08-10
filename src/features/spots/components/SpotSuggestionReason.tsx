@@ -1,6 +1,6 @@
 import { useId } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { SparkleIcon } from 'phosphor-react-native'
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg'
 import { colors } from '@/shared/theme'
 
@@ -37,7 +37,7 @@ export function SpotSuggestionReason({ text }: Props) {
         />
       </Svg>
       <View className="flex-row items-center gap-1.5 px-4 py-2">
-        <Ionicons name="sparkles" size={13} color={colors.brandText} />
+        <SparkleIcon size={13} color={colors.brandText} />
         <Text className="flex-1 text-xs text-content-muted" numberOfLines={1}>
           {text}
         </Text>

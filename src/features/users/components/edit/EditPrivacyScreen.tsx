@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { View, Text, Pressable, ActivityIndicator } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { GlobeIcon, LockIcon, InfoIcon } from 'phosphor-react-native'
 import { EditFieldScaffold } from './EditFieldScaffold'
 import { useEditProfileField } from '../../hooks/useEditProfileField'
 import type { UserProfile } from '@/shared/types'
@@ -42,6 +42,7 @@ function PrivacyForm({ profile, save, saving }: FormProps) {
       <View className="flex-row gap-1 bg-surface border border-line-strong rounded-xl p-1">
         {([false, true] as const).map(priv => {
           const active = isPrivate === priv
+          const VisibilityIcon = priv ? LockIcon : GlobeIcon
           return (
             <Pressable
               key={String(priv)}
@@ -52,8 +53,7 @@ function PrivacyForm({ profile, save, saving }: FormProps) {
                 active ? 'bg-surface-elevated' : ''
               }`}
             >
-              <Ionicons
-                name={priv ? 'lock-closed' : 'earth'}
+              <VisibilityIcon
                 size={16}
                 color={active ? colors.content : colors.contentMuted}
               />
@@ -70,8 +70,7 @@ function PrivacyForm({ profile, save, saving }: FormProps) {
       </View>
 
       <View className="flex-row items-start gap-1.5 mt-3">
-        <Ionicons
-          name="information-circle-outline"
+        <InfoIcon
           size={16}
           color={colors.contentSubtle}
           style={{ marginTop: 1 }}

@@ -5,7 +5,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { CaretLeftIcon, LockIcon } from 'phosphor-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEvent } from '@/features/events/hooks/useEvents'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
@@ -23,7 +23,7 @@ function Header({ onBack }: { onBack: () => void }) {
   return (
     <View className="flex-row items-center gap-3 px-4 pt-4 pb-3 border-b border-line">
       <Pressable onPress={onBack} hitSlop={12}>
-        <Ionicons name="arrow-back" size={24} color={colors.content} />
+        <CaretLeftIcon size={24} color={colors.content} />
       </Pressable>
       <Text className="text-content font-bold text-xl">
         Analytics do evento
@@ -88,11 +88,7 @@ export default function EventAnalyticsScreen() {
       <View className="flex-1 bg-background">
         <Header onBack={back} />
         <View className="flex-1 items-center justify-center px-8 gap-2">
-          <Ionicons
-            name="lock-closed-outline"
-            size={32}
-            color={colors.contentSubtle}
-          />
+          <LockIcon size={32} color={colors.contentSubtle} />
           <Text className="text-content-secondary font-semibold text-base text-center">
             Analytics indisponível
           </Text>

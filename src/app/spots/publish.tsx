@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { View, Text } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { MapPinIcon } from 'phosphor-react-native'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 import { getApiError, isConflictError } from '@/shared/lib/apiError'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
@@ -97,7 +97,7 @@ export default function PublishSpotScreen() {
         headerSection={
           <View className="bg-surface border border-line rounded-2xl p-3 flex-row items-center gap-3">
             <View className="w-12 h-12 rounded-lg bg-brand-surface border border-brand-surface-strong items-center justify-center">
-              <Ionicons name="location" size={20} color={colors.brandText} />
+              <MapPinIcon weight="fill" size={20} color={colors.brandText} />
             </View>
             <View className="flex-1">
               <Text

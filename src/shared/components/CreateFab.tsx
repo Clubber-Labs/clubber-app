@@ -1,12 +1,15 @@
 import { useState } from 'react'
-import type { ComponentProps } from 'react'
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  PlusIcon,
+  CaretRightIcon,
+  CalendarBlankIcon,
+  SparkleIcon,
+  type Icon,
+} from 'phosphor-react-native'
 import { SheetModal } from '@/shared/components/SheetModal'
 import { colors } from '@/shared/theme'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
-
-type IconName = ComponentProps<typeof Ionicons>['name']
 
 type Props = {
   onCreateEvent: () => void
@@ -41,7 +44,7 @@ export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
           elevation: 6,
         }}
       >
-        <Ionicons name="add" size={28} color={colors.background} />
+        <PlusIcon size={28} color={colors.background} />
       </Pressable>
 
       <SheetModal visible={open} onClose={() => setOpen(false)}>
@@ -50,13 +53,13 @@ export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
             Criar
           </Text>
           <CreateOption
-            icon="calendar-outline"
+            icon={CalendarBlankIcon}
             title="Evento"
             subtitle="Com data, local e lista de presença"
             onPress={() => choose(onCreateEvent)}
           />
           <CreateOption
-            icon="sparkles-outline"
+            icon={SparkleIcon}
             title="Rolê"
             subtitle="Um encontro rápido perto de você"
             onPress={() => choose(onCreateSpot)}
@@ -68,12 +71,12 @@ export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
 }
 
 function CreateOption({
-  icon,
+  icon: Icon,
   title,
   subtitle,
   onPress,
 }: {
-  icon: IconName
+  icon: Icon
   title: string
   subtitle: string
   onPress: () => void
@@ -85,13 +88,13 @@ function CreateOption({
       className="flex-row items-center gap-3 rounded-xl px-1 py-3 active:bg-surface"
     >
       <View className="h-12 w-12 items-center justify-center rounded-xl bg-surface-elevated">
-        <Ionicons name={icon} size={22} color={colors.brandText} />
+        <Icon size={22} color={colors.brandText} />
       </View>
       <View className="flex-1">
         <Text className="text-base font-bold text-content">{title}</Text>
         <Text className="text-sm text-content-muted">{subtitle}</Text>
       </View>
-      <Ionicons name="chevron-forward" size={18} color={colors.contentSubtle} />
+      <CaretRightIcon size={18} color={colors.contentSubtle} />
     </Pressable>
   )
 }

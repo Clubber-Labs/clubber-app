@@ -1,5 +1,5 @@
 import { Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { FlagIcon } from 'phosphor-react-native'
 import { useReportFlow } from '../hooks/useReportFlow'
 import { ReportReasonSheet } from './ReportReasonSheet'
 import { TARGET_LABELS } from '../utils/reportLabels'
@@ -34,8 +34,7 @@ export function ReportButton({ target, variant = 'overlay' }: Props) {
             : 'w-9 h-9 items-center justify-center'
         }
       >
-        <Ionicons
-          name="flag-outline"
+        <FlagIcon
           size={isOverlay ? 20 : 22}
           color={isOverlay ? colors.content : colors.contentMuted}
         />

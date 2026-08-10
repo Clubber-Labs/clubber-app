@@ -1,5 +1,10 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  StarIcon,
+  NavigationArrowIcon,
+  MapPinIcon,
+  CaretRightIcon,
+} from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { formatDistance } from '@/shared/utils/distance'
 import { formatRating, priceLevelSymbol } from '../utils/suggestionMeta'
@@ -41,7 +46,7 @@ export function SpotSuggestionCard({
       <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1 px-3.5 mt-2.5">
         {typeof rating === 'number' && (
           <View className="flex-row items-center gap-1">
-            <Ionicons name="star" size={12} color={colors.warning} />
+            <StarIcon size={12} color={colors.warning} weight="fill" />
             <Text className="text-content-tertiary text-xs font-semibold">
               {formatRating(rating)}
               {typeof userRatingCount === 'number' && ` (${userRatingCount})`}
@@ -55,11 +60,7 @@ export function SpotSuggestionCard({
         )}
         {isBest && distance && (
           <View className="flex-row items-center gap-1">
-            <Ionicons
-              name="navigate-outline"
-              size={12}
-              color={colors.contentSubtle}
-            />
+            <NavigationArrowIcon size={12} color={colors.contentSubtle} />
             <Text className="text-content-tertiary text-xs">{distance}</Text>
           </View>
         )}
@@ -118,11 +119,7 @@ export function SpotSuggestionCard({
         {header}
         {title}
         <View className="flex-row items-center gap-1.5 px-3.5 mt-1.5">
-          <Ionicons
-            name="location-outline"
-            size={13}
-            color={colors.contentMuted}
-          />
+          <MapPinIcon size={13} color={colors.contentMuted} />
           <Text
             numberOfLines={1}
             className="flex-1 text-content-muted text-[13px]"
@@ -161,7 +158,7 @@ export function SpotSuggestionCard({
         <Text className="text-brand-text-bright text-[13px] font-bold">
           Escolher esse rolê
         </Text>
-        <Ionicons name="chevron-forward" size={16} color={colors.brandText} />
+        <CaretRightIcon size={16} color={colors.brandText} />
       </View>
     </Pressable>
   )

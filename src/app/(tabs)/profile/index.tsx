@@ -2,6 +2,14 @@ import { useMemo } from 'react'
 import { View, Text } from 'react-native'
 import { useRouter } from 'expo-router'
 import {
+  UserPlusIcon,
+  CrownIcon,
+  GearIcon,
+  ShieldCheckIcon,
+  InfoIcon,
+  SignOutIcon,
+} from 'phosphor-react-native'
+import {
   useMyProfile,
   useUploadAvatar,
 } from '@/features/users/hooks/useProfile'
@@ -78,7 +86,7 @@ export default function ProfileScreen() {
       ? [
           {
             label: 'Solicitações de follow',
-            icon: 'person-add-outline' as const,
+            icon: UserPlusIcon,
             badge: pendingRequestsBadge,
             onPress: () => router.push('/profile/follow-requests'),
           },
@@ -86,28 +94,28 @@ export default function ProfileScreen() {
       : []),
     {
       label: profile.isPremium ? 'Assinatura' : 'Clubber Premium',
-      icon: 'diamond-outline',
+      icon: CrownIcon,
       onPress: () =>
         router.push(profile.isPremium ? '/billing/manage' : '/billing/upgrade'),
     },
     {
       label: 'Configurações',
-      icon: 'settings-outline' as const,
+      icon: GearIcon,
       onPress: () => router.push('/settings'),
     },
     {
       label: 'Privacidade',
-      icon: 'shield-checkmark-outline' as const,
+      icon: ShieldCheckIcon,
       onPress: () => router.push('/profile/privacy'),
     },
     {
       label: 'Sobre o app',
-      icon: 'information-circle-outline',
+      icon: InfoIcon,
       onPress: () => router.push('/about'),
     },
     {
       label: 'Sair',
-      icon: 'log-out-outline',
+      icon: SignOutIcon,
       onPress: handleLogout,
     },
   ]

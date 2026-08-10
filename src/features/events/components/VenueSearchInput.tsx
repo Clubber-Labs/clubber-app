@@ -6,7 +6,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { MagnifyingGlassIcon, PencilSimpleIcon } from 'phosphor-react-native'
 import { useVenueSearch } from '../hooks/useVenueSearch'
 import { VenueSuggestionItem } from './VenueSuggestionItem'
 import type { PlaceDetails, VenueSuggestion } from '../services/placesService'
@@ -63,7 +63,7 @@ export function VenueSearchInput({
           {busy ? (
             <ActivityIndicator size="small" color={colors.brandEmphasis} />
           ) : (
-            <Ionicons name="search" size={18} color={colors.contentSubtle} />
+            <MagnifyingGlassIcon size={18} color={colors.contentSubtle} />
           )}
         </View>
       </View>
@@ -99,7 +99,7 @@ export function VenueSearchInput({
         onPress={onManual}
         className="flex-row items-center gap-1.5 py-1"
       >
-        <Ionicons name="create-outline" size={15} color={colors.brandText} />
+        <PencilSimpleIcon size={15} color={colors.brandText} />
         <Text className="text-sm font-medium text-brand-text">
           Inserir endereço manualmente
         </Text>

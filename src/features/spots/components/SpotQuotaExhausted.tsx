@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { ClockIcon, SparkleIcon } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { SpotSheetState } from './SpotSheetState'
 import { colors } from '@/shared/theme'
@@ -18,7 +18,7 @@ export function SpotQuotaExhausted({ isPremium, onUpgrade, onSeeMap }: Props) {
 
   return (
     <SpotSheetState
-      icon="time-outline"
+      icon={ClockIcon}
       tone="warning"
       title={`Você usou suas ${limit} gerações de hoje`}
       description={
@@ -30,7 +30,7 @@ export function SpotQuotaExhausted({ isPremium, onUpgrade, onSeeMap }: Props) {
       {!isPremium && (
         <View className="w-full bg-brand-surface border border-brand-surface-strong rounded-2xl p-4 gap-2 mt-1">
           <View className="flex-row items-center gap-2">
-            <Ionicons name="sparkles" size={16} color={colors.brandText} />
+            <SparkleIcon size={16} color={colors.brandText} />
             <Text className="text-brand-text-bright text-sm font-bold">
               Clubber Premium
             </Text>

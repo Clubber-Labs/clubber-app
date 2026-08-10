@@ -1,5 +1,5 @@
 import { Pressable, ActivityIndicator } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { ChatCircleIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -22,11 +22,7 @@ export function MessageButton({ onPress, loading }: Props) {
       {loading ? (
         <ActivityIndicator size="small" color={colors.contentSecondary} />
       ) : (
-        <Ionicons
-          name="chatbubble-outline"
-          size={20}
-          color={colors.contentSecondary}
-        />
+        <ChatCircleIcon size={20} color={colors.contentSecondary} />
       )}
     </Pressable>
   )

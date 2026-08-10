@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { PaperPlaneRightIcon } from 'phosphor-react-native'
 import {
   useComments,
   useAddComment,
@@ -127,7 +127,11 @@ export function InlineCommentsSection({ eventId }: Props) {
           {addComment.isPending ? (
             <ActivityIndicator size="small" color={colors.content} />
           ) : (
-            <Ionicons name="send" size={14} color={colors.content} />
+            <PaperPlaneRightIcon
+              size={14}
+              color={colors.content}
+              weight="fill"
+            />
           )}
         </Pressable>
       </View>

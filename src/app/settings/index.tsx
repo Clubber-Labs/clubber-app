@@ -1,5 +1,12 @@
 import { ScrollView, View, Text } from 'react-native'
 import { useRouter } from 'expo-router'
+import {
+  UserCircleIcon,
+  BellIcon,
+  SparkleIcon,
+  ShieldCheckIcon,
+  InfoIcon,
+} from 'phosphor-react-native'
 import { SettingsRow } from '@/shared/components/SettingsRow'
 
 export default function SettingsScreen() {
@@ -19,30 +26,30 @@ export default function SettingsScreen() {
         <SettingsRow
           label="Conta"
           description="Propriedade e controle da conta"
-          icon="person-circle-outline"
+          icon={UserCircleIcon}
           onPress={() => router.push('/settings/account')}
         />
         <SettingsRow
           label="Notificações"
           description="Push, eventos próximos e categorias preferidas"
-          icon="notifications-outline"
+          icon={BellIcon}
           onPress={() => router.push('/settings/notifications')}
         />
         <SettingsRow
           label="Sugestões de rolês"
           description="Raio da busca de spots no mapa"
-          icon="sparkles-outline"
+          icon={SparkleIcon}
           onPress={() => router.push('/settings/spots')}
         />
         <SettingsRow
           label="Privacidade"
           description="Consentimentos e dados (LGPD)"
-          icon="shield-checkmark-outline"
+          icon={ShieldCheckIcon}
           onPress={() => router.push('/profile/privacy')}
         />
         <SettingsRow
           label="Sobre o app"
-          icon="information-circle-outline"
+          icon={InfoIcon}
           onPress={() => router.push('/about')}
         />
       </View>

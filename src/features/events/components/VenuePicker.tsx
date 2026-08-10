@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { MagnifyingGlassIcon } from 'phosphor-react-native'
 import { VenueSearchInput } from './VenueSearchInput'
 import { SelectedVenueCard } from './SelectedVenueCard'
 import { AddressAutocomplete } from './AddressAutocomplete'
@@ -68,7 +68,7 @@ export function VenuePicker({ value, onChange, coords, hasError }: Props) {
           onPress={() => setMode('search')}
           className="flex-row items-center gap-1.5 py-1"
         >
-          <Ionicons name="search" size={15} color={colors.brandText} />
+          <MagnifyingGlassIcon size={15} color={colors.brandText} />
           <Text className="text-sm font-medium text-brand-text">
             Buscar estabelecimento
           </Text>

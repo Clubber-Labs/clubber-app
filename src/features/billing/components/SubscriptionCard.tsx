@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { CrownIcon } from 'phosphor-react-native'
 import type { Subscription, SubscriptionStatus } from '../types'
 import { formatDateBR } from '../utils/formatDateBR'
 import { colors } from '@/shared/theme'
@@ -26,7 +26,7 @@ export function SubscriptionCard({ subscription }: Props) {
     <View className="bg-surface border border-line rounded-2xl p-5 gap-4">
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <Ionicons name="diamond-outline" size={20} color={colors.brandText} />
+          <CrownIcon size={20} color={colors.brandText} />
           <Text className="text-content font-bold text-lg">
             Clubber Premium
           </Text>

@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { PencilSimpleIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { InboxList } from '@/features/chat/components/InboxList'
@@ -38,7 +38,7 @@ export default function InboxScreen() {
         style={{ bottom: tabBarClearance }}
         accessibilityLabel="Nova conversa"
       >
-        <Ionicons name="create" size={24} color={colors.background} />
+        <PencilSimpleIcon size={24} color={colors.background} weight="fill" />
       </Pressable>
     </View>
   )

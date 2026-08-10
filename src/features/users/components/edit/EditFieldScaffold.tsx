@@ -7,7 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { CaretLeftIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { colors } from '@/shared/theme'
 
@@ -42,11 +42,7 @@ export function EditFieldScaffold({
           className="w-9 h-9 rounded-full bg-surface-elevated items-center justify-center"
           accessibilityLabel="Voltar"
         >
-          <Ionicons
-            name="chevron-back"
-            size={22}
-            color={colors.contentSecondary}
-          />
+          <CaretLeftIcon size={22} color={colors.contentSecondary} />
         </Pressable>
         <Text className="flex-1 text-content text-lg font-extrabold">
           {title}

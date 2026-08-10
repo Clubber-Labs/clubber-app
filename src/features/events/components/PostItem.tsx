@@ -1,5 +1,10 @@
 import { View, Text, Pressable, Image, ScrollView } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  TrashIcon,
+  FlagIcon,
+  ChatCircleIcon,
+  HeartIcon,
+} from 'phosphor-react-native'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
 import { UserAvatar } from '@/shared/components/UserAvatar'
@@ -64,7 +69,7 @@ export function PostItem({ eventId, post, onReport }: Props) {
             disabled={deletePost.isPending}
             className="w-8 h-8 items-center justify-center"
           >
-            <Ionicons name="trash-outline" size={18} color={colors.danger} />
+            <TrashIcon size={18} color={colors.danger} />
           </Pressable>
         ) : onReport ? (
           <Pressable
@@ -72,11 +77,7 @@ export function PostItem({ eventId, post, onReport }: Props) {
             className="w-8 h-8 items-center justify-center"
             accessibilityLabel="Denunciar publicação"
           >
-            <Ionicons
-              name="flag-outline"
-              size={16}
-              color={colors.contentSubtle}
-            />
+            <FlagIcon size={16} color={colors.contentSubtle} />
           </Pressable>
         ) : null}
       </View>
@@ -103,21 +104,13 @@ export function PostItem({ eventId, post, onReport }: Props) {
       {post._count && (
         <View className="flex-row gap-4 pt-1">
           <View className="flex-row items-center gap-1">
-            <Ionicons
-              name="chatbubble-outline"
-              size={14}
-              color={colors.contentSubtle}
-            />
+            <ChatCircleIcon size={14} color={colors.contentSubtle} />
             <Text className="text-xs text-content-muted">
               {post._count.comments}
             </Text>
           </View>
           <View className="flex-row items-center gap-1">
-            <Ionicons
-              name="heart-outline"
-              size={14}
-              color={colors.contentSubtle}
-            />
+            <HeartIcon size={14} color={colors.contentSubtle} />
             <Text className="text-xs text-content-muted">
               {post._count.reactions}
             </Text>

@@ -7,7 +7,7 @@ import Animated, {
   useAnimatedStyle,
   type SharedValue,
 } from 'react-native-reanimated'
-import { Ionicons } from '@expo/vector-icons'
+import type { Icon } from 'phosphor-react-native'
 import ReanimatedSwipeable, {
   type SwipeableMethods,
   SwipeDirection,
@@ -15,13 +15,13 @@ import ReanimatedSwipeable, {
 import { colors } from '@/shared/theme'
 
 export type SwipeAction = {
-  icon: keyof typeof Ionicons.glyphMap
+  icon: Icon
   label: string
   onPress: () => void
 }
 
 export type SwipeTrigger = {
-  icon: keyof typeof Ionicons.glyphMap
+  icon: Icon
   onTrigger: () => void
 }
 
@@ -52,17 +52,20 @@ function RightActions({
 
   return (
     <Animated.View style={style} className="flex-row items-center">
-      {actions.map(action => (
-        <Pressable
-          key={action.label}
-          onPress={() => onRun(action)}
-          style={{ width: 32 }}
-          className="items-center justify-center"
-          accessibilityLabel={action.label}
-        >
-          <Ionicons name={action.icon} size={24} color={colors.content} />
-        </Pressable>
-      ))}
+      {actions.map(action => {
+        const ActionIcon = action.icon
+        return (
+          <Pressable
+            key={action.label}
+            onPress={() => onRun(action)}
+            style={{ width: 32 }}
+            className="items-center justify-center"
+            accessibilityLabel={action.label}
+          >
+            <ActionIcon size={24} color={colors.content} />
+          </Pressable>
+        )
+      })}
     </Animated.View>
   )
 }
@@ -71,10 +74,10 @@ function RightActions({
 // e cresce; a ação dispara ao soltar passando o limiar (ver onSwipeableOpen).
 function TriggerIcon({
   progress,
-  icon,
+  icon: IconComponent,
 }: {
   progress: SharedValue<number>
-  icon: keyof typeof Ionicons.glyphMap
+  icon: Icon
 }) {
   const style = useAnimatedStyle(() => ({
     opacity: interpolate(progress.value, [0.2, 1], [0, 1], Extrapolation.CLAMP),
@@ -92,7 +95,7 @@ function TriggerIcon({
 
   return (
     <Animated.View style={style} className="items-center justify-center px-5">
-      <Ionicons name={icon} size={22} color={colors.brandEmphasis} />
+      <IconComponent size={22} color={colors.brandEmphasis} />
     </Animated.View>
   )
 }

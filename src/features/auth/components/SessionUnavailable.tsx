@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { CloudSlashIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -12,11 +12,7 @@ export function SessionUnavailable({ onRetry }: Props) {
   return (
     <View className="absolute inset-0 bg-background items-center justify-center px-8 gap-4">
       <View className="w-16 h-16 rounded-full bg-surface items-center justify-center">
-        <Ionicons
-          name="cloud-offline-outline"
-          size={32}
-          color={colors.brandEmphasis}
-        />
+        <CloudSlashIcon size={32} color={colors.brandEmphasis} />
       </View>
       <Text className="text-content font-semibold text-lg text-center">
         Sem conexão

@@ -1,5 +1,4 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { formatRelative } from '@/shared/utils/dateFormat'
@@ -81,7 +80,7 @@ export function NotificationRow({ notification, onPress }: Props) {
           <View
             className={`w-11 h-11 rounded-full border items-center justify-center ${tile.box}`}
           >
-            <Ionicons name={visual.icon} size={20} color={tile.icon} />
+            <visual.icon size={20} color={tile.icon} weight="fill" />
           </View>
         )}
         {actor && (
@@ -89,7 +88,7 @@ export function NotificationRow({ notification, onPress }: Props) {
             className="absolute -right-1.5 -bottom-0.5 w-5 h-5 rounded-full items-center justify-center border-2 border-background"
             style={{ backgroundColor: BADGE_COLOR[visual.tone] }}
           >
-            <Ionicons name={visual.icon} size={11} color={colors.content} />
+            <visual.icon size={11} color={colors.content} weight="fill" />
           </View>
         )}
       </View>

@@ -1,6 +1,6 @@
 /**
  * Espelho JS dos tokens de cor para props que NÃO aceitam className —
- * ícones (@expo/vector-icons), Mapbox, ActivityIndicator, tab bar, etc.
+ * ícones (phosphor-react-native), Mapbox, ActivityIndicator, tab bar, etc.
  *
  * Fonte da verdade visual é src/global.css. Manter os valores aqui em
  * sincronia com as variáveis --color-* daquele arquivo.

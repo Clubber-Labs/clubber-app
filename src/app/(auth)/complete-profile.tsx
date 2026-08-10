@@ -8,7 +8,7 @@ import {
   Platform,
 } from 'react-native'
 import { Stack } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
+import { CaretLeftIcon } from 'phosphor-react-native'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { useLogout } from '@/features/auth/hooks/useLogout'
 import { CompleteProfileForm } from '@/features/auth/components/CompleteProfileForm'
@@ -45,7 +45,7 @@ export default function CompleteProfileScreen() {
           hitSlop={12}
           className="flex-row items-center gap-1 px-6 pt-4 self-start"
         >
-          <Ionicons name="chevron-back" size={22} color={colors.content} />
+          <CaretLeftIcon size={22} color={colors.content} />
           <Text className="text-content font-semibold text-base">Sair</Text>
         </Pressable>
 

@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { CameraIcon } from 'phosphor-react-native'
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { ProfileStats } from './ProfileStats'
@@ -98,7 +98,7 @@ export function ProfileHeader({
             </View>
             {editable && !avatarUploading && (
               <View className="absolute -bottom-0.5 -right-0.5 h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-brand">
-                <Ionicons name="camera" size={13} color={colors.content} />
+                <CameraIcon size={13} color={colors.content} />
               </View>
             )}
           </Pressable>

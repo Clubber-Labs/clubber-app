@@ -7,7 +7,7 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { CalendarBlankIcon } from 'phosphor-react-native'
 import type { EventImage } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
@@ -27,7 +27,7 @@ export function EventImagesCarousel({ images, height = 224 }: Props) {
         style={{ height }}
         className="w-full bg-brand-strong items-center justify-center"
       >
-        <Ionicons name="calendar" size={56} color={colors.content} />
+        <CalendarBlankIcon size={56} weight="fill" color={colors.content} />
       </View>
     )
   }

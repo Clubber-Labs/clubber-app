@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { View, Text, Pressable, ActivityIndicator } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { CaretDownIcon, CaretUpIcon } from 'phosphor-react-native'
 import { useCategories } from '@/shared/hooks/useCategories'
 import { InterestGroup } from './InterestGroup'
 import { colors } from '@/shared/theme'
@@ -45,11 +45,11 @@ export function InterestsMultiSelect({ value, onChange, max = 30 }: Props) {
             </View>
           )}
         </View>
-        <Ionicons
-          name={expanded ? 'chevron-up' : 'chevron-down'}
-          size={18}
-          color={colors.contentTertiary}
-        />
+        {expanded ? (
+          <CaretUpIcon size={18} color={colors.contentTertiary} />
+        ) : (
+          <CaretDownIcon size={18} color={colors.contentTertiary} />
+        )}
       </Pressable>
 
       {expanded &&

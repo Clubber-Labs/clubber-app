@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { StackIcon, SparkleIcon } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { colors } from '@/shared/theme'
 
@@ -17,7 +17,7 @@ export function SpotLimitReached({ isPremium, onUpgrade, onBack }: Props) {
   return (
     <View className="flex-1 items-center justify-center px-6 gap-3">
       <View className="w-16 h-16 rounded-2xl bg-warning/15 border border-warning/30 items-center justify-center">
-        <Ionicons name="albums-outline" size={28} color={colors.warningText} />
+        <StackIcon size={28} color={colors.warningText} />
       </View>
 
       <Text className="text-content text-lg font-bold text-center">
@@ -34,7 +34,7 @@ export function SpotLimitReached({ isPremium, onUpgrade, onBack }: Props) {
       {!isPremium && (
         <View className="w-full bg-brand-surface border border-brand-surface-strong rounded-2xl p-4 gap-2 mt-1">
           <View className="flex-row items-center gap-2">
-            <Ionicons name="sparkles" size={16} color={colors.brandText} />
+            <SparkleIcon size={16} color={colors.brandText} />
             <Text className="text-brand-text-bright text-sm font-bold">
               Clubber Premium
             </Text>

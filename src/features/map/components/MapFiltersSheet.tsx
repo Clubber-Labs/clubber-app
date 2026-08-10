@@ -1,5 +1,5 @@
 import { View, Text, Pressable, ScrollView, Switch } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { UsersIcon } from 'phosphor-react-native'
 import { SheetModal } from '@/shared/components/SheetModal'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import { EventStatusFilter } from '@/features/events/components/EventStatusFilter'
@@ -60,7 +60,7 @@ export function MapFiltersSheet() {
           <Text className={`${SECTION_LABEL} mt-6`}>Pessoas</Text>
           <View className="flex-row items-center gap-3 bg-surface border border-line rounded-2xl px-3.5 py-3">
             <View className="w-10 h-10 rounded-xl bg-brand-surface border border-brand-surface-strong items-center justify-center">
-              <Ionicons name="people" size={20} color={colors.brandText} />
+              <UsersIcon size={20} color={colors.brandText} weight="fill" />
             </View>
             <View className="flex-1">
               <Text className="text-content-secondary text-[15px] font-semibold">

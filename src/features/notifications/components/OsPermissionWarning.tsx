@@ -1,5 +1,5 @@
 import { View, Text, Pressable, Linking } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { WarningCircleIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 export function OsPermissionWarning({ message }: Props) {
   return (
     <View className="flex-row items-center gap-3 px-4 py-3 border-t border-line">
-      <Ionicons name="alert-circle-outline" size={18} color={colors.warning} />
+      <WarningCircleIcon size={18} color={colors.warning} />
       <Text className="flex-1 text-xs text-warning-text leading-4">
         {message}
       </Text>

@@ -1,5 +1,5 @@
 import { View } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { UsersIcon } from 'phosphor-react-native'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import type { UserMini } from '@/shared/types'
 import { colors } from '@/shared/theme'
@@ -20,10 +20,10 @@ export function ConversationAvatar({ users, type, size = 52 }: Props) {
           style={{ width: size, height: size, borderRadius: size / 2 }}
           className="bg-surface-elevated items-center justify-center"
         >
-          <Ionicons
-            name="people"
+          <UsersIcon
             size={Math.round(size * 0.5)}
             color={colors.contentMuted}
+            weight="fill"
           />
         </View>
       )

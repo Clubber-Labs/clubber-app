@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { DotsThreeIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useDeleteEvent } from '../hooks/useDeleteEvent'
@@ -63,7 +63,7 @@ export function EventActionsButton({ eventId, isPublic }: Props) {
         className="w-10 h-10 items-center justify-center rounded-full bg-background/50"
         hitSlop={8}
       >
-        <Ionicons name="ellipsis-horizontal" size={22} color={colors.content} />
+        <DotsThreeIcon size={22} color={colors.content} weight="bold" />
       </Pressable>
       <EventActionsMenu
         visible={open}

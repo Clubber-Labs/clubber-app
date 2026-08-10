@@ -1,6 +1,5 @@
 import { Pressable, Text, ActivityIndicator } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
-import type { ComponentProps } from 'react'
+import type { Icon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
 type Variant = 'primary' | 'secondary' | 'destructive' | 'neutral'
@@ -12,7 +11,7 @@ type Props = {
   disabled?: boolean
   variant?: Variant
   // Ícone opcional à esquerda do label (oculto enquanto carrega).
-  icon?: ComponentProps<typeof Ionicons>['name']
+  icon?: Icon
 }
 
 const containerStyles: Record<Variant, string> = {
@@ -46,7 +45,7 @@ export function Button({
   loading,
   disabled,
   variant = 'primary',
-  icon,
+  icon: IconComponent,
 }: Props) {
   const base = 'rounded-lg py-3 px-6 items-center justify-center flex-row gap-2'
 
@@ -70,7 +69,7 @@ export function Button({
           }
         />
       ) : (
-        icon && <Ionicons name={icon} size={18} color={iconColors[variant]} />
+        IconComponent && <IconComponent size={18} color={iconColors[variant]} />
       )}
       <Text className={`font-semibold text-base ${textStyles[variant]}`}>
         {label}

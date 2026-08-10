@@ -1,14 +1,11 @@
 import { Pressable, View, Text } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
-import type { ComponentProps } from 'react'
+import { CaretRightIcon, type Icon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
-
-type IconName = ComponentProps<typeof Ionicons>['name']
 
 type Props = {
   label: string
   description?: string
-  icon?: IconName
+  icon?: Icon
   destructive?: boolean
   onPress: () => void
 }
@@ -18,7 +15,7 @@ type Props = {
 export function SettingsRow({
   label,
   description,
-  icon,
+  icon: IconComponent,
   destructive,
   onPress,
 }: Props) {
@@ -28,9 +25,8 @@ export function SettingsRow({
       className="flex-row items-center justify-between px-4 py-4 border-b border-line active:opacity-70"
     >
       <View className="flex-row items-center gap-3 flex-1 pr-3">
-        {icon && (
-          <Ionicons
-            name={icon}
+        {IconComponent && (
+          <IconComponent
             size={20}
             color={destructive ? colors.danger : colors.contentMuted}
           />
@@ -48,7 +44,7 @@ export function SettingsRow({
           )}
         </View>
       </View>
-      <Ionicons name="chevron-forward" size={16} color={colors.contentSubtle} />
+      <CaretRightIcon size={16} color={colors.contentSubtle} />
     </Pressable>
   )
 }

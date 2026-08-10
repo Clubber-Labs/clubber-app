@@ -1,5 +1,10 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  CaretLeftIcon,
+  ListIcon,
+  BellIcon,
+  SlidersHorizontalIcon,
+} from 'phosphor-react-native'
 import { useRouter, useSegments } from 'expo-router'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useProfileDrawer } from '@/features/users/store/profileDrawerStore'
@@ -73,11 +78,7 @@ export function GlobalHeader({
             onPress={handleBack}
             className="w-9 h-9 items-center justify-center"
           >
-            <Ionicons
-              name="chevron-back"
-              size={26}
-              color={colors.contentBright}
-            />
+            <CaretLeftIcon size={26} color={colors.contentBright} />
           </Pressable>
         )}
         {isProfileTab && (
@@ -90,7 +91,7 @@ export function GlobalHeader({
                 : 'Abrir menu'
             }
           >
-            <Ionicons name="menu" size={26} color={colors.contentBright} />
+            <ListIcon size={26} color={colors.contentBright} />
             {hasPendingRequests && (
               <View className="absolute top-1.5 right-1 w-2 h-2 bg-danger rounded-full" />
             )}
@@ -102,11 +103,7 @@ export function GlobalHeader({
             className="w-9 h-9 items-center justify-center"
             accessibilityLabel="Filtrar eventos"
           >
-            <Ionicons
-              name="options-outline"
-              size={24}
-              color={colors.contentBright}
-            />
+            <SlidersHorizontalIcon size={24} color={colors.contentBright} />
             {hasMapFilters && (
               <View className="absolute top-1.5 right-1 w-2 h-2 bg-brand-emphasis rounded-full" />
             )}
@@ -132,11 +129,7 @@ export function GlobalHeader({
                 : 'Notificações'
             }
           >
-            <Ionicons
-              name="notifications-outline"
-              size={24}
-              color={colors.contentSecondary}
-            />
+            <BellIcon size={24} color={colors.contentSecondary} />
             {unreadNotifications > 0 && (
               <View className="absolute -top-0.5 -right-1.5">
                 <UnreadBadge count={unreadNotifications} />

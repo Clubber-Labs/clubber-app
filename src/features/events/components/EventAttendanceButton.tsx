@@ -1,16 +1,14 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { StarIcon, CheckCircleIcon, XCircleIcon } from 'phosphor-react-native'
+import type { Icon } from 'phosphor-react-native'
 import { useSetAttendance, useCancelAttendance } from '../hooks/useAttendance'
 import type { AttendanceType } from '@/shared/types'
-import type { ComponentProps } from 'react'
 import { colors } from '@/shared/theme'
 
-type IconName = ComponentProps<typeof Ionicons>['name']
-
-const OPTIONS: { type: AttendanceType; label: string; icon: IconName }[] = [
-  { type: 'INTERESTED', label: 'Interessado', icon: 'star-outline' },
-  { type: 'CONFIRMED', label: 'Vou', icon: 'checkmark-circle-outline' },
-  { type: 'NOT_INTERESTED', label: 'Não vou', icon: 'close-circle-outline' },
+const OPTIONS: { type: AttendanceType; label: string; icon: Icon }[] = [
+  { type: 'INTERESTED', label: 'Interessado', icon: StarIcon },
+  { type: 'CONFIRMED', label: 'Vou', icon: CheckCircleIcon },
+  { type: 'NOT_INTERESTED', label: 'Não vou', icon: XCircleIcon },
 ]
 
 type Props = {
@@ -32,7 +30,7 @@ export function EventAttendanceButton({ eventId, current }: Props) {
 
   return (
     <View className="flex-row gap-2">
-      {OPTIONS.map(({ type, label, icon }) => {
+      {OPTIONS.map(({ type, label, icon: OptionIcon }) => {
         const active = current === type
         return (
           <Pressable
@@ -46,8 +44,7 @@ export function EventAttendanceButton({ eventId, current }: Props) {
                 : 'bg-surface border-line-strong'
             }`}
           >
-            <Ionicons
-              name={icon}
+            <OptionIcon
               size={20}
               color={active ? colors.background : colors.contentSecondary}
             />

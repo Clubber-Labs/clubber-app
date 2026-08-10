@@ -1,44 +1,35 @@
 import { Tabs } from 'expo-router'
-import { Ionicons } from '@expo/vector-icons'
-import type { ComponentProps } from 'react'
+import {
+  HouseIcon,
+  MagnifyingGlassIcon,
+  MapTrifoldIcon,
+  ChatCircleIcon,
+  UserIcon,
+} from 'phosphor-react-native'
+import type { Icon } from 'phosphor-react-native'
 import { useInbox } from '@/features/chat/hooks/useInbox'
 import { GlassTabBar } from '@/shared/components/GlassTabBar'
-
-type IconName = ComponentProps<typeof Ionicons>['name']
 
 type TabConfig = {
   name: string
   title: string
-  icon: IconName
-  iconFocused: IconName
+  icon: Icon
 }
 
 const TABS: TabConfig[] = [
-  {
-    name: 'feed/index',
-    title: 'Feed',
-    icon: 'home-outline',
-    iconFocused: 'home',
-  },
+  { name: 'feed/index', title: 'Feed', icon: HouseIcon },
   {
     name: 'search/index',
     title: 'Buscar',
-    icon: 'search-outline',
-    iconFocused: 'search',
+    icon: MagnifyingGlassIcon,
   },
-  { name: 'map/index', title: 'Mapa', icon: 'map-outline', iconFocused: 'map' },
+  { name: 'map/index', title: 'Mapa', icon: MapTrifoldIcon },
   {
     name: 'messages/index',
     title: 'Mensagens',
-    icon: 'chatbubble-outline',
-    iconFocused: 'chatbubble',
+    icon: ChatCircleIcon,
   },
-  {
-    name: 'profile/index',
-    title: 'Perfil',
-    icon: 'person-outline',
-    iconFocused: 'person',
-  },
+  { name: 'profile/index', title: 'Perfil', icon: UserIcon },
 ]
 
 export default function TabsLayout() {
@@ -58,10 +49,10 @@ export default function TabsLayout() {
           options={{
             title: tab.title,
             tabBarIcon: ({ focused, color, size }) => (
-              <Ionicons
-                name={focused ? tab.iconFocused : tab.icon}
+              <tab.icon
                 size={size}
                 color={color}
+                weight={focused ? 'fill' : 'regular'}
               />
             ),
             ...(tab.name === 'messages/index' && unreadTotal > 0

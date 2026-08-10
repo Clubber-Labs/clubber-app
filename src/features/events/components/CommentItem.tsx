@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { FlagIcon, HeartIcon, TrashIcon } from 'phosphor-react-native'
 import { useToggleCommentLike } from '../hooks/useComments'
 import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
 import { formatRelative } from '@/shared/utils/dateFormat'
@@ -49,11 +49,7 @@ export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
               accessibilityRole="button"
               accessibilityLabel="Denunciar comentário"
             >
-              <Ionicons
-                name="flag-outline"
-                size={14}
-                color={colors.contentSubtle}
-              />
+              <FlagIcon size={14} color={colors.contentSubtle} />
             </Pressable>
           )}
         </View>
@@ -65,9 +61,9 @@ export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
         className="flex-row items-center gap-1 mt-2 self-start"
         accessibilityLabel={comment.userLiked ? 'Descurtir' : 'Curtir'}
       >
-        <Ionicons
-          name={comment.userLiked ? 'heart' : 'heart-outline'}
+        <HeartIcon
           size={16}
+          weight={comment.userLiked ? 'fill' : 'regular'}
           color={comment.userLiked ? colors.danger : colors.contentMuted}
         />
         {comment.reactionsCount > 0 && (
@@ -85,7 +81,7 @@ export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
 
   return (
     <SwipeableRow
-      rightActions={[{ icon: 'trash', label: 'Apagar', onPress: onDelete }]}
+      rightActions={[{ icon: TrashIcon, label: 'Apagar', onPress: onDelete }]}
     >
       {card}
     </SwipeableRow>

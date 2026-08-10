@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { PauseIcon, PlayIcon } from 'phosphor-react-native'
 import { formatDuration } from '@/shared/utils/formatDuration'
 import { Waveform } from './Waveform'
 import { useVoiceMessagePlayer } from '../hooks/useVoiceMessagePlayer'
@@ -55,7 +55,11 @@ export function VoiceMessage({ attachment, isMine, onLongPress }: Props) {
         className="w-9 h-9 items-center justify-center"
         accessibilityLabel={playing ? 'Pausar áudio' : 'Tocar áudio'}
       >
-        <Ionicons name={playing ? 'pause' : 'play'} size={22} color={tint} />
+        {playing ? (
+          <PauseIcon size={22} color={tint} weight="fill" />
+        ) : (
+          <PlayIcon size={22} color={tint} weight="fill" />
+        )}
       </Pressable>
 
       <Pressable

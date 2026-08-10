@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { DotsThreeVerticalIcon } from 'phosphor-react-native'
 import { ConversationAvatar } from './ConversationAvatar'
 import { PresenceDot } from './PresenceDot'
 import { usePresence } from '../hooks/usePresence'
@@ -85,10 +85,10 @@ export function ConversationHeader({
         className="w-9 h-9 items-center justify-center"
         accessibilityLabel="Mais opções"
       >
-        <Ionicons
-          name="ellipsis-vertical"
+        <DotsThreeVerticalIcon
           size={20}
           color={colors.contentSecondary}
+          weight="bold"
         />
       </Pressable>
     </View>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { View, Text, TextInput, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { RadioButtonIcon } from 'phosphor-react-native'
 import { SheetModal } from '@/shared/components/SheetModal'
 import { REASON_OPTIONS, reportSheetTitle } from '../utils/reportLabels'
 import type { ReportReason, ReportTarget } from '../types'
@@ -48,8 +48,8 @@ export function ReportReasonSheet({ target, onClose, onSubmit }: Props) {
             className="flex-row items-center justify-between px-5 py-3"
           >
             <Text className="text-content-bright text-base">{r.label}</Text>
-            <Ionicons
-              name={active ? 'radio-button-on' : 'radio-button-off'}
+            <RadioButtonIcon
+              weight={active ? 'fill' : 'regular'}
               size={20}
               color={active ? colors.brandEmphasis : colors.contentFaint}
             />

@@ -1,5 +1,5 @@
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { LockIcon, UsersIcon } from 'phosphor-react-native'
 import Svg, {
   Defs,
   RadialGradient,
@@ -68,11 +68,7 @@ export function ProfileEventTile({ event, onPress }: Props) {
       </View>
       {!event.isPublic && (
         <View className="absolute right-2 top-2 rounded-md border border-white/15 bg-black/70 p-1">
-          <Ionicons
-            name="lock-closed"
-            size={11}
-            color={colors.contentTertiary}
-          />
+          <LockIcon size={11} color={colors.contentTertiary} />
         </View>
       )}
 
@@ -85,7 +81,7 @@ export function ProfileEventTile({ event, onPress }: Props) {
         </Text>
         {typeof event.attendancesCount === 'number' && (
           <View className="mt-1 flex-row items-center gap-1">
-            <Ionicons name="people" size={11} color={colors.contentTertiary} />
+            <UsersIcon size={11} color={colors.contentTertiary} />
             <Text className="text-[11px] font-semibold text-content-tertiary">
               {event.attendancesCount}
             </Text>

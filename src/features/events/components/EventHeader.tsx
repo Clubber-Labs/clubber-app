@@ -1,6 +1,14 @@
-import type { ComponentProps, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  CaretLeftIcon,
+  CaretRightIcon,
+  BuildingsIcon,
+  MapPinIcon,
+  ClockIcon,
+  LockIcon,
+  type Icon,
+} from 'phosphor-react-native'
 import Svg, {
   Defs,
   RadialGradient,
@@ -21,8 +29,6 @@ import { EventAttendeesStack } from './EventAttendeesStack'
 import type { EventDetail } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
-type IconName = ComponentProps<typeof Ionicons>['name']
-
 type Props = {
   event: EventDetail
   onAuthorPress?: () => void
@@ -35,12 +41,12 @@ type Props = {
 
 // Linha de meta: ícone destacado num quadrado + título forte + subtítulo.
 function MetaRow({
-  icon,
+  icon: Icon,
   title,
   subtitle,
   chevron,
 }: {
-  icon: IconName
+  icon: Icon
   title: string
   subtitle?: string
   chevron?: boolean
@@ -48,7 +54,7 @@ function MetaRow({
   return (
     <View className="flex-row items-center gap-3 border-b border-line py-3">
       <View className="h-9 w-9 items-center justify-center rounded-lg bg-surface">
-        <Ionicons name={icon} size={18} color={colors.brandText} />
+        <Icon size={18} color={colors.brandText} />
       </View>
       <View className="flex-1">
         <Text className="text-content text-sm font-bold">{title}</Text>
@@ -58,13 +64,7 @@ function MetaRow({
           </Text>
         )}
       </View>
-      {chevron && (
-        <Ionicons
-          name="chevron-forward"
-          size={18}
-          color={colors.contentSubtle}
-        />
-      )}
+      {chevron && <CaretRightIcon size={18} color={colors.contentSubtle} />}
     </View>
   )
 }
@@ -105,7 +105,7 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
             hitSlop={8}
             className="h-10 w-10 items-center justify-center rounded-full bg-background/50"
           >
-            <Ionicons name="chevron-back" size={24} color={colors.content} />
+            <CaretLeftIcon size={24} color={colors.content} />
           </Pressable>
         ) : (
           <View className="h-10 w-10" />
@@ -187,11 +187,7 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
             ))}
             {!event.isPublic && (
               <View className="flex-row items-center gap-1 rounded-md bg-surface-elevated px-2.5 py-1">
-                <Ionicons
-                  name="lock-closed"
-                  size={11}
-                  color={colors.contentTertiary}
-                />
+                <LockIcon size={11} color={colors.contentTertiary} />
                 <Text className="text-content-tertiary text-xs font-semibold">
                   Privado
                 </Text>
@@ -211,7 +207,7 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
             longitude={event.longitude}
           >
             <MetaRow
-              icon={event.venueName ? 'business-outline' : 'location-outline'}
+              icon={event.venueName ? BuildingsIcon : MapPinIcon}
               title={
                 event.venueName ?? event.address ?? 'Ver localização no mapa'
               }
@@ -225,7 +221,7 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
               chevron
             />
           </AddressLink>
-          <MetaRow icon="time-outline" title={formatEventDate(event.date)} />
+          <MetaRow icon={ClockIcon} title={formatEventDate(event.date)} />
         </View>
 
         {!!event.description && (

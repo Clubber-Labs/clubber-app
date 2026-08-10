@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { BuildingsIcon } from 'phosphor-react-native'
 import type { VenueSuggestion } from '../services/placesService'
 import { colors } from '@/shared/theme'
 
@@ -16,8 +16,7 @@ export function VenueSuggestionItem({ suggestion, onPress, divider }: Props) {
       className={`px-4 py-3 ${divider ? 'border-t border-line' : ''}`}
     >
       <View className="flex-row items-start gap-2">
-        <Ionicons
-          name="business-outline"
+        <BuildingsIcon
           size={16}
           color={colors.brandText}
           style={{ marginTop: 2 }}

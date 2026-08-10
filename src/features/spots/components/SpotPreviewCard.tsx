@@ -1,5 +1,10 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  XIcon,
+  SparkleIcon,
+  ClockIcon,
+  CaretRightIcon,
+} from 'phosphor-react-native'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useCategories } from '@/shared/hooks/useCategories'
 import { formatSpotWindow, isSpotLiveNow } from '../utils/spotWindow'
@@ -51,7 +56,7 @@ export function SpotPreviewCard({
         hitSlop={8}
         className="absolute right-2.5 top-2.5 z-10 h-7 w-7 items-center justify-center rounded-lg bg-surface-elevated"
       >
-        <Ionicons name="close" size={16} color={colors.contentMuted} />
+        <XIcon size={16} color={colors.contentMuted} />
       </Pressable>
 
       <View className="flex-row gap-3">
@@ -59,7 +64,7 @@ export function SpotPreviewCard({
           className="h-20 w-20 items-center justify-center overflow-hidden rounded-lg"
           style={{ backgroundColor: colors.brandSurfaceStrong }}
         >
-          <Ionicons name="sparkles" size={26} color={colors.brandTextBright} />
+          <SparkleIcon size={26} color={colors.brandTextBright} />
         </View>
 
         <View className="flex-1 gap-1 pr-6">
@@ -84,11 +89,7 @@ export function SpotPreviewCard({
           </Text>
           {live && <LivePill />}
           <View className="flex-row items-center gap-1.5">
-            <Ionicons
-              name="time-outline"
-              size={13}
-              color={colors.contentSubtle}
-            />
+            <ClockIcon size={13} color={colors.contentSubtle} />
             <Text
               className="flex-1 text-xs text-content-muted"
               numberOfLines={1}
@@ -107,7 +108,7 @@ export function SpotPreviewCard({
         className="mt-3 h-11 flex-row items-center justify-center gap-1.5 rounded-lg bg-brand"
       >
         <Text className="text-sm font-bold text-content">Ver rolê</Text>
-        <Ionicons name="chevron-forward" size={16} color={colors.content} />
+        <CaretRightIcon size={16} color={colors.content} />
       </Pressable>
     </View>
   )

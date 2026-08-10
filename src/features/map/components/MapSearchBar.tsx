@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   Keyboard,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { MapPinIcon } from 'phosphor-react-native'
 import { SearchInput } from '@/shared/components/SearchInput'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useCategories } from '@/shared/hooks/useCategories'
@@ -39,7 +39,7 @@ export function MapSearchBar({ onSelect }: Props) {
         value={query}
         onChange={setQuery}
         loading={open && isLoading}
-        placeholder="Buscar eventos..."
+        placeholder="Buscar rolês ou eventos..."
         variant="overlay"
       />
 
@@ -72,11 +72,7 @@ export function MapSearchBar({ onSelect }: Props) {
                       {event.title}
                     </Text>
                     <View className="flex-row items-center gap-1">
-                      <Ionicons
-                        name="location-outline"
-                        size={12}
-                        color={colors.contentSubtle}
-                      />
+                      <MapPinIcon size={12} color={colors.contentSubtle} />
                       <Text
                         numberOfLines={1}
                         className="text-content-subtle text-xs flex-1"

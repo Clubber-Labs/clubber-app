@@ -8,7 +8,12 @@ import {
   Platform,
   Pressable,
 } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import {
+  SparkleIcon,
+  GlobeIcon,
+  UsersIcon,
+  ChatCircleIcon,
+} from 'phosphor-react-native'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { ReactNode } from 'react'
@@ -106,7 +111,7 @@ export function SpotForm({
               Título
             </Text>
             <View className="flex-row items-center gap-1 rounded-full bg-brand-surface border border-brand-surface-strong px-2 py-0.5">
-              <Ionicons name="sparkles" size={10} color={colors.brandText} />
+              <SparkleIcon size={10} color={colors.brandText} />
               <Text className="text-brand-text text-[10px] font-bold">
                 sugerido pela IA
               </Text>
@@ -314,6 +319,7 @@ export function SpotForm({
                 {(['PUBLIC', 'FRIENDS'] as const).map(option => {
                   const active = value === option
                   const isPublic = option === 'PUBLIC'
+                  const VisibilityIcon = isPublic ? GlobeIcon : UsersIcon
                   return (
                     <Pressable
                       key={option}
@@ -324,8 +330,7 @@ export function SpotForm({
                         active ? 'bg-surface-elevated' : ''
                       }`}
                     >
-                      <Ionicons
-                        name={isPublic ? 'earth' : 'people'}
+                      <VisibilityIcon
                         size={16}
                         color={active ? colors.content : colors.contentMuted}
                       />
@@ -351,11 +356,7 @@ export function SpotForm({
       <View className="border-t border-line bg-surface-sunken px-5 pt-3 pb-5 gap-3">
         <FormError message={submitError} />
         <View className="flex-row items-center justify-center gap-2">
-          <Ionicons
-            name="chatbubble-outline"
-            size={14}
-            color={colors.contentMuted}
-          />
+          <ChatCircleIcon size={14} color={colors.contentMuted} />
           <Text className="text-content-muted text-xs">
             Publicar cria o{' '}
             <Text className="text-content-secondary font-semibold">
@@ -366,7 +367,7 @@ export function SpotForm({
         </View>
         <Button
           label={submitting ? 'Publicando...' : 'Publicar rolê'}
-          icon="sparkles"
+          icon={SparkleIcon}
           onPress={handleSubmit(onSubmit)}
           loading={submitting}
         />

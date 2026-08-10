@@ -1,5 +1,5 @@
 import { View, Text, ActivityIndicator, Pressable, Share } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { CheckIcon, MapPinIcon } from 'phosphor-react-native'
 import * as Linking from 'expo-linking'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 import { Button } from '@/shared/components/Button'
@@ -46,7 +46,7 @@ export default function SpotCreatedScreen() {
   return (
     <View className="flex-1 bg-background items-center justify-center px-6 gap-5">
       <View className="w-20 h-20 rounded-full bg-brand items-center justify-center">
-        <Ionicons name="checkmark" size={40} color={colors.content} />
+        <CheckIcon size={40} color={colors.content} />
       </View>
 
       <View className="items-center gap-2">
@@ -60,7 +60,7 @@ export default function SpotCreatedScreen() {
 
       <View className="w-full flex-row items-center gap-3 bg-surface border border-line rounded-xl p-3">
         <View className="w-12 h-12 rounded-lg bg-brand-surface border border-brand-surface-strong items-center justify-center">
-          <Ionicons name="location" size={20} color={colors.brandText} />
+          <MapPinIcon weight="fill" size={20} color={colors.brandText} />
         </View>
         <View className="flex-1">
           <Text

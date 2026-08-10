@@ -1,5 +1,5 @@
 import { ScrollView, View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { ArrowSquareOutIcon } from 'phosphor-react-native'
 import * as Linking from 'expo-linking'
 import Constants from 'expo-constants'
 import { colors } from '@/shared/theme'
@@ -21,7 +21,7 @@ function LinkRow({ label, url, showBorder }: LinkRowProps) {
       className={`flex-row items-center justify-between py-3 ${showBorder ? 'border-t border-line' : ''}`}
     >
       <Text className="text-content-secondary text-base">{label}</Text>
-      <Ionicons name="open-outline" size={18} color={colors.contentMuted} />
+      <ArrowSquareOutIcon size={18} color={colors.contentMuted} />
     </Pressable>
   )
 }

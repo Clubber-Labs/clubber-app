@@ -1,15 +1,17 @@
 import { View, Text } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
-import type { ComponentProps } from 'react'
+import {
+  EyeIcon,
+  ShareNetworkIcon,
+  CheckCircleIcon,
+} from 'phosphor-react-native'
+import type { Icon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 import type { EventAnalyticsTotals } from '../types'
-
-type IconName = ComponentProps<typeof Ionicons>['name']
 
 type Card = {
   key: keyof EventAnalyticsTotals
   label: string
-  icon: IconName
+  icon: Icon
   color: string
 }
 
@@ -19,19 +21,19 @@ const CARDS: Card[] = [
   {
     key: 'views',
     label: 'Visualizações',
-    icon: 'eye-outline',
+    icon: EyeIcon,
     color: colors.brandText,
   },
   {
     key: 'shares',
     label: 'Compartilhamentos',
-    icon: 'share-social-outline',
+    icon: ShareNetworkIcon,
     color: colors.info,
   },
   {
     key: 'confirmations',
     label: 'Confirmações',
-    icon: 'checkmark-circle-outline',
+    icon: CheckCircleIcon,
     color: colors.successText,
   },
 ]
@@ -49,7 +51,7 @@ export function AnalyticsSummaryCards({ totals }: Props) {
           className="flex-1 bg-surface-sunken border border-line rounded-xl p-3"
         >
           <View className="w-9 h-9 rounded-full bg-surface-elevated items-center justify-center mb-2">
-            <Ionicons name={card.icon} size={18} color={card.color} />
+            <card.icon size={18} color={card.color} />
           </View>
           <Text className="text-content font-bold text-xl">
             {totals[card.key]}

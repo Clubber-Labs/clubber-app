@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { ChatsIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -10,11 +10,7 @@ export function InboxEmpty({ onNew }: Props) {
   return (
     <View className="flex-1 items-center justify-center px-8 gap-3">
       <View className="w-16 h-16 rounded-full bg-surface items-center justify-center">
-        <Ionicons
-          name="chatbubbles-outline"
-          size={32}
-          color={colors.brandEmphasis}
-        />
+        <ChatsIcon size={32} color={colors.brandEmphasis} />
       </View>
       <Text className="text-content font-semibold text-base">
         Nenhuma conversa ainda

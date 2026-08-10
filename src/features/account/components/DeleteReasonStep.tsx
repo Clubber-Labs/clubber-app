@@ -1,5 +1,5 @@
 import { View, Text, TextInput, Pressable } from 'react-native'
-import { Ionicons } from '@expo/vector-icons'
+import { RadioButtonIcon } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import {
   DELETE_REASON_OPTIONS,
@@ -42,10 +42,10 @@ export function DeleteReasonStep({
             className="flex-row items-center justify-between py-3"
           >
             <Text className="text-content-bright text-base">{o.label}</Text>
-            <Ionicons
-              name={active ? 'radio-button-on' : 'radio-button-off'}
+            <RadioButtonIcon
               size={20}
               color={active ? colors.brandEmphasis : colors.contentFaint}
+              weight={active ? 'fill' : 'regular'}
             />
           </Pressable>
         )
