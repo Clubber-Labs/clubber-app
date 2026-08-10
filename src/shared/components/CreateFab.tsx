@@ -13,9 +13,10 @@ type Props = {
   onCreateSpot: () => void
 }
 
-// Ação única de criar no mapa: o "+" abre um seletor (evento formal × rolê) em
-// vez de dois FABs separados. Cada opção dispara o fluxo da tela.
-export function MapCreateButton({ onCreateEvent, onCreateSpot }: Props) {
+// Ação única de criar, igual em todas as abas: o "+" abre um seletor (evento
+// formal × rolê) em vez de FABs distintos por tela. Cada opção dispara o fluxo
+// que a tela hospedeira passar (o rolê fora do mapa navega até ele).
+export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
   const [open, setOpen] = useState(false)
   const tabBarClearance = useTabBarClearance()
 

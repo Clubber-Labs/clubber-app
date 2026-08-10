@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs'
 import { colors } from '@/shared/theme'
 
-export const TAB_BAR_HEIGHT = 52
+export const TAB_BAR_HEIGHT = 64
 export const TAB_BAR_BOTTOM_MARGIN = 8
 export const TAB_BAR_SIDE_MARGIN = 24
 

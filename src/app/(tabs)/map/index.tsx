@@ -37,7 +37,7 @@ import { MapStatusBanner } from '@/features/map/components/MapStatusBanner'
 import { MapSearchBar } from '@/features/map/components/MapSearchBar'
 import { MapCategoryChips } from '@/features/map/components/MapCategoryChips'
 import { MapFiltersSheet } from '@/features/map/components/MapFiltersSheet'
-import { MapCreateButton } from '@/features/map/components/MapCreateButton'
+import { CreateFab } from '@/shared/components/CreateFab'
 import { useViewportSpots } from '@/features/spots/hooks/useViewportSpots'
 import { useSuggestSpots } from '@/features/spots/hooks/useSuggestSpots'
 import { SpotMarkers } from '@/features/spots/components/SpotMarkers'
@@ -50,11 +50,18 @@ import { colors } from '@/shared/theme'
 
 export default function MapScreen() {
   const router = useRouter()
-  // Pedido de foco vindo de fora (ex.: "Ver no mapa" pós-publicação de spot).
-  const { focusSpotId, focusLat, focusLng } = useLocalSearchParams<{
+  // Pedidos vindos de fora: foco em spot ("Ver no mapa" pós-publicação) e
+  // abertura do fluxo de rolê (CreateFab das outras abas).
+  const {
+    focusSpotId,
+    focusLat,
+    focusLng,
+    suggest: suggestParam,
+  } = useLocalSearchParams<{
     focusSpotId?: string
     focusLat?: string
     focusLng?: string
+    suggest?: string
   }>()
   const { coords: userCoords, status: locationStatus } = useUserLocation()
   const livePos = useUserLiveLocation(locationStatus === 'ready')
@@ -112,6 +119,14 @@ export default function MapScreen() {
     if (!userCoords || focusLat || focusConsumedRef.current) return
     flyTo(userCoords, USER_ZOOM, 800)
   }, [userCoords, flyTo, focusLat])
+
+  // "Rolê" pedido por outra aba: abre o painel de sugestões e apaga o param
+  // (grudado na tab, reabriria o painel a cada volta pro mapa).
+  useEffect(() => {
+    if (!suggestParam) return
+    setSuggestionsOpen(true)
+    router.setParams({ suggest: '' })
+  }, [suggestParam, router])
 
   // O card do rolê abre quando os spots do viewport incluírem o focado.
   useEffect(() => {
@@ -303,7 +318,7 @@ export default function MapScreen() {
             densityActive={densityVisible}
             onToggleDensity={() => setDensityVisible(v => !v)}
           />
-          <MapCreateButton
+          <CreateFab
             onCreateEvent={() => router.push('/events/create')}
             onCreateSpot={() => setSuggestionsOpen(true)}
           />
