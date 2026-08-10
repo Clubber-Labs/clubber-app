@@ -6,6 +6,7 @@ import { formatSpotWindow } from '../utils/spotWindow'
 import { distanceKm, formatDistance } from '@/shared/utils/distance'
 import type { Spot } from '../types'
 import { colors } from '@/shared/theme'
+import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 
 type Props = {
   spot: Spot
@@ -23,6 +24,7 @@ export function SpotPreviewCard({
   onClose,
   onSeeDetails,
 }: Props) {
+  const tabBarClearance = useTabBarClearance()
   const { labelFor } = useCategories()
   const categoriesText = [...spot.categories, ...(spot.subcategories ?? [])]
     .map(labelFor)
@@ -37,7 +39,10 @@ export function SpotPreviewCard({
     .join(' · ')
 
   return (
-    <View className="absolute bottom-4 left-3 right-3 rounded-xl border border-line-strong bg-surface p-3">
+    <View
+      className="absolute left-3 right-3 rounded-xl border border-line-strong bg-surface p-3"
+      style={{ bottom: tabBarClearance }}
+    >
       <Pressable
         onPress={onClose}
         accessibilityLabel="Fechar"

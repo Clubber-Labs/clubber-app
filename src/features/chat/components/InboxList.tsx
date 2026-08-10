@@ -9,6 +9,7 @@ import {
 import { useInbox } from '../hooks/useInbox'
 import { useDeleteConversation } from '../hooks/useDeleteConversation'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
+import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import { useConfirm } from '@/shared/lib/confirm'
 import { SwipeableRow } from '@/shared/components/SwipeableRow'
 import { ConversationRow } from './ConversationRow'
@@ -24,6 +25,7 @@ type Props = {
 }
 
 export function InboxList({ myId, onOpen, onNew }: Props) {
+  const tabBarClearance = useTabBarClearance()
   const {
     conversations,
     isLoading,
@@ -73,6 +75,7 @@ export function InboxList({ myId, onOpen, onNew }: Props) {
     <FlatList
       data={conversations}
       keyExtractor={(item: InboxItem) => item.id}
+      contentContainerStyle={{ paddingBottom: tabBarClearance }}
       renderItem={({ item }) => (
         <SwipeableRow
           rightActions={[

@@ -4,10 +4,12 @@ import { useRouter } from 'expo-router'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { InboxList } from '@/features/chat/components/InboxList'
 import { colors } from '@/shared/theme'
+import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 
 export default function InboxScreen() {
   const router = useRouter()
   const myId = useAuthStore(s => s.userId)
+  const tabBarClearance = useTabBarClearance()
 
   if (!myId) return <View className="flex-1 bg-background" />
 
@@ -27,7 +29,8 @@ export default function InboxScreen() {
 
       <Pressable
         onPress={goNew}
-        className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-brand items-center justify-center"
+        className="absolute right-6 w-14 h-14 rounded-full bg-brand items-center justify-center"
+        style={{ bottom: tabBarClearance }}
         accessibilityLabel="Nova conversa"
       >
         <Ionicons name="create" size={24} color={colors.content} />

@@ -11,9 +11,11 @@ import { UserSearchInput } from '@/features/users/components/UserSearchInput'
 import { UserSearchCard } from '@/features/users/components/UserSearchCard'
 import { UserSearchEmpty } from '@/features/users/components/UserSearchEmpty'
 import { colors } from '@/shared/theme'
+import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 
 export default function SearchScreen() {
   const [query, setQuery] = useState('')
+  const tabBarClearance = useTabBarClearance()
   const {
     users,
     debouncedQuery,
@@ -56,6 +58,7 @@ export default function SearchScreen() {
         <FlatList
           data={users}
           keyExtractor={u => u.id}
+          contentContainerStyle={{ paddingBottom: tabBarClearance }}
           renderItem={({ item }) => <UserSearchCard user={item} />}
           ItemSeparatorComponent={() => (
             <View className="h-px bg-surface mx-4" />

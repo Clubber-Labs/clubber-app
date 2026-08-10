@@ -4,6 +4,7 @@ import { View, Text, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { SheetModal } from '@/shared/components/SheetModal'
 import { colors } from '@/shared/theme'
+import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 
 type IconName = ComponentProps<typeof Ionicons>['name']
 
@@ -16,6 +17,7 @@ type Props = {
 // vez de dois FABs separados. Cada opção dispara o fluxo da tela.
 export function MapCreateButton({ onCreateEvent, onCreateSpot }: Props) {
   const [open, setOpen] = useState(false)
+  const tabBarClearance = useTabBarClearance()
 
   function choose(action: () => void) {
     setOpen(false)
@@ -28,8 +30,9 @@ export function MapCreateButton({ onCreateEvent, onCreateSpot }: Props) {
         onPress={() => setOpen(true)}
         accessibilityRole="button"
         accessibilityLabel="Criar"
-        className="absolute bottom-6 right-4 h-14 w-14 items-center justify-center rounded-full bg-brand"
+        className="absolute right-4 h-14 w-14 items-center justify-center rounded-full bg-brand"
         style={{
+          bottom: tabBarClearance,
           shadowColor: colors.background,
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.2,

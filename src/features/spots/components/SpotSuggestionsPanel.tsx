@@ -14,6 +14,7 @@ import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { RadiusSlider } from '@/shared/components/RadiusSlider'
 import { useKeyboardSheetLift } from '@/shared/hooks/useKeyboardSheetLift'
+import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import {
   isValidationError,
   isTooManyRequestsError,
@@ -58,6 +59,7 @@ type Props = {
 // "Gerar de novo" reabre os controles (com voltar) sem gastar outra geração.
 export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
   const router = useRouter()
+  const tabBarClearance = useTabBarClearance()
   // Levanta a folha acima do teclado no iOS (Android: adjustResize já resolve).
   const { ref: sheetRef, lift: keyboardLift } = useKeyboardSheetLift()
   // Volta pros controles depois de já ter resultados (ajustar raio/intenção).
@@ -246,6 +248,9 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
           left: 0,
           right: 0,
           bottom: 0,
+          // Folha ancora no fundo da tela; o padding mantém o conteúdo acima
+          // da pílula flutuante (que fica por cima do vidro da folha).
+          paddingBottom: tabBarClearance,
           maxHeight: showResults ? '55%' : '85%',
           backgroundColor: colors.surfaceSunken,
           borderTopLeftRadius: 24,

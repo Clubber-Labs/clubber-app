@@ -9,6 +9,7 @@ import { EventAttendeesStack } from '@/features/events/components/EventAttendees
 import { distanceKm, formatDistance } from '@/shared/utils/distance'
 import { featuredAttendees } from '@/shared/utils/featuredAttendees'
 import { colors } from '@/shared/theme'
+import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 
 type Props = {
   event: FeedEvent
@@ -27,6 +28,7 @@ export function EventPreviewCard({
   onClose,
   onSeeDetails,
 }: Props) {
+  const tabBarClearance = useTabBarClearance()
   const cover = event.images[0]?.url
   const gradId = `preview-grad-${event.id}`
   const attendees = featuredAttendees(event)
@@ -38,7 +40,10 @@ export function EventPreviewCard({
     .join(' · ')
 
   return (
-    <View className="absolute bottom-4 left-3 right-3 rounded-xl border border-line-strong bg-surface p-3">
+    <View
+      className="absolute left-3 right-3 rounded-xl border border-line-strong bg-surface p-3"
+      style={{ bottom: tabBarClearance }}
+    >
       <Pressable
         onPress={onClose}
         accessibilityLabel="Fechar"

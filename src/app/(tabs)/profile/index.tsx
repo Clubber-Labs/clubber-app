@@ -10,6 +10,7 @@ import { usePickAvatar } from '@/features/users/hooks/usePickAvatar'
 import { useLogout } from '@/features/auth/hooks/useLogout'
 import { useFollowRequests } from '@/features/follows/hooks/useFollowRequests'
 import { useConfirm } from '@/shared/lib/confirm'
+import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import { ProfileHeader } from '@/features/users/components/ProfileHeader'
 import { EditProfileButton } from '@/features/users/components/EditProfileButton'
 import { ProfileEventsList } from '@/features/users/components/ProfileEventsList'
@@ -23,6 +24,7 @@ import {
 
 export default function ProfileScreen() {
   const router = useRouter()
+  const tabBarClearance = useTabBarClearance()
   const { data: profile, isLoading: profileLoading } = useMyProfile()
   const userId = profile?.id ?? ''
 
@@ -126,6 +128,7 @@ export default function ProfileScreen() {
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
         onLoadMore={fetchNextPage}
+        bottomPadding={tabBarClearance}
         empty={
           <ProfileEventsEmpty
             variant="own"

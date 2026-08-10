@@ -1,6 +1,7 @@
 import { View, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { colors } from '@/shared/theme'
+import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 
 type Props = {
   onZoomIn: () => void
@@ -22,8 +23,14 @@ export function MapZoomControls({
   densityActive,
   onToggleDensity,
 }: Props) {
+  const tabBarClearance = useTabBarClearance()
+
   return (
-    <View className="absolute bottom-28 right-4 w-14 overflow-hidden rounded-xl border border-line-strong bg-surface/95">
+    <View
+      className="absolute right-4 w-14 overflow-hidden rounded-xl border border-line-strong bg-surface/95"
+      // Acima do FAB de criar (56) + o mesmo respiro visual do layout antigo.
+      style={{ bottom: tabBarClearance + 88 }}
+    >
       <Pressable
         onPress={onToggleDensity}
         accessibilityRole="button"

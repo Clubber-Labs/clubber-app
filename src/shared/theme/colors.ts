@@ -6,13 +6,13 @@
  * sincronia com as variáveis --color-* daquele arquivo.
  */
 export const colors = {
-  // superfícies / fundos (carvão frio ~hue 215)
-  background: '#0e1116',
-  surfaceSunken: '#090b0f',
-  surface: '#181d24',
-  surfaceElevated: '#262d36',
-  surfaceHigh: '#3b4552',
-  surfaceHigher: '#4e5967',
+  // superfícies / fundos (zinc profundo)
+  background: '#0b0b0d',
+  surfaceSunken: '#060607',
+  surface: '#18181b',
+  surfaceElevated: '#27272a',
+  surfaceHigh: '#3f3f46',
+  surfaceHigher: '#52525b',
 
   // texto / conteúdo
   content: '#ffffff',
@@ -24,9 +24,9 @@ export const colors = {
   contentFaint: '#4e5967',
 
   // bordas
-  line: '#262d36',
-  lineStrong: '#3b4552',
-  lineSubtle: '#181d24',
+  line: '#27272a',
+  lineStrong: '#3f3f46',
+  lineSubtle: '#18181b',
 
   // marca
   brand: '#7c3aed',

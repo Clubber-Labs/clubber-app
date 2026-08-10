@@ -11,6 +11,7 @@ import { useFeed } from '../hooks/useFeed'
 import { EventCard } from '@/features/events/components/EventCard'
 import { EventStatusFilter } from '@/features/events/components/EventStatusFilter'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
+import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import { useUserLocation } from '@/shared/hooks/useUserLocation'
 import { flattenInfiniteList } from '@/shared/utils/infiniteList'
 import type { EventStatus, FeedEvent } from '@/shared/types'
@@ -18,6 +19,7 @@ import { colors } from '@/shared/theme'
 
 export function FeedList() {
   const router = useRouter()
+  const tabBarClearance = useTabBarClearance()
   const [statusFilter, setStatusFilter] = useState<EventStatus[]>([])
   // coords vêm como [lng, lat] (convenção Mapbox). Só envia near com permissão
   // concedida; negado/erro → feed sem proximidade (descoberta só por categoria).
@@ -85,7 +87,10 @@ export function FeedList() {
         <FlatList
           data={events}
           keyExtractor={(item: FeedEvent) => item.id}
-          contentContainerStyle={{ padding: 16 }}
+          contentContainerStyle={{
+            padding: 16,
+            paddingBottom: tabBarClearance,
+          }}
           renderItem={({ item }) => (
             <EventCard
               event={item}
