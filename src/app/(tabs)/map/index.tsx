@@ -20,6 +20,7 @@ import { useMapCamera } from '@/features/map/hooks/useMapCamera'
 import { useUserLocation } from '@/shared/hooks/useUserLocation'
 import { useUserLiveLocation } from '@/shared/hooks/useUserLiveLocation'
 import { useMapLightPreset } from '@/shared/hooks/useMapLightPreset'
+import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 import { useBanner } from '@/shared/lib/banner'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { UserLocationLayer } from '@/features/map/components/UserLocationLayer'
@@ -75,6 +76,7 @@ export default function MapScreen() {
   const filters = useMapUiStore(s => s.filters)
   const showBanner = useBanner()
   const lightPreset = useMapLightPreset()
+  const headerClearance = useHeaderClearance()
 
   const [selectedEvent, setSelectedEvent] = useState<FeedEvent | null>(null)
   const [avatarIconUri, setAvatarIconUri] = useState<string | null>(null)
@@ -278,7 +280,8 @@ export default function MapScreen() {
       </Mapbox.MapView>
 
       <View
-        className="absolute top-3 left-0 right-0 gap-2"
+        className="absolute left-0 right-0 gap-2"
+        style={{ top: headerClearance }}
         pointerEvents="box-none"
       >
         <View className="px-3">
@@ -288,13 +291,19 @@ export default function MapScreen() {
       </View>
 
       {isLoading && !error && (
-        <View className="absolute top-24 self-center bg-surface/90 px-3 py-1.5 rounded-lg border border-line-strong">
+        <View
+          className="absolute self-center bg-surface/90 px-3 py-1.5 rounded-lg border border-line-strong"
+          style={{ top: headerClearance + 84 }}
+        >
           <ActivityIndicator size="small" color={colors.brandEmphasis} />
         </View>
       )}
 
       {!isLoading && truncated && !error && (
-        <View className="absolute top-24 self-center bg-surface/90 px-3 py-1.5 rounded-lg border border-line-strong">
+        <View
+          className="absolute self-center bg-surface/90 px-3 py-1.5 rounded-lg border border-line-strong"
+          style={{ top: headerClearance + 84 }}
+        >
           <Text className="text-content-tertiary text-xs">
             Aproxime para ver mais eventos
           </Text>

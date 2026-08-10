@@ -153,6 +153,10 @@ export default function RootLayout() {
     !isBilling &&
     !isNotifications &&
     !isProfileEdit
+  // Nas abas o header de vidro flutua edge-to-edge (cobre a status bar, o
+  // conteúdo passa por baixo — clearance via useHeaderClearance). Nas telas
+  // empilhadas ele fica no fluxo, com o inset do SafeAreaView.
+  const floatingHeader = showHeader && segments[0] === '(tabs)'
   const chatActive = isAuthenticated && !profileIncomplete && !!userId
 
   // Publishable key é pública por natureza (pk_) — sem ela a PaymentSheet
@@ -171,9 +175,9 @@ export default function RootLayout() {
                   <StatusBar style="light" />
                   <SafeAreaView
                     style={{ flex: 1, backgroundColor: colors.background }}
-                    edges={isEventDetail ? [] : ['top']}
+                    edges={isEventDetail || floatingHeader ? [] : ['top']}
                   >
-                    {showHeader && <GlobalHeader />}
+                    {showHeader && !floatingHeader && <GlobalHeader />}
                     <View className="flex-1 bg-background">
                       <Stack
                         screenOptions={{
@@ -181,6 +185,11 @@ export default function RootLayout() {
                           contentStyle: { backgroundColor: colors.background },
                         }}
                       />
+                      {floatingHeader && (
+                        <View className="absolute top-0 left-0 right-0">
+                          <GlobalHeader floating />
+                        </View>
+                      )}
                       {/* Gate de sessão: bloqueia as telas até /me validar. */}
                       {status === 'loading' && (
                         <View className="absolute inset-0 bg-background" />

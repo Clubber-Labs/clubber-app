@@ -12,6 +12,7 @@ import { EventCard } from '@/features/events/components/EventCard'
 import { EventStatusFilter } from '@/features/events/components/EventStatusFilter'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
+import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 import { useUserLocation } from '@/shared/hooks/useUserLocation'
 import { flattenInfiniteList } from '@/shared/utils/infiniteList'
 import type { EventStatus, FeedEvent } from '@/shared/types'
@@ -20,6 +21,7 @@ import { colors } from '@/shared/theme'
 export function FeedList() {
   const router = useRouter()
   const tabBarClearance = useTabBarClearance()
+  const headerClearance = useHeaderClearance(0)
   const [statusFilter, setStatusFilter] = useState<EventStatus[]>([])
   // coords vêm como [lng, lat] (convenção Mapbox). Só envia near com permissão
   // concedida; negado/erro → feed sem proximidade (descoberta só por categoria).
@@ -55,7 +57,7 @@ export function FeedList() {
   const filtering = statusFilter.length > 0
 
   return (
-    <View className="flex-1">
+    <View className="flex-1" style={{ paddingTop: headerClearance }}>
       <View className="pt-3 pb-2 border-b border-line-subtle">
         <EventStatusFilter value={statusFilter} onChange={setStatusFilter} />
       </View>

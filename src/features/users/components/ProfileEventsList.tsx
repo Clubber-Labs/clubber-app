@@ -12,9 +12,10 @@ type Props = {
   hasNextPage: boolean
   isFetchingNextPage: boolean
   onLoadMore: () => void
-  // Aba com a pílula flutuante passa o clearance; perfil de terceiros (stack,
-  // sem tab bar) usa o default.
+  // Aba com pílula/header flutuantes passa os clearances; perfil de terceiros
+  // (stack, header no fluxo) usa os defaults.
   bottomPadding?: number
+  topPadding?: number
 }
 
 type Spacer = { __spacer: string }
@@ -32,6 +33,7 @@ export function ProfileEventsList({
   isFetchingNextPage,
   onLoadMore,
   bottomPadding = 32,
+  topPadding = 0,
 }: Props) {
   const router = useRouter()
 
@@ -45,7 +47,10 @@ export function ProfileEventsList({
       data={data}
       numColumns={2}
       keyExtractor={item => (isSpacer(item) ? item.__spacer : item.id)}
-      contentContainerStyle={{ paddingBottom: bottomPadding }}
+      contentContainerStyle={{
+        paddingTop: topPadding,
+        paddingBottom: bottomPadding,
+      }}
       columnWrapperStyle={{ paddingHorizontal: 16, gap: 8 }}
       ListHeaderComponent={header}
       renderItem={({ item }) =>

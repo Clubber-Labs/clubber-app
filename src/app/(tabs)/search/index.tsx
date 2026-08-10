@@ -12,10 +12,12 @@ import { UserSearchCard } from '@/features/users/components/UserSearchCard'
 import { UserSearchEmpty } from '@/features/users/components/UserSearchEmpty'
 import { colors } from '@/shared/theme'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
+import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 
 export default function SearchScreen() {
   const [query, setQuery] = useState('')
   const tabBarClearance = useTabBarClearance()
+  const headerClearance = useHeaderClearance(0)
   const {
     users,
     debouncedQuery,
@@ -32,7 +34,10 @@ export default function SearchScreen() {
     !showIdle && !isLoading && !isError && users.length === 0
 
   return (
-    <View className="flex-1 bg-background">
+    <View
+      className="flex-1 bg-background"
+      style={{ paddingTop: headerClearance }}
+    >
       <UserSearchInput
         value={query}
         onChange={setQuery}
