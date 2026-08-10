@@ -7,6 +7,8 @@ const PIN_TAIL_RATIO = 0.26
 // (day/dawn), onde branco sobre chão claro some; à noite é imperceptível.
 export const PIN_RIM_WIDTH = 1.6
 export const PIN_RIM_COLOR = 'rgba(0,0,0,0.30)'
+// Rim claro pra casca ESCURA (patrocinado invertido) — mesmo papel, invertido.
+export const PIN_RIM_COLOR_ON_DARK = 'rgba(255,255,255,0.38)'
 
 export function pinTailHeight(size: number): number {
   return Math.round(size * PIN_TAIL_RATIO)
