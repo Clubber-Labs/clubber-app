@@ -1,6 +1,6 @@
 import { View, Pressable, Text } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
-import Svg, { Circle, Path } from 'react-native-svg'
+import Svg, { Circle, Defs, LinearGradient, Path, Stop } from 'react-native-svg'
 import type { FeedEvent, FriendAttendance } from '@/shared/types'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { EmojiPinFace } from '@/shared/components/EmojiPinFace'
@@ -17,7 +17,7 @@ import {
   PIN_RIM_COLOR_ON_DARK,
   PIN_RIM_WIDTH,
 } from '../utils/markerLayout'
-import { colors } from '@/shared/theme'
+import { colors, categoryHue, SPECTRUM } from '@/shared/theme'
 
 type Props = {
   events: FeedEvent[]
@@ -53,12 +53,30 @@ function EventPin({
   const inner = size - 6
   const height = size + pinTailHeight(size)
   const featured = event.isFeatured
+  // Espectro do "agora": evento ONGOING troca o rim pelo gradiente-assinatura.
+  const live = event.status === 'ONGOING'
   const shell = featured
     ? colors.background
     : selected
       ? colors.contentBright
       : colors.content
-  const rim = featured ? PIN_RIM_COLOR_ON_DARK : PIN_RIM_COLOR
+  const rimId = `pin-rim-${event.id}`
+  const rim = live
+    ? `url(#${rimId})`
+    : featured
+      ? PIN_RIM_COLOR_ON_DARK
+      : PIN_RIM_COLOR
+  const rimWidth = live ? PIN_RIM_WIDTH * 2 : PIN_RIM_WIDTH
+  // Espalhamento do glow: live = halos do espectro; patrocinado = aura
+  // branca-prata saindo do rim claro (destaque no estilo da inversão, sem
+  // cor). Branco é perceptualmente mais claro → opacidades menores.
+  const glow = live || featured ? 6 : 0
+  const haloFill = live ? rim : colors.content
+  const haloStrong = live ? 0.35 : 0.32
+  const haloSoft = live ? 0.16 : 0.14
+  // Margem do canvas acompanha rim + glow: o gradiente do "agora" é mais
+  // grosso e estourava a folga fixa de 2, cortando nas laterais e no topo.
+  const pad = rimWidth + glow + 2
   const sealSize = Math.round(size * 0.34)
   return (
     <View
@@ -70,18 +88,57 @@ function EventPin({
       }}
     >
       <Svg
-        width={size + 4}
-        height={height + 4}
-        viewBox={`-2 -2 ${size + 4} ${height + 4}`}
-        style={{ position: 'absolute', left: -2, top: -2 }}
+        width={size + pad * 2}
+        height={height + pad * 2}
+        viewBox={`${-pad} ${-pad} ${size + pad * 2} ${height + pad * 2}`}
+        style={{ position: 'absolute', left: -pad, top: -pad }}
       >
+        {live && (
+          <Defs>
+            <LinearGradient id={rimId} x1="0" y1="0" x2="1" y2="1">
+              <Stop offset="0" stopColor={SPECTRUM[0]} />
+              <Stop offset="0.5" stopColor={SPECTRUM[1]} />
+              <Stop offset="1" stopColor={SPECTRUM[2]} />
+            </LinearGradient>
+          </Defs>
+        )}
+        {glow > 0 && (
+          <>
+            {/* Glow em camadas (sem filtro SVG — instável no RN): a cor do
+                halo se espalhando com opacidade decrescente. */}
+            <Circle
+              cx={size / 2}
+              cy={size / 2}
+              r={size / 2 + rimWidth + glow}
+              fill={haloFill}
+              fillOpacity={haloSoft}
+            />
+            <Path
+              d={pinTailPath(size, rimWidth + glow)}
+              fill={haloFill}
+              fillOpacity={haloSoft}
+            />
+            <Circle
+              cx={size / 2}
+              cy={size / 2}
+              r={size / 2 + rimWidth + glow / 2}
+              fill={haloFill}
+              fillOpacity={haloStrong}
+            />
+            <Path
+              d={pinTailPath(size, rimWidth + glow / 2)}
+              fill={haloFill}
+              fillOpacity={haloStrong}
+            />
+          </>
+        )}
         <Circle
           cx={size / 2}
           cy={size / 2}
-          r={size / 2 + PIN_RIM_WIDTH}
+          r={size / 2 + rimWidth}
           fill={rim}
         />
-        <Path d={pinTailPath(size, PIN_RIM_WIDTH)} fill={rim} />
+        <Path d={pinTailPath(size, rimWidth)} fill={rim} />
         <Circle cx={size / 2} cy={size / 2} r={size / 2} fill={shell} />
         <Path d={pinTailPath(size)} fill={shell} />
       </Svg>
@@ -99,6 +156,7 @@ function EventPin({
         <EmojiPinFace
           size={inner}
           emoji={eventCategoryEmoji(event.categories)}
+          field={categoryHue(event.categories[0]).pinField}
         />
       </View>
       {featured && (
@@ -137,24 +195,7 @@ type StackItem = { key: string; index: number } & (
   | { kind: 'more'; count: number }
 )
 
-// Prova social pendurada na base do pin (só pin único):
-//  - evento COM capa → avatar do organizador (sempre, mesmo com o card aberto)
-//  - evento SEM capa → pilha de participantes (amigos primeiro) + "+N", só no
-//    modo de navegação (some ao abrir o card de detalhes)
-function socialItems(event: FeedEvent, detailsOpen: boolean): StackItem[] {
-  if (event.images[0]?.url) {
-    return [
-      {
-        key: event.author.id,
-        index: 0,
-        kind: 'avatar',
-        attendee: { user: event.author },
-      },
-    ]
-  }
-
-  if (detailsOpen) return []
-
+function attendeeItems(event: FeedEvent): StackItem[] {
   const attendees = featuredAttendees(event).slice(0, MAX_FRIENDS)
   const moreCount = Math.max(0, event._count.attendances - attendees.length)
   const items: StackItem[] = attendees.map((attendee, index) => ({
@@ -172,6 +213,34 @@ function socialItems(event: FeedEvent, detailsOpen: boolean): StackItem[] {
     })
   }
   return items
+}
+
+// Prova social pendurada na base do pin (só pin único):
+//  - PATROCINADO → pilha de participantes mesmo com capa (a tração real vende
+//    mais que o avatar do organizador); sem confirmados, cai na regra da capa
+//  - evento COM capa → avatar do organizador (sempre, mesmo com o card aberto)
+//  - evento SEM capa → pilha de participantes (amigos primeiro) + "+N", só no
+//    modo de navegação (some ao abrir o card de detalhes)
+function socialItems(event: FeedEvent, detailsOpen: boolean): StackItem[] {
+  if (event.isFeatured && !detailsOpen) {
+    const items = attendeeItems(event)
+    if (items.length > 0) return items
+  }
+
+  if (event.images[0]?.url) {
+    return [
+      {
+        key: event.author.id,
+        index: 0,
+        kind: 'avatar',
+        attendee: { user: event.author },
+      },
+    ]
+  }
+
+  if (detailsOpen) return []
+
+  return attendeeItems(event)
 }
 
 function SingleMarker({

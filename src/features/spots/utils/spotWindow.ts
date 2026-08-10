@@ -12,3 +12,11 @@ export function formatSpotWindow(startsAt: string, endsAt: string): string {
     : format(end, "d 'de' MMMM 'às' HH:mm", { locale: ptBR })
   return `${startText} – ${endText}`
 }
+
+// Dentro da janela AGORA — gate do espectro-assinatura no balão do mapa.
+export function isSpotLiveNow(startsAt: string, endsAt: string): boolean {
+  const now = Date.now()
+  return (
+    new Date(startsAt).getTime() <= now && now <= new Date(endsAt).getTime()
+  )
+}

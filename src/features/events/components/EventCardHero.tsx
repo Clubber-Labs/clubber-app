@@ -1,19 +1,14 @@
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
-import Svg, {
-  Defs,
-  RadialGradient,
-  LinearGradient,
-  Stop,
-  Rect,
-} from 'react-native-svg'
+import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg'
 import { EventDateChip } from './EventDateChip'
 import { EventStatusBadge } from './EventStatusBadge'
 import { SponsoredBadge } from '@/features/featured-events/components/SponsoredBadge'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { formatFullName } from '@/shared/utils/fullName'
+import { eventCategoryEmoji } from '@/shared/utils/eventCategoryEmoji'
 import type { FeedEvent } from '@/shared/types'
-import { colors } from '@/shared/theme'
+import { colors, categoryHue } from '@/shared/theme'
 
 type Props = {
   event: FeedEvent
@@ -127,18 +122,20 @@ export function EventCardHero({ event, onAuthorPress }: Props) {
     )
   }
 
-  // Sem foto: o título vira o herói sobre um brilho sutil da marca no canto,
-  // esvaecendo para a superfície do card (id do gradiente por evento pra não
-  // colidir entre múltiplos Svg na lista).
+  // Sem foto: capa-gradiente no matiz da CATEGORIA (cor é informação) com o
+  // emoji grande como assinatura visual — o card deixa de ser cinza e diz o
+  // tipo do rolê antes da leitura (id por evento pra não colidir na lista).
   const gradientId = `hero-${event.id}`
+  const cover = categoryHue(event.categories[0]).cover
   return (
     <View className="relative overflow-hidden bg-surface">
       <Svg style={StyleSheet.absoluteFill}>
         <Defs>
-          <RadialGradient id={gradientId} cx="0" cy="0" r="1">
-            <Stop offset="0" stopColor={colors.brandSurfaceStrong} />
-            <Stop offset="0.62" stopColor={colors.surface} />
-          </RadialGradient>
+          <LinearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
+            <Stop offset="0" stopColor={cover[0]} />
+            <Stop offset="0.55" stopColor={cover[1]} />
+            <Stop offset="1" stopColor={cover[2]} />
+          </LinearGradient>
         </Defs>
         <Rect
           x="0"
@@ -148,10 +145,16 @@ export function EventCardHero({ event, onAuthorPress }: Props) {
           fill={`url(#${gradientId})`}
         />
       </Svg>
+      <Text
+        className="absolute bottom-1 right-3 text-4xl"
+        style={{ opacity: 0.9 }}
+      >
+        {eventCategoryEmoji(event.categories)}
+      </Text>
       <View className="gap-3 px-4 pb-4 pt-3">
         <TopChips event={event} isPast={isPast} />
         <Text
-          className="text-xl font-extrabold leading-tight text-content"
+          className="pr-10 text-xl font-extrabold leading-tight text-content"
           numberOfLines={2}
         >
           {event.title}

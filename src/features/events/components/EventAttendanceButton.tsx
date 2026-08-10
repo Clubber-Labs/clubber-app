@@ -41,16 +41,18 @@ export function EventAttendanceButton({ eventId, current }: Props) {
             accessibilityRole="button"
             accessibilityState={{ selected: active }}
             className={`flex-1 items-center justify-center gap-1 rounded-lg border py-3 ${
-              active ? 'bg-brand border-brand' : 'bg-surface border-line-strong'
+              active
+                ? 'bg-content border-content'
+                : 'bg-surface border-line-strong'
             }`}
           >
             <Ionicons
               name={icon}
               size={20}
-              color={active ? colors.content : colors.contentSecondary}
+              color={active ? colors.background : colors.contentSecondary}
             />
             <Text
-              className={`text-xs font-bold ${active ? 'text-content' : 'text-content-secondary'}`}
+              className={`text-xs font-bold ${active ? 'text-background' : 'text-content-secondary'}`}
             >
               {label}
             </Text>

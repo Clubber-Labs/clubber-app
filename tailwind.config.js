@@ -67,6 +67,7 @@ module.exports = {
           DEFAULT: token('success'),
           text: token('success-text'),
           strong: token('success-strong'),
+          surface: token('success-surface'),
         },
         // informação
         info: token('info'),

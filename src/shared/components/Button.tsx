@@ -16,7 +16,9 @@ type Props = {
 }
 
 const containerStyles: Record<Variant, string> = {
-  primary: 'bg-brand',
+  // Primário neutro (identidade A): branco cheio com texto escuro — o pop vem
+  // do contraste, não de cor de marca. Sem gradiente em botão, nunca.
+  primary: 'bg-content',
   secondary: 'border border-line-strong',
   // Vermelho igual ao botão destrutivo do ConfirmDialog.
   destructive: 'bg-danger-strong',
@@ -25,14 +27,14 @@ const containerStyles: Record<Variant, string> = {
 }
 
 const textStyles: Record<Variant, string> = {
-  primary: 'text-content',
+  primary: 'text-background',
   secondary: 'text-content-secondary',
   destructive: 'text-content',
   neutral: 'text-content',
 }
 
 const iconColors: Record<Variant, string> = {
-  primary: colors.content,
+  primary: colors.background,
   secondary: colors.contentSecondary,
   destructive: colors.content,
   neutral: colors.content,
@@ -59,7 +61,13 @@ export function Button({
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === 'secondary' ? colors.lineStrong : colors.content}
+          color={
+            variant === 'primary'
+              ? colors.background
+              : variant === 'secondary'
+                ? colors.lineStrong
+                : colors.content
+          }
         />
       ) : (
         icon && <Ionicons name={icon} size={18} color={iconColors[variant]} />

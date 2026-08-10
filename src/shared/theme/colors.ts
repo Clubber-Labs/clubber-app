@@ -28,16 +28,16 @@ export const colors = {
   lineStrong: '#3f3f46',
   lineSubtle: '#18181b',
 
-  // marca
-  brand: '#7c3aed',
-  brandEmphasis: '#8b5cf6',
-  brandStrong: '#6d28d9',
-  brandText: '#a78bfa',
-  brandTextStrong: '#c4b5fd',
-  brandTextBright: '#ddd6fe',
-  brandTextSubtle: '#ede9fe',
-  brandSurface: '#2e1065',
-  brandSurfaceStrong: '#4c1d95',
+  // ação/realce — ex-marca violeta, agora neutros (nomes legados; ver global.css)
+  brand: '#3f3f46',
+  brandEmphasis: '#9aa4b0',
+  brandStrong: '#52525b',
+  brandText: '#ccd2da',
+  brandTextStrong: '#e2e6eb',
+  brandTextBright: '#f2f4f7',
+  brandTextSubtle: '#f2f4f7',
+  brandSurface: '#27272a',
+  brandSurfaceStrong: '#3f3f46',
 
   // perigo
   danger: '#ef4444',
@@ -56,6 +56,7 @@ export const colors = {
   success: '#22c55e',
   successText: '#4ade80',
   successStrong: '#16a34a',
+  successSurface: '#153a26',
 
   // informação (ex: confirmação de "lido")
   info: '#7dd3fc',

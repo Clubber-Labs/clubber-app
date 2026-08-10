@@ -37,16 +37,18 @@
   --color-line-strong: 63 63 70; /* #3f3f46 */
   --color-line-subtle: 24 24 27; /* #18181b */
 
-  /* marca (violet) */
-  --color-brand: 124 58 237; /* #7c3aed */
-  --color-brand-emphasis: 139 92 246; /* #8b5cf6 */
-  --color-brand-strong: 109 40 217; /* #6d28d9 */
-  --color-brand-text: 167 139 250; /* #a78bfa */
-  --color-brand-text-strong: 196 181 253; /* #c4b5fd */
-  --color-brand-text-bright: 221 214 254; /* #ddd6fe */
-  --color-brand-text-subtle: 237 233 254; /* #ede9fe */
-  --color-brand-surface: 46 16 101; /* #2e1065 */
-  --color-brand-surface-strong: 76 29 149; /* #4c1d95 */
+  /* ação/realce — ex-marca violeta, agora NEUTROS (identidade A: chrome sem
+     cor de marca; a vida vem do conteúdo e do espectro do "agora"). Nomes
+     brand* mantidos como legado até um rename mecânico dedicado. */
+  --color-brand: 63 63 70; /* #3f3f46 */
+  --color-brand-emphasis: 154 164 176; /* #9aa4b0 */
+  --color-brand-strong: 82 82 91; /* #52525b */
+  --color-brand-text: 204 210 218; /* #ccd2da */
+  --color-brand-text-strong: 226 230 235; /* #e2e6eb */
+  --color-brand-text-bright: 242 244 247; /* #f2f4f7 */
+  --color-brand-text-subtle: 242 244 247; /* #f2f4f7 */
+  --color-brand-surface: 39 39 42; /* #27272a */
+  --color-brand-surface-strong: 63 63 70; /* #3f3f46 */
 
   /* perigo (red) */
   --color-danger: 239 68 68; /* #ef4444 */
@@ -65,6 +67,7 @@
   --color-success: 34 197 94; /* #22c55e */
   --color-success-text: 74 222 128; /* #4ade80 */
   --color-success-strong: 22 163 74; /* #16a34a */
+  --color-success-surface: 21 58 38; /* #153a26 */
 
   /* informação (sky) — ex: confirmação de "lido" */
   --color-info: 125 211 252; /* #7dd3fc */

@@ -1,4 +1,5 @@
 import { View, Text } from 'react-native'
+import { LivePill } from '@/shared/components/LivePill'
 import type { EventStatus } from '@/shared/types'
 
 type Props = {
@@ -12,8 +13,9 @@ type Style = {
   strike?: boolean
 }
 
-const STYLES: Record<EventStatus, Style> = {
-  ONGOING: { bg: 'bg-danger-surface', text: 'text-danger-text-subtle' },
+// ONGOING não está aqui: é o único estado que usa o espectro-assinatura
+// (gradiente do "agora"), renderizado à parte.
+const STYLES: Record<Exclude<EventStatus, 'ONGOING'>, Style> = {
   SOON: { bg: 'bg-warning-surface', text: 'text-warning-text' },
   UPCOMING: { bg: 'bg-surface-elevated', text: 'text-content-secondary' },
   PAST: { bg: 'bg-surface-elevated/60', text: 'text-content-subtle' },
@@ -25,7 +27,7 @@ const STYLES: Record<EventStatus, Style> = {
 }
 
 function buildLabel(status: EventStatus, date?: string): string {
-  if (status === 'ONGOING') return 'Acontecendo agora'
+  if (status === 'ONGOING') return 'Rolando agora'
   if (status === 'SOON') return 'Em breve'
   if (status === 'PAST') return 'Encerrado'
   if (status === 'CANCELED') return 'Cancelado'
@@ -45,8 +47,10 @@ function daysUntil(iso: string): number {
 // `status` vem sempre do backend — mobile não computa. Quando ausente ou
 // desconhecido, não renderiza (forward-compat enquanto o backend popula).
 export function EventStatusBadge({ status, date }: Props) {
+  if (!status) return null
+  if (status === 'ONGOING') return <LivePill label={buildLabel('ONGOING')} />
   // hasOwn evita match em chaves herdadas (ex: 'toString')
-  if (!status || !Object.hasOwn(STYLES, status)) return null
+  if (!Object.hasOwn(STYLES, status)) return null
   const style = STYLES[status]
   return (
     <View className={`px-2.5 py-1 rounded-md ${style.bg}`}>
