@@ -13,7 +13,7 @@ export function GlassSurface({ children, style }: Props) {
   return (
     <BlurView
       tint="dark"
-      intensity={60}
+      intensity={50}
       experimentalBlurMethod="dimezisBlurView"
       style={[
         {

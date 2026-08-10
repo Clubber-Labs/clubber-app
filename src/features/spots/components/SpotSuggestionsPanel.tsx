@@ -14,6 +14,7 @@ import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { RadiusSlider } from '@/shared/components/RadiusSlider'
 import { useKeyboardSheetLift } from '@/shared/hooks/useKeyboardSheetLift'
+import { GlassSurface } from '@/shared/components/GlassSurface'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import {
   isValidationError,
@@ -248,94 +249,104 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
           left: 0,
           right: 0,
           bottom: 0,
-          // Folha ancora no fundo da tela; o padding mantém o conteúdo acima
-          // da pílula flutuante (que fica por cima do vidro da folha).
-          paddingBottom: tabBarClearance,
           maxHeight: showResults ? '55%' : '85%',
-          backgroundColor: colors.surfaceSunken,
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-          borderTopWidth: 1,
-          borderTopColor: colors.line,
         },
         sheetStyle,
       ]}
     >
-      <GestureDetector gesture={dragGesture}>
-        <View className="items-center pt-3 pb-3">
-          <View className="w-10 h-1 bg-surface-high rounded-full" />
-        </View>
-      </GestureDetector>
-      <View className="flex-row items-center justify-between px-5 pb-2">
-        <View className="flex-row items-center gap-1.5 flex-1">
-          {editing && canReturn && (
-            <Pressable
-              onPress={() => setEditing(false)}
-              accessibilityRole="button"
-              accessibilityLabel="Voltar para as sugestões"
-              hitSlop={8}
-            >
-              <Ionicons name="chevron-back" size={22} color={colors.content} />
-            </Pressable>
-          )}
-          <Text className="text-content text-lg font-bold">
-            {showResults
-              ? `${count} ${count === 1 ? 'rolê' : 'rolês'} pra hoje`
-              : 'Bora pra onde?'}
-          </Text>
-        </View>
-        <View className="flex-row items-center gap-4">
-          {showResults && (
-            <Pressable
-              onPress={() => setEditing(true)}
-              className="flex-row items-center gap-1.5"
-              accessibilityRole="button"
-              accessibilityLabel="Gerar de novo"
-              hitSlop={8}
-            >
-              <Ionicons name="refresh" size={16} color={colors.brandText} />
-              <Text className="text-brand-text text-sm font-semibold">
-                Gerar de novo
-              </Text>
-            </Pressable>
-          )}
-          <Pressable
-            onPress={onClose}
-            className="w-8 h-8 items-center justify-center"
-            accessibilityLabel="Fechar sugestões"
-          >
-            <Ionicons name="close" size={22} color={colors.contentMuted} />
-          </Pressable>
-        </View>
-      </View>
-      <FlatList
-        // A folha tem teto (max-h); flexShrink deixa a lista encolher e rolar
-        // dentro dele com muitos cards. Sem isto a lista estica a folha além da
-        // tela e a virtualização não rola (flex-1 colaparia: base 0 em pai auto).
-        style={{ flexShrink: 1 }}
-        // Ordem ranqueada pela IA — renderiza como veio, sem reordenar. Na cota
-        // esgotada a lista some: o estado dedicado (no header) toma a folha.
-        data={showQuota ? NO_SUGGESTIONS : suggestions}
-        keyExtractor={item => item.placeId}
-        // O campo de intenção vive no header: sem isto, o 1º tap em "Gerar" com
-        // o teclado aberto só fecharia o teclado em vez de disparar a geração.
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{
-          paddingHorizontal: 20,
-          paddingBottom: 24,
-          gap: 12,
+      {/* Folha inline (não Modal) sobre o mapa — aqui o blur real funciona.
+          O padding inferior mantém o conteúdo acima da pílula flutuante, que
+          fica por cima do vidro da folha. */}
+      <GlassSurface
+        style={{
+          flex: 1,
+          paddingBottom: tabBarClearance,
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          borderWidth: 0,
+          borderTopWidth: 1,
         }}
-        // No modo resultados os controles somem — sobra só a lista compacta.
-        ListHeaderComponent={showResults ? null : header}
-        renderItem={({ item, index }) => (
-          <SpotSuggestionCard
-            suggestion={item}
-            rank={index + 1}
-            onChoose={() => onChoose(item)}
-            reason={index === 0 ? bestReason : undefined}
-          />
-        )}
-      />
+      >
+        <GestureDetector gesture={dragGesture}>
+          <View className="items-center pt-3 pb-3">
+            <View className="w-10 h-1 bg-surface-high rounded-full" />
+          </View>
+        </GestureDetector>
+        <View className="flex-row items-center justify-between px-5 pb-2">
+          <View className="flex-row items-center gap-1.5 flex-1">
+            {editing && canReturn && (
+              <Pressable
+                onPress={() => setEditing(false)}
+                accessibilityRole="button"
+                accessibilityLabel="Voltar para as sugestões"
+                hitSlop={8}
+              >
+                <Ionicons
+                  name="chevron-back"
+                  size={22}
+                  color={colors.content}
+                />
+              </Pressable>
+            )}
+            <Text className="text-content text-lg font-bold">
+              {showResults
+                ? `${count} ${count === 1 ? 'rolê' : 'rolês'} pra hoje`
+                : 'Bora pra onde?'}
+            </Text>
+          </View>
+          <View className="flex-row items-center gap-4">
+            {showResults && (
+              <Pressable
+                onPress={() => setEditing(true)}
+                className="flex-row items-center gap-1.5"
+                accessibilityRole="button"
+                accessibilityLabel="Gerar de novo"
+                hitSlop={8}
+              >
+                <Ionicons name="refresh" size={16} color={colors.brandText} />
+                <Text className="text-brand-text text-sm font-semibold">
+                  Gerar de novo
+                </Text>
+              </Pressable>
+            )}
+            <Pressable
+              onPress={onClose}
+              className="w-8 h-8 items-center justify-center"
+              accessibilityLabel="Fechar sugestões"
+            >
+              <Ionicons name="close" size={22} color={colors.contentMuted} />
+            </Pressable>
+          </View>
+        </View>
+        <FlatList
+          // A folha tem teto (max-h); flexShrink deixa a lista encolher e rolar
+          // dentro dele com muitos cards. Sem isto a lista estica a folha além da
+          // tela e a virtualização não rola (flex-1 colaparia: base 0 em pai auto).
+          style={{ flexShrink: 1 }}
+          // Ordem ranqueada pela IA — renderiza como veio, sem reordenar. Na cota
+          // esgotada a lista some: o estado dedicado (no header) toma a folha.
+          data={showQuota ? NO_SUGGESTIONS : suggestions}
+          keyExtractor={item => item.placeId}
+          // O campo de intenção vive no header: sem isto, o 1º tap em "Gerar" com
+          // o teclado aberto só fecharia o teclado em vez de disparar a geração.
+          keyboardShouldPersistTaps="handled"
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingBottom: 24,
+            gap: 12,
+          }}
+          // No modo resultados os controles somem — sobra só a lista compacta.
+          ListHeaderComponent={showResults ? null : header}
+          renderItem={({ item, index }) => (
+            <SpotSuggestionCard
+              suggestion={item}
+              rank={index + 1}
+              onChoose={() => onChoose(item)}
+              reason={index === 0 ? bestReason : undefined}
+            />
+          )}
+        />
+      </GlassSurface>
     </Animated.View>
   )
 }

@@ -62,98 +62,110 @@ export function GlobalHeader({
     router.push('/notifications')
   }
 
+  const bar = (
+    <View
+      className="px-4 flex-row items-center justify-center relative"
+      style={{ height: HEADER_BAR_HEIGHT }}
+    >
+      <View className="absolute left-4 top-0 bottom-0 flex-row items-center">
+        {canGoBack && (
+          <Pressable
+            onPress={handleBack}
+            className="w-9 h-9 items-center justify-center"
+          >
+            <Ionicons
+              name="chevron-back"
+              size={26}
+              color={colors.contentBright}
+            />
+          </Pressable>
+        )}
+        {isProfileTab && (
+          <Pressable
+            onPress={toggleDrawer}
+            className="w-9 h-9 items-center justify-center"
+            accessibilityLabel={
+              hasPendingRequests
+                ? 'Abrir menu (solicitações pendentes)'
+                : 'Abrir menu'
+            }
+          >
+            <Ionicons name="menu" size={26} color={colors.contentBright} />
+            {hasPendingRequests && (
+              <View className="absolute top-1.5 right-1 w-2 h-2 bg-danger rounded-full" />
+            )}
+          </Pressable>
+        )}
+        {isMapTab && (
+          <Pressable
+            onPress={() => setMapFiltersOpen(true)}
+            className="w-9 h-9 items-center justify-center"
+            accessibilityLabel="Filtrar eventos"
+          >
+            <Ionicons
+              name="options-outline"
+              size={24}
+              color={colors.contentBright}
+            />
+            {hasMapFilters && (
+              <View className="absolute top-1.5 right-1 w-2 h-2 bg-brand-emphasis rounded-full" />
+            )}
+          </Pressable>
+        )}
+      </View>
+
+      <View className="flex-row items-center gap-2">
+        <View className="w-8 h-8 rounded-full bg-brand items-center justify-center">
+          <Text className="text-content font-bold text-sm">C</Text>
+        </View>
+        <Text className="text-xl font-bold text-content">Clubber</Text>
+      </View>
+
+      <View className="absolute right-4 top-0 bottom-0 flex-row items-center gap-2">
+        {showNotifications && (
+          <Pressable
+            onPress={handleNotifications}
+            className="w-9 h-9 items-center justify-center"
+            accessibilityLabel={
+              unreadNotifications > 0
+                ? `Notificações (${unreadNotifications} não lidas)`
+                : 'Notificações'
+            }
+          >
+            <Ionicons
+              name="notifications-outline"
+              size={24}
+              color={colors.contentSecondary}
+            />
+            {unreadNotifications > 0 && (
+              <View className="absolute -top-0.5 -right-1.5">
+                <UnreadBadge count={unreadNotifications} />
+              </View>
+            )}
+          </Pressable>
+        )}
+      </View>
+    </View>
+  )
+
+  // Sem conteúdo passando por baixo (telas empilhadas, header no fluxo), o
+  // blur não tem o que desfocar e vira uma placa cinza — barra sólida.
+  if (!floating) {
+    return (
+      <View className="bg-background border-b border-line-subtle">{bar}</View>
+    )
+  }
+
   return (
     <GlassSurface
       style={{
-        paddingTop: floating ? insets.top : 0,
+        paddingTop: insets.top,
         // Faixa contínua: sem bordas laterais/topo, só o hairline de baixo.
         borderWidth: 0,
         borderBottomWidth: 1,
       }}
     >
-      <View
-        className="px-4 flex-row items-center justify-center relative"
-        style={{ height: HEADER_BAR_HEIGHT }}
-      >
-        <View className="absolute left-4 top-0 bottom-0 flex-row items-center">
-          {canGoBack && (
-            <Pressable
-              onPress={handleBack}
-              className="w-9 h-9 items-center justify-center"
-            >
-              <Ionicons
-                name="chevron-back"
-                size={26}
-                color={colors.contentBright}
-              />
-            </Pressable>
-          )}
-          {isProfileTab && (
-            <Pressable
-              onPress={toggleDrawer}
-              className="w-9 h-9 items-center justify-center"
-              accessibilityLabel={
-                hasPendingRequests
-                  ? 'Abrir menu (solicitações pendentes)'
-                  : 'Abrir menu'
-              }
-            >
-              <Ionicons name="menu" size={26} color={colors.contentBright} />
-              {hasPendingRequests && (
-                <View className="absolute top-1.5 right-1 w-2 h-2 bg-danger rounded-full" />
-              )}
-            </Pressable>
-          )}
-          {isMapTab && (
-            <Pressable
-              onPress={() => setMapFiltersOpen(true)}
-              className="w-9 h-9 items-center justify-center"
-              accessibilityLabel="Filtrar eventos"
-            >
-              <Ionicons
-                name="options-outline"
-                size={24}
-                color={colors.contentBright}
-              />
-              {hasMapFilters && (
-                <View className="absolute top-1.5 right-1 w-2 h-2 bg-brand-emphasis rounded-full" />
-              )}
-            </Pressable>
-          )}
-        </View>
-
-        <View className="flex-row items-center gap-2">
-          <View className="w-8 h-8 rounded-full bg-brand items-center justify-center">
-            <Text className="text-content font-bold text-sm">C</Text>
-          </View>
-          <Text className="text-xl font-bold text-content">Clubber</Text>
-        </View>
-
-        <View className="absolute right-4 top-0 bottom-0 flex-row items-center gap-2">
-          {showNotifications && (
-            <Pressable
-              onPress={handleNotifications}
-              className="w-9 h-9 items-center justify-center"
-              accessibilityLabel={
-                unreadNotifications > 0
-                  ? `Notificações (${unreadNotifications} não lidas)`
-                  : 'Notificações'
-              }
-            >
-              <Ionicons
-                name="notifications-outline"
-                size={24}
-                color={colors.contentSecondary}
-              />
-              {unreadNotifications > 0 && (
-                <View className="absolute -top-0.5 -right-1.5">
-                  <UnreadBadge count={unreadNotifications} />
-                </View>
-              )}
-            </Pressable>
-          )}
-        </View>
-      </View>
+      {bar}
     </GlassSurface>
   )
 }
