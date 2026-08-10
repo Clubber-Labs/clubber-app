@@ -22,7 +22,6 @@ export type DrawerItem = {
   icon: IconName
   badge?: string | number
   onPress: () => void
-  destructive?: boolean
 }
 
 type Props = {

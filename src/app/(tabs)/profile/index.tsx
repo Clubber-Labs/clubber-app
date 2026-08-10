@@ -109,7 +109,6 @@ export default function ProfileScreen() {
       label: 'Sair',
       icon: 'log-out-outline',
       onPress: handleLogout,
-      destructive: true,
     },
   ]
 

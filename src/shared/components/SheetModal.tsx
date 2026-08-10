@@ -48,8 +48,8 @@ export function SheetModal({ visible, onClose, children }: Props) {
         <Animated.View style={sheetStyle}>
           {/* Folha SÓLIDA em surface (elevação, não sunken): Modal vive em
               janela própria do iOS e blur real é impossível — translucidez
-              sem blur deixava o conteúdo de trás conflitar com a folha. O
-              scrim + hairline fazem a separação no espírito do liquid glass. */}
+              sem blur deixava o conteúdo de trás conflitar com a folha; o
+              hairline faz a separação no espírito do liquid glass. */}
           <Pressable
             className="bg-surface rounded-t-3xl border-t border-white/10 pb-8 pt-2"
             onPress={() => {}}
