@@ -53,6 +53,8 @@ export type CategoryHue = {
   chipBg: string
   chipBorder: string
   chipText: string
+  // Capa-gradiente de evento sem foto (escuro → matiz): 3 stops.
+  cover: [string, string, string]
 }
 
 function derive(base: string): CategoryHue {
@@ -61,6 +63,11 @@ function derive(base: string): CategoryHue {
     chipBg: mix(base, DARK_ANCHOR, 0.62),
     chipBorder: mix(base, DARK_ANCHOR, 0.2),
     chipText: mix(base, LIGHT_ANCHOR, 0.62),
+    cover: [
+      mix(base, DARK_ANCHOR, 0.84),
+      mix(base, DARK_ANCHOR, 0.58),
+      mix(base, DARK_ANCHOR, 0.3),
+    ],
   }
 }
 
@@ -69,6 +76,7 @@ const FALLBACK: CategoryHue = {
   chipBg: colors.surface,
   chipBorder: colors.lineStrong,
   chipText: colors.contentTertiary,
+  cover: [colors.surface, colors.surfaceElevated, colors.surfaceHigh],
 }
 
 const HUES: Record<string, CategoryHue> = Object.fromEntries(

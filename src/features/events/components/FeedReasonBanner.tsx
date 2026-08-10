@@ -4,32 +4,41 @@ import { Ionicons } from '@expo/vector-icons'
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg'
 import type { ComponentProps } from 'react'
 import type { FeedReason } from '@/shared/types'
-import { colors } from '@/shared/theme'
+import { colors, categoryHue } from '@/shared/theme'
 
 type IconName = ComponentProps<typeof Ionicons>['name']
 
 type Props = {
   reason: FeedReason
+  // Matiz da categoria do evento — tinge SÓ razões sociais (amigo fez algo);
+  // razões de sistema (você criou/interagiu, descoberta) seguem neutras.
+  categories?: string[]
 }
 
-export function FeedReasonBanner({ reason }: Props) {
+const SOCIAL_KINDS = new Set([
+  'friend_created',
+  'friend_attending',
+  'friend_reacted',
+  'friend_commented',
+])
+
+export function FeedReasonBanner({ reason, categories }: Props) {
   const content = render(reason)
   // useId é estável por instância e evita colisão de id de gradiente entre os
   // vários banners da lista (os dois-pontos do useId não valem em url(#id)).
   const gradientId = `reason-${useId().replace(/:/g, '')}`
   // Kind desconhecido (ex.: variante futura do backend) → sem banner, sem crash.
   if (!content) return null
+  const social = SOCIAL_KINDS.has(reason.kind)
+  const hue = social ? categoryHue(categories?.[0]) : null
+  const tint = hue ? hue.chipBg : colors.brandSurface
   return (
     <View className="relative border-b border-line">
       <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
         <Defs>
           <LinearGradient id={gradientId} x1="0" y1="0" x2="1" y2="0">
-            <Stop
-              offset="0"
-              stopColor={colors.brandSurface}
-              stopOpacity={0.7}
-            />
-            <Stop offset="1" stopColor={colors.brandSurface} stopOpacity={0} />
+            <Stop offset="0" stopColor={tint} stopOpacity={0.7} />
+            <Stop offset="1" stopColor={tint} stopOpacity={0} />
           </LinearGradient>
         </Defs>
         <Rect
@@ -41,7 +50,11 @@ export function FeedReasonBanner({ reason }: Props) {
         />
       </Svg>
       <View className="flex-row items-center gap-1.5 px-4 py-2">
-        <Ionicons name={content.icon} size={13} color={colors.brandText} />
+        <Ionicons
+          name={content.icon}
+          size={13}
+          color={hue ? hue.chipText : colors.brandText}
+        />
         <Text className="flex-1 text-xs text-content-muted" numberOfLines={1}>
           {content.text}
         </Text>

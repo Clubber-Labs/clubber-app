@@ -12,8 +12,12 @@ import { UserAvatar } from '@/shared/components/UserAvatar'
 import { formatRelative, formatTime } from '@/shared/utils/dateFormat'
 import { formatFullName } from '@/shared/utils/fullName'
 import { featuredAttendees } from '@/shared/utils/featuredAttendees'
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg'
+import { StyleSheet } from 'react-native'
+import { useCategories } from '@/shared/hooks/useCategories'
+import { eventCategoryEmoji } from '@/shared/utils/eventCategoryEmoji'
 import type { FeedEvent } from '@/shared/types'
-import { colors } from '@/shared/theme'
+import { colors, categoryHue, METAL, SPECTRUM } from '@/shared/theme'
 
 type Props = {
   event: FeedEvent
@@ -23,8 +27,35 @@ type Props = {
   showReason?: boolean
 }
 
+// Chip pequeno da categoria principal — mesmo vocabulário de matiz dos chips
+// do mapa (cor é informação, não marca).
+function CategoryChip({ categories }: { categories: string[] }) {
+  const { categories: tree } = useCategories()
+  const primary = categories[0]
+  const label = tree.find(entry => entry.value === primary)?.label
+  if (!primary || !label) return null
+  const hue = categoryHue(primary)
+  return (
+    <View
+      className="flex-row items-center gap-1 self-start rounded-md border px-2 py-0.5"
+      style={{ backgroundColor: hue.chipBg, borderColor: hue.chipBorder }}
+    >
+      <Text className="text-[10px]">{eventCategoryEmoji(categories)}</Text>
+      <Text className="text-[10px] font-bold" style={{ color: hue.chipText }}>
+        {label}
+      </Text>
+    </View>
+  )
+}
+
 export function EventCard({ event, onPress, showReason = true }: Props) {
   const [expanded, setExpanded] = useState(false)
+  // Medida real do card pro frame de destaque: Rect com "100%" não
+  // re-resolve quando a altura do container muda (RNSVG/new arch) — a
+  // moldura ficava cortada no meio do card.
+  const [frameSize, setFrameSize] = useState<{ w: number; h: number } | null>(
+    null,
+  )
   const toggleLike = useToggleLike(event.id)
   const setAttendance = useSetAttendance(event.id)
   const cancelAttendance = useCancelAttendance(event.id)
@@ -35,7 +66,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
   const hasImage = !!event.images[0]?.url
   const attendees = featuredAttendees(event)
   const going = event.userAttendance === 'CONFIRMED'
-  const interested = event.userAttendance === 'INTERESTED'
+  const declined = event.userAttendance === 'NOT_INTERESTED'
   const rsvpPending = setAttendance.isPending || cancelAttendance.isPending
 
   function handleLike() {
@@ -47,16 +78,26 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
     else setAttendance.mutate('CONFIRMED')
   }
 
-  function handleInterested() {
-    if (interested) cancelAttendance.mutate()
-    else setAttendance.mutate('INTERESTED')
+  function handleDeclined() {
+    if (declined) cancelAttendance.mutate()
+    else setAttendance.mutate('NOT_INTERESTED')
   }
 
-  return (
-    <View className="mb-3 overflow-hidden rounded-xl border border-line bg-surface">
+  // Molduras de destaque: ao vivo = gradiente do espectro; patrocinado =
+  // metal (prata, par da aura dos pins). Live vence quando coincidem; fora
+  // disso, borda neutra padrão.
+  const live = event.status === 'ONGOING'
+  const framed = live || event.isFeatured
+  const frameStops = live ? SPECTRUM : METAL
+  const frameId = `card-frame-${event.id}`
+
+  const card = (
+    <View
+      className={`overflow-hidden rounded-xl bg-surface ${framed ? '' : 'border border-line'}`}
+    >
       {/* self_created duplica o autor já exibido logo abaixo */}
       {reason && reason.kind !== 'self_created' && (
-        <FeedReasonBanner reason={reason} />
+        <FeedReasonBanner reason={reason} categories={event.categories} />
       )}
 
       <Pressable onPress={onPress}>
@@ -66,6 +107,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
         />
 
         <View className="gap-2 px-4 pt-3">
+          <CategoryChip categories={event.categories} />
           {/* Com foto, a assinatura do autor já aparece sobreposta no hero;
               sem foto, o título está no hero e a assinatura vem aqui. */}
           {hasImage ? (
@@ -147,51 +189,72 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
         )}
       </Pressable>
 
-      {/* RSVP — a ação central acontece na própria descoberta */}
-      <View className="flex-row gap-2 px-4 pt-3">
-        <Pressable
-          onPress={handleGoing}
-          disabled={rsvpPending}
-          accessibilityRole="button"
-          accessibilityState={{ selected: going, busy: rsvpPending }}
-          className={`h-12 flex-1 flex-row items-center justify-center gap-2 rounded-lg ${
-            going
-              ? 'border border-brand-surface-strong bg-brand-surface'
-              : 'bg-brand'
-          }`}
-        >
-          <Ionicons
-            name={going ? 'checkmark-circle' : 'checkmark-circle-outline'}
-            size={18}
-            color={going ? colors.brandTextBright : colors.content}
-          />
-          <Text
-            className={`text-sm font-bold ${going ? 'text-brand-text-bright' : 'text-content'}`}
+      {/* RSVP compacto (pills com rótulo) — estados por PESO, sem cor
+          semântica: pendente = branco cheio; respondido = quieto (outline
+          claro no confirmado, fantasma no não vou). "Interessado" vive só na
+          tela de detalhe. */}
+      <View className="flex-row items-center gap-2 px-4 pt-3">
+        {going ? (
+          <Pressable
+            onPress={handleGoing}
+            disabled={rsvpPending}
+            accessibilityRole="button"
+            accessibilityState={{ selected: true, busy: rsvpPending }}
+            className="flex-row items-center gap-2 rounded-full border border-white/40 px-5 py-2.5"
           >
-            {going ? 'Confirmado' : 'Vou'}
-          </Text>
-        </Pressable>
-
-        <Pressable
-          onPress={handleInterested}
-          disabled={rsvpPending}
-          accessibilityRole="button"
-          accessibilityLabel="Tenho interesse"
-          accessibilityState={{ selected: interested, busy: rsvpPending }}
-          className={`h-12 w-12 items-center justify-center rounded-lg ${
-            interested
-              ? 'border border-brand-surface-strong bg-brand-surface'
-              : 'bg-surface-elevated'
-          }`}
-        >
-          <Ionicons
-            name={interested ? 'star' : 'star-outline'}
-            size={20}
-            color={
-              interested ? colors.brandTextBright : colors.contentSecondary
-            }
-          />
-        </Pressable>
+            <Ionicons
+              name="checkmark-circle"
+              size={17}
+              color={colors.content}
+            />
+            <Text className="text-sm font-bold text-content">Confirmado</Text>
+          </Pressable>
+        ) : (
+          <>
+            <Pressable
+              onPress={handleGoing}
+              disabled={rsvpPending}
+              accessibilityRole="button"
+              accessibilityState={{ selected: false, busy: rsvpPending }}
+              className={`flex-row items-center gap-2 rounded-full px-5 py-2.5 ${
+                declined ? 'border border-line-strong' : 'bg-content'
+              }`}
+            >
+              {!declined && (
+                <Ionicons
+                  name="checkmark-circle-outline"
+                  size={17}
+                  color={colors.background}
+                />
+              )}
+              <Text
+                className={`text-sm font-bold ${declined ? 'text-content-muted' : 'text-background'}`}
+              >
+                Vou
+              </Text>
+            </Pressable>
+            <Pressable
+              onPress={handleDeclined}
+              disabled={rsvpPending}
+              accessibilityRole="button"
+              accessibilityState={{ selected: declined, busy: rsvpPending }}
+              className="flex-row items-center gap-2 rounded-full border border-line px-5 py-2.5"
+            >
+              {declined && (
+                <Ionicons
+                  name="close-circle"
+                  size={17}
+                  color={colors.contentSubtle}
+                />
+              )}
+              <Text
+                className={`text-sm font-bold ${declined ? 'text-content-subtle' : 'text-content-muted'}`}
+              >
+                Não vou
+              </Text>
+            </Pressable>
+          </>
+        )}
       </View>
 
       {/* engajamento leve */}
@@ -256,6 +319,62 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
       )}
 
       {expanded && <InlineCommentsSection eventId={event.id} />}
+    </View>
+  )
+
+  if (!framed) return <View className="mb-3">{card}</View>
+
+  return (
+    <View
+      className="relative mb-3"
+      onLayout={e => {
+        const { width, height } = e.nativeEvent.layout
+        setFrameSize(prev =>
+          prev?.w === width && prev?.h === height
+            ? prev
+            : { w: width, h: height },
+        )
+      }}
+    >
+      {card}
+      {frameSize && (
+        <Svg
+          width={frameSize.w}
+          height={frameSize.h}
+          style={StyleSheet.absoluteFill}
+          pointerEvents="none"
+        >
+          <Defs>
+            <LinearGradient id={frameId} x1="0" y1="0" x2="1" y2="1">
+              <Stop offset="0" stopColor={frameStops[0]} />
+              <Stop offset="0.5" stopColor={frameStops[1]} />
+              <Stop offset="1" stopColor={frameStops[2]} />
+            </LinearGradient>
+          </Defs>
+          {/* Mini-glow (mesma linguagem dos pins) + traço do frame. */}
+          <Rect
+            x={2}
+            y={2}
+            width={frameSize.w - 4}
+            height={frameSize.h - 4}
+            rx={12}
+            fill="none"
+            stroke={`url(#${frameId})`}
+            strokeWidth={6}
+            strokeOpacity={0.2}
+          />
+          <Rect
+            x={1.25}
+            y={1.25}
+            width={frameSize.w - 2.5}
+            height={frameSize.h - 2.5}
+            rx={12.5}
+            fill="none"
+            stroke={`url(#${frameId})`}
+            strokeWidth={2.5}
+          />
+        </Svg>
+      )}
     </View>
   )
 }
