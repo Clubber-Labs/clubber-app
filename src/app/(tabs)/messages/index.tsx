@@ -4,17 +4,24 @@ import { useRouter } from 'expo-router'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { InboxList } from '@/features/chat/components/InboxList'
 import { colors } from '@/shared/theme'
+import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
+import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 
 export default function InboxScreen() {
   const router = useRouter()
   const myId = useAuthStore(s => s.userId)
+  const tabBarClearance = useTabBarClearance()
+  const headerClearance = useHeaderClearance(0)
 
   if (!myId) return <View className="flex-1 bg-background" />
 
   const goNew = () => router.push('/conversations/new')
 
   return (
-    <View className="flex-1 bg-background">
+    <View
+      className="flex-1 bg-background"
+      style={{ paddingTop: headerClearance }}
+    >
       <View className="flex-row items-center justify-between px-4 pt-3 pb-2">
         <Text className="text-content text-2xl font-bold">Mensagens</Text>
       </View>
@@ -27,7 +34,8 @@ export default function InboxScreen() {
 
       <Pressable
         onPress={goNew}
-        className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-brand items-center justify-center"
+        className="absolute right-6 w-14 h-14 rounded-full bg-brand items-center justify-center"
+        style={{ bottom: tabBarClearance }}
         accessibilityLabel="Nova conversa"
       >
         <Ionicons name="create" size={24} color={colors.content} />

@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import Mapbox from '@rnmapbox/maps'
 import { colors } from '@/shared/theme'
+import { PIN_RIM_COLOR } from '../utils/markerLayout'
 import type { EventCluster } from '../hooks/useEventClusters'
 
 type Props = {
@@ -66,8 +67,10 @@ export function EventClustersLayer({ clusters, onPress, dimmed }: Props) {
       <Mapbox.CircleLayer
         id="clusters"
         style={{
-          circleColor: colors.brand,
-          circleStrokeColor: colors.content,
+          // Disco branco com número escuro — mesma casca dos pins, sem cor
+          // de marca; o rim escuro faz o papel do contorno das gotas.
+          circleColor: colors.content,
+          circleStrokeColor: PIN_RIM_COLOR,
           circleStrokeWidth: 1.5,
           circleRadius: ['get', 'radius'],
           circleOpacity: opacity,
@@ -81,10 +84,10 @@ export function EventClustersLayer({ clusters, onPress, dimmed }: Props) {
         style={{
           textField: ['get', 'countLabel'],
           textSize: ['get', 'countSize'],
-          textColor: colors.content,
+          textColor: colors.background,
           // Halo fino + número sempre opaco: legível mesmo com o badge
           // esmaecido sobre o pico claro do heatmap.
-          textHaloColor: colors.background,
+          textHaloColor: colors.content,
           textHaloWidth: 1.2,
           textHaloBlur: 0.3,
           textOpacity: 1,

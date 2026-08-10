@@ -6,9 +6,9 @@
  * sincronia com as variáveis --color-* daquele arquivo.
  */
 export const colors = {
-  // superfícies / fundos
-  background: '#000000',
-  surfaceSunken: '#0a0a0a',
+  // superfícies / fundos (zinc profundo)
+  background: '#0b0b0d',
+  surfaceSunken: '#060607',
   surface: '#18181b',
   surfaceElevated: '#27272a',
   surfaceHigh: '#3f3f46',
@@ -16,12 +16,12 @@ export const colors = {
 
   // texto / conteúdo
   content: '#ffffff',
-  contentBright: '#f4f4f5',
-  contentSecondary: '#e4e4e7',
-  contentTertiary: '#d4d4d8',
-  contentMuted: '#a1a1aa',
-  contentSubtle: '#71717a',
-  contentFaint: '#52525b',
+  contentBright: '#f2f4f7',
+  contentSecondary: '#e2e6eb',
+  contentTertiary: '#ccd2da',
+  contentMuted: '#9aa4b0',
+  contentSubtle: '#6b7684',
+  contentFaint: '#4e5967',
 
   // bordas
   line: '#27272a',

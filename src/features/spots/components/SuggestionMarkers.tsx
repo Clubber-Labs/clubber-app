@@ -37,18 +37,18 @@ export function SuggestionMarkers({ suggestions, onPress }: Props) {
               borderRadius: SIZE * 0.34,
               borderWidth: 2,
               borderStyle: 'dashed',
-              borderColor: colors.brandText,
+              borderColor: colors.contentTertiary,
               backgroundColor: 'rgba(10, 10, 10, 0.85)',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <Ionicons name="sparkles" size={18} color={colors.brandText} />
+            <Ionicons name="sparkles" size={18} color={colors.contentBright} />
             <View
               style={{ position: 'absolute', top: -7, right: -7 }}
-              className="bg-brand rounded-full w-5 h-5 items-center justify-center border border-background"
+              className="bg-content rounded-full w-5 h-5 items-center justify-center border border-background"
             >
-              <Text className="text-content text-[10px] font-bold">
+              <Text className="text-background text-[10px] font-bold">
                 {index + 1}
               </Text>
             </View>

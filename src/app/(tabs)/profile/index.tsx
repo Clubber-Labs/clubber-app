@@ -10,6 +10,9 @@ import { usePickAvatar } from '@/features/users/hooks/usePickAvatar'
 import { useLogout } from '@/features/auth/hooks/useLogout'
 import { useFollowRequests } from '@/features/follows/hooks/useFollowRequests'
 import { useConfirm } from '@/shared/lib/confirm'
+import { UserAvatar } from '@/shared/components/UserAvatar'
+import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
+import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 import { ProfileHeader } from '@/features/users/components/ProfileHeader'
 import { EditProfileButton } from '@/features/users/components/EditProfileButton'
 import { ProfileEventsList } from '@/features/users/components/ProfileEventsList'
@@ -23,6 +26,8 @@ import {
 
 export default function ProfileScreen() {
   const router = useRouter()
+  const tabBarClearance = useTabBarClearance()
+  const headerClearance = useHeaderClearance(0)
   const { data: profile, isLoading: profileLoading } = useMyProfile()
   const userId = profile?.id ?? ''
 
@@ -104,18 +109,24 @@ export default function ProfileScreen() {
       label: 'Sair',
       icon: 'log-out-outline',
       onPress: handleLogout,
-      destructive: true,
     },
   ]
 
   const drawerHeader = (
-    <View className="pt-5 pb-4 px-5 border-b border-line-subtle">
-      <Text className="text-content font-bold text-lg">
-        {profile.name} {profile.lastname}
-      </Text>
-      <Text className="text-content-muted text-sm mt-0.5">
-        @{profile.username}
-      </Text>
+    // Divisor no hairline do vidro (o drawer é GlassSurface).
+    <View
+      className="pt-5 pb-4 px-5 border-b flex-row items-center gap-3"
+      style={{ borderBottomColor: 'rgba(255, 255, 255, 0.13)' }}
+    >
+      <UserAvatar name={profile.name} avatarUrl={profile.avatarUrl} size={48} />
+      <View className="flex-1">
+        <Text className="text-content font-bold text-lg" numberOfLines={1}>
+          {profile.name} {profile.lastname}
+        </Text>
+        <Text className="text-content-muted text-sm mt-0.5" numberOfLines={1}>
+          @{profile.username}
+        </Text>
+      </View>
     </View>
   )
 
@@ -126,6 +137,8 @@ export default function ProfileScreen() {
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
         onLoadMore={fetchNextPage}
+        bottomPadding={tabBarClearance}
+        topPadding={headerClearance}
         empty={
           <ProfileEventsEmpty
             variant="own"

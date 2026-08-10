@@ -1,9 +1,14 @@
 import type { EventStatus } from '@/shared/types'
 
+// O que aparece no mapa: tudo, só eventos ou só rolês (spots). Filtro
+// client-side — cada tipo tem sua própria query/camada.
+export type MapKind = 'all' | 'events' | 'spots'
+
 export type MapFilters = {
   categories: string[]
   statuses: EventStatus[]
   friendsOnly: boolean
+  kind: MapKind
 }
 
 // Default ao abrir o mapa: tudo menos cancelados (requisito de produto).
@@ -18,6 +23,7 @@ export const DEFAULT_MAP_FILTERS: MapFilters = {
   categories: [],
   statuses: DEFAULT_MAP_STATUSES,
   friendsOnly: false,
+  kind: 'all',
 }
 
 // Params que vão pra rede (viewport + heatmap). Poda vazios pra queryKey estável.
@@ -39,6 +45,7 @@ export function isDefaultMapFilters(f: MapFilters): boolean {
   return (
     f.categories.length === 0 &&
     !f.friendsOnly &&
+    f.kind === 'all' &&
     f.statuses.length === DEFAULT_MAP_STATUSES.length &&
     DEFAULT_MAP_STATUSES.every(s => f.statuses.includes(s))
   )

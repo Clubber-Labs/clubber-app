@@ -4,6 +4,7 @@ import { View, Text, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { SheetModal } from '@/shared/components/SheetModal'
 import { colors } from '@/shared/theme'
+import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 
 type IconName = ComponentProps<typeof Ionicons>['name']
 
@@ -12,10 +13,12 @@ type Props = {
   onCreateSpot: () => void
 }
 
-// Ação única de criar no mapa: o "+" abre um seletor (evento formal × rolê) em
-// vez de dois FABs separados. Cada opção dispara o fluxo da tela.
-export function MapCreateButton({ onCreateEvent, onCreateSpot }: Props) {
+// Ação única de criar, igual em todas as abas: o "+" abre um seletor (evento
+// formal × rolê) em vez de FABs distintos por tela. Cada opção dispara o fluxo
+// que a tela hospedeira passar (o rolê fora do mapa navega até ele).
+export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
   const [open, setOpen] = useState(false)
+  const tabBarClearance = useTabBarClearance()
 
   function choose(action: () => void) {
     setOpen(false)
@@ -28,8 +31,9 @@ export function MapCreateButton({ onCreateEvent, onCreateSpot }: Props) {
         onPress={() => setOpen(true)}
         accessibilityRole="button"
         accessibilityLabel="Criar"
-        className="absolute bottom-6 right-4 h-14 w-14 items-center justify-center rounded-full bg-brand"
+        className="absolute right-4 h-14 w-14 items-center justify-center rounded-full bg-brand"
         style={{
+          bottom: tabBarClearance,
           shadowColor: colors.background,
           shadowOffset: { width: 0, height: 4 },
           shadowOpacity: 0.2,
@@ -40,7 +44,7 @@ export function MapCreateButton({ onCreateEvent, onCreateSpot }: Props) {
         <Ionicons name="add" size={28} color={colors.content} />
       </Pressable>
 
-      <SheetModal visible={open} onClose={() => setOpen(false)} dimmed={false}>
+      <SheetModal visible={open} onClose={() => setOpen(false)}>
         <View className="px-4 pb-2">
           <Text className="px-1 pb-2 text-lg font-bold text-content">
             Criar

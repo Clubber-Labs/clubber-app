@@ -1,16 +1,22 @@
-import { ScrollView } from 'react-native'
+import { ScrollView, View } from 'react-native'
 import { useCategories } from '@/shared/hooks/useCategories'
 import { Chip } from '@/shared/components/Chip'
 import { useMapUiStore } from '../store/mapUiStore'
+import type { MapKind } from '../types'
 
-// Chips de categoria sobre o mapa — filtro rápido multi-select sincronizado com
-// o mesmo estado do sheet de filtros (mapUiStore.filters.categories). "Todas"
-// limpa a seleção (sem categoria = todas).
+// Chips sobre o mapa: tipo (eventos × rolês, mutuamente exclusivos — reativar
+// volta pra "tudo") + categorias multi-select, sincronizados com o mesmo
+// estado do sheet de filtros (mapUiStore.filters). "Todas" limpa a seleção
+// de categorias (sem categoria = todas).
 export function MapCategoryChips() {
   const { categories } = useCategories()
   const filters = useMapUiStore(s => s.filters)
   const setFilters = useMapUiStore(s => s.setFilters)
   const selected = filters.categories
+
+  function toggleKind(next: Exclude<MapKind, 'all'>) {
+    setFilters({ ...filters, kind: filters.kind === next ? 'all' : next })
+  }
 
   function toggle(value: string) {
     const next = selected.includes(value)
@@ -18,8 +24,6 @@ export function MapCategoryChips() {
       : [...selected, value]
     setFilters({ ...filters, categories: next })
   }
-
-  if (categories.length === 0) return null
 
   return (
     <ScrollView
@@ -29,18 +33,33 @@ export function MapCategoryChips() {
       contentContainerStyle={{ paddingHorizontal: 12, gap: 8 }}
     >
       <Chip
-        label="Todas"
-        active={selected.length === 0}
-        onPress={() => setFilters({ ...filters, categories: [] })}
+        label="Eventos"
+        active={filters.kind === 'events'}
+        onPress={() => toggleKind('events')}
       />
-      {categories.map(category => (
-        <Chip
-          key={category.value}
-          label={category.label}
-          active={selected.includes(category.value)}
-          onPress={() => toggle(category.value)}
-        />
-      ))}
+      <Chip
+        label="Rolês"
+        active={filters.kind === 'spots'}
+        onPress={() => toggleKind('spots')}
+      />
+      {categories.length > 0 && (
+        <>
+          <View className="w-px self-stretch my-1 bg-white/20" />
+          <Chip
+            label="Todas"
+            active={selected.length === 0}
+            onPress={() => setFilters({ ...filters, categories: [] })}
+          />
+          {categories.map(category => (
+            <Chip
+              key={category.value}
+              label={category.label}
+              active={selected.includes(category.value)}
+              onPress={() => toggle(category.value)}
+            />
+          ))}
+        </>
+      )}
     </ScrollView>
   )
 }

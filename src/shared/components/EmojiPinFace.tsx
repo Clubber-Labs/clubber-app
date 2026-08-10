@@ -7,8 +7,8 @@ type Props = {
   emoji: string
 }
 
-// Miolo circular de pin: campo violeta com gradiente sutil + emoji da
-// categoria, renderizado pelo sistema — sem fonte de ícones nem asset.
+// Miolo circular de pin: campo grafite neutro com gradiente sutil + emoji da
+// categoria — a cor do pin vem do emoji, não de cor de marca (mapa sem brand).
 export function EmojiPinFace({ size, emoji }: Props) {
   return (
     <View
@@ -18,8 +18,8 @@ export function EmojiPinFace({ size, emoji }: Props) {
       <Svg width={size} height={size} style={{ position: 'absolute' }}>
         <Defs>
           <RadialGradient id="pin-face" cx="50%" cy="40%" r="75%">
-            <Stop offset="0" stopColor={colors.brandEmphasis} />
-            <Stop offset="1" stopColor={colors.brand} />
+            <Stop offset="0" stopColor={colors.surfaceElevated} />
+            <Stop offset="1" stopColor={colors.surface} />
           </RadialGradient>
         </Defs>
         <Circle

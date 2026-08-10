@@ -11,6 +11,8 @@ import { useFocusEffect } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import type { ComponentProps } from 'react'
 import { useProfileDrawer } from '../store/profileDrawerStore'
+import { GlassSurface } from '@/shared/components/GlassSurface'
+import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 import { colors } from '@/shared/theme'
 
 type IconName = ComponentProps<typeof Ionicons>['name']
@@ -20,7 +22,6 @@ export type DrawerItem = {
   icon: IconName
   badge?: string | number
   onPress: () => void
-  destructive?: boolean
 }
 
 type Props = {
@@ -30,10 +31,14 @@ type Props = {
 
 const SCREEN_WIDTH = Dimensions.get('window').width
 const DRAWER_WIDTH = Math.min(SCREEN_WIDTH * 0.78, 320)
+
+// Divisores entre os itens no mesmo hairline da borda do vidro.
+const GLASS_DIVIDER = { borderTopColor: 'rgba(255, 255, 255, 0.13)' }
 const ANIMATION_MS = 220
 
 export function ProfileDrawer({ items, header }: Props) {
   const { open, setOpen } = useProfileDrawer()
+  const headerClearance = useHeaderClearance(0)
   const translateX = useRef(new Animated.Value(-DRAWER_WIDTH)).current
   const backdropOpacity = useRef(new Animated.Value(0)).current
   const [isVisible, setIsVisible] = useState(false)
@@ -118,40 +123,51 @@ export function ProfileDrawer({ items, header }: Props) {
           transform: [{ translateX }],
           width: DRAWER_WIDTH,
         }}
-        className="bg-surface-sunken border-r border-line h-full"
+        className="h-full"
       >
-        {header}
-        <View className="py-2">
-          {items.map((item, i) => (
-            <Pressable
-              key={item.label}
-              onPress={() => handleItemPress(item)}
-              className={`flex-row items-center justify-between px-5 py-4 ${i > 0 ? 'border-t border-line-subtle' : ''}`}
-            >
-              <View className="flex-row items-center gap-3">
-                <Ionicons
-                  name={item.icon}
-                  size={20}
-                  color={
-                    item.destructive ? colors.danger : colors.contentSecondary
-                  }
-                />
-                <Text
-                  className={`text-base font-medium ${item.destructive ? 'text-danger-text' : 'text-content'}`}
-                >
-                  {item.label}
-                </Text>
-              </View>
-              {shouldShowBadge(item.badge) && (
-                <View className="bg-brand rounded-full min-w-5 h-5 px-1.5 items-center justify-center">
-                  <Text className="text-content text-xs font-bold">
-                    {item.badge}
+        {/* Vidro do painel: só o hairline da direita (é uma folha lateral).
+            O conteúdo começa abaixo do header flutuante; o vidro segue até o
+            topo e o header desfoca por cima. */}
+        <GlassSurface
+          style={{
+            flex: 1,
+            paddingTop: headerClearance,
+            borderWidth: 0,
+            borderRightWidth: 1,
+          }}
+        >
+          {header}
+          <View className="py-2">
+            {items.map((item, i) => (
+              <Pressable
+                key={item.label}
+                onPress={() => handleItemPress(item)}
+                className={`flex-row items-center justify-between px-5 py-4 ${i > 0 ? 'border-t' : ''}`}
+                style={i > 0 ? GLASS_DIVIDER : undefined}
+              >
+                <View className="flex-row items-center gap-3">
+                  <Ionicons
+                    name={item.icon}
+                    size={20}
+                    color={colors.contentSecondary}
+                  />
+                  <Text
+                    className="text-base font-medium text-content"
+                  >
+                    {item.label}
                   </Text>
                 </View>
-              )}
-            </Pressable>
-          ))}
-        </View>
+                {shouldShowBadge(item.badge) && (
+                  <View className="bg-brand rounded-full min-w-5 h-5 px-1.5 items-center justify-center">
+                    <Text className="text-content text-xs font-bold">
+                      {item.badge}
+                    </Text>
+                  </View>
+                )}
+              </Pressable>
+            ))}
+          </View>
+        </GlassSurface>
       </Animated.View>
       <Animated.View
         style={{ opacity: backdropOpacity, flex: 1 }}

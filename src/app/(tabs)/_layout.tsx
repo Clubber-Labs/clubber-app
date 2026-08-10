@@ -2,7 +2,7 @@ import { Tabs } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import type { ComponentProps } from 'react'
 import { useInbox } from '@/features/chat/hooks/useInbox'
-import { colors } from '@/shared/theme'
+import { GlassTabBar } from '@/shared/components/GlassTabBar'
 
 type IconName = ComponentProps<typeof Ionicons>['name']
 
@@ -48,28 +48,8 @@ export default function TabsLayout() {
 
   return (
     <Tabs
-      screenOptions={{
-        headerShown: false,
-        tabBarActiveTintColor: colors.brandEmphasis,
-        tabBarInactiveTintColor: colors.content,
-        tabBarStyle: {
-          backgroundColor: colors.background,
-          borderTopColor: colors.line,
-          borderTopWidth: 1,
-          paddingBottom: 8,
-          paddingTop: 8,
-          height: 96,
-        },
-        tabBarLabelStyle: {
-          display: 'none',
-          fontSize: 12,
-          fontWeight: '400',
-        },
-        tabBarBadgeStyle: {
-          backgroundColor: colors.brand,
-          fontSize: 10,
-        },
-      }}
+      tabBar={props => <GlassTabBar {...props} />}
+      screenOptions={{ headerShown: false }}
     >
       {TABS.map(tab => (
         <Tabs.Screen

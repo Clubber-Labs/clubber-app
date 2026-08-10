@@ -13,18 +13,11 @@ type Props = {
   visible: boolean
   onClose: () => void
   children: ReactNode
-  // Escurece o fundo (scrim) atrás da folha. false = fundo transparente — ex.:
-  // seletor de criar no mapa, pra não escurecer o mapa. Tap pra fechar mantém.
-  dimmed?: boolean
 }
 
 // Bottom sheet imperativo simples (dark theme), no espírito do confirm.tsx.
 // Tap no backdrop fecha; tap no conteúdo não propaga. Genérico — qualquer feature.
-export function SheetModal({
-  visible,
-  onClose,
-  children,
-}: Props) {
+export function SheetModal({ visible, onClose, children }: Props) {
   // Arrastar a alça pra baixo fecha: segue o dedo; além do limiar (ou num flick),
   // fecha — o slide do Modal cuida da saída. Reseta ao reabrir.
   const dragY = useSharedValue(0)
@@ -51,13 +44,14 @@ export function SheetModal({
       animationType="slide"
       onRequestClose={onClose}
     >
-      <Pressable
-        className="flex-1 justify-end"
-        onPress={onClose}
-      >
+      <Pressable className="flex-1 justify-end" onPress={onClose}>
         <Animated.View style={sheetStyle}>
+          {/* Folha SÓLIDA em surface (elevação, não sunken): Modal vive em
+              janela própria do iOS e blur real é impossível — translucidez
+              sem blur deixava o conteúdo de trás conflitar com a folha; o
+              hairline faz a separação no espírito do liquid glass. */}
           <Pressable
-            className="bg-surface-sunken rounded-t-3xl border-t border-line pb-8 pt-2"
+            className="bg-surface rounded-t-3xl border-t border-white/10 pb-8 pt-2"
             onPress={() => {}}
           >
             <GestureDetector gesture={dragGesture}>

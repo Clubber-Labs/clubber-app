@@ -1,7 +1,9 @@
+import { useRef } from 'react'
 import type { ReactElement } from 'react'
 import { View, FlatList, ActivityIndicator } from 'react-native'
 import { useRouter } from 'expo-router'
 import { ProfileEventTile } from './ProfileEventTile'
+import { useActiveTabPress } from '@/shared/hooks/useActiveTabPress'
 import type { UserEventSummary } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
@@ -12,6 +14,10 @@ type Props = {
   hasNextPage: boolean
   isFetchingNextPage: boolean
   onLoadMore: () => void
+  // Aba com pílula/header flutuantes passa os clearances; perfil de terceiros
+  // (stack, header no fluxo) usa os defaults.
+  bottomPadding?: number
+  topPadding?: number
 }
 
 type Spacer = { __spacer: string }
@@ -28,8 +34,17 @@ export function ProfileEventsList({
   hasNextPage,
   isFetchingNextPage,
   onLoadMore,
+  bottomPadding = 32,
+  topPadding = 0,
 }: Props) {
   const router = useRouter()
+
+  // Re-tap na aba Perfil: volta ao topo. No perfil de terceiros (stack) o
+  // evento tabPress nunca é emitido — o hook fica inerte.
+  const listRef = useRef<FlatList<Row>>(null)
+  useActiveTabPress(() => {
+    listRef.current?.scrollToOffset({ offset: 0, animated: true })
+  })
 
   // numColumns=2: completa a linha ímpar com um espaçador pra os tiles (flex-1)
   // manterem largura igual sem o último esticar pra largura cheia.
@@ -38,10 +53,14 @@ export function ProfileEventsList({
 
   return (
     <FlatList
+      ref={listRef}
       data={data}
       numColumns={2}
       keyExtractor={item => (isSpacer(item) ? item.__spacer : item.id)}
-      contentContainerStyle={{ paddingBottom: 32 }}
+      contentContainerStyle={{
+        paddingTop: topPadding,
+        paddingBottom: bottomPadding,
+      }}
       columnWrapperStyle={{ paddingHorizontal: 16, gap: 8 }}
       ListHeaderComponent={header}
       renderItem={({ item }) =>

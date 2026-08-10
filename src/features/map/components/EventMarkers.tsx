@@ -14,6 +14,7 @@ import {
   pinTailHeight,
   pinTailPath,
   PIN_RIM_COLOR,
+  PIN_RIM_COLOR_ON_DARK,
   PIN_RIM_WIDTH,
 } from '../utils/markerLayout'
 import { colors } from '@/shared/theme'
@@ -36,8 +37,10 @@ const MAX_FRIENDS = 2
 const DIMMED_OPACITY = 0.5
 
 // Pin do evento em gota invertida: a cabeça mostra SEMPRE o emoji da
-// categoria sobre campo violeta — a capa do banner fica pro card de preview
+// categoria sobre campo grafite — a capa do banner fica pro card de preview
 // e pro avatar do organizador pendurado (socialItems), nunca na cabeça.
+// Patrocinado destaca por INVERSÃO (única casca escura do mapa + selo ★),
+// não por cor de marca.
 function EventPin({
   event,
   size,
@@ -49,11 +52,14 @@ function EventPin({
 }) {
   const inner = size - 6
   const height = size + pinTailHeight(size)
-  const shell = event.isFeatured
-    ? colors.brandEmphasis
+  const featured = event.isFeatured
+  const shell = featured
+    ? colors.background
     : selected
       ? colors.contentBright
       : colors.content
+  const rim = featured ? PIN_RIM_COLOR_ON_DARK : PIN_RIM_COLOR
+  const sealSize = Math.round(size * 0.34)
   return (
     <View
       style={{
@@ -73,9 +79,9 @@ function EventPin({
           cx={size / 2}
           cy={size / 2}
           r={size / 2 + PIN_RIM_WIDTH}
-          fill={PIN_RIM_COLOR}
+          fill={rim}
         />
-        <Path d={pinTailPath(size, PIN_RIM_WIDTH)} fill={PIN_RIM_COLOR} />
+        <Path d={pinTailPath(size, PIN_RIM_WIDTH)} fill={rim} />
         <Circle cx={size / 2} cy={size / 2} r={size / 2} fill={shell} />
         <Path d={pinTailPath(size)} fill={shell} />
       </Svg>
@@ -95,6 +101,33 @@ function EventPin({
           emoji={eventCategoryEmoji(event.categories)}
         />
       </View>
+      {featured && (
+        <View
+          style={{
+            position: 'absolute',
+            top: -2,
+            right: -2,
+            width: sealSize,
+            height: sealSize,
+            borderRadius: sealSize / 2,
+            backgroundColor: colors.content,
+            borderWidth: 1,
+            borderColor: PIN_RIM_COLOR,
+          }}
+          className="items-center justify-center"
+        >
+          <Text
+            style={{
+              color: colors.background,
+              fontSize: Math.round(sealSize * 0.62),
+              fontWeight: '700',
+              includeFontPadding: false,
+            }}
+          >
+            ★
+          </Text>
+        </View>
+      )}
     </View>
   )
 }

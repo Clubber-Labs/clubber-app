@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import {
   View,
   ActivityIndicator,
@@ -11,9 +11,20 @@ import { UserSearchInput } from '@/features/users/components/UserSearchInput'
 import { UserSearchCard } from '@/features/users/components/UserSearchCard'
 import { UserSearchEmpty } from '@/features/users/components/UserSearchEmpty'
 import { colors } from '@/shared/theme'
+import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
+import { useActiveTabPress } from '@/shared/hooks/useActiveTabPress'
+import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 
 export default function SearchScreen() {
   const [query, setQuery] = useState('')
+  const tabBarClearance = useTabBarClearance()
+  const headerClearance = useHeaderClearance(0)
+
+  // Re-tap na aba Buscar: volta ao topo dos resultados.
+  const listRef = useRef<FlatList<(typeof users)[number]>>(null)
+  useActiveTabPress(() => {
+    listRef.current?.scrollToOffset({ offset: 0, animated: true })
+  })
   const {
     users,
     debouncedQuery,
@@ -30,7 +41,10 @@ export default function SearchScreen() {
     !showIdle && !isLoading && !isError && users.length === 0
 
   return (
-    <View className="flex-1 bg-background">
+    <View
+      className="flex-1 bg-background"
+      style={{ paddingTop: headerClearance }}
+    >
       <UserSearchInput
         value={query}
         onChange={setQuery}
@@ -54,8 +68,10 @@ export default function SearchScreen() {
         </Pressable>
       ) : (
         <FlatList
+          ref={listRef}
           data={users}
           keyExtractor={u => u.id}
+          contentContainerStyle={{ paddingBottom: tabBarClearance }}
           renderItem={({ item }) => <UserSearchCard user={item} />}
           ItemSeparatorComponent={() => (
             <View className="h-px bg-surface mx-4" />

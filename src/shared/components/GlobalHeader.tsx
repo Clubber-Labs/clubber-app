@@ -1,17 +1,27 @@
 import { View, Text, Pressable } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter, useSegments } from 'expo-router'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useProfileDrawer } from '@/features/users/store/profileDrawerStore'
 import { useFollowRequests } from '@/features/follows/hooks/useFollowRequests'
 import { useMapUiStore } from '@/features/map/store/mapUiStore'
 import { isDefaultMapFilters } from '@/features/map/types'
 import { useUnreadCount } from '@/features/notifications/hooks/useUnreadCount'
 import { UnreadBadge } from './UnreadBadge'
+import { GlassSurface } from './GlassSurface'
 import { colors } from '@/shared/theme'
+
+// Altura da faixa útil do header (sem o inset da status bar) — base do
+// useHeaderClearance nas telas em que ele flutua.
+export const HEADER_BAR_HEIGHT = 56
 
 type Props = {
   showNotifications?: boolean
   showBack?: boolean
+  // true nas abas: o header flutua edge-to-edge (cobre a status bar) e o
+  // conteúdo passa por baixo do vidro. false (stack): fica no fluxo, com o
+  // inset do topo por conta do SafeAreaView do layout.
+  floating?: boolean
   onNotificationsPress?: () => void
   onBackPress?: () => void
 }
@@ -19,11 +29,13 @@ type Props = {
 export function GlobalHeader({
   showNotifications = true,
   showBack = true,
+  floating = false,
   onNotificationsPress,
   onBackPress,
 }: Props) {
   const router = useRouter()
   const segments = useSegments()
+  const insets = useSafeAreaInsets()
   const toggleDrawer = useProfileDrawer(s => s.toggle)
   const { count: unreadNotifications } = useUnreadCount()
 
@@ -50,8 +62,11 @@ export function GlobalHeader({
     router.push('/notifications')
   }
 
-  return (
-    <View className="bg-background border-b border-line-subtle px-4 py-3 flex-row items-center justify-center relative">
+  const bar = (
+    <View
+      className="px-4 flex-row items-center justify-center relative"
+      style={{ height: HEADER_BAR_HEIGHT }}
+    >
       <View className="absolute left-4 top-0 bottom-0 flex-row items-center">
         {canGoBack && (
           <Pressable
@@ -131,5 +146,26 @@ export function GlobalHeader({
         )}
       </View>
     </View>
+  )
+
+  // Sem conteúdo passando por baixo (telas empilhadas, header no fluxo), o
+  // blur não tem o que desfocar e vira uma placa cinza — barra sólida.
+  if (!floating) {
+    return (
+      <View className="bg-background border-b border-line-subtle">{bar}</View>
+    )
+  }
+
+  return (
+    <GlassSurface
+      style={{
+        paddingTop: insets.top,
+        // Faixa contínua: sem bordas laterais/topo, só o hairline de baixo.
+        borderWidth: 0,
+        borderBottomWidth: 1,
+      }}
+    >
+      {bar}
+    </GlassSurface>
   )
 }

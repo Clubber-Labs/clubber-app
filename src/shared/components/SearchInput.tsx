@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import { forwardRef } from 'react'
 import { ActivityIndicator, Pressable, TextInput, View } from 'react-native'
+import { GlassSurface } from '@/shared/components/GlassSurface'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -8,8 +9,8 @@ type Props = {
   onChange: (text: string) => void
   loading?: boolean
   placeholder?: string
-  // 'overlay' = sobreposto ao mapa: superfície translúcida, cantos do sistema e
-  // borda. 'default' mantém a pílula escura usada nas demais buscas.
+  // 'overlay' = sobreposto ao mapa: vidro (GlassSurface), mesmo sistema da tab
+  // bar e dos controles. 'default' mantém a pílula escura das demais buscas.
   variant?: 'default' | 'overlay'
 }
 
@@ -22,8 +23,23 @@ export const SearchInput = forwardRef<TextInput, Props>(function SearchInput(
   const hasText = value.length > 0
   const overlay = variant === 'overlay'
   const fieldClass = overlay
-    ? 'bg-surface/95 border border-line-strong rounded-xl pl-10 pr-12 py-3 text-base text-content'
+    ? 'pl-10 pr-12 py-3 text-base text-content'
     : 'bg-background rounded-3xl pl-10 pr-12 py-3 text-base text-content'
+
+  const input = (
+    <TextInput
+      ref={ref}
+      value={value}
+      onChangeText={onChange}
+      placeholder={placeholder}
+      placeholderTextColor={overlay ? colors.contentMuted : colors.content}
+      autoCapitalize="none"
+      autoCorrect={false}
+      returnKeyType="search"
+      textAlignVertical="center"
+      className={fieldClass}
+    />
+  )
 
   return (
     <View className="relative">
@@ -34,18 +50,11 @@ export const SearchInput = forwardRef<TextInput, Props>(function SearchInput(
           color={overlay ? colors.contentSecondary : colors.content}
         />
       </View>
-      <TextInput
-        ref={ref}
-        value={value}
-        onChangeText={onChange}
-        placeholder={placeholder}
-        placeholderTextColor={overlay ? colors.contentMuted : colors.content}
-        autoCapitalize="none"
-        autoCorrect={false}
-        returnKeyType="search"
-        textAlignVertical="center"
-        className={fieldClass}
-      />
+      {overlay ? (
+        <GlassSurface style={{ borderRadius: 12 }}>{input}</GlassSurface>
+      ) : (
+        input
+      )}
       <View className="absolute right-3 top-0 bottom-0 justify-center items-center">
         {loading ? (
           <ActivityIndicator size="small" color={colors.brandEmphasis} />
