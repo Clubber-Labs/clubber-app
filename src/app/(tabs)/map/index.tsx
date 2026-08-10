@@ -310,16 +310,22 @@ export default function MapScreen() {
         )}
       </Mapbox.MapView>
 
-      <View
-        className="absolute left-0 right-0 gap-2"
-        style={{ top: headerClearance }}
-        pointerEvents="box-none"
-      >
-        <View className="px-3">
-          <MapSearchBar onSelect={openEvent} />
+      {/* Escondida com o painel de rolê aberto: a folha cresce até encostar
+          no header, e o GlassSurface (BlurView nativo) da busca vaza por
+          cima dela no iOS — UIVisualEffectView compõe numa camada própria
+          que ignora a ordem de pintura normal da árvore RN. */}
+      {!suggestionsOpen && (
+        <View
+          className="absolute left-0 right-0 gap-2"
+          style={{ top: headerClearance }}
+          pointerEvents="box-none"
+        >
+          <View className="px-3">
+            <MapSearchBar onSelect={openEvent} />
+          </View>
+          <MapCategoryChips />
         </View>
-        <MapCategoryChips />
-      </View>
+      )}
 
       {isLoading && !error && (
         <View
