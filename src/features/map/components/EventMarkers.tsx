@@ -1,6 +1,6 @@
 import { View, Pressable, Text } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
-import Svg, { Circle, Path } from 'react-native-svg'
+import Svg, { Circle, Defs, LinearGradient, Path, Stop } from 'react-native-svg'
 import type { FeedEvent, FriendAttendance } from '@/shared/types'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { EmojiPinFace } from '@/shared/components/EmojiPinFace'
@@ -17,7 +17,7 @@ import {
   PIN_RIM_COLOR_ON_DARK,
   PIN_RIM_WIDTH,
 } from '../utils/markerLayout'
-import { colors } from '@/shared/theme'
+import { colors, categoryHue, SPECTRUM } from '@/shared/theme'
 
 type Props = {
   events: FeedEvent[]
@@ -53,12 +53,20 @@ function EventPin({
   const inner = size - 6
   const height = size + pinTailHeight(size)
   const featured = event.isFeatured
+  // Espectro do "agora": evento ONGOING troca o rim pelo gradiente-assinatura.
+  const live = event.status === 'ONGOING'
   const shell = featured
     ? colors.background
     : selected
       ? colors.contentBright
       : colors.content
-  const rim = featured ? PIN_RIM_COLOR_ON_DARK : PIN_RIM_COLOR
+  const rimId = `pin-rim-${event.id}`
+  const rim = live
+    ? `url(#${rimId})`
+    : featured
+      ? PIN_RIM_COLOR_ON_DARK
+      : PIN_RIM_COLOR
+  const rimWidth = live ? PIN_RIM_WIDTH * 2 : PIN_RIM_WIDTH
   const sealSize = Math.round(size * 0.34)
   return (
     <View
@@ -75,13 +83,22 @@ function EventPin({
         viewBox={`-2 -2 ${size + 4} ${height + 4}`}
         style={{ position: 'absolute', left: -2, top: -2 }}
       >
+        {live && (
+          <Defs>
+            <LinearGradient id={rimId} x1="0" y1="0" x2="1" y2="1">
+              <Stop offset="0" stopColor={SPECTRUM[0]} />
+              <Stop offset="0.5" stopColor={SPECTRUM[1]} />
+              <Stop offset="1" stopColor={SPECTRUM[2]} />
+            </LinearGradient>
+          </Defs>
+        )}
         <Circle
           cx={size / 2}
           cy={size / 2}
-          r={size / 2 + PIN_RIM_WIDTH}
+          r={size / 2 + rimWidth}
           fill={rim}
         />
-        <Path d={pinTailPath(size, PIN_RIM_WIDTH)} fill={rim} />
+        <Path d={pinTailPath(size, rimWidth)} fill={rim} />
         <Circle cx={size / 2} cy={size / 2} r={size / 2} fill={shell} />
         <Path d={pinTailPath(size)} fill={shell} />
       </Svg>
@@ -99,6 +116,9 @@ function EventPin({
         <EmojiPinFace
           size={inner}
           emoji={eventCategoryEmoji(event.categories)}
+          field={
+            featured ? undefined : categoryHue(event.categories[0]).pinField
+          }
         />
       </View>
       {featured && (

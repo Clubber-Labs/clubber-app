@@ -1,10 +1,11 @@
 import { View, Text, Pressable } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
-import Svg, { G, Path } from 'react-native-svg'
+import Svg, { Defs, G, LinearGradient, Path, Stop } from 'react-native-svg'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { PIN_RIM_COLOR, PIN_RIM_WIDTH } from '@/features/map/utils/markerLayout'
+import { isSpotLiveNow } from '../utils/spotWindow'
 import type { Spot } from '../types'
-import { colors } from '@/shared/theme'
+import { colors, SPECTRUM } from '@/shared/theme'
 
 type Props = {
   spots: Spot[]
@@ -44,6 +45,10 @@ const BADGE_CENTER_Y = 5
 // escuro, hairline claro) no ombro direito.
 function SpotBalloon({ spot, size }: { spot: Spot; size: number }) {
   const u = size / BALLOON_SIZE
+  // Rolê dentro da janela AGORA: o rim vira o espectro-assinatura (mais
+  // grosso pra leitura); fora dela, o rim escuro padrão da família.
+  const live = isSpotLiveNow(spot.startsAt, spot.endsAt)
+  const rimId = `spot-rim-${spot.id}`
   return (
     <View style={{ width: CANVAS_W * u, height: CANVAS_H * u }}>
       <Svg
@@ -51,13 +56,22 @@ function SpotBalloon({ spot, size }: { spot: Spot; size: number }) {
         height={CANVAS_H * u}
         viewBox={`0 0 ${CANVAS_W} ${CANVAS_H}`}
       >
+        {live && (
+          <Defs>
+            <LinearGradient id={rimId} x1="0" y1="0" x2="1" y2="1">
+              <Stop offset="0" stopColor={SPECTRUM[0]} />
+              <Stop offset="0.5" stopColor={SPECTRUM[1]} />
+              <Stop offset="1" stopColor={SPECTRUM[2]} />
+            </LinearGradient>
+          </Defs>
+        )}
         <G transform={`translate(${PAD}, ${PAD})`}>
           {/* Stroke centrado + fill por cima = rim só na metade externa. */}
           <Path
             d={BUBBLE_PATH}
             fill="none"
-            stroke={PIN_RIM_COLOR}
-            strokeWidth={PIN_RIM_WIDTH * 2}
+            stroke={live ? `url(#${rimId})` : PIN_RIM_COLOR}
+            strokeWidth={live ? PIN_RIM_WIDTH * 4 : PIN_RIM_WIDTH * 2}
             strokeLinejoin="round"
           />
           <Path d={BUBBLE_PATH} fill={colors.content} />

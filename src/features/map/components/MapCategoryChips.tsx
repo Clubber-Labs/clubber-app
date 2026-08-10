@@ -2,6 +2,7 @@ import { ScrollView, View } from 'react-native'
 import { useCategories } from '@/shared/hooks/useCategories'
 import { Chip } from '@/shared/components/Chip'
 import { useMapUiStore } from '../store/mapUiStore'
+import { categoryHue } from '@/shared/theme'
 import type { MapKind } from '../types'
 
 // Chips sobre o mapa: tipo (eventos × rolês, mutuamente exclusivos — reativar
@@ -50,14 +51,22 @@ export function MapCategoryChips() {
             active={selected.length === 0}
             onPress={() => setFilters({ ...filters, categories: [] })}
           />
-          {categories.map(category => (
-            <Chip
-              key={category.value}
-              label={category.label}
-              active={selected.includes(category.value)}
-              onPress={() => toggle(category.value)}
-            />
-          ))}
+          {categories.map(category => {
+            const hue = categoryHue(category.value)
+            return (
+              <Chip
+                key={category.value}
+                label={category.label}
+                active={selected.includes(category.value)}
+                onPress={() => toggle(category.value)}
+                activeColors={{
+                  bg: hue.chipBg,
+                  border: hue.chipBorder,
+                  text: hue.chipText,
+                }}
+              />
+            )
+          })}
         </>
       )}
     </ScrollView>
