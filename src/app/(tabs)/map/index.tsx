@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { View, Text, ActivityIndicator, Keyboard, Linking } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -42,7 +42,6 @@ import { CreateFab } from '@/shared/components/CreateFab'
 import { useViewportSpots } from '@/features/spots/hooks/useViewportSpots'
 import { useSuggestSpots } from '@/features/spots/hooks/useSuggestSpots'
 import { SpotMarkers } from '@/features/spots/components/SpotMarkers'
-import { SpotBalloonLayer } from '@/features/spots/components/SpotBalloonLayer'
 import { SpotPreviewCard } from '@/features/spots/components/SpotPreviewCard'
 import { SpotSuggestionsPanel } from '@/features/spots/components/SpotSuggestionsPanel'
 import { SuggestionMarkers } from '@/features/spots/components/SuggestionMarkers'
@@ -70,10 +69,11 @@ export default function MapScreen() {
   const profile = useMyProfile()
   const { cameraRef, mapRef, flyTo, adjustZoom, focusOnEvent, fitToCoords } =
     useMapCamera()
-  const { showMarkers, zoomBucket, onCameraZoomChange } = useMapZoomState()
+  const { zoomBucket, onCameraZoomChange } = useMapZoomState()
   const { bbox, onRegionChange } = useViewportBbox(mapRef)
 
   const filters = useMapUiStore(s => s.filters)
+  const setFilters = useMapUiStore(s => s.setFilters)
   const showBanner = useBanner()
   const lightPreset = useMapLightPreset()
   const headerClearance = useHeaderClearance()
@@ -88,18 +88,41 @@ export default function MapScreen() {
   // sem perder as sugestões já geradas — reabrir não gasta outra geração.
   const suggest = useSuggestSpots()
 
-  const { events, truncated, isLoading, error } = useMapEvents(bbox, filters)
+  // Filtro de tipo (chips Eventos/Rolês): desliga a query do tipo oculto e
+  // esvazia o dado na renderização — só desabilitar não basta, o cache do
+  // keepPreviousData continuaria alimentando as camadas.
+  const showEvents = filters.kind !== 'spots'
+  const showSpots = filters.kind !== 'events'
+
+  const mapEvents = useMapEvents(bbox, filters, showEvents)
+  const { truncated, isLoading, error } = mapEvents
+  const events = useMemo(
+    () => (showEvents ? mapEvents.events : []),
+    [showEvents, mapEvents.events],
+  )
   // Clusterização em JS: agrupados viram badges nativos; os que sobram são
   // MarkerViews completos (emoji + confirmados) em qualquer zoom.
   const { clusters, singles } = useEventClusters(events, zoomBucket)
   // Spots sempre visíveis, sem o gate de zoom dos pins de evento: o zoom
   // padrão (USER_ZOOM) fica abaixo do threshold e esconderia os balões. O
   // volume é baixo (máx. 5 ativos por usuário, vida de 24h) — não clusteriza.
-  const { data: spots = [] } = useViewportSpots(bbox, {
-    categories: filters.categories,
-    friendsOnly: filters.friendsOnly,
-  })
-  const { data: heatmapPoints = [] } = useHeatmap(bbox, filters, densityVisible)
+  const { data: viewportSpots = [] } = useViewportSpots(
+    bbox,
+    {
+      categories: filters.categories,
+      friendsOnly: filters.friendsOnly,
+    },
+    showSpots,
+  )
+  const spots = useMemo(
+    () => (showSpots ? viewportSpots : []),
+    [showSpots, viewportSpots],
+  )
+  const { data: heatmapPoints = [] } = useHeatmap(
+    bbox,
+    filters,
+    densityVisible && showEvents,
+  )
 
   // Voa até o pedido de foco e o APAGA da rota: param grudado na tab
   // bloquearia o recentro automático pra sempre e impediria um segundo
@@ -111,9 +134,21 @@ export default function MapScreen() {
     if (!focusLat || !focusLng) return
     focusConsumedRef.current = true
     focusOnEvent([Number(focusLng), Number(focusLat)])
-    if (focusSpotId) setSpotToOpen(focusSpotId)
+    if (focusSpotId) {
+      setSpotToOpen(focusSpotId)
+      // O rolê focado precisa estar visível — destrava o filtro de tipo.
+      if (filters.kind === 'events') setFilters({ ...filters, kind: 'all' })
+    }
     router.setParams({ focusSpotId: '', focusLat: '', focusLng: '' })
-  }, [focusSpotId, focusLat, focusLng, focusOnEvent, router])
+  }, [
+    focusSpotId,
+    focusLat,
+    focusLng,
+    focusOnEvent,
+    router,
+    filters,
+    setFilters,
+  ])
 
   // Recentro automático só sem foco pedido — o fix de GPS chega depois do
   // voo e roubaria a câmera (o ref cobre a janela após limpar os params).
@@ -127,8 +162,10 @@ export default function MapScreen() {
   useEffect(() => {
     if (!suggestParam) return
     setSuggestionsOpen(true)
+    // Publicar rolê com o filtro em "Eventos" esconderia o resultado.
+    if (filters.kind === 'events') setFilters({ ...filters, kind: 'all' })
     router.setParams({ suggest: '' })
-  }, [suggestParam, router])
+  }, [suggestParam, router, filters, setFilters])
 
   // O card do rolê abre quando os spots do viewport incluírem o focado.
   useEffect(() => {
@@ -234,22 +271,14 @@ export default function MapScreen() {
           animationMode="flyTo"
         />
         {/* Densidade ao fundo + indicador do usuário, ambos abaixo dos pins. */}
-        {densityVisible && <EventHeatmapLayer points={heatmapPoints} />}
+        {densityVisible && showEvents && (
+          <EventHeatmapLayer points={heatmapPoints} />
+        )}
         {/* Indicador de posição como STYLE LAYER (não MarkerView): style layer
             NUNCA captura toque e fica abaixo dos pins — então nunca bloqueia a
             interação com eles (o MarkerView bloqueava, mesmo com pointerEvents). */}
         {locationStatus === 'ready' && myPos && (
           <UserLocationLayer coordinate={myPos} avatarIconUri={avatarIconUri} />
-        )}
-        {/* Mini-balões de spot ANTES dos badges: ambos style layers, a ordem
-            de montagem deixa os eventos por cima. MarkerViews (pins e balões
-            completos) ficam acima de qualquer layer por natureza. */}
-        {!showMarkers && (
-          <SpotBalloonLayer
-            spots={spots}
-            onPress={openSpot}
-            dimmed={densityVisible}
-          />
         )}
         <EventClustersLayer
           clusters={clusters}
@@ -263,14 +292,16 @@ export default function MapScreen() {
           dimmed={densityVisible}
           detailsOpen={!!selectedEvent || !!selectedSpot}
         />
-        {showMarkers && (
-          <SpotMarkers
-            spots={spots}
-            selectedId={selectedSpot?.id}
-            onPress={openSpot}
-            dimmed={densityVisible}
-          />
-        )}
+        {/* Balão completo (foto do criador + membros) em QUALQUER zoom — o
+            mini de zoom baixo foi aposentado. Como MarkerView, os balões
+            ficam acima dos badges de cluster; o volume é baixo (máx. 5
+            ativos por usuário). */}
+        <SpotMarkers
+          spots={spots}
+          selectedId={selectedSpot?.id}
+          onPress={openSpot}
+          dimmed={densityVisible}
+        />
         {suggestionsOpen && (
           <SuggestionMarkers
             suggestions={suggest.suggestions}
@@ -299,7 +330,7 @@ export default function MapScreen() {
         </View>
       )}
 
-      {!isLoading && truncated && !error && (
+      {!isLoading && truncated && !error && showEvents && (
         <View
           className="absolute self-center bg-surface/90 px-3 py-1.5 rounded-lg border border-line-strong"
           style={{ top: headerClearance + 84 }}
