@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import {
   FlatList,
   View,
@@ -11,6 +11,7 @@ import { useFeed } from '../hooks/useFeed'
 import { EventCard } from '@/features/events/components/EventCard'
 import { EventStatusFilter } from '@/features/events/components/EventStatusFilter'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
+import { useActiveTabPress } from '@/shared/hooks/useActiveTabPress'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 import { useUserLocation } from '@/shared/hooks/useUserLocation'
@@ -50,6 +51,13 @@ export function FeedList() {
   )
   const { refreshing, onRefresh } = usePullRefresh(refetch)
 
+  // Re-tap na aba Feed: volta ao topo e atualiza (padrão de plataforma).
+  const listRef = useRef<FlatList<FeedEvent>>(null)
+  useActiveTabPress(() => {
+    listRef.current?.scrollToOffset({ offset: 0, animated: true })
+    refetch()
+  })
+
   // Dedup defensivo por id: o mesmo evento pode reaparecer entre páginas
   // (empates de ranking ou re-surface por sinais sociais entre sessões).
   // Memoiza pra não reconstruir o Set a cada render não relacionado.
@@ -61,6 +69,7 @@ export function FeedList() {
   // ListEmptyComponent pra manter os chips visíveis e o scroll contínuo.
   return (
     <FlatList
+      ref={listRef}
       className="flex-1"
       data={!locationResolved || isLoading || isError ? [] : events}
       keyExtractor={(item: FeedEvent) => item.id}

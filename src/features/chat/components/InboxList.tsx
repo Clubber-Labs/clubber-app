@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import {
   FlatList,
   View,
@@ -9,6 +10,7 @@ import {
 import { useInbox } from '../hooks/useInbox'
 import { useDeleteConversation } from '../hooks/useDeleteConversation'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
+import { useActiveTabPress } from '@/shared/hooks/useActiveTabPress'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import { useConfirm } from '@/shared/lib/confirm'
 import { SwipeableRow } from '@/shared/components/SwipeableRow'
@@ -26,6 +28,12 @@ type Props = {
 
 export function InboxList({ myId, onOpen, onNew }: Props) {
   const tabBarClearance = useTabBarClearance()
+
+  // Re-tap na aba Mensagens: volta ao topo da caixa de entrada.
+  const listRef = useRef<FlatList<InboxItem>>(null)
+  useActiveTabPress(() => {
+    listRef.current?.scrollToOffset({ offset: 0, animated: true })
+  })
   const {
     conversations,
     isLoading,
@@ -73,6 +81,7 @@ export function InboxList({ myId, onOpen, onNew }: Props) {
 
   return (
     <FlatList
+      ref={listRef}
       data={conversations}
       keyExtractor={(item: InboxItem) => item.id}
       contentContainerStyle={{ paddingBottom: tabBarClearance }}
