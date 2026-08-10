@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { View, Text } from 'react-native'
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg'
 import { colors } from '@/shared/theme'
@@ -13,6 +14,9 @@ type Props = {
 // Miolo circular de pin: campo grafite neutro com gradiente sutil + emoji da
 // categoria — a cor do pin vem do emoji, não de cor de marca (mapa sem brand).
 export function EmojiPinFace({ size, emoji, field }: Props) {
+  // Id único por instância: com vários pins (cada um com seu matiz), o id
+  // fixo colidia no registro global do RNSVG e o último gradiente vencia.
+  const gradientId = `pin-face-${useId().replace(/:/g, '')}`
   return (
     <View
       style={{ width: size, height: size }}
@@ -20,7 +24,7 @@ export function EmojiPinFace({ size, emoji, field }: Props) {
     >
       <Svg width={size} height={size} style={{ position: 'absolute' }}>
         <Defs>
-          <RadialGradient id="pin-face" cx="50%" cy="40%" r="75%">
+          <RadialGradient id={gradientId} cx="50%" cy="40%" r="75%">
             <Stop offset="0" stopColor={field ?? colors.surfaceElevated} />
             <Stop offset="1" stopColor={field ?? colors.surface} />
           </RadialGradient>
@@ -29,13 +33,15 @@ export function EmojiPinFace({ size, emoji, field }: Props) {
           cx={size / 2}
           cy={size / 2}
           r={size / 2}
-          fill="url(#pin-face)"
+          fill={`url(#${gradientId})`}
         />
       </Svg>
+      {/* Sem lineHeight apertado: emoji no iOS desenha além da caixa e a
+          base saía cortada — a caixa padrão do glifo + centering do container
+          resolvem. */}
       <Text
         style={{
           fontSize: Math.round(size * 0.44),
-          lineHeight: Math.round(size * 0.6),
           includeFontPadding: false,
         }}
       >
