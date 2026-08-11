@@ -10,7 +10,7 @@ export function GoogleLoginButton() {
     <Pressable
       onPress={() => mutate()}
       disabled={isPending}
-      className="rounded-lg py-3 px-6 bg-content flex-row gap-2 items-center justify-center"
+      className="rounded-full py-3 px-6 bg-content flex-row gap-2 items-center justify-center"
     >
       {isPending ? (
         <ActivityIndicator size="small" color={colors.surface} />
