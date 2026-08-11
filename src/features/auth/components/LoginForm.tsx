@@ -31,7 +31,7 @@ export function LoginForm({ defaultEmail }: Props) {
         name="email"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            className={`border ${errors.email ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
+            className={`border ${errors.email ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
             placeholder="E-mail"
             placeholderTextColor={colors.contentSubtle}
             onChangeText={onChange}
@@ -50,7 +50,7 @@ export function LoginForm({ defaultEmail }: Props) {
         name="password"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            className={`border ${errors.password ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
+            className={`border ${errors.password ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
             placeholder="Senha"
             placeholderTextColor={colors.contentSubtle}
             onChangeText={onChange}

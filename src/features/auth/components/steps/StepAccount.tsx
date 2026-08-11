@@ -30,7 +30,7 @@ export function StepAccount({ control, errors }: Props) {
             name="username"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.username ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
+                className={`border ${errors.username ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
                 placeholder="joaosilva"
                 placeholderTextColor={colors.contentSubtle}
                 onChangeText={onChange}
@@ -55,7 +55,7 @@ export function StepAccount({ control, errors }: Props) {
             name="email"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.email ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
+                className={`border ${errors.email ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
                 placeholder="joao@email.com"
                 placeholderTextColor={colors.contentSubtle}
                 onChangeText={onChange}
@@ -79,7 +79,7 @@ export function StepAccount({ control, errors }: Props) {
             name="phone"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className={`border ${errors.phone ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
+                className={`border ${errors.phone ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
                 placeholder="(11) 99999-9999"
                 placeholderTextColor={colors.contentSubtle}
                 onChangeText={text => onChange(text.replace(/\D/g, ''))}

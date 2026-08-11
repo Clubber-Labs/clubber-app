@@ -51,7 +51,7 @@ export function AddressAutocomplete({
     <View className="gap-1">
       <View className="relative">
         <TextInput
-          className={`border ${hasError ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 pr-10 text-base text-content`}
+          className={`border ${hasError ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 pr-10 text-base text-content`}
           placeholder="Rua, número, bairro"
           placeholderTextColor={colors.contentSubtle}
           value={value}

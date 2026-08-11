@@ -53,5 +53,10 @@ export function Enter({ active, variant, delay = 0, children }: Props) {
           ],
   }))
 
-  return <Animated.View style={style}>{children}</Animated.View>
+  // Base inline com opacity 0: o worklet só aplica o estilo depois do
+  // primeiro frame — sem a base, o elemento pisca no estado final antes da
+  // entrada começar (mesma classe do bug do CTA fantasma no rodapé).
+  return (
+    <Animated.View style={[{ opacity: 0 }, style]}>{children}</Animated.View>
+  )
 }

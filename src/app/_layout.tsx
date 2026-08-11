@@ -159,10 +159,11 @@ export default function RootLayout() {
   // nessa rota (events/[id], sem subrotas como edit/invites).
   const isEventDetail =
     segments[0] === 'events' && segments[1] === '[id]' && segments.length === 2
-  // Onboarding tem mapa full-bleed sob a status bar/Dynamic Island — a tela
-  // compensa o inset no próprio header (useSafeAreaInsets).
-  const isOnboarding =
-    segments[0] === '(auth)' && (segments as string[])[1] === 'onboarding'
+  // O grupo (auth) inteiro é edge-to-edge no raiz: o onboarding tem mapa
+  // full-bleed sob a status bar, e as demais telas do grupo recebem o inset
+  // POR TELA via contentStyle no (auth)/_layout — alternar edges globais ao
+  // navegar dentro do grupo re-layoutava a árvore inteira (flick vertical).
+  const isAuthGroup = segments[0] === '(auth)'
   // Telas de billing (upgrade/manage) têm header próprio (fechar/voltar) —
   // o header global em cima seria redundante.
   const isBilling = segments[0] === 'billing'
@@ -204,7 +205,7 @@ export default function RootLayout() {
                   <SafeAreaView
                     style={{ flex: 1, backgroundColor: colors.background }}
                     edges={
-                      isEventDetail || floatingHeader || isOnboarding
+                      isEventDetail || floatingHeader || isAuthGroup
                         ? []
                         : ['top']
                     }

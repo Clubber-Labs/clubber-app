@@ -27,7 +27,7 @@ export function StepAccount({ control, errors, email }: Props) {
             <Text className="text-sm font-medium text-content-tertiary">
               E-mail
             </Text>
-            <View className="border border-line bg-surface rounded-xl px-4 py-3.5 opacity-70">
+            <View className="border border-line bg-surface rounded-full px-4 py-3.5 opacity-70">
               <Text className="text-base text-content-tertiary">{email}</Text>
             </View>
           </View>
@@ -42,7 +42,7 @@ export function StepAccount({ control, errors, email }: Props) {
             name="username"
             render={({ field: { onChange, value, onBlur } }) => (
               <TextInput
-                className={`border ${errors.username ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
+                className={`border ${errors.username ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
                 placeholder="joaosilva"
                 placeholderTextColor={colors.contentSubtle}
                 autoCapitalize="none"
@@ -68,7 +68,7 @@ export function StepAccount({ control, errors, email }: Props) {
             name="phone"
             render={({ field: { onChange, value, onBlur } }) => (
               <TextInput
-                className={`border ${errors.phone ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
+                className={`border ${errors.phone ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
                 placeholder="(11) 99999-9999"
                 placeholderTextColor={colors.contentSubtle}
                 keyboardType="phone-pad"

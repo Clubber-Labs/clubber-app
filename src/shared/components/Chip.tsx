@@ -14,7 +14,7 @@ type Props = {
 
 // Chip selecionável único do app — filtros (status/categorias), seletores de
 // categoria/interesse, chips sobre o mapa. Ativo = fundo da marca + check;
-// inativo = surface neutro. Forma padrão: rounded-lg. Quem agrupa decide o
+// inativo = surface neutro. Forma padrão: pílula (rounded-full). Quem agrupa decide o
 // layout (scroll horizontal ou flex-wrap).
 export function Chip({
   label,
@@ -30,7 +30,7 @@ export function Chip({
       disabled={disabled}
       accessibilityRole="button"
       accessibilityState={{ selected: active, disabled }}
-      className={`flex-row items-center gap-1 rounded-lg border px-3.5 py-2 ${
+      className={`flex-row items-center gap-1 rounded-full border px-3.5 py-2 ${
         active && !hue
           ? 'bg-brand border-brand'
           : 'bg-surface border-line-strong'

@@ -32,7 +32,7 @@ export const UserSearchInput = forwardRef<TextInput, Props>(
             autoCapitalize="none"
             autoCorrect={false}
             returnKeyType="search"
-            className="bg-surface border border-line rounded-xl px-4 py-3 text-base text-content"
+            className="bg-surface border border-line rounded-full px-4 py-3 text-base text-content"
           />
           <View className="absolute right-3 top-0 bottom-0 justify-center">
             {loading ? (
