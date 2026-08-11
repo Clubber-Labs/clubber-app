@@ -92,8 +92,19 @@ export function OnboardingFooter({
         <Animated.View
           pointerEvents={last ? 'auto' : 'none'}
           onLayout={e => setStackH(e.nativeEvent.layout.height)}
+          // Base inline com opacity 0: o worklet só aplica o estilo DEPOIS do
+          // primeiro frame (e reaplica quando as medidas chegam) — sem a base,
+          // a pilha piscava visível sobre o Continuar no slide 1 (o "Já tenho
+          // conta" escuro lia como faixa preta subindo do rodapé).
           style={[
-            { position: 'absolute', left: 0, right: 0, bottom: 0 },
+            {
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              opacity: 0,
+              transform: [{ translateY: 16 }],
+            },
             stackStyle,
           ]}
         >
