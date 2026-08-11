@@ -4,9 +4,10 @@ import { colors } from '@/shared/theme'
 
 type Variant = 'primary' | 'secondary' | 'destructive' | 'neutral'
 
-// 'lg' = pílula-herói do onboarding/auth (cápsula alta, texto maior) — mesma
-// paleta das variants; muda só forma e escala. Overrides inline de propósito:
-// classes de tamanho inéditas já quebraram em Release por cache do NativeWind.
+// 'lg' = pílula-herói do onboarding/auth: mais alta (18px de padding vertical
+// vs 12 do 'md') e texto maior — mesma paleta das variants. Override inline de
+// propósito: classes de tamanho inéditas já quebraram em Release por cache do
+// NativeWind.
 type Size = 'md' | 'lg'
 
 type Props = {
@@ -54,7 +55,8 @@ export function Button({
   size = 'md',
   icon: IconComponent,
 }: Props) {
-  const base = 'rounded-full py-6 px-6 items-center justify-center flex-row gap-2'
+  const base =
+    'rounded-full py-3 px-6 items-center justify-center flex-row gap-2'
   const lg = size === 'lg'
 
   return (
@@ -64,7 +66,7 @@ export function Button({
       accessibilityRole="button"
       accessibilityState={{ disabled: disabled || loading, busy: loading }}
       className={`${base} ${containerStyles[variant]} ${disabled && !loading ? 'opacity-40' : ''}`}
-      style={lg ? { borderRadius: 999, paddingVertical: 18 } : undefined}
+      style={lg ? { paddingVertical: 18 } : undefined}
     >
       {loading ? (
         <ActivityIndicator

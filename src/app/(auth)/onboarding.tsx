@@ -111,12 +111,16 @@ export default function OnboardingScreen() {
           width={width}
           lastIdx={lastIdx}
           page={page}
-          onNext={() =>
+          onNext={() => {
+            // Otimista: scrollTo animado nem sempre emite momentum (Android) —
+            // sem isto, dots e `active` dessincronizariam do slide visível.
+            // O settlePage do gesto é idempotente com este valor.
+            setPage(page + 1)
             scrollRef.current?.scrollTo({
               x: width * (page + 1),
               animated: true,
             })
-          }
+          }}
           onRegister={() => router.replace('/(auth)/register')}
           onLogin={() => router.replace('/(auth)/login')}
         />

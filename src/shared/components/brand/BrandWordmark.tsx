@@ -4,7 +4,7 @@ import { BrandSticker } from './BrandSticker'
 
 // Wordmark "clu[b]ber" — Sora Bold com o primeiro b como sticker.
 // height = tamanho da fonte; o sticker escala junto (1.2x).
-// Requer Sora_700Bold carregada no _layout (ver PATCHES.md).
+// Requer Sora_700Bold carregada no _layout raiz (useFonts + gate do splash).
 export function BrandWordmark({ height = 16 }: { height?: number }) {
   const t = {
     fontFamily: 'Sora_700Bold',

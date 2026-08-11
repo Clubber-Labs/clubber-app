@@ -73,7 +73,7 @@ export function ArtSocial({ active }: ArtProps) {
           </View>
           <View className="max-w-[85%] self-end rounded-xl rounded-br-sm bg-surface-high px-3 py-1.5">
             <Text className="text-sm text-content">
-            Boaa. Vou ver no Clubber!
+              Boaa. Vou ver no Clubber!
             </Text>
           </View>
         </View>
