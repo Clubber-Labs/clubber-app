@@ -18,12 +18,14 @@ export function useViewportBbox(mapRef: RefObject<Mapbox.MapView | null>) {
         const bounds = await mapRef.current?.getVisibleBounds()
         if (!bounds) return
         if (versionRef.current !== token) return
-        const [[east, north], [west, south]] = bounds
+        // getVisibleBounds() não garante a ordem dos cantos — normaliza com
+        // min/max (bbox cruzando o antimeridiano não se aplica ao app).
+        const [[lng1, lat1], [lng2, lat2]] = bounds
         setBbox({
-          bboxNorth: north,
-          bboxSouth: south,
-          bboxEast: east,
-          bboxWest: west,
+          bboxNorth: Math.max(lat1, lat2),
+          bboxSouth: Math.min(lat1, lat2),
+          bboxEast: Math.max(lng1, lng2),
+          bboxWest: Math.min(lng1, lng2),
         })
       } catch {
         // MapView ainda não montou ou falha nativa — ignora.
