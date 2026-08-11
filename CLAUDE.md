@@ -394,6 +394,7 @@ export const useAuthStore = create<AuthState>(set => ({
 - **`shared/components/`** nunca importa de `features/` — dependência só desce, nunca sobe
 - **`shared/utils/`** para funções puras reutilizáveis — se uma função de formatação/máscara/parse for usada em mais de um lugar (ou puder ser), ela vai em `shared/utils/`, não embutida no componente. Ex: `formatPhone` em `masks.ts`, não dentro de `StepAccount.tsx`
 - **NativeWind para estilos** — evitar `StyleSheet.create` exceto para casos não suportados pelo Tailwind
+- **Raios de borda (identidade "b de balão")** — *toca e age = pílula; contém = raio moderado; estrutura = reto*: controles interativos (botão, chip, badge/selo, pill, input de linha única) usam `rounded-full`; superfícies (cards, sheets, modais, dropdowns, textareas/campos multilinha) ficam em `rounded-xl/2xl/3xl`; linhas estruturais (SettingsRow, rows de lista) são retas. Não introduzir raio novo fora dessa régua
 - Erros de API tratados nos interceptors do Axios — não repetir tratamento em cada hook
 
 ---

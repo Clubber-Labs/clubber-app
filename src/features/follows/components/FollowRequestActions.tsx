@@ -26,14 +26,14 @@ export function FollowRequestActions({ followerId }: Props) {
     <View className="flex-row gap-2">
       <Pressable
         onPress={() => accept.mutate(followerId)}
-        className="bg-brand rounded-lg px-3 py-2"
+        className="bg-brand rounded-full px-3 py-2"
         accessibilityLabel="Aceitar"
       >
         <Text className="text-content text-xs font-semibold">Aceitar</Text>
       </Pressable>
       <Pressable
         onPress={() => reject.mutate(followerId)}
-        className="bg-surface-elevated rounded-lg px-3 py-2 border border-line-strong"
+        className="bg-surface-elevated rounded-full px-3 py-2 border border-line-strong"
         accessibilityLabel="Recusar"
       >
         <Text className="text-content-secondary text-xs font-semibold">

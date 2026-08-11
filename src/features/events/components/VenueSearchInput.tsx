@@ -52,7 +52,7 @@ export function VenueSearchInput({
     <View className="gap-2">
       <View className="relative">
         <TextInput
-          className={`border ${hasError ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 pr-10 text-base text-content`}
+          className={`border ${hasError ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 pr-10 text-base text-content`}
           placeholder="Buscar estabelecimento"
           placeholderTextColor={colors.contentSubtle}
           value={query}

@@ -29,7 +29,7 @@ export function PasswordInput({
 
   return (
     <View
-      className={`flex-row items-center border ${error ? 'border-content' : 'border-line'} bg-surface rounded-xl pl-4 pr-3`}
+      className={`flex-row items-center border ${error ? 'border-content' : 'border-line'} bg-surface rounded-full pl-4 pr-3`}
     >
       <TextInput
         className="flex-1 py-3.5 text-base text-content"

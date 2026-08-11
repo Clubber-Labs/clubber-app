@@ -24,7 +24,7 @@ const textShadow = {
 
 function PrivatePill() {
   return (
-    <View className="flex-row items-center gap-1 rounded-md border border-white/15 bg-black/70 px-2 py-1">
+    <View className="flex-row items-center gap-1 rounded-full border border-white/15 bg-black/70 px-2 py-1">
       <LockIcon size={11} color={colors.contentTertiary} />
       <Text className="text-[11px] font-semibold text-content-tertiary">
         Privado

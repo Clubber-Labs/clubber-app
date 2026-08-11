@@ -186,7 +186,7 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
               <CategoryBadge key={subcategory} value={subcategory} />
             ))}
             {!event.isPublic && (
-              <View className="flex-row items-center gap-1 rounded-md bg-surface-elevated px-2.5 py-1">
+              <View className="flex-row items-center gap-1 rounded-full bg-surface-elevated px-2.5 py-1">
                 <LockIcon size={11} color={colors.contentTertiary} />
                 <Text className="text-content-tertiary text-xs font-semibold">
                   Privado

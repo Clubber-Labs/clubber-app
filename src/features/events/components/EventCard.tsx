@@ -45,7 +45,7 @@ function CategoryChip({ categories }: { categories: string[] }) {
   const hue = categoryHue(primary)
   return (
     <View
-      className="flex-row items-center gap-1 self-start rounded-md border px-2 py-0.5"
+      className="flex-row items-center gap-1 self-start rounded-full border px-2 py-0.5"
       style={{ backgroundColor: hue.chipBg, borderColor: hue.chipBorder }}
     >
       <Text className="text-[10px]">{eventCategoryEmoji(categories)}</Text>
