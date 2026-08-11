@@ -55,8 +55,7 @@ export function Button({
   size = 'md',
   icon: IconComponent,
 }: Props) {
-  const base =
-    'rounded-full py-3 px-6 items-center justify-center flex-row gap-2'
+  const base = 'rounded-full px-6 items-center justify-center flex-row gap-2'
   const lg = size === 'lg'
 
   return (
@@ -65,7 +64,10 @@ export function Button({
       disabled={disabled || loading}
       accessibilityRole="button"
       accessibilityState={{ disabled: disabled || loading, busy: loading }}
-      className={`${base} ${containerStyles[variant]} ${disabled && !loading ? 'opacity-40' : ''}`}
+      // Padding vertical: classe SÓ no md — se py-* e style disputam a mesma
+      // propriedade, o css-interop resolve a favor da classe e o lg não
+      // cresceria (foi um bug real; o lg usa apenas o inline abaixo).
+      className={`${base} ${lg ? '' : 'py-3'} ${containerStyles[variant]} ${disabled && !loading ? 'opacity-40' : ''}`}
       style={lg ? { paddingVertical: 24 } : undefined}
     >
       {loading ? (
