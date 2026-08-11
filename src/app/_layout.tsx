@@ -9,6 +9,8 @@ import { StatusBar } from 'expo-status-bar'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { StripeProvider } from '@stripe/stripe-react-native'
 import Constants from 'expo-constants'
+import { useFonts, Sora_700Bold } from '@expo-google-fonts/sora'
+import * as ExpoSplash from 'expo-splash-screen'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { queryClient } from '@/shared/lib/queryClient'
 import { ConfirmProvider } from '@/shared/lib/confirm'
@@ -29,7 +31,12 @@ import { SessionUnavailable } from '@/features/auth/components/SessionUnavailabl
 import { ChatRealtimeMount } from '@/features/chat/components/ChatRealtimeMount'
 import { NotificationsMount } from '@/features/notifications/components/NotificationsMount'
 import { GlobalHeader } from '@/shared/components/GlobalHeader'
+import { SplashOverlay } from '@/shared/components/SplashOverlay'
 import { colors } from '@/shared/theme'
+
+// Segura a splash nativa (b reto) até a splash JS montar — o hideAsync roda no
+// primeiro frame do overlay (onMounted), sem flash preto na troca.
+ExpoSplash.preventAutoHideAsync().catch(() => {})
 
 // Redirecionamentos por status. 'loading'/'offline' são tratados pelos overlays
 // no RootLayout (não navega), pra não jogar o usuário no login enquanto valida
@@ -37,6 +44,8 @@ import { colors } from '@/shared/theme'
 function AuthGuard() {
   const status = useAuthStore(s => s.status)
   const profileIncomplete = useAuthStore(s => s.profileIncomplete)
+  const onboardingSeen = useAuthStore(s => s.onboardingSeen)
+  const sessionExpired = useAuthStore(s => s.sessionExpired)
   const segments = useSegments()
   const router = useRouter()
 
@@ -55,7 +64,13 @@ function AuthGuard() {
       inAuthGroup && (segments as string[])[1] === 'consent'
 
     if (status === 'unauthenticated' && !inAuthGroup) {
-      router.replace('/(auth)/login')
+      // Sessão expirada vai direto pro login (banner "sessão expirou" mora lá);
+      // onboarding é só pra quem nunca o viu neste aparelho.
+      router.replace(
+        sessionExpired || onboardingSeen
+          ? '/(auth)/login'
+          : '/(auth)/onboarding',
+      )
       return
     }
 
@@ -89,6 +104,8 @@ function AuthGuard() {
   }, [
     status,
     profileIncomplete,
+    onboardingSeen,
+    sessionExpired,
     needsConsent,
     needsVersionBump,
     segments,
@@ -105,6 +122,16 @@ export default function RootLayout() {
   const profileIncomplete = useAuthStore(s => s.profileIncomplete)
   const userId = useAuthStore(s => s.userId)
   const segments = useSegments() as string[]
+  const [fontsLoaded] = useFonts({ Sora_700Bold })
+  // Splash global SÓ no boot: fontes carregando ou sessão indefinida. Nunca em
+  // logout, navegação, resume ou loading local — e o fade de saída de 200ms dá
+  // ao wordmark (que espera a fonte) seu momento mesmo quando a fonte é a
+  // última a resolver.
+  const showSplash = !fontsLoaded || status === 'loading'
+
+  const hideNativeSplash = useCallback(() => {
+    ExpoSplash.hideAsync().catch(() => {})
+  }, [])
 
   useEffect(() => {
     // GoogleSignin.configure() é lazy (chamado no 1º signIn). Facebook precisa
@@ -132,6 +159,10 @@ export default function RootLayout() {
   // nessa rota (events/[id], sem subrotas como edit/invites).
   const isEventDetail =
     segments[0] === 'events' && segments[1] === '[id]' && segments.length === 2
+  // Onboarding tem mapa full-bleed sob a status bar/Dynamic Island — a tela
+  // compensa o inset no próprio header (useSafeAreaInsets).
+  const isOnboarding =
+    segments[0] === '(auth)' && (segments as string[])[1] === 'onboarding'
   // Telas de billing (upgrade/manage) têm header próprio (fechar/voltar) —
   // o header global em cima seria redundante.
   const isBilling = segments[0] === 'billing'
@@ -172,7 +203,11 @@ export default function RootLayout() {
                   <StatusBar style="light" />
                   <SafeAreaView
                     style={{ flex: 1, backgroundColor: colors.background }}
-                    edges={isEventDetail || floatingHeader ? [] : ['top']}
+                    edges={
+                      isEventDetail || floatingHeader || isOnboarding
+                        ? []
+                        : ['top']
+                    }
                   >
                     {showHeader && !floatingHeader && <GlobalHeader />}
                     <View className="flex-1 bg-background">
@@ -187,15 +222,16 @@ export default function RootLayout() {
                           <GlobalHeader floating />
                         </View>
                       )}
-                      {/* Gate de sessão: bloqueia as telas até /me validar. */}
-                      {status === 'loading' && (
-                        <View className="absolute inset-0 bg-background" />
-                      )}
                       {status === 'offline' && (
                         <SessionUnavailable onRetry={retry} />
                       )}
                     </View>
                   </SafeAreaView>
+                  <SplashOverlay
+                    visible={showSplash}
+                    showWordmark={fontsLoaded}
+                    onMounted={hideNativeSplash}
+                  />
                   <AuthGuard />
                   {chatActive && userId && (
                     <>

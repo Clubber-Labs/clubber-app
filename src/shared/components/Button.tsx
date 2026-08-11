@@ -4,12 +4,19 @@ import { colors } from '@/shared/theme'
 
 type Variant = 'primary' | 'secondary' | 'destructive' | 'neutral'
 
+// 'lg' = pílula-herói do onboarding/auth: altura dobrada (24px de padding
+// vertical vs 12 do 'md') e texto maior — mesma paleta das variants. Override
+// inline de propósito: classes de tamanho inéditas já quebraram em Release
+// por cache do NativeWind.
+type Size = 'md' | 'lg'
+
 type Props = {
   label: string
   onPress: () => void
   loading?: boolean
   disabled?: boolean
   variant?: Variant
+  size?: Size
   // Ícone opcional à esquerda do label (oculto enquanto carrega).
   icon?: Icon
 }
@@ -45,9 +52,11 @@ export function Button({
   loading,
   disabled,
   variant = 'primary',
+  size = 'md',
   icon: IconComponent,
 }: Props) {
-  const base = 'rounded-lg py-3 px-6 items-center justify-center flex-row gap-2'
+  const base = 'rounded-full px-6 items-center justify-center flex-row gap-2'
+  const lg = size === 'lg'
 
   return (
     <Pressable
@@ -55,7 +64,11 @@ export function Button({
       disabled={disabled || loading}
       accessibilityRole="button"
       accessibilityState={{ disabled: disabled || loading, busy: loading }}
-      className={`${base} ${containerStyles[variant]} ${disabled && !loading ? 'opacity-40' : ''}`}
+      // Padding vertical: classe SÓ no md — se py-* e style disputam a mesma
+      // propriedade, o css-interop resolve a favor da classe e o lg não
+      // cresceria (foi um bug real; o lg usa apenas o inline abaixo).
+      className={`${base} ${lg ? '' : 'py-3'} ${containerStyles[variant]} ${disabled && !loading ? 'opacity-40' : ''}`}
+      style={lg ? { paddingVertical: 24 } : undefined}
     >
       {loading ? (
         <ActivityIndicator
@@ -71,7 +84,10 @@ export function Button({
       ) : (
         IconComponent && <IconComponent size={18} color={iconColors[variant]} />
       )}
-      <Text className={`font-semibold text-base ${textStyles[variant]}`}>
+      <Text
+        className={`font-semibold text-base ${textStyles[variant]}`}
+        style={lg ? { fontSize: 17, fontWeight: '700' } : undefined}
+      >
         {label}
       </Text>
     </Pressable>

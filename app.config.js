@@ -71,8 +71,14 @@ export default {
     version: "1.0.0",
     scheme: "clubber",
     userInterfaceStyle: "automatic",
+    // Ícone = sticker inclinado (rotação de -8° JÁ embutida no PNG — nunca
+    // aplicar transform por fora). No chrome do app o BrandB fica reto; o
+    // inclinado em UI é só o BrandSticker. icon-viva.png = alternativo de
+    // campanha, só entra se pedido.
+    icon: "./assets/icon.png",
     ios: {
       bundleIdentifier: 'com.netobonato.clubber',
+      icon: "./assets/icon.png",
       // Team ID da Apple Developer (Team ID é público, vai no binário publicado).
       // O prebuild --clean reseta o DEVELOPMENT_TEAM no project.pbxproj se essa
       // chave não estiver no config — quebrava code sign local no Xcode.
@@ -81,6 +87,10 @@ export default {
     },
     android: {
       package: 'com.netobonato.clubber',
+      adaptiveIcon: {
+        foregroundImage: "./assets/icon.png",
+        backgroundColor: "#0B0B0D",
+      },
       // FCM v1 (push). O arquivo vem do Firebase console e é registrado via
       // `eas credentials` / env GOOGLE_SERVICES_JSON — sem ele o push Android
       // não chega, mas o build local segue funcionando.

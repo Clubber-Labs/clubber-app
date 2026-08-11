@@ -4,6 +4,7 @@ import { useAuthStore } from '@/features/auth/store/authStore'
 
 export default function Index() {
   const status = useAuthStore(s => s.status)
+  const onboardingSeen = useAuthStore(s => s.onboardingSeen)
 
   // 'loading'/'offline' são cobertos pelos overlays do _layout — não redireciona
   // pro login enquanto valida a sessão ou está offline no boot.
@@ -15,5 +16,7 @@ export default function Index() {
     return <Redirect href="/(tabs)/feed" />
   }
 
-  return <Redirect href="/(auth)/login" />
+  return (
+    <Redirect href={onboardingSeen ? '/(auth)/login' : '/(auth)/onboarding'} />
+  )
 }

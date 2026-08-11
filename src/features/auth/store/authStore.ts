@@ -12,6 +12,9 @@ type AuthState = {
   profileIncomplete: boolean
   // true quando a sessão caiu por 401 (expirada/revogada) — login mostra aviso.
   sessionExpired: boolean
+  // Hidratado do storage no boot (useRestoreSession), antes do status resolver:
+  // deslogado que já viu o onboarding entra direto no login.
+  onboardingSeen: boolean
   // Derivados de `status`, mantidos sincronizados pelas ações para os
   // consumidores existentes (índice, layout, chat) não precisarem mudar.
   isAuthenticated: boolean
@@ -22,6 +25,7 @@ type AuthState = {
   setUnauthenticated: () => void
   logout: (expired?: boolean) => void
   acknowledgeExpired: () => void
+  setOnboardingSeen: (value: boolean) => void
 }
 
 function flags(status: SessionStatus) {
@@ -37,6 +41,7 @@ export const useAuthStore = create<AuthState>(set => ({
   status: 'loading',
   profileIncomplete: false,
   sessionExpired: false,
+  onboardingSeen: false,
   isAuthenticated: false,
   hydrated: false,
   setUser: userId =>
@@ -59,4 +64,5 @@ export const useAuthStore = create<AuthState>(set => ({
       sessionExpired: expired,
     }),
   acknowledgeExpired: () => set({ sessionExpired: false }),
+  setOnboardingSeen: value => set({ onboardingSeen: value }),
 }))
