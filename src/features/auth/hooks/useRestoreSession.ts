@@ -10,6 +10,7 @@ import {
   clearAuthSession,
   saveUserId,
   saveProfileIncomplete,
+  getOnboardingSeen,
 } from '@/shared/lib/secureStore'
 import { isUnauthorizedError, isNotFoundError } from '@/shared/lib/apiError'
 import { setUnauthorizedHandler } from '@/shared/lib/api'
@@ -74,6 +75,9 @@ export function useRestoreSession() {
   const setOffline = useAuthStore(s => s.setOffline)
 
   const validate = useCallback(async () => {
+    // Hidrata o flag ANTES do status resolver: quando o AuthGuard acordar com
+    // 'unauthenticated', o destino (onboarding × login) já é decidível síncrono.
+    useAuthStore.getState().setOnboardingSeen(await getOnboardingSeen())
     const session = await loadSession()
     if (session.kind === 'authenticated') {
       const incomplete = isProfileIncomplete(session.profile)

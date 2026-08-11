@@ -28,6 +28,10 @@ pnpm exec expo run:ios        # compila e roda no simulador iOS
 pnpm exec expo run:android    # compila e roda no emulador Android
 
 # Build
+# ⚠️ NUNCA rodar `expo prebuild --clean`: o nativo commitado tem edições manuais
+# (splash, ícones, assinatura) que o config ainda não descreve por completo.
+# Plano de migração pra CNG (quando o prebuild volta a ser seguro):
+# docs/migracao-cng.md
 pnpm exec expo prebuild       # gera as pastas ios/ e android/ (necessário após mudar plugins)
 eas build --profile development   # build de desenvolvimento via EAS
 eas build --profile preview       # build de preview (TestFlight / APK interno)

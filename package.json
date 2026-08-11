@@ -17,6 +17,7 @@
     "build:all": "eas build --platform all"
   },
   "dependencies": {
+    "@expo-google-fonts/sora": "^0.4.2",
     "@hookform/resolvers": "^5.2.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "^9.1.0",
@@ -42,6 +43,7 @@
     "expo-notifications": "~0.32.17",
     "expo-router": "~6.0.23",
     "expo-secure-store": "~15.0.8",
+    "expo-splash-screen": "~31.0.13",
     "expo-status-bar": "~3.0.9",
     "expo-video": "~3.0.16",
     "nativewind": "^4.2.3",

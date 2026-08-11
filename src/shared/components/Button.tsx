@@ -4,12 +4,18 @@ import { colors } from '@/shared/theme'
 
 type Variant = 'primary' | 'secondary' | 'destructive' | 'neutral'
 
+// 'lg' = pílula-herói do onboarding/auth (cápsula alta, texto maior) — mesma
+// paleta das variants; muda só forma e escala. Overrides inline de propósito:
+// classes de tamanho inéditas já quebraram em Release por cache do NativeWind.
+type Size = 'md' | 'lg'
+
 type Props = {
   label: string
   onPress: () => void
   loading?: boolean
   disabled?: boolean
   variant?: Variant
+  size?: Size
   // Ícone opcional à esquerda do label (oculto enquanto carrega).
   icon?: Icon
 }
@@ -45,9 +51,11 @@ export function Button({
   loading,
   disabled,
   variant = 'primary',
+  size = 'md',
   icon: IconComponent,
 }: Props) {
-  const base = 'rounded-lg py-3 px-6 items-center justify-center flex-row gap-2'
+  const base = 'rounded-full py-6 px-6 items-center justify-center flex-row gap-2'
+  const lg = size === 'lg'
 
   return (
     <Pressable
@@ -56,6 +64,7 @@ export function Button({
       accessibilityRole="button"
       accessibilityState={{ disabled: disabled || loading, busy: loading }}
       className={`${base} ${containerStyles[variant]} ${disabled && !loading ? 'opacity-40' : ''}`}
+      style={lg ? { borderRadius: 999, paddingVertical: 18 } : undefined}
     >
       {loading ? (
         <ActivityIndicator
@@ -71,7 +80,10 @@ export function Button({
       ) : (
         IconComponent && <IconComponent size={18} color={iconColors[variant]} />
       )}
-      <Text className={`font-semibold text-base ${textStyles[variant]}`}>
+      <Text
+        className={`font-semibold text-base ${textStyles[variant]}`}
+        style={lg ? { fontSize: 17, fontWeight: '700' } : undefined}
+      >
         {label}
       </Text>
     </Pressable>

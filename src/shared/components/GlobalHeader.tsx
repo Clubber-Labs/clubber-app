@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native'
+import { View, Pressable } from 'react-native'
 import {
   CaretLeftIcon,
   ListIcon,
@@ -14,6 +14,7 @@ import { isDefaultMapFilters } from '@/features/map/types'
 import { useUnreadCount } from '@/features/notifications/hooks/useUnreadCount'
 import { UnreadBadge } from './UnreadBadge'
 import { GlassSurface } from './GlassSurface'
+import { BrandWordmark } from './brand'
 import { colors } from '@/shared/theme'
 
 // Altura da faixa útil do header (sem o inset da status bar) — base do
@@ -111,12 +112,7 @@ export function GlobalHeader({
         )}
       </View>
 
-      <View className="flex-row items-center gap-2">
-        <View className="w-8 h-8 rounded-full bg-brand items-center justify-center">
-          <Text className="text-content font-bold text-sm">C</Text>
-        </View>
-        <Text className="text-xl font-bold text-content">Clubber</Text>
-      </View>
+      <BrandWordmark height={24} />
 
       <View className="absolute right-4 top-0 bottom-0 flex-row items-center gap-2">
         {showNotifications && (

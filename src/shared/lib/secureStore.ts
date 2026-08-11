@@ -7,6 +7,9 @@ const USER_ID_KEY = 'auth_user_id'
 // não libere o feed após kill/restart sem rede (me() pode falhar e deixar
 // o flag em default false, bypassando a tela de completar perfil).
 const PROFILE_INCOMPLETE_KEY = 'auth_profile_incomplete'
+// Flag de aparelho (sobrevive a logout de propósito): quem já viu o
+// onboarding cai direto no login quando deslogado.
+const ONBOARDING_SEEN_KEY = 'onboarding_seen'
 
 export const saveToken = (token: string) =>
   SecureStore.setItemAsync(TOKEN_KEY, token)
@@ -33,6 +36,13 @@ export const getProfileIncomplete = async (): Promise<boolean | null> => {
 }
 export const deleteProfileIncomplete = () =>
   SecureStore.deleteItemAsync(PROFILE_INCOMPLETE_KEY)
+
+export const saveOnboardingSeen = () =>
+  SecureStore.setItemAsync(ONBOARDING_SEEN_KEY, '1')
+export const getOnboardingSeen = async (): Promise<boolean> =>
+  (await SecureStore.getItemAsync(ONBOARDING_SEEN_KEY)) === '1'
+export const deleteOnboardingSeen = () =>
+  SecureStore.deleteItemAsync(ONBOARDING_SEEN_KEY)
 
 export const saveAuthSession = (token: string, userId: string) =>
   Promise.all([saveToken(token), saveUserId(userId)])
