@@ -1,15 +1,15 @@
 import { api } from '@/shared/lib/api'
 import type { Bbox } from '@/features/map/services/mapService'
+import type { MapFilterParams } from '@/features/map/types'
 import type { CreateSpotPayload } from '../schemas/createSpotSchema'
 import type { UpdateSpotPayload } from '../schemas/editSpotSchema'
 import type {
   Spot,
-  SpotListFilters,
   SpotSuggestionsParams,
   SpotSuggestionsResponse,
 } from '../types'
 
-type ListParams = Bbox & SpotListFilters & { limit?: number }
+type ListParams = Bbox & MapFilterParams & { limit?: number }
 
 export const spotsService = {
   // Consome quota diária — o caller deve travar o botão enquanto pendente.
@@ -29,12 +29,14 @@ export const spotsService = {
     api.post('/spots', data).then(r => r.data),
 
   // Só spots ativos (não cancelados e endsAt > now). Deslogado vê só PUBLIC;
-  // visibilidade/bloqueio são decididos pelo backend.
+  // visibilidade/bloqueio são decididos pelo backend. O status do rolê é
+  // derivado do startsAt lá — PAST/CANCELED nunca casam com a lista ativa.
   listByBbox: ({
     bboxNorth,
     bboxSouth,
     bboxEast,
     bboxWest,
+    status,
     category,
     friendsOnly,
     limit,
@@ -46,11 +48,13 @@ export const spotsService = {
           bboxSouth,
           bboxEast,
           bboxWest,
+          ...(status?.length ? { status } : {}),
           ...(category?.length ? { category } : {}),
           ...(friendsOnly ? { friendsOnly: true } : {}),
           ...(limit ? { limit } : {}),
         },
-        // Backend espera array repetido (category=A&category=B), não brackets.
+        // Backend espera array repetido (status=A&status=B), não brackets nem
+        // CSV — CSV volta 400.
         paramsSerializer: { indexes: null },
       })
       .then(r => r.data),

@@ -63,10 +63,3 @@ export type SpotSuggestionsResponse = {
   // cache hit no backend.
   remaining: number
 }
-
-// Filtros aplicados na listagem por bbox — espelha o subconjunto dos filtros
-// do mapa que o GET /spots aceita.
-export type SpotListFilters = {
-  category?: string[]
-  friendsOnly?: boolean
-}

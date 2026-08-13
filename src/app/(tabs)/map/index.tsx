@@ -108,10 +108,7 @@ export default function MapScreen() {
   // volume é baixo (máx. 5 ativos por usuário, vida de 24h) — não clusteriza.
   const { data: viewportSpots = [] } = useViewportSpots(
     bbox,
-    {
-      categories: filters.categories,
-      friendsOnly: filters.friendsOnly,
-    },
+    filters,
     showSpots,
   )
   const spots = useMemo(
