@@ -11,10 +11,12 @@ import { FlatList } from 'react-native-gesture-handler'
 import Animated, {
   Extrapolation,
   interpolate,
+  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   type SharedValue,
 } from 'react-native-reanimated'
+import { runOnJS } from 'react-native-worklets'
 
 export const WHEEL_ITEM_HEIGHT = 44
 export const WHEEL_VISIBLE_ITEMS = 5
@@ -67,8 +69,8 @@ const getItemLayout = (
 // Coluna de roda (estilo iOS/Tinder): rola, encaixa item a item (snap) e o item
 // central cresce/ilumina enquanto os vizinhos encolhem/desbotam. O realce é
 // função contínua do offset e é calculado na UI thread — o onScroll só escreve o
-// offset num shared value. Nenhum estado de render acompanha a rolagem: qualquer
-// setState aqui re-renderizaria toda célula montada (renderItem novo invalida o
+// offset num shared value. A coluna não guarda estado que acompanhe a rolagem:
+// setState aqui re-renderiza toda célula montada (renderItem novo invalida o
 // CellRenderer inteiro) e travava a thread JS no fim do arrasto.
 export function WheelColumn({
   items,
@@ -80,6 +82,11 @@ export function WheelColumn({
   const selected = useRef(initialValue)
   const [initialIndex] = useState(() => nearestIndex(items, initialValue))
   const offset = useSharedValue(initialIndex * WHEEL_ITEM_HEIGHT)
+  // Quem está no centro anda por shared value, não por estado da coluna: o peso
+  // da fonte é a única parte do realce que não dá pra animar, e qualquer estado
+  // aqui re-renderizaria toda célula montada. Assim só as duas que trocam de
+  // papel no encaixe re-renderizam (ver WheelCell).
+  const centerIndex = useSharedValue(initialIndex)
 
   // Props frescas para quem roda fora do render (handlers de scroll e o efeito de
   // reencaixe), sem virar dependência de efeito — `onSelect` é uma arrow nova a
@@ -99,18 +106,25 @@ export function WheelColumn({
   // existem porque nem toda solta gera momentum (drag lento sem flick) e nem todo
   // momentum vem de um fim de drag útil; comitar duas vezes no mesmo gesto é
   // inofensivo — o que não pode é reagir a isso movendo a roda.
-  const settle = useCallback((contentOffsetY: number) => {
-    const list = latest.current.items
-    if (list.length === 0) return
-    const index = Math.max(
-      0,
-      Math.min(list.length - 1, Math.round(contentOffsetY / WHEEL_ITEM_HEIGHT)),
-    )
-    const value = list[index].value
-    if (value === selected.current) return
-    selected.current = value
-    latest.current.onSelect(value)
-  }, [])
+  const settle = useCallback(
+    (contentOffsetY: number) => {
+      const list = latest.current.items
+      if (list.length === 0) return
+      const index = Math.max(
+        0,
+        Math.min(
+          list.length - 1,
+          Math.round(contentOffsetY / WHEEL_ITEM_HEIGHT),
+        ),
+      )
+      centerIndex.value = index
+      const value = list[index].value
+      if (value === selected.current) return
+      selected.current = value
+      latest.current.onSelect(value)
+    },
+    [centerIndex],
+  )
 
   // Reencaixa quando a lista muda e o valor atual sai dela, ou quando os índices
   // andam. Sai cedo se a coluna já está no destino — reposicionar à toa faz o
@@ -124,19 +138,25 @@ export function WheelColumn({
       selected.current = items[index].value
       latest.current.onSelect(items[index].value)
     }
+    centerIndex.value = index
     if (Math.round(offset.value / WHEEL_ITEM_HEIGHT) === index) return
     offset.value = index * WHEEL_ITEM_HEIGHT
     ref.current?.scrollToOffset({
       offset: index * WHEEL_ITEM_HEIGHT,
       animated: false,
     })
-  }, [items, offset])
+  }, [items, offset, centerIndex])
 
   const renderItem = useCallback(
     ({ item, index }: ListRenderItemInfo<WheelItem>) => (
-      <WheelCell label={item.label} index={index} offset={offset} />
+      <WheelCell
+        label={item.label}
+        index={index}
+        offset={offset}
+        centerIndex={centerIndex}
+      />
     ),
-    [offset],
+    [offset, centerIndex],
   )
 
   return (
@@ -166,9 +186,28 @@ type CellProps = {
   label: string
   index: number
   offset: SharedValue<number>
+  centerIndex: SharedValue<number>
 }
 
-const WheelCell = memo(function WheelCell({ label, index, offset }: CellProps) {
+const WheelCell = memo(function WheelCell({
+  label,
+  index,
+  offset,
+  centerIndex,
+}: CellProps) {
+  const [centered, setCentered] = useState(() => centerIndex.value === index)
+  // A reação só roda quando o centro muda (o mapper depende de centerIndex, não
+  // do offset), então nada disso pesa por frame durante a rolagem.
+  useAnimatedReaction(
+    () => centerIndex.value === index,
+    (isCentered, previous) => {
+      if (previous !== null && isCentered !== previous) {
+        runOnJS(setCentered)(isCentered)
+      }
+    },
+    [index],
+  )
+
   const style = useAnimatedStyle(() => {
     const distance = Math.abs(offset.value / WHEEL_ITEM_HEIGHT - index)
     return {
@@ -202,7 +241,12 @@ const WheelCell = memo(function WheelCell({ label, index, offset }: CellProps) {
         style,
       ]}
     >
-      <Text numberOfLines={1} className="text-content text-[20px] font-bold">
+      <Text
+        numberOfLines={1}
+        className={`text-content text-[20px] ${
+          centered ? 'font-bold' : 'font-semibold'
+        }`}
+      >
         {label}
       </Text>
     </Animated.View>
