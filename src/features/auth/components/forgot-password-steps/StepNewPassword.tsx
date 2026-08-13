@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type Path } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   resetPasswordSchema,
@@ -11,6 +11,13 @@ import { FormError } from '@/shared/components/FormError'
 import { useFormFocus } from '@/shared/lib/formFocus'
 import { PasswordInput } from '@/shared/components/PasswordInput'
 import { PasswordStrengthMeter } from '@/shared/components/PasswordStrengthMeter'
+
+// Identidade estável: o useWatch do FormSubmitButton tem `name` nas deps do
+// efeito de subscrição, e um literal inline re-assinaria a cada tecla digitada.
+const REQUIRED_FIELDS: Path<ResetPasswordInput>[] = [
+  'newPassword',
+  'confirmPassword',
+]
 
 type Props = {
   email: string
@@ -130,7 +137,7 @@ export function StepNewPassword({
         <View className="flex-1">
           <FormSubmitButton
             control={control}
-            required={['newPassword', 'confirmPassword']}
+            required={REQUIRED_FIELDS}
             label={isSubmitting ? 'Redefinindo...' : 'Redefinir senha'}
             onPress={handleSubmit(onSubmit, form.focusFirstError)}
             loading={isSubmitting}

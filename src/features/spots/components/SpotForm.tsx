@@ -14,7 +14,7 @@ import {
   UsersIcon,
   ChatCircleIcon,
 } from 'phosphor-react-native'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type Path } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { ReactNode } from 'react'
 import { FormSubmitButton } from '@/shared/components/FormSubmitButton'
@@ -30,6 +30,15 @@ import {
 import { spotPresetWindow, type SpotTimePreset } from '../utils/spotTimePresets'
 import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
 import { colors } from '@/shared/theme'
+
+// Identidade estável: o useWatch do FormSubmitButton tem `name` nas deps do
+// efeito de subscrição, e um literal inline re-assinaria a cada tecla digitada.
+const REQUIRED_FIELDS: Path<CreateSpotInput>[] = [
+  'title',
+  'categories',
+  'startsAt',
+  'endsAt',
+]
 
 const MAX_CATEGORIES = 5
 
@@ -371,7 +380,7 @@ export function SpotForm({
         </View>
         <FormSubmitButton
           control={control}
-          required={['title', 'categories', 'startsAt', 'endsAt']}
+          required={REQUIRED_FIELDS}
           label={submitting ? 'Publicando...' : 'Publicar rolê'}
           icon={SparkleIcon}
           onPress={handleSubmit(onSubmit, form.focusFirstError)}

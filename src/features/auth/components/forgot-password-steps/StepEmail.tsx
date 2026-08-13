@@ -1,5 +1,5 @@
 import { View, Text, TextInput } from 'react-native'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type Path } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   forgotPasswordEmailSchema,
@@ -9,6 +9,10 @@ import { FormSubmitButton } from '@/shared/components/FormSubmitButton'
 import { FormError } from '@/shared/components/FormError'
 import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
+
+// Identidade estável: o useWatch do FormSubmitButton tem `name` nas deps do
+// efeito de subscrição, e um literal inline re-assinaria a cada tecla digitada.
+const REQUIRED_FIELDS: Path<ForgotPasswordEmailInput>[] = ['email']
 
 type Props = {
   defaultEmail?: string
@@ -74,7 +78,7 @@ export function StepEmail({
 
       <FormSubmitButton
         control={control}
-        required={['email']}
+        required={REQUIRED_FIELDS}
         label={isSubmitting ? 'Enviando...' : 'Enviar código'}
         onPress={handleSubmit(
           data => onSubmit(data.email),

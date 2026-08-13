@@ -8,7 +8,7 @@ import {
   Pressable,
 } from 'react-native'
 import { GlobeIcon, LockIcon } from 'phosphor-react-native'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type Path } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   createEventSchema,
@@ -25,6 +25,16 @@ import { VenuePicker, type VenueSelection } from './VenuePicker'
 import { useUserLocation } from '@/shared/hooks/useUserLocation'
 import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
 import { colors } from '@/shared/theme'
+
+// Identidade estável: o useWatch do FormSubmitButton tem `name` nas deps do
+// efeito de subscrição, e um literal inline re-assinaria a cada tecla digitada.
+const REQUIRED_FIELDS: Path<CreateEventInput>[] = [
+  'title',
+  'date',
+  'categories',
+  'address',
+  'latitude',
+]
 
 const DEFAULTS: Partial<CreateEventInput> = {
   title: '',
@@ -333,7 +343,7 @@ export function EventForm({
         <FormError message={submitError ? errorMessage : null} />
         <FormSubmitButton
           control={control}
-          required={['title', 'date', 'categories', 'address', 'latitude']}
+          required={REQUIRED_FIELDS}
           label={submitting ? submittingLabel : submitLabel}
           onPress={handleSubmit(onSubmit, form.focusFirstError)}
           loading={submitting}
