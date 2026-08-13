@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import {
   PlusIcon,
@@ -10,6 +9,7 @@ import {
 import { SheetModal } from '@/shared/components/SheetModal'
 import { colors } from '@/shared/theme'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
+import { useSheetExit } from '@/shared/hooks/useSheetExit'
 
 type Props = {
   onCreateEvent: () => void
@@ -20,18 +20,13 @@ type Props = {
 // formal × rolê) em vez de FABs distintos por tela. Cada opção dispara o fluxo
 // que a tela hospedeira passar (o rolê fora do mapa navega até ele).
 export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
-  const [open, setOpen] = useState(false)
+  const sheet = useSheetExit()
   const tabBarClearance = useTabBarClearance()
-
-  function choose(action: () => void) {
-    setOpen(false)
-    action()
-  }
 
   return (
     <>
       <Pressable
-        onPress={() => setOpen(true)}
+        onPress={sheet.open}
         accessibilityRole="button"
         accessibilityLabel="Criar"
         className="absolute right-4 h-14 w-14 items-center justify-center rounded-full bg-content"
@@ -47,7 +42,11 @@ export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
         <PlusIcon size={28} color={colors.background} />
       </Pressable>
 
-      <SheetModal visible={open} onClose={() => setOpen(false)}>
+      <SheetModal
+        visible={sheet.visible}
+        onClose={sheet.close}
+        instantExit={sheet.instantExit}
+      >
         <View className="px-4 pb-2">
           <Text className="px-1 pb-2 text-lg font-bold text-content">
             Criar
@@ -56,13 +55,13 @@ export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
             icon={CalendarBlankIcon}
             title="Evento"
             subtitle="Com data, local e lista de presença"
-            onPress={() => choose(onCreateEvent)}
+            onPress={() => sheet.exitTo(onCreateEvent)}
           />
           <CreateOption
             icon={SparkleIcon}
             title="Rolê"
             subtitle="Um encontro rápido perto de você"
-            onPress={() => choose(onCreateSpot)}
+            onPress={() => sheet.exitTo(onCreateSpot)}
           />
         </View>
       </SheetModal>
