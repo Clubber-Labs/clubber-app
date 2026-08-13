@@ -28,7 +28,7 @@ import { FormError } from '@/shared/components/FormError'
 import { SheetModal } from '@/shared/components/SheetModal'
 import { CategoryBadge } from '@/shared/components/CategoryBadge'
 import { UserAvatar } from '@/shared/components/UserAvatar'
-import { EventMap } from '@/features/events/components/EventMap'
+import { SpotLocationMap } from '@/features/spots/components/SpotLocationMap'
 import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { useSpot } from '@/features/spots/hooks/useSpot'
@@ -243,11 +243,7 @@ export default function SpotDetailScreen() {
         </View>
 
         <View className="relative">
-          <EventMap
-            latitude={spot.latitude}
-            longitude={spot.longitude}
-            marker="spot"
-          />
+          <SpotLocationMap spot={spot} />
           <Pressable
             onPress={() =>
               openInMaps({ latitude: spot.latitude, longitude: spot.longitude })

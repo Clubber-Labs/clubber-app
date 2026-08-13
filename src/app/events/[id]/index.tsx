@@ -14,7 +14,7 @@ import { useAuthStore } from '@/features/auth/store/authStore'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { isForbiddenError } from '@/shared/lib/apiError'
 import { EventHeader } from '@/features/events/components/EventHeader'
-import { EventMap } from '@/features/events/components/EventMap'
+import { EventLocationMap } from '@/features/events/components/EventLocationMap'
 import { EventAttendanceButton } from '@/features/events/components/EventAttendanceButton'
 import { EventPostsFeed } from '@/features/events/components/EventPostsFeed'
 import { EventActionsButton } from '@/features/events/components/EventActionsButton'
@@ -84,11 +84,7 @@ function DetailHeader({ event, isAuthor, isPremium, onShared }: HeaderProps) {
             current={event.userAttendance}
           />
         )}
-        <EventMap
-          latitude={event.latitude}
-          longitude={event.longitude}
-          categories={event.categories}
-        />
+        <EventLocationMap event={event} />
       </View>
       <View className="border-t border-line" />
     </View>

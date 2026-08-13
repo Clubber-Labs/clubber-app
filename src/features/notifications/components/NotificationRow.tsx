@@ -113,9 +113,7 @@ export function NotificationRow({ notification, onPress }: Props) {
         </Text>
       </View>
 
-      {unread && (
-        <View className="w-2.5 h-2.5 rounded-full bg-brand-emphasis mt-1.5" />
-      )}
+      {unread && <View className="w-2.5 h-2.5 rounded-full bg-danger mt-1.5" />}
     </Pressable>
   )
 }

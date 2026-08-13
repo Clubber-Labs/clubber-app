@@ -149,7 +149,7 @@ export function ProfileDrawer({ items, header }: Props) {
                   </Text>
                 </View>
                 {shouldShowBadge(item.badge) && (
-                  <View className="bg-brand rounded-full min-w-5 h-5 px-1.5 items-center justify-center">
+                  <View className="bg-danger rounded-full min-w-5 h-5 px-1.5 items-center justify-center">
                     <Text className="text-content text-xs font-bold">
                       {item.badge}
                     </Text>

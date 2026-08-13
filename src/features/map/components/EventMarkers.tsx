@@ -1,23 +1,23 @@
 import { View, Pressable, Text } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
-import Svg, { Circle, Defs, LinearGradient, Path, Stop } from 'react-native-svg'
 import type { FeedEvent, FriendAttendance } from '@/shared/types'
 import { UserAvatar } from '@/shared/components/UserAvatar'
-import { EmojiPinFace } from '@/shared/components/EmojiPinFace'
 import { featuredAttendees } from '@/shared/utils/featuredAttendees'
-import { eventCategoryEmoji } from '@/shared/utils/eventCategoryEmoji'
 import {
   groupCoincidentEvents,
   fanoutOffset,
   fanoutRadius,
   friendStackLayout,
   pinTailHeight,
-  pinTailPath,
-  PIN_RIM_COLOR,
-  PIN_RIM_COLOR_ON_DARK,
-  PIN_RIM_WIDTH,
 } from '../utils/markerLayout'
-import { colors, categoryHue, SPECTRUM } from '@/shared/theme'
+import { eventPinLook } from '../utils/eventPinLook'
+import {
+  EventPin,
+  EVENT_PIN_SIZE,
+  EVENT_PIN_SIZE_SELECTED,
+  EVENT_PIN_TIP_ANCHOR,
+} from './EventPin'
+import { colors } from '@/shared/theme'
 
 type Props = {
   events: FeedEvent[]
@@ -30,165 +30,9 @@ type Props = {
   detailsOpen?: boolean
 }
 
-const PIN_SIZE = 54
-const PIN_SIZE_SELECTED = 66
 const FANOUT_GAP = 10
 const MAX_FRIENDS = 2
 const DIMMED_OPACITY = 0.5
-
-// Pin do evento em gota invertida: a cabeça mostra SEMPRE o emoji da
-// categoria sobre campo grafite — a capa do banner fica pro card de preview
-// e pro avatar do organizador pendurado (socialItems), nunca na cabeça.
-// Patrocinado destaca por INVERSÃO (única casca escura do mapa + selo ★),
-// não por cor de marca.
-function EventPin({
-  event,
-  size,
-  selected,
-}: {
-  event: FeedEvent
-  size: number
-  selected: boolean
-}) {
-  const inner = size - 6
-  const height = size + pinTailHeight(size)
-  const featured = event.isFeatured
-  // Espectro do "agora": evento ONGOING troca o rim pelo gradiente-assinatura.
-  const live = event.status === 'ONGOING'
-  const shell = featured
-    ? colors.background
-    : selected
-      ? colors.contentBright
-      : colors.content
-  const rimId = `pin-rim-${event.id}`
-  const rim = live
-    ? `url(#${rimId})`
-    : featured
-      ? PIN_RIM_COLOR_ON_DARK
-      : PIN_RIM_COLOR
-  const rimWidth = live ? PIN_RIM_WIDTH * 2 : PIN_RIM_WIDTH
-  // Espalhamento do glow: live = halos do espectro; patrocinado = aura
-  // branca-prata saindo do rim claro (destaque no estilo da inversão, sem
-  // cor). Branco é perceptualmente mais claro → opacidades menores.
-  const glow = live || featured ? 6 : 0
-  const haloFill = live ? rim : colors.content
-  const haloStrong = live ? 0.35 : 0.32
-  const haloSoft = live ? 0.16 : 0.14
-  // Margem do canvas acompanha rim + glow: o gradiente do "agora" é mais
-  // grosso e estourava a folga fixa de 2, cortando nas laterais e no topo.
-  const pad = rimWidth + glow + 2
-  const sealSize = Math.round(size * 0.34)
-  return (
-    <View
-      style={{
-        width: size,
-        height,
-        // Encerrados ficam esmaecidos (status vem do backend).
-        opacity: event.status === 'PAST' ? 0.55 : 1,
-      }}
-    >
-      <Svg
-        width={size + pad * 2}
-        height={height + pad * 2}
-        viewBox={`${-pad} ${-pad} ${size + pad * 2} ${height + pad * 2}`}
-        style={{ position: 'absolute', left: -pad, top: -pad }}
-      >
-        {live && (
-          <Defs>
-            <LinearGradient id={rimId} x1="0" y1="0" x2="1" y2="1">
-              <Stop offset="0" stopColor={SPECTRUM[0]} />
-              <Stop offset="0.5" stopColor={SPECTRUM[1]} />
-              <Stop offset="1" stopColor={SPECTRUM[2]} />
-            </LinearGradient>
-          </Defs>
-        )}
-        {glow > 0 && (
-          <>
-            {/* Glow em camadas (sem filtro SVG — instável no RN): a cor do
-                halo se espalhando com opacidade decrescente. */}
-            <Circle
-              cx={size / 2}
-              cy={size / 2}
-              r={size / 2 + rimWidth + glow}
-              fill={haloFill}
-              fillOpacity={haloSoft}
-            />
-            <Path
-              d={pinTailPath(size, rimWidth + glow)}
-              fill={haloFill}
-              fillOpacity={haloSoft}
-            />
-            <Circle
-              cx={size / 2}
-              cy={size / 2}
-              r={size / 2 + rimWidth + glow / 2}
-              fill={haloFill}
-              fillOpacity={haloStrong}
-            />
-            <Path
-              d={pinTailPath(size, rimWidth + glow / 2)}
-              fill={haloFill}
-              fillOpacity={haloStrong}
-            />
-          </>
-        )}
-        <Circle
-          cx={size / 2}
-          cy={size / 2}
-          r={size / 2 + rimWidth}
-          fill={rim}
-        />
-        <Path d={pinTailPath(size, rimWidth)} fill={rim} />
-        <Circle cx={size / 2} cy={size / 2} r={size / 2} fill={shell} />
-        <Path d={pinTailPath(size)} fill={shell} />
-      </Svg>
-      <View
-        style={{
-          position: 'absolute',
-          left: 3,
-          top: 3,
-          width: inner,
-          height: inner,
-          borderRadius: inner / 2,
-          overflow: 'hidden',
-        }}
-      >
-        <EmojiPinFace
-          size={inner}
-          emoji={eventCategoryEmoji(event.categories)}
-          field={categoryHue(event.categories[0]).pinField}
-        />
-      </View>
-      {featured && (
-        <View
-          style={{
-            position: 'absolute',
-            top: -2,
-            right: -2,
-            width: sealSize,
-            height: sealSize,
-            borderRadius: sealSize / 2,
-            backgroundColor: colors.content,
-            borderWidth: 1,
-            borderColor: PIN_RIM_COLOR,
-          }}
-          className="items-center justify-center"
-        >
-          <Text
-            style={{
-              color: colors.background,
-              fontSize: Math.round(sealSize * 0.62),
-              fontWeight: '700',
-              includeFontPadding: false,
-            }}
-          >
-            ★
-          </Text>
-        </View>
-      )}
-    </View>
-  )
-}
 
 type StackItem = { key: string; index: number } & (
   | { kind: 'avatar'; attendee: FriendAttendance }
@@ -256,7 +100,7 @@ function SingleMarker({
   dimmed?: boolean
   detailsOpen?: boolean
 }) {
-  const size = selected ? PIN_SIZE_SELECTED : PIN_SIZE
+  const size = selected ? EVENT_PIN_SIZE_SELECTED : EVENT_PIN_SIZE
   const opacity = dimmed ? DIMMED_OPACITY : 1
   const items = socialItems(event, !!detailsOpen)
 
@@ -267,7 +111,7 @@ function SingleMarker({
       accessibilityLabel={`Ver evento ${event.title}`}
       hitSlop={6}
     >
-      <EventPin event={event} size={size} selected={selected} />
+      <EventPin {...eventPinLook(event)} size={size} selected={selected} />
     </Pressable>
   )
 
@@ -276,7 +120,7 @@ function SingleMarker({
       <Mapbox.MarkerView
         id={`event-${event.id}`}
         coordinate={[event.longitude, event.latitude]}
-        anchor={{ x: 0.5, y: 1 }}
+        anchor={EVENT_PIN_TIP_ANCHOR}
         allowOverlap
       >
         <View style={{ opacity }}>{pin}</View>
@@ -369,11 +213,11 @@ function CoincidentMarker({
   dimmed?: boolean
 }) {
   const anchor = group[0]
-  const radius = fanoutRadius(group.length, PIN_SIZE_SELECTED, FANOUT_GAP)
-  const frame = PIN_SIZE_SELECTED + radius * 2
+  const radius = fanoutRadius(group.length, EVENT_PIN_SIZE_SELECTED, FANOUT_GAP)
+  const frame = EVENT_PIN_SIZE_SELECTED + radius * 2
   // O quadro cresce pra baixo pra caber o rabinho das gotas; a âncora mantém
   // o centro do leque sobre a coordenada compartilhada.
-  const frameHeight = frame + pinTailHeight(PIN_SIZE_SELECTED)
+  const frameHeight = frame + pinTailHeight(EVENT_PIN_SIZE_SELECTED)
 
   return (
     <Mapbox.MarkerView
@@ -392,7 +236,7 @@ function CoincidentMarker({
       >
         {group.map((event, index) => {
           const selected = selectedId === event.id
-          const size = selected ? PIN_SIZE_SELECTED : PIN_SIZE
+          const size = selected ? EVENT_PIN_SIZE_SELECTED : EVENT_PIN_SIZE
           const offset = fanoutOffset(index, group.length, radius)
           return (
             <Pressable
@@ -407,7 +251,11 @@ function CoincidentMarker({
                 top: frame / 2 - size / 2 + offset.y,
               }}
             >
-              <EventPin event={event} size={size} selected={selected} />
+              <EventPin
+                {...eventPinLook(event)}
+                size={size}
+                selected={selected}
+              />
             </Pressable>
           )
         })}
