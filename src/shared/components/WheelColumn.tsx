@@ -11,15 +11,21 @@ import { FlatList } from 'react-native-gesture-handler'
 import Animated, {
   Extrapolation,
   interpolate,
+  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   type SharedValue,
 } from 'react-native-reanimated'
+import { runOnJS } from 'react-native-worklets'
 
 export const WHEEL_ITEM_HEIGHT = 44
 export const WHEEL_VISIBLE_ITEMS = 5
 const WHEEL_HEIGHT = WHEEL_ITEM_HEIGHT * WHEEL_VISIBLE_ITEMS
 const PADDING = (WHEEL_HEIGHT - WHEEL_ITEM_HEIGHT) / 2
+// Janela de render em viewports. O padrão (21) daria 4620px — mais que a coluna
+// de anos inteira, então nada era descartado e a virtualização não valia nada.
+// 5 mantém ±2 telas de folga contra buraco no fling.
+const WINDOW_SIZE = 5
 
 export type WheelItem = { label: string; value: number }
 
@@ -63,9 +69,9 @@ const getItemLayout = (
 // Coluna de roda (estilo iOS/Tinder): rola, encaixa item a item (snap) e o item
 // central cresce/ilumina enquanto os vizinhos encolhem/desbotam. O realce é
 // função contínua do offset e é calculado na UI thread — o onScroll só escreve o
-// offset num shared value, sem re-render por frame. Lista virtualizada de
-// propósito: o estilo animado é por célula, então montar as ~107 de uma coluna de
-// anos custaria uma atualização de view por célula por frame.
+// offset num shared value. A coluna não guarda estado que acompanhe a rolagem:
+// setState aqui re-renderiza toda célula montada (renderItem novo invalida o
+// CellRenderer inteiro) e travava a thread JS no fim do arrasto.
 export function WheelColumn({
   items,
   initialValue,
@@ -74,10 +80,13 @@ export function WheelColumn({
 }: Props) {
   const ref = useRef<FlatList<WheelItem>>(null)
   const selected = useRef(initialValue)
-  const [centerIndex, setCenterIndex] = useState(() =>
-    nearestIndex(items, initialValue),
-  )
-  const offset = useSharedValue(centerIndex * WHEEL_ITEM_HEIGHT)
+  const [initialIndex] = useState(() => nearestIndex(items, initialValue))
+  const offset = useSharedValue(initialIndex * WHEEL_ITEM_HEIGHT)
+  // Quem está no centro anda por shared value, não por estado da coluna: o peso
+  // da fonte é a única parte do realce que não dá pra animar, e qualquer estado
+  // aqui re-renderizaria toda célula montada. Assim só as duas que trocam de
+  // papel no encaixe re-renderizam (ver WheelCell).
+  const centerIndex = useSharedValue(initialIndex)
 
   // Props frescas para quem roda fora do render (handlers de scroll e o efeito de
   // reencaixe), sem virar dependência de efeito — `onSelect` é uma arrow nova a
@@ -97,19 +106,25 @@ export function WheelColumn({
   // existem porque nem toda solta gera momentum (drag lento sem flick) e nem todo
   // momentum vem de um fim de drag útil; comitar duas vezes no mesmo gesto é
   // inofensivo — o que não pode é reagir a isso movendo a roda.
-  const settle = useCallback((contentOffsetY: number) => {
-    const list = latest.current.items
-    if (list.length === 0) return
-    const index = Math.max(
-      0,
-      Math.min(list.length - 1, Math.round(contentOffsetY / WHEEL_ITEM_HEIGHT)),
-    )
-    setCenterIndex(index)
-    const value = list[index].value
-    if (value === selected.current) return
-    selected.current = value
-    latest.current.onSelect(value)
-  }, [])
+  const settle = useCallback(
+    (contentOffsetY: number) => {
+      const list = latest.current.items
+      if (list.length === 0) return
+      const index = Math.max(
+        0,
+        Math.min(
+          list.length - 1,
+          Math.round(contentOffsetY / WHEEL_ITEM_HEIGHT),
+        ),
+      )
+      centerIndex.value = index
+      const value = list[index].value
+      if (value === selected.current) return
+      selected.current = value
+      latest.current.onSelect(value)
+    },
+    [centerIndex],
+  )
 
   // Reencaixa quando a lista muda e o valor atual sai dela, ou quando os índices
   // andam. Sai cedo se a coluna já está no destino — reposicionar à toa faz o
@@ -123,14 +138,14 @@ export function WheelColumn({
       selected.current = items[index].value
       latest.current.onSelect(items[index].value)
     }
+    centerIndex.value = index
     if (Math.round(offset.value / WHEEL_ITEM_HEIGHT) === index) return
-    setCenterIndex(index)
     offset.value = index * WHEEL_ITEM_HEIGHT
     ref.current?.scrollToOffset({
       offset: index * WHEEL_ITEM_HEIGHT,
       animated: false,
     })
-  }, [items, offset])
+  }, [items, offset, centerIndex])
 
   const renderItem = useCallback(
     ({ item, index }: ListRenderItemInfo<WheelItem>) => (
@@ -138,7 +153,7 @@ export function WheelColumn({
         label={item.label}
         index={index}
         offset={offset}
-        centered={index === centerIndex}
+        centerIndex={centerIndex}
       />
     ),
     [offset, centerIndex],
@@ -151,8 +166,8 @@ export function WheelColumn({
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       getItemLayout={getItemLayout}
-      initialScrollIndex={centerIndex}
-      extraData={centerIndex}
+      initialScrollIndex={initialIndex}
+      windowSize={WINDOW_SIZE}
       style={{ flex, height: WHEEL_HEIGHT }}
       showsVerticalScrollIndicator={false}
       snapToInterval={WHEEL_ITEM_HEIGHT}
@@ -171,15 +186,28 @@ type CellProps = {
   label: string
   index: number
   offset: SharedValue<number>
-  centered: boolean
+  centerIndex: SharedValue<number>
 }
 
 const WheelCell = memo(function WheelCell({
   label,
   index,
   offset,
-  centered,
+  centerIndex,
 }: CellProps) {
+  const [centered, setCentered] = useState(() => centerIndex.value === index)
+  // A reação só roda quando o centro muda (o mapper depende de centerIndex, não
+  // do offset), então nada disso pesa por frame durante a rolagem.
+  useAnimatedReaction(
+    () => centerIndex.value === index,
+    (isCentered, previous) => {
+      if (previous !== null && isCentered !== previous) {
+        runOnJS(setCentered)(isCentered)
+      }
+    },
+    [index],
+  )
+
   const style = useAnimatedStyle(() => {
     const distance = Math.abs(offset.value / WHEEL_ITEM_HEIGHT - index)
     return {
