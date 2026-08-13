@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import { View, Text } from 'react-native'
 import Svg, { Defs, G, LinearGradient, Path, Stop } from 'react-native-svg'
 import { UserAvatar } from '@/shared/components/UserAvatar'
@@ -45,7 +46,11 @@ export function SpotBalloon({ spot, size }: { spot: Spot; size: number }) {
   // Rolê dentro da janela AGORA: o rim vira o espectro-assinatura (mais
   // grosso pra leitura); fora dela, o rim escuro padrão da família.
   const live = isSpotLiveNow(spot.startsAt, spot.endsAt)
-  const rimId = `spot-rim-${spot.id}`
+  // Id por instância, não por spot: a aba do mapa segue montada atrás da tela
+  // de detalhe, então o MESMO rolê renderiza dois balões ao mesmo tempo — com
+  // id derivado do spot os dois disputam a mesma entrada no registro global
+  // do RNSVG.
+  const rimId = `spot-rim-${useId().replace(/:/g, '')}`
   return (
     <View style={{ width: CANVAS_W * u, height: CANVAS_H * u }}>
       <Svg
