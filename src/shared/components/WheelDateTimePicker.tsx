@@ -28,6 +28,11 @@ function addDays(base: Date, days: number): Date {
   return new Date(base.getFullYear(), base.getMonth(), base.getDate() + days)
 }
 
+function range(from: number, to: number): number[] {
+  if (to < from) return []
+  return Array.from({ length: to - from + 1 }, (_, i) => from + i)
+}
+
 function clampDate(date: Date, min?: Date, max?: Date): Date {
   if (min && date < min) return min
   if (max && date > max) return max
@@ -41,24 +46,41 @@ const COLUMN_LABEL =
 
 // Seletor de data+hora em rodas (padrão iOS), no tema dark da marca. Coluna de
 // data com rótulo relativo ("Hoje" / "qua, 12 de mar") + Hora + Minuto — bem
-// mais usável que cinco colunas numéricas. Controla pelo `value` e clampa ao
-// intervalo permitido.
+// mais usável que cinco colunas numéricas. Nos extremos do intervalo as colunas
+// de hora e minuto encolhem, então não dá pra parar num horário inválido.
 export function WheelDateTimePicker({
   value,
   onChange,
   minimumDate,
   maximumDate,
 }: Props) {
+  // Limites como escalares, não como Date: chamadores passam `new Date()` inline
+  // e a identidade muda a cada render — os números não, então as listas abaixo
+  // mantêm identidade estável e as colunas não se reposicionam à toa.
+  const baseSource = minimumDate ?? new Date()
+  const baseYear = baseSource.getFullYear()
+  const baseMonth = baseSource.getMonth()
+  const baseDay = baseSource.getDate()
   const base = useMemo(
-    () => startOfDay(minimumDate ?? new Date()),
-    [minimumDate],
+    () => new Date(baseYear, baseMonth, baseDay),
+    [baseYear, baseMonth, baseDay],
   )
 
+  const minHour = minimumDate?.getHours() ?? 0
+  const minMinute = minimumDate?.getMinutes() ?? 0
+  const maxHour = maximumDate?.getHours() ?? 23
+  const maxMinute = maximumDate?.getMinutes() ?? 59
+
   const valueOffset = diffDays(value, base)
-  const maxOffset = useMemo(() => {
-    const fromMax = maximumDate ? diffDays(maximumDate, base) : 365
-    return Math.max(fromMax, valueOffset, 0)
-  }, [maximumDate, base, valueOffset])
+  const lastOffset = maximumDate ? diffDays(maximumDate, base) : 365
+  const maxOffset = Math.max(lastOffset, valueOffset, 0)
+
+  const offset = Math.max(0, Math.min(maxOffset, valueOffset))
+  const hour = value.getHours()
+  const minute = value.getMinutes()
+
+  const atMinDay = !!minimumDate && offset === 0
+  const atMaxDay = !!maximumDate && offset === lastOffset
 
   const dateItems = useMemo(
     () =>
@@ -68,19 +90,21 @@ export function WheelDateTimePicker({
       })),
     [maxOffset, base],
   )
-  const hourItems = useMemo(
-    () => Array.from({ length: 24 }, (_, i) => ({ label: pad(i), value: i })),
-    [],
-  )
-  const minuteItems = useMemo(
-    () => Array.from({ length: 60 }, (_, i) => ({ label: pad(i), value: i })),
-    [],
-  )
 
-  const offset = Math.max(0, Math.min(maxOffset, valueOffset))
-  const hour = value.getHours()
-  const minute = value.getMinutes()
+  const hourItems = useMemo(() => {
+    const from = atMinDay ? minHour : 0
+    const to = atMaxDay ? maxHour : 23
+    return range(from, to).map(h => ({ label: pad(h), value: h }))
+  }, [atMinDay, atMaxDay, minHour, maxHour])
 
+  const minuteItems = useMemo(() => {
+    const from = atMinDay && hour === minHour ? minMinute : 0
+    const to = atMaxDay && hour === maxHour ? maxMinute : 59
+    return range(from, to).map(m => ({ label: pad(m), value: m }))
+  }, [atMinDay, atMaxDay, hour, minHour, minMinute, maxHour, maxMinute])
+
+  // Guarda de valor enquanto as outras colunas ainda não reencaixaram; não move
+  // a roda.
   function commit(nextOffset: number, nextHour: number, nextMinute: number) {
     const next = addDays(base, nextOffset)
     next.setHours(nextHour, nextMinute, 0, 0)
@@ -118,18 +142,18 @@ export function WheelDateTimePicker({
         <View className="flex-row">
           <WheelColumn
             items={dateItems}
-            selectedValue={offset}
+            initialValue={offset}
             onSelect={o => commit(o, hour, minute)}
             flex={3.2}
           />
           <WheelColumn
             items={hourItems}
-            selectedValue={hour}
+            initialValue={hour}
             onSelect={h => commit(offset, h, minute)}
           />
           <WheelColumn
             items={minuteItems}
-            selectedValue={minute}
+            initialValue={minute}
             onSelect={m => commit(offset, hour, m)}
           />
         </View>
