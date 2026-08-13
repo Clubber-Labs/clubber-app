@@ -106,7 +106,7 @@ export function GlobalHeader({
           >
             <SlidersHorizontalIcon size={24} color={colors.contentBright} />
             {hasMapFilters && (
-              <View className="absolute top-1.5 right-1 w-2 h-2 bg-brand-emphasis rounded-full" />
+              <View className="absolute top-1.5 right-1 w-2 h-2 bg-danger rounded-full" />
             )}
           </Pressable>
         )}
