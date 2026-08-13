@@ -9,6 +9,7 @@ import {
 } from '@/shared/lib/secureStore'
 import { useBanner } from '@/shared/lib/banner'
 import { maybeShowWelcomeBack } from '@/features/account/lib/welcomeBack'
+import { resolveConsent } from '@/features/privacy/lib/resolveConsent'
 import type { LoginInput } from '../schemas/loginSchema'
 
 export function useLogin() {
@@ -25,6 +26,9 @@ export function useLogin() {
       try {
         const userId = response.userId ?? (await authService.me()).id
         await saveUserId(userId)
+        // Resolve o consentimento antes de autenticar: o AuthGuard decide o
+        // destino no mesmo instante em que o status vira 'authenticated'.
+        await resolveConsent()
         return { token, userId }
       } catch (err) {
         await clearAuthSession()

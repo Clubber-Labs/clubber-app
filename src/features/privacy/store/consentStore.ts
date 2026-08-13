@@ -127,9 +127,13 @@ export const useConsentStore = create<ConsentState & ConsentActions>()(
 
 // ── Seletores ────────────────────────────────────────────────
 export const selectConsentGiven = (s: ConsentState) => s.consentGiven
-/** Só redireciona para consent quando já hidratado E realmente precisa de consentimento */
+/**
+ * Só redireciona quando o backend CONFIRMOU que falta consentimento ('pending').
+ * 'unknown' é o estado após boot/reset — ainda não resolvido, e tratá-lo como
+ * "falta consentir" abria a tela de consentimento em todo login (ver resolveConsent).
+ */
 export const selectNeedsConsent = (s: ConsentState) =>
-  s.hydrated && (!s.consentGiven || s.status === 'pending')
+  s.hydrated && s.status === 'pending'
 export const selectNeedsVersionBump = (
   s: ConsentState,
   currentVersion: string,
