@@ -1,14 +1,20 @@
-import { memo, useEffect, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
 import {
-  Animated,
-  Easing,
   Text,
+  type ListRenderItemInfo,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from 'react-native'
-// ScrollView do gesture-handler: rola dentro de bottom sheets (SheetModal usa
-// gestos do RNGH); o ScrollView nativo do RN é interceptado e não rola lá.
-import { ScrollView } from 'react-native-gesture-handler'
+// FlatList do gesture-handler: rola dentro de bottom sheets (SheetModal usa
+// gestos do RNGH); o scroll nativo do RN é interceptado e não rola lá.
+import { FlatList } from 'react-native-gesture-handler'
+import Animated, {
+  Extrapolation,
+  interpolate,
+  useAnimatedStyle,
+  useSharedValue,
+  type SharedValue,
+} from 'react-native-reanimated'
 
 export const WHEEL_ITEM_HEIGHT = 44
 export const WHEEL_VISIBLE_ITEMS = 5
@@ -19,81 +25,134 @@ export type WheelItem = { label: string; value: number }
 
 type Props = {
   items: WheelItem[]
-  selectedValue: number
+  // Posiciona só na montagem, como um defaultValue: depois disso a posição é do
+  // scroll e o pai só reage ao onSelect. Sem os dois lados mandando na posição
+  // não há eco entre eles — a roda nunca é puxada de volta durante o gesto.
+  initialValue: number
   onSelect: (value: number) => void
   flex?: number
 }
 
+// Item mais próximo por valor: usado quando `items` muda e o valor atual sai da
+// lista (dia 31 num mês de 30, mês fora do range do ano escolhido).
+function nearestIndex(items: WheelItem[], value: number): number {
+  let best = 0
+  let bestDistance = Infinity
+  for (let i = 0; i < items.length; i++) {
+    const distance = Math.abs(items[i].value - value)
+    if (distance < bestDistance) {
+      bestDistance = distance
+      best = i
+    }
+  }
+  return best
+}
+
+const keyExtractor = (item: WheelItem) => String(item.value)
+
+// Altura fixa: dispensa medição e deixa o initialScrollIndex ser exato.
+const getItemLayout = (
+  _: ArrayLike<WheelItem> | null | undefined,
+  i: number,
+) => ({
+  length: WHEEL_ITEM_HEIGHT,
+  offset: WHEEL_ITEM_HEIGHT * i,
+  index: i,
+})
+
 // Coluna de roda (estilo iOS/Tinder): rola, encaixa item a item (snap) e o item
-// central cresce/ilumina enquanto os vizinhos encolhem/desbotam. O nível de cada
-// item (distância ao centro) vem do índice central rastreado no onScroll; a
-// transição entre níveis é animada por célula (escala + opacidade, driver
-// nativo) — sem Animated.event, que é frágil na nova arquitetura.
+// central cresce/ilumina enquanto os vizinhos encolhem/desbotam. O realce é
+// função contínua do offset e é calculado na UI thread — o onScroll só escreve o
+// offset num shared value, sem re-render por frame. Lista virtualizada de
+// propósito: o estilo animado é por célula, então montar as ~107 de uma coluna de
+// anos custaria uma atualização de view por célula por frame.
 export function WheelColumn({
   items,
-  selectedValue,
+  initialValue,
   onSelect,
   flex = 1,
 }: Props) {
-  const ref = useRef<ScrollView>(null)
-  const lastReported = useRef(selectedValue)
-  const initialIndex = Math.max(
-    0,
-    items.findIndex(i => i.value === selectedValue),
+  const ref = useRef<FlatList<WheelItem>>(null)
+  const selected = useRef(initialValue)
+  const [centerIndex, setCenterIndex] = useState(() =>
+    nearestIndex(items, initialValue),
   )
-  const [centerIndex, setCenterIndex] = useState(initialIndex)
+  const offset = useSharedValue(centerIndex * WHEEL_ITEM_HEIGHT)
 
-  // Centra o item selecionado na montagem (sem animar).
+  // Props frescas para quem roda fora do render (handlers de scroll e o efeito de
+  // reencaixe), sem virar dependência de efeito — `onSelect` é uma arrow nova a
+  // cada render do pai. Precisa ser declarado ANTES do efeito de reencaixe: o
+  // React roda os efeitos na ordem de declaração, e é isso que garante que o
+  // reencaixe leia o `onSelect` da render atual.
+  const latest = useRef({ items, onSelect })
   useEffect(() => {
-    const id = requestAnimationFrame(() =>
-      ref.current?.scrollTo({
-        y: initialIndex * WHEEL_ITEM_HEIGHT,
-        animated: false,
-      }),
-    )
-    return () => cancelAnimationFrame(id)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  // Sincroniza quando o valor muda de fora (ex.: dia clampado ao trocar de mês).
-  useEffect(() => {
-    if (selectedValue === lastReported.current) return
-    const idx = items.findIndex(i => i.value === selectedValue)
-    if (idx >= 0) {
-      setCenterIndex(idx)
-      ref.current?.scrollTo({ y: idx * WHEEL_ITEM_HEIGHT, animated: true })
-    }
-    lastReported.current = selectedValue
-  }, [selectedValue, items])
+    latest.current = { items, onSelect }
+  })
 
   function handleScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
-    const index = Math.round(e.nativeEvent.contentOffset.y / WHEEL_ITEM_HEIGHT)
-    const clamped = Math.max(0, Math.min(items.length - 1, index))
-    setCenterIndex(prev => (prev === clamped ? prev : clamped))
+    offset.value = e.nativeEvent.contentOffset.y
   }
 
-  function settleTo(offsetY: number) {
+  // `settle` arredonda pro alvo do snap e ignora repetição. Os dois caminhos
+  // existem porque nem toda solta gera momentum (drag lento sem flick) e nem todo
+  // momentum vem de um fim de drag útil; comitar duas vezes no mesmo gesto é
+  // inofensivo — o que não pode é reagir a isso movendo a roda.
+  const settle = useCallback((contentOffsetY: number) => {
+    const list = latest.current.items
+    if (list.length === 0) return
     const index = Math.max(
       0,
-      Math.min(items.length - 1, Math.round(offsetY / WHEEL_ITEM_HEIGHT)),
+      Math.min(list.length - 1, Math.round(contentOffsetY / WHEEL_ITEM_HEIGHT)),
     )
-    const value = items[index].value
-    lastReported.current = value
-    if (value !== selectedValue) onSelect(value)
-  }
+    setCenterIndex(index)
+    const value = list[index].value
+    if (value === selected.current) return
+    selected.current = value
+    latest.current.onSelect(value)
+  }, [])
 
-  // Drag lento solto sem flick (velocidade ~0) pode não gerar onMomentumScrollEnd
-  // no iOS — o snap acontece visualmente mas a seleção não comitava. Comita aqui
-  // sobre o offset (round = alvo do snap). Com velocidade, deixa o momentum
-  // comitar o destino final.
-  function handleScrollEndDrag(e: NativeSyntheticEvent<NativeScrollEvent>) {
-    const velocityY = e.nativeEvent.velocity?.y ?? 0
-    if (Math.abs(velocityY) < 0.1) settleTo(e.nativeEvent.contentOffset.y)
-  }
+  // Reencaixa quando a lista muda e o valor atual sai dela, ou quando os índices
+  // andam. Sai cedo se a coluna já está no destino — reposicionar à toa faz o
+  // realce piscar. Nunca animado: animação programática disputa com o
+  // snapToInterval nativo e no Android as duas se atropelam até a coluna travar.
+  useEffect(() => {
+    if (items.length === 0) return
+    const found = items.findIndex(i => i.value === selected.current)
+    const index = found >= 0 ? found : nearestIndex(items, selected.current)
+    if (found < 0) {
+      selected.current = items[index].value
+      latest.current.onSelect(items[index].value)
+    }
+    if (Math.round(offset.value / WHEEL_ITEM_HEIGHT) === index) return
+    setCenterIndex(index)
+    offset.value = index * WHEEL_ITEM_HEIGHT
+    ref.current?.scrollToOffset({
+      offset: index * WHEEL_ITEM_HEIGHT,
+      animated: false,
+    })
+  }, [items, offset])
+
+  const renderItem = useCallback(
+    ({ item, index }: ListRenderItemInfo<WheelItem>) => (
+      <WheelCell
+        label={item.label}
+        index={index}
+        offset={offset}
+        centered={index === centerIndex}
+      />
+    ),
+    [offset, centerIndex],
+  )
 
   return (
-    <ScrollView
+    <FlatList
       ref={ref}
+      data={items}
+      renderItem={renderItem}
+      keyExtractor={keyExtractor}
+      getItemLayout={getItemLayout}
+      initialScrollIndex={centerIndex}
+      extraData={centerIndex}
       style={{ flex, height: WHEEL_HEIGHT }}
       showsVerticalScrollIndicator={false}
       snapToInterval={WHEEL_ITEM_HEIGHT}
@@ -101,63 +160,63 @@ export function WheelColumn({
       scrollEventThrottle={16}
       nestedScrollEnabled
       onScroll={handleScroll}
-      onScrollEndDrag={handleScrollEndDrag}
-      onMomentumScrollEnd={e => settleTo(e.nativeEvent.contentOffset.y)}
+      onScrollEndDrag={e => settle(e.nativeEvent.contentOffset.y)}
+      onMomentumScrollEnd={e => settle(e.nativeEvent.contentOffset.y)}
       contentContainerStyle={{ paddingVertical: PADDING }}
-    >
-      {items.map((item, index) => (
-        <WheelCell
-          key={item.value}
-          label={item.label}
-          level={Math.min(2, Math.abs(index - centerIndex))}
-        />
-      ))}
-    </ScrollView>
+    />
   )
+}
+
+type CellProps = {
+  label: string
+  index: number
+  offset: SharedValue<number>
+  centered: boolean
 }
 
 const WheelCell = memo(function WheelCell({
   label,
-  level,
-}: {
-  label: string
-  level: number
-}) {
-  // `anim` segue o nível (0 = centro). Ao mudar, transiciona com easing — é o
-  // que dá o crescer/iluminar elegante quando o item passa pelo centro.
-  const anim = useRef(new Animated.Value(level)).current
-  useEffect(() => {
-    Animated.timing(anim, {
-      toValue: level,
-      duration: 220,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start()
-  }, [level, anim])
-
-  const opacity = anim.interpolate({
-    inputRange: [0, 1, 2],
-    outputRange: [1, 0.45, 0.18],
-  })
-  const scale = anim.interpolate({
-    inputRange: [0, 1, 2],
-    outputRange: [1, 0.84, 0.72],
+  index,
+  offset,
+  centered,
+}: CellProps) {
+  const style = useAnimatedStyle(() => {
+    const distance = Math.abs(offset.value / WHEEL_ITEM_HEIGHT - index)
+    return {
+      opacity: interpolate(
+        distance,
+        [0, 1, 2],
+        [1, 0.45, 0.18],
+        Extrapolation.CLAMP,
+      ),
+      transform: [
+        {
+          scale: interpolate(
+            distance,
+            [0, 1, 2],
+            [1, 0.84, 0.72],
+            Extrapolation.CLAMP,
+          ),
+        },
+      ],
+    }
   })
 
   return (
     <Animated.View
-      style={{
-        height: WHEEL_ITEM_HEIGHT,
-        alignItems: 'center',
-        justifyContent: 'center',
-        opacity,
-        transform: [{ scale }],
-      }}
+      style={[
+        {
+          height: WHEEL_ITEM_HEIGHT,
+          alignItems: 'center',
+          justifyContent: 'center',
+        },
+        style,
+      ]}
     >
       <Text
         numberOfLines={1}
         className={`text-content text-[20px] ${
-          level === 0 ? 'font-bold' : 'font-semibold'
+          centered ? 'font-bold' : 'font-semibold'
         }`}
       >
         {label}
