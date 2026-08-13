@@ -66,9 +66,10 @@ export function SheetModal({ visible, onClose, children }: Props) {
               className="bg-surface rounded-t-3xl border-t border-white/10 pb-8 pt-2"
               onPress={() => {}}
             >
-              {/* O padding é o alvo de toque: a barra tem 4px e sozinha fica bem
-                  abaixo dos 44px de alvo mínimo — errar a alça pega o conteúdo
-                  de baixo, que numa folha com lista rolável rola em vez de fechar. */}
+              {/* O padding é o alvo de toque: errar a alça pega o conteúdo de
+                  baixo, que numa folha com lista rolável rola em vez de fechar.
+                  28px é meio-termo deliberado — os 44px de alvo ideal custariam
+                  24px de cromo em toda folha do app. */}
               <GestureDetector gesture={dragGesture}>
                 <View className="py-3">
                   <View className="w-10 h-1 bg-surface-high rounded-full self-center" />
