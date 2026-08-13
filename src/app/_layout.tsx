@@ -105,7 +105,7 @@ function AuthGuard() {
       !needsVersionBump &&
       inAuthGroup
     ) {
-      router.replace('/(tabs)/feed')
+      router.replace('/(tabs)/map')
     }
   }, [
     status,

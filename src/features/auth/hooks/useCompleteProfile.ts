@@ -15,7 +15,7 @@ export function useCompleteProfile(userId: string) {
     mutationFn: (data: UpdateMePayload) => usersService.update(userId, data),
     onSuccess: async updated => {
       mergeProfileCache(queryClient, updated)
-      // Persist + memory: AuthGuard libera pra /(tabs)/feed e o flag sobrevive
+      // Persist + memory: AuthGuard libera a shell autenticada e o flag sobrevive
       // a kill/restart sem depender de me() recarregar com sucesso.
       await saveProfileIncomplete(false)
       setProfileIncomplete(false)
