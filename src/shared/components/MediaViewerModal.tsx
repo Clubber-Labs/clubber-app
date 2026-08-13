@@ -1,7 +1,10 @@
 import type { ComponentProps, ReactNode } from 'react'
-import { Modal, View, Pressable } from 'react-native'
+import { Modal, Pressable } from 'react-native'
 import { XIcon } from 'phosphor-react-native'
-import { GestureDetector } from 'react-native-gesture-handler'
+import {
+  GestureDetector,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 import { colors } from '@/shared/theme'
 
@@ -29,7 +32,9 @@ export function MediaViewerModal({
 }: Props) {
   return (
     <Modal visible transparent animationType="fade" onRequestClose={onClose}>
-      <View className="flex-1">
+      {/* Raiz do RNGH: no Android o Modal abre numa Dialog fora da raiz do
+          _layout e nenhum gesto daqui de dentro receberia toque. */}
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <Animated.View
           className="absolute inset-0 bg-background"
           style={bgStyle}
@@ -43,7 +48,7 @@ export function MediaViewerModal({
         >
           <XIcon size={24} color={colors.content} />
         </Pressable>
-      </View>
+      </GestureHandlerRootView>
     </Modal>
   )
 }
