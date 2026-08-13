@@ -1,7 +1,11 @@
 import { useEffect } from 'react'
 import { Modal, Pressable, View } from 'react-native'
 import type { ReactNode } from 'react'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler'
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -44,25 +48,30 @@ export function SheetModal({ visible, onClose, children }: Props) {
       animationType="slide"
       onRequestClose={onClose}
     >
-      <Pressable className="flex-1 justify-end" onPress={onClose}>
-        <Animated.View style={sheetStyle}>
-          {/* Folha SÓLIDA em surface (elevação, não sunken): Modal vive em
-              janela própria do iOS e blur real é impossível — translucidez
-              sem blur deixava o conteúdo de trás conflitar com a folha; o
-              hairline faz a separação no espírito do liquid glass. */}
-          <Pressable
-            className="bg-surface rounded-t-3xl border-t border-white/10 pb-8 pt-2"
-            onPress={() => {}}
-          >
-            <GestureDetector gesture={dragGesture}>
-              <View className="pt-1 pb-2">
-                <View className="w-10 h-1 bg-surface-high rounded-full self-center" />
-              </View>
-            </GestureDetector>
-            {children}
-          </Pressable>
-        </Animated.View>
-      </Pressable>
+      {/* No Android o Modal abre numa Dialog própria, fora do
+          GestureHandlerRootView do _layout — sem uma raiz aqui, nada de RNGH
+          dentro da folha recebe toque (a roda do DatePicker não rolava). */}
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Pressable className="flex-1 justify-end" onPress={onClose}>
+          <Animated.View style={sheetStyle}>
+            {/* Folha SÓLIDA em surface (elevação, não sunken): Modal vive em
+                janela própria do iOS e blur real é impossível — translucidez
+                sem blur deixava o conteúdo de trás conflitar com a folha; o
+                hairline faz a separação no espírito do liquid glass. */}
+            <Pressable
+              className="bg-surface rounded-t-3xl border-t border-white/10 pb-8 pt-2"
+              onPress={() => {}}
+            >
+              <GestureDetector gesture={dragGesture}>
+                <View className="pt-1 pb-2">
+                  <View className="w-10 h-1 bg-surface-high rounded-full self-center" />
+                </View>
+              </GestureDetector>
+              {children}
+            </Pressable>
+          </Animated.View>
+        </Pressable>
+      </GestureHandlerRootView>
     </Modal>
   )
 }

@@ -3,7 +3,11 @@ import { Modal, View, Text, Pressable } from 'react-native'
 import { CaretRightIcon, NavigationArrowIcon } from 'phosphor-react-native'
 import type { Icon } from 'phosphor-react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler'
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -56,73 +60,80 @@ export function MapsChooserSheet({ visible, title, options, onClose }: Props) {
       animationType="slide"
       onRequestClose={onClose}
     >
-      {/* Sem scrim: o fundo (mapa/tela) continua visível — só o tap fecha. */}
-      <Pressable className="flex-1 justify-end" onPress={onClose}>
-        <Animated.View style={sheetStyle}>
-          <Pressable
-            className="bg-surface-sunken border-t border-line rounded-t-3xl px-4"
-            style={{ paddingBottom: insets.bottom + 16 }}
-            onPress={e => e.stopPropagation()}
-          >
-            <GestureDetector gesture={dragGesture}>
-              <View className="pt-3 pb-2">
-                <View className="self-center w-10 h-1 rounded-full bg-surface-high" />
-              </View>
-            </GestureDetector>
+      {/* Raiz do RNGH: no Android o Modal abre numa Dialog fora da raiz do
+          _layout e o arrastar-pra-fechar não receberia toque. */}
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        {/* Sem scrim: o fundo (mapa/tela) continua visível — só o tap fecha. */}
+        <Pressable className="flex-1 justify-end" onPress={onClose}>
+          <Animated.View style={sheetStyle}>
+            <Pressable
+              className="bg-surface-sunken border-t border-line rounded-t-3xl px-4"
+              style={{ paddingBottom: insets.bottom + 16 }}
+              onPress={e => e.stopPropagation()}
+            >
+              <GestureDetector gesture={dragGesture}>
+                <View className="pt-3 pb-2">
+                  <View className="self-center w-10 h-1 rounded-full bg-surface-high" />
+                </View>
+              </GestureDetector>
 
-            <View className="flex-row items-center gap-3 px-1 pb-3 pt-1">
-              <View className="w-11 h-11 rounded-xl bg-brand-surface border border-brand-surface-strong items-center justify-center">
-                <NavigationArrowIcon
-                  size={20}
-                  color={colors.brandText}
-                  weight="fill"
-                />
-              </View>
-              <View className="flex-1">
-                <Text className="text-content text-base font-bold">
-                  Abrir com
-                </Text>
-                {!!title && (
-                  <Text
-                    className="text-content-subtle text-xs mt-0.5"
-                    numberOfLines={1}
-                  >
-                    {title}
+              <View className="flex-row items-center gap-3 px-1 pb-3 pt-1">
+                <View className="w-11 h-11 rounded-xl bg-brand-surface border border-brand-surface-strong items-center justify-center">
+                  <NavigationArrowIcon
+                    size={20}
+                    color={colors.brandText}
+                    weight="fill"
+                  />
+                </View>
+                <View className="flex-1">
+                  <Text className="text-content text-base font-bold">
+                    Abrir com
                   </Text>
-                )}
-              </View>
-            </View>
-
-            <View className="bg-surface border border-line rounded-2xl overflow-hidden">
-              {options.map((option, i) => {
-                const OptionIcon = option.icon
-                return (
-                  <View key={option.key}>
-                    {i > 0 && <View className="h-px bg-line mx-4" />}
-                    <Pressable
-                      onPress={option.onPress}
-                      accessibilityRole="button"
-                      className="flex-row items-center gap-3 px-4 py-3.5 active:bg-surface-elevated"
+                  {!!title && (
+                    <Text
+                      className="text-content-subtle text-xs mt-0.5"
+                      numberOfLines={1}
                     >
-                      <View className="w-9 h-9 rounded-lg bg-surface-elevated items-center justify-center">
-                        <OptionIcon size={18} color={colors.contentSecondary} />
-                      </View>
-                      <Text className="flex-1 text-content text-[15px] font-semibold">
-                        {option.label}
-                      </Text>
-                      <CaretRightIcon size={16} color={colors.contentFaint} />
-                    </Pressable>
-                  </View>
-                )
-              })}
-            </View>
+                      {title}
+                    </Text>
+                  )}
+                </View>
+              </View>
 
-            <View className="mt-3">
-              <Button label="Cancelar" variant="neutral" onPress={onClose} />
-            </View>
-          </Pressable>
-        </Animated.View>
-      </Pressable>
+              <View className="bg-surface border border-line rounded-2xl overflow-hidden">
+                {options.map((option, i) => {
+                  const OptionIcon = option.icon
+                  return (
+                    <View key={option.key}>
+                      {i > 0 && <View className="h-px bg-line mx-4" />}
+                      <Pressable
+                        onPress={option.onPress}
+                        accessibilityRole="button"
+                        className="flex-row items-center gap-3 px-4 py-3.5 active:bg-surface-elevated"
+                      >
+                        <View className="w-9 h-9 rounded-lg bg-surface-elevated items-center justify-center">
+                          <OptionIcon
+                            size={18}
+                            color={colors.contentSecondary}
+                          />
+                        </View>
+                        <Text className="flex-1 text-content text-[15px] font-semibold">
+                          {option.label}
+                        </Text>
+                        <CaretRightIcon size={16} color={colors.contentFaint} />
+                      </Pressable>
+                    </View>
+                  )
+                })}
+              </View>
+
+              <View className="mt-3">
+                <Button label="Cancelar" variant="neutral" onPress={onClose} />
+              </View>
+            </Pressable>
+          </Animated.View>
+        </Pressable>
+      </GestureHandlerRootView>
     </Modal>
   )
 }
