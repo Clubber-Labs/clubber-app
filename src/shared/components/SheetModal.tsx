@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Modal, Pressable, View } from 'react-native'
 import type { ReactNode } from 'react'
 import {
@@ -29,14 +29,18 @@ export function SheetModal({ visible, onClose, children }: Props) {
     if (visible) dragY.value = 0
   }, [visible, dragY])
 
-  const dragGesture = Gesture.Pan()
-    .onUpdate(e => {
-      dragY.value = Math.max(0, e.translationY)
-    })
-    .onEnd(e => {
-      if (e.translationY > 100 || e.velocityY > 800) runOnJS(onClose)()
-      else dragY.value = withSpring(0, { damping: 22, stiffness: 220 })
-    })
+  const dragGesture = useMemo(
+    () =>
+      Gesture.Pan()
+        .onUpdate(e => {
+          dragY.value = Math.max(0, e.translationY)
+        })
+        .onEnd(e => {
+          if (e.translationY > 100 || e.velocityY > 800) runOnJS(onClose)()
+          else dragY.value = withSpring(0, { damping: 22, stiffness: 220 })
+        }),
+    [dragY, onClose],
+  )
   const sheetStyle = useAnimatedStyle(() => ({
     transform: [{ translateY: dragY.value }],
   }))
@@ -62,8 +66,11 @@ export function SheetModal({ visible, onClose, children }: Props) {
               className="bg-surface rounded-t-3xl border-t border-white/10 pb-8 pt-2"
               onPress={() => {}}
             >
+              {/* O padding é o alvo de toque: a barra tem 4px e sozinha fica bem
+                  abaixo dos 44px de alvo mínimo — errar a alça pega o conteúdo
+                  de baixo, que numa folha com lista rolável rola em vez de fechar. */}
               <GestureDetector gesture={dragGesture}>
-                <View className="pt-1 pb-2">
+                <View className="py-3">
                   <View className="w-10 h-1 bg-surface-high rounded-full self-center" />
                 </View>
               </GestureDetector>
