@@ -20,6 +20,10 @@ export const WHEEL_ITEM_HEIGHT = 44
 export const WHEEL_VISIBLE_ITEMS = 5
 const WHEEL_HEIGHT = WHEEL_ITEM_HEIGHT * WHEEL_VISIBLE_ITEMS
 const PADDING = (WHEEL_HEIGHT - WHEEL_ITEM_HEIGHT) / 2
+// Janela de render em viewports. O padrão (21) daria 4620px — mais que a coluna
+// de anos inteira, então nada era descartado e a virtualização não valia nada.
+// 5 mantém ±2 telas de folga contra buraco no fling.
+const WINDOW_SIZE = 5
 
 export type WheelItem = { label: string; value: number }
 
@@ -63,9 +67,9 @@ const getItemLayout = (
 // Coluna de roda (estilo iOS/Tinder): rola, encaixa item a item (snap) e o item
 // central cresce/ilumina enquanto os vizinhos encolhem/desbotam. O realce é
 // função contínua do offset e é calculado na UI thread — o onScroll só escreve o
-// offset num shared value, sem re-render por frame. Lista virtualizada de
-// propósito: o estilo animado é por célula, então montar as ~107 de uma coluna de
-// anos custaria uma atualização de view por célula por frame.
+// offset num shared value. Nenhum estado de render acompanha a rolagem: qualquer
+// setState aqui re-renderizaria toda célula montada (renderItem novo invalida o
+// CellRenderer inteiro) e travava a thread JS no fim do arrasto.
 export function WheelColumn({
   items,
   initialValue,
@@ -74,10 +78,8 @@ export function WheelColumn({
 }: Props) {
   const ref = useRef<FlatList<WheelItem>>(null)
   const selected = useRef(initialValue)
-  const [centerIndex, setCenterIndex] = useState(() =>
-    nearestIndex(items, initialValue),
-  )
-  const offset = useSharedValue(centerIndex * WHEEL_ITEM_HEIGHT)
+  const [initialIndex] = useState(() => nearestIndex(items, initialValue))
+  const offset = useSharedValue(initialIndex * WHEEL_ITEM_HEIGHT)
 
   // Props frescas para quem roda fora do render (handlers de scroll e o efeito de
   // reencaixe), sem virar dependência de efeito — `onSelect` é uma arrow nova a
@@ -104,7 +106,6 @@ export function WheelColumn({
       0,
       Math.min(list.length - 1, Math.round(contentOffsetY / WHEEL_ITEM_HEIGHT)),
     )
-    setCenterIndex(index)
     const value = list[index].value
     if (value === selected.current) return
     selected.current = value
@@ -124,7 +125,6 @@ export function WheelColumn({
       latest.current.onSelect(items[index].value)
     }
     if (Math.round(offset.value / WHEEL_ITEM_HEIGHT) === index) return
-    setCenterIndex(index)
     offset.value = index * WHEEL_ITEM_HEIGHT
     ref.current?.scrollToOffset({
       offset: index * WHEEL_ITEM_HEIGHT,
@@ -134,14 +134,9 @@ export function WheelColumn({
 
   const renderItem = useCallback(
     ({ item, index }: ListRenderItemInfo<WheelItem>) => (
-      <WheelCell
-        label={item.label}
-        index={index}
-        offset={offset}
-        centered={index === centerIndex}
-      />
+      <WheelCell label={item.label} index={index} offset={offset} />
     ),
-    [offset, centerIndex],
+    [offset],
   )
 
   return (
@@ -151,8 +146,8 @@ export function WheelColumn({
       renderItem={renderItem}
       keyExtractor={keyExtractor}
       getItemLayout={getItemLayout}
-      initialScrollIndex={centerIndex}
-      extraData={centerIndex}
+      initialScrollIndex={initialIndex}
+      windowSize={WINDOW_SIZE}
       style={{ flex, height: WHEEL_HEIGHT }}
       showsVerticalScrollIndicator={false}
       snapToInterval={WHEEL_ITEM_HEIGHT}
@@ -171,15 +166,9 @@ type CellProps = {
   label: string
   index: number
   offset: SharedValue<number>
-  centered: boolean
 }
 
-const WheelCell = memo(function WheelCell({
-  label,
-  index,
-  offset,
-  centered,
-}: CellProps) {
+const WheelCell = memo(function WheelCell({ label, index, offset }: CellProps) {
   const style = useAnimatedStyle(() => {
     const distance = Math.abs(offset.value / WHEEL_ITEM_HEIGHT - index)
     return {
@@ -213,12 +202,7 @@ const WheelCell = memo(function WheelCell({
         style,
       ]}
     >
-      <Text
-        numberOfLines={1}
-        className={`text-content text-[20px] ${
-          centered ? 'font-bold' : 'font-semibold'
-        }`}
-      >
+      <Text numberOfLines={1} className="text-content text-[20px] font-bold">
         {label}
       </Text>
     </Animated.View>
