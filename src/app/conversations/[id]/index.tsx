@@ -406,10 +406,12 @@ export default function ConversationScreen() {
     )
   }
 
+  // Sem keyboardVerticalOffset: o inset do topo virou padding da própria tela
+  // (contentStyle no _layout raiz), então o onLayout daqui já sai na posição
+  // real da janela e a conta do teclado fecha sem compensação manual.
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 96 : 0}
       className="flex-1 bg-background"
     >
       <ConversationHeader
