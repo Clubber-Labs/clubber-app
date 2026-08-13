@@ -91,17 +91,21 @@ export function WheelDateTimePicker({
     [maxOffset, base],
   )
 
-  const hourItems = useMemo(() => {
-    const from = atMinDay ? minHour : 0
-    const to = atMaxDay ? maxHour : 23
-    return range(from, to).map(h => ({ label: pad(h), value: h }))
-  }, [atMinDay, atMaxDay, minHour, maxHour])
+  // Memoiza pelo intervalo, não pelo dia/hora: fora dos extremos a lista é sempre
+  // a mesma, e recriar o array faria a coluna reencaixar e piscar à toa.
+  const hourFrom = atMinDay ? minHour : 0
+  const hourTo = atMaxDay ? maxHour : 23
+  const hourItems = useMemo(
+    () => range(hourFrom, hourTo).map(h => ({ label: pad(h), value: h })),
+    [hourFrom, hourTo],
+  )
 
-  const minuteItems = useMemo(() => {
-    const from = atMinDay && hour === minHour ? minMinute : 0
-    const to = atMaxDay && hour === maxHour ? maxMinute : 59
-    return range(from, to).map(m => ({ label: pad(m), value: m }))
-  }, [atMinDay, atMaxDay, hour, minHour, minMinute, maxHour, maxMinute])
+  const minuteFrom = atMinDay && hour === minHour ? minMinute : 0
+  const minuteTo = atMaxDay && hour === maxHour ? maxMinute : 59
+  const minuteItems = useMemo(
+    () => range(minuteFrom, minuteTo).map(m => ({ label: pad(m), value: m })),
+    [minuteFrom, minuteTo],
+  )
 
   // Guarda de valor enquanto as outras colunas ainda não reencaixaram; não move
   // a roda.

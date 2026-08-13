@@ -75,18 +75,23 @@ export function WheelDatePicker({
     [minYear, maxYear],
   )
 
-  const months = useMemo(() => {
-    const from = year === minYear ? minMonth : 0
-    const to = year === maxYear ? maxMonth : 11
-    return range(from, to).map(m => ({ label: MONTHS_PT[m], value: m }))
-  }, [year, minYear, minMonth, maxYear, maxMonth])
+  // Memoiza pelo intervalo, não pelo ano/mês: trocar de 1998 pra 1999 dá a mesma
+  // lista de meses, e recriar o array faria a coluna reencaixar e piscar à toa.
+  const monthFrom = year === minYear ? minMonth : 0
+  const monthTo = year === maxYear ? maxMonth : 11
+  const months = useMemo(
+    () =>
+      range(monthFrom, monthTo).map(m => ({ label: MONTHS_PT[m], value: m })),
+    [monthFrom, monthTo],
+  )
 
-  const days = useMemo(() => {
-    const from = year === minYear && month === minMonth ? minDay : 1
-    const to =
-      year === maxYear && month === maxMonth ? maxDay : daysInMonth(year, month)
-    return range(from, to).map(d => ({ label: String(d), value: d }))
-  }, [year, month, minYear, minMonth, minDay, maxYear, maxMonth, maxDay])
+  const dayFrom = year === minYear && month === minMonth ? minDay : 1
+  const dayTo =
+    year === maxYear && month === maxMonth ? maxDay : daysInMonth(year, month)
+  const days = useMemo(
+    () => range(dayFrom, dayTo).map(d => ({ label: String(d), value: d })),
+    [dayFrom, dayTo],
+  )
 
   // `safeDay` evita o rollover do Date (31 de fev vira março) enquanto as outras
   // colunas ainda não reencaixaram; `clampDate` segura o valor emitido no
