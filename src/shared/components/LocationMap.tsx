@@ -1,27 +1,23 @@
+import type { ReactNode } from 'react'
 import { View } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
 import { MAP_STYLE_URL } from '@/shared/theme'
 import { useMapLightPreset } from '@/shared/hooks/useMapLightPreset'
-import { LocationBalloonMarker } from './LocationBalloonMarker'
-import { LocationDropMarker } from './LocationDropMarker'
 
 type Props = {
   latitude: number
   longitude: number
   height?: number
-  // Identidade do marcador: gota pra evento, balão de conversa pra rolê
-  // (a tela de detalhe de spot reusa este mapa).
-  marker?: 'event' | 'spot'
-  // Categorias do evento — definem o emoji no miolo da gota.
-  categories?: string[]
+  // Marcador (MarkerView/layer) de quem chama — o mapa não conhece domínio.
+  children?: ReactNode
 }
 
-export function EventMap({
+// Mini-mapa de um único lugar: mesma base e mesma luz do mapa principal.
+export function LocationMap({
   latitude,
   longitude,
   height = 200,
-  marker = 'event',
-  categories,
+  children,
 }: Props) {
   const lightPreset = useMapLightPreset()
   return (
@@ -38,18 +34,7 @@ export function EventMap({
           centerCoordinate={[longitude, latitude]}
           animationMode="none"
         />
-        {marker === 'spot' ? (
-          <LocationBalloonMarker
-            id="event-location"
-            coordinate={[longitude, latitude]}
-          />
-        ) : (
-          <LocationDropMarker
-            id="event-location"
-            coordinate={[longitude, latitude]}
-            categories={categories}
-          />
-        )}
+        {children}
       </Mapbox.MapView>
     </View>
   )

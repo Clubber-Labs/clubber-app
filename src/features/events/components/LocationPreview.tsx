@@ -4,7 +4,12 @@ import Mapbox from '@rnmapbox/maps'
 import { InfoIcon } from 'phosphor-react-native'
 import { colors, MAP_STYLE_URL } from '@/shared/theme'
 import { useMapLightPreset } from '@/shared/hooks/useMapLightPreset'
-import { LocationDropMarker } from './LocationDropMarker'
+import {
+  EventPin,
+  EVENT_PIN_SIZE,
+  EVENT_PIN_TIP_ANCHOR,
+} from '@/features/map/components/EventPin'
+import { eventPinLook } from '@/features/map/utils/eventPinLook'
 
 type Coords = { latitude: number; longitude: number }
 
@@ -54,11 +59,19 @@ export function LocationPreview({
           <Mapbox.StyleImport id="basemap" existing config={{ lightPreset }} />
           <Mapbox.Camera zoomLevel={13} centerCoordinate={center} />
           {value && (
-            <LocationDropMarker
+            <Mapbox.MarkerView
               id="event-location"
               coordinate={[value.longitude, value.latitude]}
-              categories={categories}
-            />
+              anchor={EVENT_PIN_TIP_ANCHOR}
+              allowOverlap
+            >
+              {/* Mesma gota do mapa: o autor vê no formulário o pin que o
+                  evento vai ter lá. */}
+              <EventPin
+                {...eventPinLook({ categories: categories ?? [] })}
+                size={EVENT_PIN_SIZE}
+              />
+            </Mapbox.MarkerView>
           )}
         </Mapbox.MapView>
       </View>

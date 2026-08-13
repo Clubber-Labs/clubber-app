@@ -3,7 +3,7 @@ import { CheckIcon, MapPinIcon } from 'phosphor-react-native'
 import * as Linking from 'expo-linking'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 import { Button } from '@/shared/components/Button'
-import { EventMap } from '@/features/events/components/EventMap'
+import { SpotLocationMap } from '@/features/spots/components/SpotLocationMap'
 import { useSpot } from '@/features/spots/hooks/useSpot'
 import { formatSpotWindow } from '@/features/spots/utils/spotWindow'
 import { colors } from '@/shared/theme'
@@ -106,12 +106,7 @@ export default function SpotCreatedScreen() {
             Ver no mapa
           </Text>
         </Pressable>
-        <EventMap
-          latitude={spot.latitude}
-          longitude={spot.longitude}
-          height={160}
-          marker="spot"
-        />
+        <SpotLocationMap spot={spot} height={160} />
       </View>
     </View>
   )
