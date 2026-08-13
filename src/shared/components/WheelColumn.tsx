@@ -79,6 +79,11 @@ export function WheelColumn({
   )
   const offset = useSharedValue(centerIndex * WHEEL_ITEM_HEIGHT)
 
+  // Props frescas para quem roda fora do render (handlers de scroll e o efeito de
+  // reencaixe), sem virar dependência de efeito — `onSelect` é uma arrow nova a
+  // cada render do pai. Precisa ser declarado ANTES do efeito de reencaixe: o
+  // React roda os efeitos na ordem de declaração, e é isso que garante que o
+  // reencaixe leia o `onSelect` da render atual.
   const latest = useRef({ items, onSelect })
   useEffect(() => {
     latest.current = { items, onSelect }
