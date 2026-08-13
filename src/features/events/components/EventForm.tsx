@@ -15,7 +15,7 @@ import {
   type CreateEventInput,
 } from '../schemas/createEventSchema'
 import type { ReactNode } from 'react'
-import { Button } from '@/shared/components/Button'
+import { FormSubmitButton } from '@/shared/components/FormSubmitButton'
 import { FormError } from '@/shared/components/FormError'
 import { DatePicker } from '@/shared/components/DatePicker'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
@@ -23,6 +23,7 @@ import { SubcategorySelect } from '@/shared/components/SubcategorySelect'
 import { LocationPreview } from './LocationPreview'
 import { VenuePicker, type VenueSelection } from './VenuePicker'
 import { useUserLocation } from '@/shared/hooks/useUserLocation'
+import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
 import { colors } from '@/shared/theme'
 
 const DEFAULTS: Partial<CreateEventInput> = {
@@ -76,6 +77,7 @@ export function EventForm({
   const latitude = watch('latitude')
   const longitude = watch('longitude')
   const { coords } = useUserLocation()
+  const form = useKeyboardAwareForm()
 
   function patchLocation(patch: Partial<VenueSelection>) {
     if ('address' in patch)
@@ -94,12 +96,12 @@ export function EventForm({
       className="flex-1"
     >
       <ScrollView
+        {...form.scrollProps}
         contentContainerStyle={{ padding: 20, paddingBottom: 40, gap: 20 }}
-        keyboardShouldPersistTaps="handled"
       >
         {imagesSection}
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('title')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Título
           </Text>
@@ -108,6 +110,7 @@ export function EventForm({
             name="title"
             render={({ field: { onChange, value } }) => (
               <TextInput
+                {...form.input('title')}
                 className={`border ${errors.title ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                 placeholder="Festival de música no parque"
                 placeholderTextColor={colors.contentSubtle}
@@ -121,7 +124,7 @@ export function EventForm({
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('description')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Descrição
           </Text>
@@ -130,6 +133,7 @@ export function EventForm({
             name="description"
             render={({ field: { onChange, value } }) => (
               <TextInput
+                {...form.input('description')}
                 className={`border ${errors.description ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content min-h-[96px]`}
                 placeholder="Conte mais sobre o evento..."
                 placeholderTextColor={colors.contentSubtle}
@@ -147,7 +151,7 @@ export function EventForm({
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('date')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Data e hora
           </Text>
@@ -170,7 +174,7 @@ export function EventForm({
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('endDate')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Horário de término{' '}
             <Text className="text-content-subtle text-xs">(opcional)</Text>
@@ -196,7 +200,7 @@ export function EventForm({
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('categories')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Categorias
           </Text>
@@ -214,7 +218,7 @@ export function EventForm({
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('subcategories')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Interesses{' '}
             <Text className="text-content-subtle text-xs">(opcional)</Text>
@@ -237,7 +241,7 @@ export function EventForm({
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('address')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Local
           </Text>
@@ -258,7 +262,7 @@ export function EventForm({
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('latitude')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Local no mapa
           </Text>
@@ -327,9 +331,11 @@ export function EventForm({
 
       <View className="border-t border-line bg-surface-sunken px-5 pt-4 pb-12 gap-3">
         <FormError message={submitError ? errorMessage : null} />
-        <Button
+        <FormSubmitButton
+          control={control}
+          required={['title', 'date', 'categories', 'address', 'latitude']}
           label={submitting ? submittingLabel : submitLabel}
-          onPress={handleSubmit(onSubmit)}
+          onPress={handleSubmit(onSubmit, form.focusFirstError)}
           loading={submitting}
         />
       </View>

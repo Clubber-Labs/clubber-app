@@ -5,8 +5,9 @@ import {
   forgotPasswordEmailSchema,
   type ForgotPasswordEmailInput,
 } from '../../schemas/forgotPasswordSchema'
-import { Button } from '@/shared/components/Button'
+import { FormSubmitButton } from '@/shared/components/FormSubmitButton'
 import { FormError } from '@/shared/components/FormError'
+import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -30,6 +31,7 @@ export function StepEmail({
     resolver: zodResolver(forgotPasswordEmailSchema),
     defaultValues: { email: defaultEmail ?? '' },
   })
+  const form = useFormFocus()
 
   return (
     <View className="gap-5">
@@ -40,7 +42,7 @@ export function StepEmail({
         </Text>
       </View>
 
-      <View className="gap-1">
+      <View className="gap-1" {...form.anchor('email')}>
         <Text className="text-sm font-medium text-content-tertiary">
           E-mail
         </Text>
@@ -49,6 +51,7 @@ export function StepEmail({
           name="email"
           render={({ field: { onChange, value } }) => (
             <TextInput
+              {...form.input('email')}
               className={`border ${errors.email ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
               placeholder="joao@email.com"
               placeholderTextColor={colors.contentSubtle}
@@ -69,9 +72,14 @@ export function StepEmail({
 
       <FormError message={serverError} />
 
-      <Button
+      <FormSubmitButton
+        control={control}
+        required={['email']}
         label={isSubmitting ? 'Enviando...' : 'Enviar código'}
-        onPress={handleSubmit(data => onSubmit(data.email))}
+        onPress={handleSubmit(
+          data => onSubmit(data.email),
+          form.focusFirstError,
+        )}
         loading={isSubmitting}
       />
     </View>

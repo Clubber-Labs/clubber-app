@@ -6,7 +6,9 @@ import {
   type ResetPasswordInput,
 } from '../../schemas/forgotPasswordSchema'
 import { Button } from '@/shared/components/Button'
+import { FormSubmitButton } from '@/shared/components/FormSubmitButton'
 import { FormError } from '@/shared/components/FormError'
+import { useFormFocus } from '@/shared/lib/formFocus'
 import { PasswordInput } from '@/shared/components/PasswordInput'
 import { PasswordStrengthMeter } from '@/shared/components/PasswordStrengthMeter'
 
@@ -44,6 +46,7 @@ export function StepNewPassword({
   })
 
   const newPassword = watch('newPassword') ?? ''
+  const form = useFormFocus()
 
   return (
     <View className="gap-5">
@@ -57,7 +60,7 @@ export function StepNewPassword({
       </View>
 
       <View className="gap-4">
-        <View className="gap-2">
+        <View className="gap-2" {...form.anchor('newPassword')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Nova senha
           </Text>
@@ -66,6 +69,7 @@ export function StepNewPassword({
             name="newPassword"
             render={({ field: { onChange, value } }) => (
               <PasswordInput
+                {...form.input('newPassword')}
                 value={value}
                 onChangeText={onChange}
                 placeholder="Mínimo 8 caracteres"
@@ -84,7 +88,7 @@ export function StepNewPassword({
           <PasswordStrengthMeter password={newPassword} email={email} />
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('confirmPassword')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Confirmar senha
           </Text>
@@ -93,6 +97,7 @@ export function StepNewPassword({
             name="confirmPassword"
             render={({ field: { onChange, value } }) => (
               <PasswordInput
+                {...form.input('confirmPassword')}
                 value={value}
                 onChangeText={onChange}
                 placeholder="Repita a senha"
@@ -123,9 +128,11 @@ export function StepNewPassword({
           <Button label="Voltar" onPress={onBack} variant="secondary" />
         </View>
         <View className="flex-1">
-          <Button
+          <FormSubmitButton
+            control={control}
+            required={['newPassword', 'confirmPassword']}
             label={isSubmitting ? 'Redefinindo...' : 'Redefinir senha'}
-            onPress={handleSubmit(onSubmit)}
+            onPress={handleSubmit(onSubmit, form.focusFirstError)}
             loading={isSubmitting}
           />
         </View>

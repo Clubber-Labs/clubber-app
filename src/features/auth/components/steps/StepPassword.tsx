@@ -2,6 +2,7 @@ import { View, Text, TextInput } from 'react-native'
 import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import type { RegisterInput } from '../../schemas/registerSchema'
+import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -10,6 +11,8 @@ type Props = {
 }
 
 export function StepPassword({ control, errors }: Props) {
+  const form = useFormFocus()
+
   return (
     <View className="gap-5">
       <View className="gap-1">
@@ -20,7 +23,7 @@ export function StepPassword({ control, errors }: Props) {
       </View>
 
       <View className="gap-4">
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('password')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Senha
           </Text>
@@ -29,6 +32,7 @@ export function StepPassword({ control, errors }: Props) {
             name="password"
             render={({ field: { onChange, value } }) => (
               <TextInput
+                {...form.input('password')}
                 className={`border ${errors.password ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                 placeholder="Mínimo 8 caracteres"
                 placeholderTextColor={colors.contentSubtle}
@@ -45,7 +49,7 @@ export function StepPassword({ control, errors }: Props) {
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('confirmPassword')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Confirmar senha
           </Text>
@@ -54,6 +58,7 @@ export function StepPassword({ control, errors }: Props) {
             name="confirmPassword"
             render={({ field: { onChange, value } }) => (
               <TextInput
+                {...form.input('confirmPassword')}
                 className={`border ${errors.confirmPassword ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                 placeholder="Repita a senha"
                 placeholderTextColor={colors.contentSubtle}

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { View, TextInput, Pressable } from 'react-native'
 import { EyeIcon, EyeSlashIcon } from 'phosphor-react-native'
-import type { ComponentProps } from 'react'
+import type { ComponentProps, Ref } from 'react'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -12,6 +12,10 @@ type Props = {
   autoFocus?: boolean
   textContentType?: ComponentProps<typeof TextInput>['textContentType']
   autoComplete?: ComponentProps<typeof TextInput>['autoComplete']
+  // ref/onFocus apontam para o campo interno: é o que o useKeyboardAwareForm
+  // precisa pra medir, focar e trazer o campo pra cima do teclado.
+  ref?: Ref<TextInput>
+  onFocus?: () => void
 }
 
 // Campo de senha com toggle de mostrar/ocultar (olho). Mesmo visual dos demais
@@ -24,6 +28,8 @@ export function PasswordInput({
   autoFocus,
   textContentType,
   autoComplete,
+  ref,
+  onFocus,
 }: Props) {
   const [visible, setVisible] = useState(false)
 
@@ -32,6 +38,8 @@ export function PasswordInput({
       className={`flex-row items-center border ${error ? 'border-content' : 'border-line'} bg-surface rounded-full pl-4 pr-3`}
     >
       <TextInput
+        ref={ref}
+        onFocus={onFocus}
         className="flex-1 py-3.5 text-base text-content"
         placeholder={placeholder}
         placeholderTextColor={colors.contentSubtle}

@@ -14,12 +14,15 @@ import { useLogout } from '@/features/auth/hooks/useLogout'
 import { CompleteProfileForm } from '@/features/auth/components/CompleteProfileForm'
 import { Button } from '@/shared/components/Button'
 import { useConfirm } from '@/shared/lib/confirm'
+import { FormFocusProvider } from '@/shared/lib/formFocus'
+import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
 import { colors } from '@/shared/theme'
 
 export default function CompleteProfileScreen() {
   const { data: profile, isLoading, isError, refetch } = useMyProfile()
   const logout = useLogout()
   const confirm = useConfirm()
+  const form = useKeyboardAwareForm()
 
   async function handleExit() {
     const ok = await confirm({
@@ -50,8 +53,8 @@ export default function CompleteProfileScreen() {
         </Pressable>
 
         <ScrollView
+          {...form.scrollProps}
           contentContainerStyle={{ padding: 24, paddingTop: 16 }}
-          keyboardShouldPersistTaps="handled"
         >
           <Text className="text-3xl font-bold text-content mb-2">
             Complete seu perfil
@@ -76,7 +79,9 @@ export default function CompleteProfileScreen() {
               />
             </View>
           ) : (
-            <CompleteProfileForm profile={profile} />
+            <FormFocusProvider value={form}>
+              <CompleteProfileForm profile={profile} />
+            </FormFocusProvider>
           )}
         </ScrollView>
       </KeyboardAvoidingView>

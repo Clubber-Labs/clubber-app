@@ -4,6 +4,7 @@ import type { Control, FieldErrors } from 'react-hook-form'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import { InterestsMultiSelect } from '@/shared/components/InterestsMultiSelect'
 import type { RegisterInput } from '../../schemas/registerSchema'
+import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -12,6 +13,8 @@ type Props = {
 }
 
 export function StepProfile({ control, errors }: Props) {
+  const form = useFormFocus()
+
   return (
     <View className="gap-5">
       <View className="gap-1">
@@ -23,13 +26,14 @@ export function StepProfile({ control, errors }: Props) {
       </View>
 
       <View className="gap-4">
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('bio')}>
           <Text className="text-sm font-medium text-content-tertiary">Bio</Text>
           <Controller
             control={control}
             name="bio"
             render={({ field: { onChange, value } }) => (
               <TextInput
+                {...form.input('bio')}
                 className={`border ${errors.bio ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                 placeholder="Conte algo sobre você..."
                 placeholderTextColor={colors.contentSubtle}
@@ -71,7 +75,7 @@ export function StepProfile({ control, errors }: Props) {
           />
         </View>
 
-        <View className="gap-2">
+        <View className="gap-2" {...form.anchor('preferredCategories')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Categorias de rolê
           </Text>

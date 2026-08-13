@@ -4,8 +4,9 @@ import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { loginSchema, type LoginInput } from '../schemas/loginSchema'
 import { useLogin } from '../hooks/useLogin'
-import { Button } from '@/shared/components/Button'
+import { FormSubmitButton } from '@/shared/components/FormSubmitButton'
 import { FormError } from '@/shared/components/FormError'
+import { useFormFocus } from '@/shared/lib/formFocus'
 import { isUnauthorizedError } from '@/shared/lib/apiError'
 import { colors } from '@/shared/theme'
 
@@ -23,6 +24,7 @@ export function LoginForm({ defaultEmail }: Props) {
     resolver: zodResolver(loginSchema),
     defaultValues: { email: defaultEmail ?? '' },
   })
+  const form = useFormFocus()
 
   return (
     <View className="gap-4">
@@ -31,6 +33,7 @@ export function LoginForm({ defaultEmail }: Props) {
         name="email"
         render={({ field: { onChange, value } }) => (
           <TextInput
+            {...form.input('email')}
             className={`border ${errors.email ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
             placeholder="E-mail"
             placeholderTextColor={colors.contentSubtle}
@@ -50,6 +53,7 @@ export function LoginForm({ defaultEmail }: Props) {
         name="password"
         render={({ field: { onChange, value } }) => (
           <TextInput
+            {...form.input('password')}
             className={`border ${errors.password ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
             placeholder="Senha"
             placeholderTextColor={colors.contentSubtle}
@@ -81,9 +85,11 @@ export function LoginForm({ defaultEmail }: Props) {
         }
       />
 
-      <Button
+      <FormSubmitButton
+        control={control}
+        required={['email', 'password']}
         label={isPending ? 'Entrando...' : 'Entrar'}
-        onPress={handleSubmit(data => login(data))}
+        onPress={handleSubmit(data => login(data), form.focusFirstError)}
         loading={isPending}
       />
     </View>
