@@ -24,6 +24,14 @@ let ending: Promise<void> | null = null
 // e os mounts desmontam quando isAuthenticated vira false (socket.stop).
 export function endSession(opts: { expired?: boolean } = {}): Promise<void> {
   if (ending) return ending
+  // Sessão JÁ encerrada: 401/4401 que chega depois do teardown (request ou
+  // socket que ainda estava em voo quando o token sumiu) não reencerra nada —
+  // e, sobretudo, não redefine o motivo: um logout voluntário viraria "Sua
+  // sessão expirou" no login. A guarda de reentrância acima só cobre a janela
+  // em que o encerramento está EM CURSO; esta cobre a de depois.
+  if (useAuthStore.getState().status === 'unauthenticated') {
+    return Promise.resolve()
+  }
   ending = runEndSession(opts).finally(() => {
     ending = null
   })
