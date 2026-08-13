@@ -27,6 +27,10 @@ type Props = {
 }
 
 const AVATAR_SIZE = 80
+const AVATAR_BORDER = 2
+// A borda ocupa a área interna da View no RN: a foto precisa descontá-la, senão
+// vaza pra direita/baixo e sai do centro do anel.
+const AVATAR_INNER = AVATAR_SIZE - AVATAR_BORDER * 2
 
 export function ProfileHeader({
   profile,
@@ -88,7 +92,7 @@ export function ProfileHeader({
               <UserAvatar
                 name={fullName}
                 avatarUrl={profile.avatarUrl}
-                size={AVATAR_SIZE}
+                size={AVATAR_INNER}
               />
               {avatarUploading && (
                 <View className="absolute inset-0 items-center justify-center bg-background/60">
