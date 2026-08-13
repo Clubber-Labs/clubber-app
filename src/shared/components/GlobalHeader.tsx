@@ -18,15 +18,15 @@ import { BrandWordmark } from './brand'
 import { colors } from '@/shared/theme'
 
 // Altura da faixa útil do header (sem o inset da status bar) — base do
-// useHeaderClearance nas telas em que ele flutua.
+// useHeaderClearance nas abas e do paddingTop das telas empilhadas (chromeFor
+// no _layout raiz).
 export const HEADER_BAR_HEIGHT = 56
 
 type Props = {
   showNotifications?: boolean
   showBack?: boolean
-  // true nas abas: o header flutua edge-to-edge (cobre a status bar) e o
-  // conteúdo passa por baixo do vidro. false (stack): fica no fluxo, com o
-  // inset do topo por conta do SafeAreaView do layout.
+  // true nas abas: vidro edge-to-edge com o conteúdo passando por baixo.
+  // false (stack): barra sólida, com o conteúdo começando abaixo dela.
   floating?: boolean
   onNotificationsPress?: () => void
   onBackPress?: () => void
@@ -137,11 +137,17 @@ export function GlobalHeader({
     </View>
   )
 
-  // Sem conteúdo passando por baixo (telas empilhadas, header no fluxo), o
-  // blur não tem o que desfocar e vira uma placa cinza — barra sólida.
+  // Sem conteúdo passando por baixo (telas empilhadas), o blur não tem o que
+  // desfocar e vira uma placa cinza — barra sólida. O inset é dela: o header é
+  // absoluto nos dois modos, então não recebe topo de ninguém.
   if (!floating) {
     return (
-      <View className="bg-background border-b border-line-subtle">{bar}</View>
+      <View
+        className="bg-background border-b border-line-subtle"
+        style={{ paddingTop: insets.top }}
+      >
+        {bar}
+      </View>
     )
   }
 

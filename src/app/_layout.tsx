@@ -3,7 +3,10 @@ import '@/shared/lib/reactotron'
 import '@/shared/lib/mapbox'
 import { useCallback, useEffect } from 'react'
 import { View } from 'react-native'
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context'
 import { Stack, useRouter, useSegments } from 'expo-router'
 import { StatusBar } from 'expo-status-bar'
 import { QueryClientProvider } from '@tanstack/react-query'
@@ -30,7 +33,10 @@ import { initFacebookSDK } from '@/features/auth/lib/facebookLogin'
 import { SessionUnavailable } from '@/features/auth/components/SessionUnavailable'
 import { ChatRealtimeMount } from '@/features/chat/components/ChatRealtimeMount'
 import { NotificationsMount } from '@/features/notifications/components/NotificationsMount'
-import { GlobalHeader } from '@/shared/components/GlobalHeader'
+import {
+  GlobalHeader,
+  HEADER_BAR_HEIGHT,
+} from '@/shared/components/GlobalHeader'
 import { SplashOverlay } from '@/shared/components/SplashOverlay'
 import { colors } from '@/shared/theme'
 
@@ -115,6 +121,42 @@ function AuthGuard() {
   return null
 }
 
+type Chrome = {
+  topInset: 'nenhum' | 'statusBar' | 'statusBarComHeader'
+  header: 'nenhum' | 'vidro' | 'solido'
+}
+
+// Cromo POR ROTA: quanto de topo a tela precisa e que header ela recebe. O
+// inset vai no contentStyle de cada tela e o header é sempre absoluto, então a
+// árvore acima do Stack tem geometria fixa. Enquanto isso morava na raiz (edges
+// do SafeAreaView + header em fluxo), entrar numa tela empilhada mudava a altura
+// do pai COMUM das duas telas da transição: a que estava saindo pulava
+// insets.top + HEADER_BAR_HEIGHT pra baixo antes da nova aparecer, e na volta
+// subia deixando uma faixa vazia embaixo.
+function chromeFor(path: string): Chrome {
+  // Abas: o header de vidro cobre a status bar e o conteúdo passa por baixo
+  // (cada tela abre espaço com useHeaderClearance).
+  if (path === '(tabs)' || path.startsWith('(tabs)/')) {
+    return { topInset: 'nenhum', header: 'vidro' }
+  }
+  // Onboarding é full-bleed e as demais telas do grupo recebem o inset por tela
+  // no (auth)/_layout.
+  if (path.startsWith('(auth)')) return { topInset: 'nenhum', header: 'nenhum' }
+  // Detalhe do evento: hero imersivo sob a status bar, com botões flutuantes
+  // próprios (subrotas como edit/invites são telas normais).
+  if (path === 'events/[id]') return { topInset: 'nenhum', header: 'nenhum' }
+  // Telas com cabeçalho próprio (voltar + título + ações) — o global em cima
+  // seria redundante.
+  if (
+    path === 'notifications' ||
+    path.startsWith('billing/') ||
+    path.startsWith('profile/edit')
+  ) {
+    return { topInset: 'statusBar', header: 'nenhum' }
+  }
+  return { topInset: 'statusBarComHeader', header: 'solido' }
+}
+
 export default function RootLayout() {
   const { retry } = useRestoreSession()
   const status = useAuthStore(s => s.status)
@@ -122,6 +164,7 @@ export default function RootLayout() {
   const profileIncomplete = useAuthStore(s => s.profileIncomplete)
   const userId = useAuthStore(s => s.userId)
   const segments = useSegments() as string[]
+  const insets = useSafeAreaInsets()
   const [fontsLoaded] = useFonts({ Sora_700Bold })
   // Splash global SÓ no boot: fontes carregando ou sessão indefinida. Nunca em
   // logout, navegação, resume ou loading local — e o fade de saída de 200ms dá
@@ -154,38 +197,20 @@ export default function RootLayout() {
   )
   const onConsentFlow =
     !consentHydrated || needsConsentRoot || needsVersionBumpRoot
-  // Detalhe do evento usa hero imersivo (sob a status bar) com botões
-  // flutuantes próprios — esconde o header global e tira o inset do topo só
-  // nessa rota (events/[id], sem subrotas como edit/invites).
-  const isEventDetail =
-    segments[0] === 'events' && segments[1] === '[id]' && segments.length === 2
-  // O grupo (auth) inteiro é edge-to-edge no raiz: o onboarding tem mapa
-  // full-bleed sob a status bar, e as demais telas do grupo recebem o inset
-  // POR TELA via contentStyle no (auth)/_layout — alternar edges globais ao
-  // navegar dentro do grupo re-layoutava a árvore inteira (flick vertical).
-  const isAuthGroup = segments[0] === '(auth)'
-  // Telas de billing (upgrade/manage) têm header próprio (fechar/voltar) —
-  // o header global em cima seria redundante.
-  const isBilling = segments[0] === 'billing'
-  // Telas com header próprio (voltar + título + ações) — o header global em
-  // cima seria redundante. Notificações tem cabeçalho com "Marcar lidas" +
-  // ajustes.
-  const isNotifications = segments[0] === 'notifications'
-  // Editar perfil é hub + telas focadas, cada uma com voltar/título/Salvar
-  // próprios — o header global em cima seria redundante.
-  const isProfileEdit = segments[0] === 'profile' && segments[1] === 'edit'
-  const showHeader =
-    isAuthenticated &&
-    !profileIncomplete &&
-    !onConsentFlow &&
-    !isEventDetail &&
-    !isBilling &&
-    !isNotifications &&
-    !isProfileEdit
-  // Nas abas o header de vidro flutua edge-to-edge (cobre a status bar, o
-  // conteúdo passa por baixo — clearance via useHeaderClearance). Nas telas
-  // empilhadas ele fica no fluxo, com o inset do SafeAreaView.
-  const floatingHeader = showHeader && segments[0] === '(tabs)'
+  // Sessão pronta = header global liberado. É a única parte do cromo que não sai
+  // da rota, e só muda em login/logout — nunca no meio de uma transição.
+  const sessionReady = isAuthenticated && !profileIncomplete && !onConsentFlow
+  const header = sessionReady ? chromeFor(segments.join('/')).header : 'nenhum'
+
+  // O route.name do Stack raiz traz o /index das pastas sem layout próprio
+  // (events/[id]/index); os segments, não — normaliza pros dois casarem.
+  function topPaddingFor(routeName: string): number {
+    const { topInset } = chromeFor(routeName.replace(/\/index$/, ''))
+    if (topInset === 'nenhum') return 0
+    if (topInset === 'statusBar' || !sessionReady) return insets.top
+    return insets.top + HEADER_BAR_HEIGHT
+  }
+
   const chatActive = isAuthenticated && !profileIncomplete && !!userId
 
   // Publishable key é pública por natureza (pk_) — sem ela a PaymentSheet
@@ -202,32 +227,27 @@ export default function RootLayout() {
               <OpenInMapsProvider>
                 <BannerProvider>
                   <StatusBar style="light" />
-                  <SafeAreaView
-                    style={{ flex: 1, backgroundColor: colors.background }}
-                    edges={
-                      isEventDetail || floatingHeader || isAuthGroup
-                        ? []
-                        : ['top']
-                    }
-                  >
-                    {showHeader && !floatingHeader && <GlobalHeader />}
-                    <View className="flex-1 bg-background">
-                      <Stack
-                        screenOptions={{
-                          headerShown: false,
-                          contentStyle: { backgroundColor: colors.background },
-                        }}
-                      />
-                      {floatingHeader && (
-                        <View className="absolute top-0 left-0 right-0">
-                          <GlobalHeader floating />
-                        </View>
-                      )}
-                      {status === 'offline' && (
-                        <SessionUnavailable onRetry={retry} />
-                      )}
-                    </View>
-                  </SafeAreaView>
+                  {/* Raiz sem inset e header absoluto: a altura daqui pra baixo
+                      não pode depender da rota (ver chromeFor). */}
+                  <View className="flex-1 bg-background">
+                    <Stack
+                      screenOptions={({ route }) => ({
+                        headerShown: false,
+                        contentStyle: {
+                          backgroundColor: colors.background,
+                          paddingTop: topPaddingFor(route.name),
+                        },
+                      })}
+                    />
+                    {header !== 'nenhum' && (
+                      <View className="absolute top-0 left-0 right-0">
+                        <GlobalHeader floating={header === 'vidro'} />
+                      </View>
+                    )}
+                    {status === 'offline' && (
+                      <SessionUnavailable onRetry={retry} />
+                    )}
+                  </View>
                   <SplashOverlay
                     visible={showSplash}
                     showWordmark={fontsLoaded}
