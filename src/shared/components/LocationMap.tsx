@@ -27,6 +27,8 @@ export function LocationMap({
         styleURL={MAP_STYLE_URL}
         scaleBarEnabled={false}
         compassEnabled={false}
+        logoEnabled={false}
+        attributionEnabled={false}
       >
         <Mapbox.StyleImport id="basemap" existing config={{ lightPreset }} />
         <Mapbox.Camera
