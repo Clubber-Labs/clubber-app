@@ -3,6 +3,7 @@ import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import type { RegisterInput } from '../../schemas/registerSchema'
 import { formatPhone } from '@/shared/utils/masks'
+import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -11,6 +12,8 @@ type Props = {
 }
 
 export function StepAccount({ control, errors }: Props) {
+  const form = useFormFocus()
+
   return (
     <View className="gap-5">
       <View className="gap-1">
@@ -21,7 +24,7 @@ export function StepAccount({ control, errors }: Props) {
       </View>
 
       <View className="gap-4">
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('username')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Username
           </Text>
@@ -30,6 +33,7 @@ export function StepAccount({ control, errors }: Props) {
             name="username"
             render={({ field: { onChange, value } }) => (
               <TextInput
+                {...form.input('username')}
                 className={`border ${errors.username ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
                 placeholder="joaosilva"
                 placeholderTextColor={colors.contentSubtle}
@@ -46,7 +50,7 @@ export function StepAccount({ control, errors }: Props) {
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('email')}>
           <Text className="text-sm font-medium text-content-tertiary">
             E-mail
           </Text>
@@ -55,6 +59,7 @@ export function StepAccount({ control, errors }: Props) {
             name="email"
             render={({ field: { onChange, value } }) => (
               <TextInput
+                {...form.input('email')}
                 className={`border ${errors.email ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
                 placeholder="joao@email.com"
                 placeholderTextColor={colors.contentSubtle}
@@ -70,7 +75,7 @@ export function StepAccount({ control, errors }: Props) {
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('phone')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Telefone
           </Text>
@@ -79,6 +84,7 @@ export function StepAccount({ control, errors }: Props) {
             name="phone"
             render={({ field: { onChange, value } }) => (
               <TextInput
+                {...form.input('phone')}
                 className={`border ${errors.phone ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
                 placeholder="(11) 99999-9999"
                 placeholderTextColor={colors.contentSubtle}

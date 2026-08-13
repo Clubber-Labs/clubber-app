@@ -51,6 +51,8 @@ export function LocationPreview({
           styleURL={MAP_STYLE_URL}
           scaleBarEnabled={false}
           compassEnabled={false}
+          logoEnabled={false}
+          attributionEnabled={false}
           scrollEnabled={false}
           zoomEnabled={false}
           rotateEnabled={false}

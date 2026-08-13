@@ -46,6 +46,16 @@ const iconColors: Record<Variant, string> = {
   neutral: colors.content,
 }
 
+// Desabilitado é um estado próprio, não opacidade: no tema dark o alpha deixa a
+// pílula transparecendo o fundo e some. Superfície morta + texto apagado leem
+// como "ainda não dá" em qualquer variant.
+const disabledContainer: Record<Variant, string> = {
+  primary: 'bg-surface-elevated',
+  secondary: 'border border-line',
+  destructive: 'bg-surface-elevated',
+  neutral: 'bg-surface',
+}
+
 export function Button({
   label,
   onPress,
@@ -57,6 +67,7 @@ export function Button({
 }: Props) {
   const base = 'rounded-full px-6 items-center justify-center flex-row gap-2'
   const lg = size === 'lg'
+  const off = !!disabled && !loading
 
   return (
     <Pressable
@@ -67,7 +78,7 @@ export function Button({
       // Padding vertical: classe SÓ no md — se py-* e style disputam a mesma
       // propriedade, o css-interop resolve a favor da classe e o lg não
       // cresceria (foi um bug real; o lg usa apenas o inline abaixo).
-      className={`${base} ${lg ? '' : 'py-3'} ${containerStyles[variant]} ${disabled && !loading ? 'opacity-40' : ''}`}
+      className={`${base} ${lg ? '' : 'py-3'} ${off ? disabledContainer[variant] : containerStyles[variant]}`}
       style={lg ? { paddingVertical: 24 } : undefined}
     >
       {loading ? (
@@ -82,10 +93,15 @@ export function Button({
           }
         />
       ) : (
-        IconComponent && <IconComponent size={18} color={iconColors[variant]} />
+        IconComponent && (
+          <IconComponent
+            size={18}
+            color={off ? colors.contentFaint : iconColors[variant]}
+          />
+        )
       )}
       <Text
-        className={`font-semibold text-base ${textStyles[variant]}`}
+        className={`font-semibold text-base ${off ? 'text-content-faint' : textStyles[variant]}`}
         style={lg ? { fontSize: 17, fontWeight: '700' } : undefined}
       >
         {label}

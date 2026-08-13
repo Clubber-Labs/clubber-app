@@ -13,6 +13,8 @@ import { StepIdentity } from './complete-profile-steps/StepIdentity'
 import { StepAccount } from './complete-profile-steps/StepAccount'
 import { StepInterests } from './complete-profile-steps/StepInterests'
 import { Button } from '@/shared/components/Button'
+import { FormSubmitButton } from '@/shared/components/FormSubmitButton'
+import { useFormFocus } from '@/shared/lib/formFocus'
 import { useBanner } from '@/shared/lib/banner'
 import { getApiError, isConflictError } from '@/shared/lib/apiError'
 import { getConflictMessage } from '@/shared/utils/conflictMessage'
@@ -27,6 +29,13 @@ const STEPS: (keyof CompleteProfileInput)[][] = [
   ['name', 'lastname', 'birthdate'],
   ['username', 'phone'],
   ['bio', 'isPrivate', 'preferredCategories', 'preferredSubcategories'],
+]
+
+// Subconjunto do STEPS que precisa estar preenchido pro avanço liberar.
+const STEP_REQUIRED: (keyof CompleteProfileInput)[][] = [
+  ['name', 'lastname', 'birthdate'],
+  ['username', 'phone'],
+  ['preferredCategories'],
 ]
 
 const FIELD_TO_STEP: Partial<Record<keyof CompleteProfileInput, number>> = {
@@ -100,6 +109,7 @@ export function CompleteProfileForm({ profile }: Props) {
     defaultValues: defaultsFromProfile(profile),
   })
 
+  const form = useFormFocus()
   const totalSteps = STEPS.length
   const isLastStep = currentStep === totalSteps - 1
 
@@ -132,8 +142,15 @@ export function CompleteProfileForm({ profile }: Props) {
   }
 
   async function handleNext() {
-    const valid = await trigger(STEPS[currentStep])
-    if (!valid) return
+    const fields = STEPS[currentStep]
+    // Valida campo a campo pra saber QUAIS falharam: o `errors` do render atual
+    // ainda é o de antes do trigger, então não serve pra localizar o erro.
+    const results = await Promise.all(fields.map(name => trigger(name)))
+    const failed = fields.filter((_, index) => !results[index])
+    if (failed.length) {
+      form.focusFirstOf(failed)
+      return
+    }
     goToStep(currentStep + 1, 'forward')
   }
 
@@ -207,14 +224,21 @@ export function CompleteProfileForm({ profile }: Props) {
         )}
         <View className="flex-1">
           {isLastStep ? (
-            <Button
+            <FormSubmitButton
+              control={control}
+              required={STEP_REQUIRED[currentStep]}
               label={isPending ? 'Salvando...' : 'Concluir'}
-              onPress={handleSubmit(onSubmit)}
+              onPress={handleSubmit(onSubmit, form.focusFirstError)}
               loading={isPending}
               disabled={rolesBlocked}
             />
           ) : (
-            <Button label="Continuar" onPress={handleNext} />
+            <FormSubmitButton
+              control={control}
+              required={STEP_REQUIRED[currentStep]}
+              label="Continuar"
+              onPress={handleNext}
+            />
           )}
         </View>
       </View>

@@ -26,7 +26,7 @@ import { runOnJS } from 'react-native-worklets'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { RadiusSlider } from '@/shared/components/RadiusSlider'
-import { useKeyboardSheetLift } from '@/shared/hooks/useKeyboardSheetLift'
+import { useKeyboardOverlap } from '@/shared/hooks/useKeyboardOverlap'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 import {
@@ -76,8 +76,10 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
   const tabBarClearance = useTabBarClearance()
   const headerClearance = useHeaderClearance()
   const { height: windowHeight } = useWindowDimensions()
-  // Levanta a folha acima do teclado no iOS (Android: adjustResize já resolve).
-  const { ref: sheetRef, lift: keyboardLift } = useKeyboardSheetLift()
+  // Mede quanto o teclado cobre da folha no iOS (Android: adjustResize já
+  // resolve). A folha NÃO sobe: fica ancorada embaixo e passa por trás do
+  // teclado — quem recua é só o conteúdo, via padding.
+  const { ref: sheetRef, overlap: keyboardOverlap } = useKeyboardOverlap()
   // Volta pros controles depois de já ter resultados (ajustar raio/intenção).
   const [editing, setEditing] = useState(false)
 
@@ -97,10 +99,9 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
         dragY.value = withSpring(0, { damping: 22, stiffness: 220 })
       }
     })
-  // Combina o arraste com o lift do teclado num só transform da folha.
   const sheetStyle = useAnimatedStyle(
-    () => ({ transform: [{ translateY: dragY.value - keyboardLift }] }),
-    [keyboardLift],
+    () => ({ transform: [{ translateY: dragY.value }] }),
+    [],
   )
 
   const {
@@ -177,7 +178,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
     : 'Combina com seus rolês'
 
   const header = (
-    <View className="gap-3 pb-4">
+    <View className="gap-3 pb-0">
       {!showTakeover && (
         <Text className="text-content-muted text-sm">
           A IA sugere rolês dentro do raio escolhido, com base nas suas
@@ -273,14 +274,14 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
     </View>
   )
 
-  // Teto de altura dinâmico: com o teclado aberto, o lift sobe a folha até o
-  // topo do teclado — sem encolher junto, o topo estourava por baixo do
-  // header e sobrava um buraco sobre o teclado. A folha ocupa no máximo o
-  // vão entre o header flutuante e o teclado.
-  const baseMaxHeight = windowHeight * (showResults ? 0.55 : 0.85)
+  // A folha cresce pelo tanto que o teclado cobre: o trecho visível (acima do
+  // teclado) continua sendo a mesma fração da tela, e o excedente é justamente
+  // o que fica escondido atrás dele. Teto absoluto: o header flutuante.
+  const baseMaxHeight =
+    windowHeight * (showResults ? 0.55 : 0.85) + keyboardOverlap
   const sheetMaxHeight = Math.min(
     baseMaxHeight,
-    Math.max(240, windowHeight - keyboardLift - headerClearance),
+    Math.max(240, windowHeight - headerClearance),
   )
 
   return (
@@ -298,16 +299,17 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
       ]}
     >
       {/* Folha sólida em surface + hairline, alinhada às SheetModal. O padding
-          inferior mantém o conteúdo acima da pílula flutuante — mas SÓ com o
-          teclado fechado: aberto, a pílula fica atrás dele e a folga viraria
-          uma faixa vazia roubando área de scroll. flexShrink (nunca flex: 1!):
-          o pai tem altura automática com teto — base 0 colapsaria a folha,
-          desalinhando o conteúdo e travando o scroll. */}
+          inferior tira o conteúdo de trás do que houver embaixo: a pílula
+          flutuante com o teclado fechado, o próprio teclado com ele aberto — a
+          superfície segue até a borda da tela nos dois casos. flexShrink (nunca
+          flex: 1!): o pai tem altura automática com teto — base 0 colapsaria a
+          folha, desalinhando o conteúdo e travando o scroll. */}
       <View
         className="bg-surface border-t border-white/10"
         style={{
           flexShrink: 1,
-          paddingBottom: keyboardLift > 0 ? 16 : tabBarClearance,
+          paddingBottom:
+            keyboardOverlap > 0 ? keyboardOverlap + 16 : tabBarClearance,
           borderTopLeftRadius: 24,
           borderTopRightRadius: 24,
           overflow: 'hidden',

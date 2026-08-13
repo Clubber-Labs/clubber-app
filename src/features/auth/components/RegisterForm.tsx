@@ -16,6 +16,8 @@ import {
 import { MIN_PREFERRED_CATEGORIES } from '@/shared/utils/rolePreferences'
 import { useRegister } from '../hooks/useRegister'
 import { Button } from '@/shared/components/Button'
+import { FormSubmitButton } from '@/shared/components/FormSubmitButton'
+import { useFormFocus } from '@/shared/lib/formFocus'
 import { RegisterProgressBar } from './RegisterProgressBar'
 import { StepPersonal } from './steps/StepPersonal'
 import { StepAccount } from './steps/StepAccount'
@@ -30,6 +32,16 @@ const STEPS: (keyof RegisterInput)[][] = [
   ['password', 'confirmPassword'],
   ['bio', 'isPrivate', 'preferredCategories'],
   ['termsAccepted', 'consents'],
+]
+
+// Subconjunto do STEPS que precisa estar preenchido pro avanço liberar — o que
+// fica de fora é opcional (bio) ou já tem default (isPrivate, consents).
+const STEP_REQUIRED: (keyof RegisterInput)[][] = [
+  ['name', 'lastname', 'birthdate'],
+  ['username', 'email', 'phone'],
+  ['password', 'confirmPassword'],
+  ['preferredCategories'],
+  ['termsAccepted'],
 ]
 
 const FIELD_TO_STEP: Partial<Record<keyof RegisterInput, number>> = {
@@ -98,6 +110,7 @@ export function RegisterForm() {
     },
   })
 
+  const form = useFormFocus()
   const totalSteps = STEPS.length
   const isLastStep = currentStep === totalSteps - 1
 
@@ -131,8 +144,15 @@ export function RegisterForm() {
   }
 
   async function handleNext() {
-    const valid = await trigger(STEPS[currentStep])
-    if (!valid) return
+    const fields = STEPS[currentStep]
+    // Valida campo a campo pra saber QUAIS falharam: o `errors` do render atual
+    // ainda é o de antes do trigger, então não serve pra localizar o erro.
+    const results = await Promise.all(fields.map(name => trigger(name)))
+    const failed = fields.filter((_, index) => !results[index])
+    if (failed.length) {
+      form.focusFirstOf(failed)
+      return
+    }
     goToStep(currentStep + 1, 'forward')
   }
 
@@ -196,16 +216,20 @@ export function RegisterForm() {
           )}
           <View className="flex-1">
             {isLastStep ? (
-              <Button
+              <FormSubmitButton
+                control={control}
+                required={STEP_REQUIRED[currentStep]}
                 label={isPending ? 'Criando conta...' : 'Criar conta'}
                 onPress={handleSubmit(data => {
                   setGenericError(null)
                   register(data, { onError: handleApiError })
-                })}
+                }, form.focusFirstError)}
                 loading={isPending}
               />
             ) : (
-              <Button
+              <FormSubmitButton
+                control={control}
+                required={STEP_REQUIRED[currentStep]}
                 label="Continuar"
                 onPress={handleNext}
                 disabled={rolesStepBlocked}

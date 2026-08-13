@@ -6,6 +6,8 @@ import { AuthDivider } from '@/features/auth/components/AuthDivider'
 import { SocialLoginButtons } from '@/features/auth/components/SocialLoginButtons'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useBanner } from '@/shared/lib/banner'
+import { FormFocusProvider } from '@/shared/lib/formFocus'
+import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
 import { deleteOnboardingSeen } from '@/shared/lib/secureStore'
 import { BrandSticker } from '@/shared/components/brand'
 
@@ -18,6 +20,7 @@ export default function LoginScreen() {
   const setOnboardingSeen = useAuthStore(s => s.setOnboardingSeen)
   const showBanner = useBanner()
   const router = useRouter()
+  const form = useKeyboardAwareForm()
 
   // Atalho escondido de rever a apresentação (útil pra QA em aparelho físico,
   // onde não dá pra limpar o Keychain por fora): segurar o sticker zera o
@@ -37,41 +40,43 @@ export default function LoginScreen() {
   }, [sessionExpired, showBanner, acknowledgeExpired])
 
   return (
-    <ScrollView
-      className="flex-1 bg-background"
-      contentContainerStyle={{
-        flexGrow: 1,
-        justifyContent: 'center',
-        padding: 24,
-      }}
-      keyboardShouldPersistTaps="handled"
-    >
-      {/* Marca: sticker centrado — a única presença do b na tela. */}
-      <View className="items-center mb-10">
-        <Pressable onLongPress={replayOnboarding} delayLongPress={600}>
-          <BrandSticker size={216} />
-        </Pressable>
-      </View>
+    <FormFocusProvider value={form}>
+      <ScrollView
+        {...form.scrollProps}
+        className="flex-1 bg-background"
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: 'center',
+          padding: 24,
+        }}
+      >
+        {/* Marca: sticker centrado — a única presença do b na tela. */}
+        <View className="items-center mb-10">
+          <Pressable onLongPress={replayOnboarding} delayLongPress={600}>
+            <BrandSticker size={216} />
+          </Pressable>
+        </View>
 
-      <Text className="text-3xl font-bold text-content mb-2">
-        Bem-vindo de volta
-      </Text>
-      <Text className="text-content-muted mb-8">
-        Entre na sua conta para continuar
-      </Text>
+        <Text className="text-3xl font-bold text-content mb-2">
+          Bem-vindo de volta
+        </Text>
+        <Text className="text-content-muted mb-8">
+          Entre na sua conta para continuar
+        </Text>
 
-      <LoginForm defaultEmail={defaultEmail} />
+        <LoginForm defaultEmail={defaultEmail} />
 
-      <AuthDivider />
+        <AuthDivider />
 
-      <SocialLoginButtons />
+        <SocialLoginButtons />
 
-      <View className="flex-row justify-center mt-6 gap-1">
-        <Text className="text-content-muted">Não tem uma conta?</Text>
-        <Link href="/(auth)/register">
-          <Text className="text-brand-text font-semibold">Cadastre-se</Text>
-        </Link>
-      </View>
-    </ScrollView>
+        <View className="flex-row justify-center mt-6 gap-1">
+          <Text className="text-content-muted">Não tem uma conta?</Text>
+          <Link href="/(auth)/register">
+            <Text className="text-brand-text font-semibold">Cadastre-se</Text>
+          </Link>
+        </View>
+      </ScrollView>
+    </FormFocusProvider>
   )
 }

@@ -3,6 +3,7 @@ import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import { formatPhone } from '@/shared/utils/masks'
 import type { CompleteProfileInput } from '../../schemas/completeProfileSchema'
+import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -12,6 +13,8 @@ type Props = {
 }
 
 export function StepAccount({ control, errors, email }: Props) {
+  const form = useFormFocus()
+
   return (
     <View className="gap-5">
       <View className="gap-1">
@@ -33,7 +36,7 @@ export function StepAccount({ control, errors, email }: Props) {
           </View>
         )}
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('username')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Nome de usuário
           </Text>
@@ -42,6 +45,7 @@ export function StepAccount({ control, errors, email }: Props) {
             name="username"
             render={({ field: { onChange, value, onBlur } }) => (
               <TextInput
+                {...form.input('username')}
                 className={`border ${errors.username ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
                 placeholder="joaosilva"
                 placeholderTextColor={colors.contentSubtle}
@@ -59,7 +63,7 @@ export function StepAccount({ control, errors, email }: Props) {
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('phone')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Telefone
           </Text>
@@ -68,6 +72,7 @@ export function StepAccount({ control, errors, email }: Props) {
             name="phone"
             render={({ field: { onChange, value, onBlur } }) => (
               <TextInput
+                {...form.input('phone')}
                 className={`border ${errors.phone ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
                 placeholder="(11) 99999-9999"
                 placeholderTextColor={colors.contentSubtle}

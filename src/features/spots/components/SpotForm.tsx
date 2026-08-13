@@ -14,10 +14,10 @@ import {
   UsersIcon,
   ChatCircleIcon,
 } from 'phosphor-react-native'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type Path } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { ReactNode } from 'react'
-import { Button } from '@/shared/components/Button'
+import { FormSubmitButton } from '@/shared/components/FormSubmitButton'
 import { FormError } from '@/shared/components/FormError'
 import { DatePicker } from '@/shared/components/DatePicker'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
@@ -28,7 +28,17 @@ import {
   type CreateSpotInput,
 } from '../schemas/createSpotSchema'
 import { spotPresetWindow, type SpotTimePreset } from '../utils/spotTimePresets'
+import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
 import { colors } from '@/shared/theme'
+
+// Identidade estável: o useWatch do FormSubmitButton tem `name` nas deps do
+// efeito de subscrição, e um literal inline re-assinaria a cada tecla digitada.
+const REQUIRED_FIELDS: Path<CreateSpotInput>[] = [
+  'title',
+  'categories',
+  'startsAt',
+  'endsAt',
+]
 
 const MAX_CATEGORIES = 5
 
@@ -93,6 +103,7 @@ export function SpotForm({
 
   const startsAt = watch('startsAt')
   const selectedCategories = watch('categories')
+  const form = useKeyboardAwareForm()
 
   return (
     <KeyboardAvoidingView
@@ -100,12 +111,12 @@ export function SpotForm({
       className="flex-1"
     >
       <ScrollView
+        {...form.scrollProps}
         contentContainerStyle={{ padding: 20, paddingBottom: 40, gap: 20 }}
-        keyboardShouldPersistTaps="handled"
       >
         {headerSection}
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('title')}>
           <View className="flex-row items-center justify-between">
             <Text className="text-sm font-medium text-content-tertiary">
               Título
@@ -122,6 +133,7 @@ export function SpotForm({
             name="title"
             render={({ field: { onChange, value } }) => (
               <TextInput
+                {...form.input('title')}
                 className={`border ${errors.title ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                 placeholder="Como você chamaria esse rolê?"
                 placeholderTextColor={colors.contentSubtle}
@@ -135,7 +147,7 @@ export function SpotForm({
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('description')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Descrição{' '}
             <Text className="text-content-subtle text-xs">(opcional)</Text>
@@ -145,6 +157,7 @@ export function SpotForm({
             name="description"
             render={({ field: { onChange, value } }) => (
               <TextInput
+                {...form.input('description')}
                 className={`border ${errors.description ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content min-h-[96px]`}
                 placeholder="Combina os detalhes com a galera..."
                 placeholderTextColor={colors.contentSubtle}
@@ -162,7 +175,7 @@ export function SpotForm({
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('startsAt')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Quando
           </Text>
@@ -225,7 +238,7 @@ export function SpotForm({
                   </Text>
                 )}
               </View>
-              <View className="gap-1">
+              <View className="gap-1" {...form.anchor('endsAt')}>
                 <Text className="text-sm font-medium text-content-tertiary">
                   Termina
                 </Text>
@@ -259,7 +272,7 @@ export function SpotForm({
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('categories')}>
           <View className="flex-row items-center justify-between">
             <Text className="text-sm font-medium text-content-tertiary">
               Categorias
@@ -284,7 +297,7 @@ export function SpotForm({
           )}
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('subcategories')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Interesses{' '}
             <Text className="text-content-subtle text-xs">(opcional)</Text>
@@ -365,10 +378,12 @@ export function SpotForm({
             do rolê
           </Text>
         </View>
-        <Button
+        <FormSubmitButton
+          control={control}
+          required={REQUIRED_FIELDS}
           label={submitting ? 'Publicando...' : 'Publicar rolê'}
           icon={SparkleIcon}
-          onPress={handleSubmit(onSubmit)}
+          onPress={handleSubmit(onSubmit, form.focusFirstError)}
           loading={submitting}
         />
       </View>

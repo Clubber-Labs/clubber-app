@@ -3,6 +3,7 @@ import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import type { RegisterInput } from '../../schemas/registerSchema'
 import { DatePicker } from '@/shared/components/DatePicker'
+import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -11,6 +12,7 @@ type Props = {
 }
 
 export function StepPersonal({ control, errors }: Props) {
+  const form = useFormFocus()
   const maxBirthdate = new Date()
   maxBirthdate.setFullYear(maxBirthdate.getFullYear() - 16)
 
@@ -25,7 +27,7 @@ export function StepPersonal({ control, errors }: Props) {
 
       <View className="gap-4">
         <View className="flex-row gap-3">
-          <View className="flex-1 gap-1">
+          <View className="flex-1 gap-1" {...form.anchor('name')}>
             <Text className="text-sm font-medium text-content-tertiary">
               Nome
             </Text>
@@ -34,6 +36,7 @@ export function StepPersonal({ control, errors }: Props) {
               name="name"
               render={({ field: { onChange, value } }) => (
                 <TextInput
+                  {...form.input('name')}
                   className={`border ${errors.name ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                   placeholder="João"
                   placeholderTextColor={colors.contentSubtle}
@@ -50,7 +53,7 @@ export function StepPersonal({ control, errors }: Props) {
             )}
           </View>
 
-          <View className="flex-1 gap-1">
+          <View className="flex-1 gap-1" {...form.anchor('lastname')}>
             <Text className="text-sm font-medium text-content-tertiary">
               Sobrenome
             </Text>
@@ -59,6 +62,7 @@ export function StepPersonal({ control, errors }: Props) {
               name="lastname"
               render={({ field: { onChange, value } }) => (
                 <TextInput
+                  {...form.input('lastname')}
                   className={`border ${errors.lastname ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                   placeholder="Silva"
                   placeholderTextColor={colors.contentSubtle}
@@ -76,7 +80,7 @@ export function StepPersonal({ control, errors }: Props) {
           </View>
         </View>
 
-        <View className="gap-1">
+        <View className="gap-1" {...form.anchor('birthdate')}>
           <Text className="text-sm font-medium text-content-tertiary">
             Data de nascimento
           </Text>

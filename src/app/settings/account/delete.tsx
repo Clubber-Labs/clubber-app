@@ -19,6 +19,7 @@ import {
   type DeleteReason,
 } from '@/features/account/utils/deleteReasons'
 import { getApiError, isTooManyRequestsError } from '@/shared/lib/apiError'
+import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
 import { formatShortDate } from '@/shared/utils/dateFormat'
 import { DeleteReasonStep } from '@/features/account/components/DeleteReasonStep'
 import { DataLossWarning } from '@/features/account/components/DataLossWarning'
@@ -35,6 +36,7 @@ export default function DeleteAccountScreen() {
   const deleteAccount = useDeleteAccount()
   const confirm = useConfirm()
   const { exportData, exporting, error: exportError } = useExportConsentData()
+  const form = useKeyboardAwareForm()
 
   const [step, setStep] = useState<Step>('reason')
   const [reason, setReason] = useState<DeleteReason | null>(null)
@@ -150,8 +152,8 @@ export default function DeleteAccountScreen() {
       style={{ flex: 1, backgroundColor: colors.background }}
     >
       <ScrollView
+        {...form.scrollProps}
         contentContainerStyle={{ padding: 20, paddingBottom: 40 }}
-        keyboardShouldPersistTaps="handled"
       >
         {step === 'reason' && (
           <DeleteReasonStep
