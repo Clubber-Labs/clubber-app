@@ -1,7 +1,11 @@
 import { View, Text, TextInput } from 'react-native'
-import { Controller } from 'react-hook-form'
+import { Controller, useWatch } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import type { RegisterInput } from '../../schemas/registerSchema'
+import {
+  useUsernameAvailability,
+  type UsernameAvailability,
+} from '@/features/users/hooks/useUsernameAvailability'
 import { formatPhone } from '@/shared/utils/masks'
 import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
@@ -11,8 +15,31 @@ type Props = {
   errors: FieldErrors<RegisterInput>
 }
 
+const AVAILABILITY_TEXT: Record<
+  Exclude<UsernameAvailability, 'idle'>,
+  { label: string; className: string }
+> = {
+  checking: {
+    label: 'Verificando disponibilidade...',
+    className: 'text-content-subtle',
+  },
+  available: { label: 'Disponível', className: 'text-success-text' },
+  taken: {
+    label: 'Este nome de usuário já está em uso.',
+    className: 'text-content',
+  },
+}
+
 export function StepAccount({ control, errors }: Props) {
   const form = useFormFocus()
+  // O watch mora nesta etapa, e não no RegisterForm, pra digitar no username
+  // re-renderizar só aqui — mesma razão do FormSubmitButton assinar apenas os
+  // campos obrigatórios em vez de o formulário inteiro.
+  const username = useWatch({ control, name: 'username' }) ?? ''
+  const availability = useUsernameAvailability(username)
+  // Erro de formato do Zod tem precedência: o campo nunca mostra dois estados.
+  const showAvailability = !errors.username && availability !== 'idle'
+  const usernameFlagged = !!errors.username || availability === 'taken'
 
   return (
     <View className="gap-5">
@@ -34,7 +61,7 @@ export function StepAccount({ control, errors }: Props) {
             render={({ field: { onChange, value } }) => (
               <TextInput
                 {...form.input('username')}
-                className={`border ${errors.username ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
+                className={`border ${usernameFlagged ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
                 placeholder="joaosilva"
                 placeholderTextColor={colors.contentSubtle}
                 onChangeText={onChange}
@@ -46,6 +73,13 @@ export function StepAccount({ control, errors }: Props) {
           {errors.username && (
             <Text className="text-content text-xs">
               {errors.username.message}
+            </Text>
+          )}
+          {showAvailability && (
+            <Text
+              className={`text-xs ${AVAILABILITY_TEXT[availability].className}`}
+            >
+              {AVAILABILITY_TEXT[availability].label}
             </Text>
           )}
         </View>
