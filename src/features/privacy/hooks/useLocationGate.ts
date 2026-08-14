@@ -1,13 +1,12 @@
 import { useCallback } from 'react'
-import { useConfirm } from '@/shared/lib/confirm'
 import { syncConsentMirror } from '../lib/consentMirror'
 import { useConsentedLocation } from './useConsentedLocation'
 
 /**
  * Desfecho de uma tentativa de obter localização.
- * `refused` = a pessoa disse não (ao priming ou ao prompt do sistema, que ainda
- * pode voltar) — insistir seria assédio. `denied` = negativa definitiva do SO:
- * só os ajustes resolvem. `revoked` = Art. 18: resolve-se dentro do app.
+ * `refused` = a pessoa dispensou o prompt do sistema, que ainda pode voltar —
+ * insistir seria assédio. `denied` = negativa definitiva do SO: só os ajustes
+ * resolvem. `revoked` = Art. 18: resolve-se dentro do app.
  */
 export type LocationGateResult =
   | 'ready'
@@ -16,28 +15,21 @@ export type LocationGateResult =
   | 'revoked'
   | 'error'
 
-type PrimingPrompt = { title: string; message: string }
-
 /**
- * Porta de entrada da localização: priming antes do prompt nativo, e espelho
- * depois dele.
+ * Acesso à localização com espelho automático.
  *
- * O priming existe porque no iOS o prompt do sistema aparece UMA vez — negado,
- * o único caminho de volta são os Ajustes. Quem recusa o priming não queima
- * essa chance: dá pra perguntar de novo em outro contexto.
+ * O priming NÃO mora aqui: quem convida é a UI (o card e o banner do mapa), que
+ * mostra o valor com o mapa na tela. Um confirm genérico antes do prompt do
+ * sistema só somava um passo — eram dois pedidos seguidos pela mesma coisa.
  */
 export function useLocationGate() {
   const { coords, status, request } = useConsentedLocation()
-  const confirm = useConfirm()
 
-  /**
-   * Dispara o prompt nativo direto, SEM o confirm. Para quem já é o priming —
-   * o card do mapa, por exemplo: dois pedidos seguidos pela mesma coisa.
-   */
+  /** Dispara o prompt nativo e espelha o desfecho no servidor. */
   const grant = useCallback(async (): Promise<LocationGateResult> => {
     const result = await request()
-    // Espelha o desfecho no servidor — concedido ou negado, os dois são
-    // estado do dispositivo que o backend precisa conhecer.
+    // Concedido ou negado, os dois são estado do dispositivo que o backend
+    // precisa conhecer.
     void syncConsentMirror()
 
     if (result === 'ready') return 'ready'
@@ -47,18 +39,5 @@ export function useLocationGate() {
     return 'refused'
   }, [request])
 
-  const ensure = useCallback(
-    async (prompt: PrimingPrompt): Promise<LocationGateResult> => {
-      if (status === 'ready') return 'ready'
-      if (status === 'revoked') return 'revoked'
-      if (status === 'denied') return 'denied'
-
-      const ok = await confirm({ ...prompt, confirmLabel: 'Permitir' })
-      if (!ok) return 'refused'
-      return grant()
-    },
-    [status, confirm, grant],
-  )
-
-  return { coords, status, ensure, grant }
+  return { coords, status, grant }
 }

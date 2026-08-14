@@ -35,6 +35,7 @@ import { EventHeatmapLayer } from '@/features/map/components/EventHeatmapLayer'
 import { EventMarkers } from '@/features/map/components/EventMarkers'
 import { EventPreviewCard } from '@/features/map/components/EventPreviewCard'
 import { LocationInviteCard } from '@/features/map/components/LocationInviteCard'
+import { LocationOffBanner } from '@/features/map/components/LocationOffBanner'
 import { useLocationInvite } from '@/features/map/hooks/useLocationInvite'
 import { MapStatusBanner } from '@/features/map/components/MapStatusBanner'
 import { MapSearchBar } from '@/features/map/components/MapSearchBar'
@@ -68,7 +69,6 @@ export default function MapScreen() {
   const {
     coords: userCoords,
     status: locationStatus,
-    ensure: ensureLocation,
     grant: grantLocation,
   } = useLocationGate()
   const locationInvite = useLocationInvite(locationStatus)
@@ -213,32 +213,41 @@ export default function MapScreen() {
     focusOnEvent([spot.longitude, spot.latitude])
   }
 
+  /**
+   * Caminho ÚNICO pra pedir acesso à localização — card, banner e o botão de
+   * centralizar entram todos por aqui. Antes cada um tinha seu próprio pedido,
+   * e o fluxo ficava impossível de prever.
+   */
+  async function requestLocationAccess() {
+    if (locationStatus === 'denied') {
+      showBanner('Ative a localização nos ajustes para ver você no mapa.')
+      Linking.openSettings()
+      return
+    }
+    if (locationStatus === 'revoked') {
+      // Revogação se desfaz no app, não nos ajustes do sistema — mandar pra lá
+      // faria a pessoa ativar a permissão e continuar sem ver nada.
+      showBanner('Você revogou seus consentimentos. Revise em Privacidade.')
+      router.push('/profile/privacy')
+      return
+    }
+    const result = await grantLocation()
+    if (result === 'denied') {
+      showBanner('Ative a localização nos ajustes para ver você no mapa.')
+      Linking.openSettings()
+    } else if (result === 'error') {
+      showBanner('Não foi possível obter sua localização.')
+    }
+  }
+
   // Centraliza na posição ATUAL (live), com fallback pro fix inicial. Sem
-  // coords, ESTE toque é o gesto que autoriza pedir — a coreografia de
-  // consentimento e permissão fica no useLocationGate; aqui ficam só o texto do
-  // pedido, a câmera e o que fazer com cada desfecho.
+  // coords, o toque vira o pedido de acesso.
   async function recenter() {
     if (myPos) {
       flyTo(myPos, USER_ZOOM, 600)
       return
     }
-    const result = await ensureLocation({
-      title: 'Mostrar você no mapa',
-      message:
-        'Para isso precisamos usar sua localização precisa. Você pode desligar quando quiser em Perfil → Privacidade.',
-    })
-    // 'refused' sai em silêncio: a pessoa acabou de dizer não.
-    if (result === 'denied') {
-      showBanner('Ative a localização nos ajustes para ver você no mapa.')
-      Linking.openSettings()
-    } else if (result === 'revoked') {
-      // Revogação se desfaz no app, não nos ajustes do sistema — mandar pra lá
-      // faria a pessoa ativar a permissão e continuar sem ver nada.
-      showBanner('Você revogou seus consentimentos. Revise em Privacidade.')
-      router.push('/profile/privacy')
-    } else if (result === 'error') {
-      showBanner('Não foi possível obter sua localização.')
-    }
+    await requestLocationAccess()
   }
 
   function expandCluster(cluster: EventCluster) {
@@ -374,6 +383,16 @@ export default function MapScreen() {
         />
       )}
 
+      {locationStatus !== 'ready' &&
+        locationStatus !== 'loading' &&
+        !locationInvite.visible &&
+        !error && (
+          <LocationOffBanner
+            top={headerClearance + 8}
+            onPress={() => void requestLocationAccess()}
+          />
+        )}
+
       {!selectedEvent && !selectedSpot && !suggestionsOpen && (
         <>
           <MapZoomControls
@@ -402,10 +421,10 @@ export default function MapScreen() {
       {locationInvite.visible && !selectedEvent && !selectedSpot && (
         <LocationInviteCard
           onEnable={() => {
-            locationInvite.dismiss()
-            void grantLocation()
+            locationInvite.hide()
+            void requestLocationAccess()
           }}
-          onDismiss={locationInvite.dismiss}
+          onDismiss={locationInvite.hide}
         />
       )}
 
