@@ -6,7 +6,7 @@ import {
   useUsernameAvailability,
   type UsernameAvailability,
 } from '@/features/users/hooks/useUsernameAvailability'
-import { formatPhone } from '@/shared/utils/masks'
+import { formatPhone, phoneDigits } from '@/shared/utils/masks'
 import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
 
@@ -114,7 +114,7 @@ export function StepAccount({ control, errors }: Props) {
                 className={`border ${errors.phone ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
                 placeholder="(11) 99999-9999"
                 placeholderTextColor={colors.contentSubtle}
-                onChangeText={text => onChange(text.replace(/\D/g, ''))}
+                onChangeText={text => onChange(phoneDigits(text))}
                 value={formatPhone(value ?? '')}
                 keyboardType="phone-pad"
               />

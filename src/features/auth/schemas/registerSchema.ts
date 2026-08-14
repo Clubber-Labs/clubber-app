@@ -7,6 +7,7 @@ import {
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
 } from '@/shared/utils/username'
+import { PHONE_MAX_DIGITS } from '@/shared/utils/masks'
 
 // Um objeto por etapa do formulário. O aceite dos documentos NÃO é campo daqui:
 // o backend registra na transação do cadastro, e a tela só informa (LegalNotice).
@@ -50,7 +51,7 @@ const accountStep = z.object({
   phone: z
     .string()
     .min(10, 'Mínimo 10 dígitos')
-    .max(11, 'Máximo 11 dígitos')
+    .max(PHONE_MAX_DIGITS, `Máximo ${PHONE_MAX_DIGITS} dígitos`)
     .regex(/^\d+$/, 'Apenas números'),
 })
 
