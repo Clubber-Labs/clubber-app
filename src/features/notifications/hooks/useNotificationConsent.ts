@@ -18,10 +18,12 @@ export function useNotificationConsent() {
   const osPermissions = useOsPermissions()
   const refreshOsPermissions = osPermissions.refresh
 
+  // Só 'undetermined' abre prompt. Concedida ou negada de vez, pedir de novo
+  // NÃO mostra nada: a chamada resolve na hora e o toque parece morto. Nesses
+  // dois casos o que resta é o ajuste do sistema — inclusive pra desligar, que
+  // é o que a pessoa quer quando toca num item já ativado.
   const enableNotifications = useCallback(async () => {
-    // 'denied' aqui é definitivo (o useOsPermissions já resolve canAskAgain):
-    // pedir de novo não abre prompt nenhum, só os Ajustes resolvem.
-    if (osPermissions.push === 'denied') {
+    if (osPermissions.push !== 'undetermined') {
       Linking.openSettings()
       return
     }
@@ -31,7 +33,7 @@ export function useNotificationConsent() {
   }, [osPermissions.push, refreshOsPermissions])
 
   const enableLocation = useCallback(async () => {
-    if (osPermissions.location === 'denied') {
+    if (osPermissions.location !== 'undetermined') {
       Linking.openSettings()
       return
     }
