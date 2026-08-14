@@ -365,10 +365,13 @@ export default function MapScreen() {
         </View>
       )}
 
+      {/* Um aviso por vez nessa faixa: o de truncamento reage ao zoom que a
+          pessoa acabou de dar, enquanto este fica enquanto faltar permissão. */}
       {locationStatus !== 'ready' &&
         locationStatus !== 'loading' &&
         !locationInvite.visible &&
         !isLoading &&
+        !truncated &&
         !error && (
           <MapStatusBanner
             icon={GpsSlashIcon}

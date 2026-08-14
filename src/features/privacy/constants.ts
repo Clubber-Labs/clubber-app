@@ -8,32 +8,13 @@ export const DEFAULT_CONSENT_FIELDS: ConsentFields = {
 }
 
 /**
- * A tela de privacidade separa os controles em três blocos porque são três
- * naturezas diferentes — misturar tudo numa lista de switches iguais é o erro
- * que faz o usuário arrastar um toggle que o app não consegue honrar.
+ * A tela de privacidade separa os controles por natureza — misturar tudo numa
+ * lista de switches iguais é o erro que faz o usuário arrastar um toggle que o
+ * app não consegue honrar. As permissões do dispositivo não têm lista aqui: o
+ * rótulo delas vive na tela, junto do estado lido do SO (DevicePermissionRow).
  */
 
-/** Bloco 1 — quem decide é o SO. O app mostra estado e leva aos Ajustes. */
-export const DEVICE_PERMISSION_ITEMS: {
-  key: 'locationPrecise' | 'pushNotifications'
-  label: string
-  description: string
-}[] = [
-  {
-    key: 'locationPrecise',
-    label: 'Localização',
-    description:
-      'Mostra rolês perto de você no mapa e avisa quando algo acontece por perto.',
-  },
-  {
-    key: 'pushNotifications',
-    label: 'Notificações',
-    description:
-      'Convites, atividade de quem você segue e avisos dos rolês que você confirmou.',
-  },
-]
-
-/** Bloco 2 — consentimento de verdade: opt-in, desligado por padrão. */
+/** Consentimento de verdade: opt-in, desligado por padrão. */
 export const COMMUNICATION_ITEMS: {
   key: 'marketing' | 'surveys'
   label: string
