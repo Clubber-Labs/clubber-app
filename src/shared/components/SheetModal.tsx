@@ -17,11 +17,12 @@ type Props = {
   visible: boolean
   onClose: () => void
   children: ReactNode
+  instantExit?: boolean
 }
 
 // Bottom sheet imperativo simples (dark theme), no espírito do confirm.tsx.
 // Tap no backdrop fecha; tap no conteúdo não propaga. Genérico — qualquer feature.
-export function SheetModal({ visible, onClose, children }: Props) {
+export function SheetModal({ visible, onClose, children, instantExit }: Props) {
   // Arrastar a alça pra baixo fecha: segue o dedo; além do limiar (ou num flick),
   // fecha — o slide do Modal cuida da saída. Reseta ao reabrir.
   const dragY = useSharedValue(0)
@@ -49,7 +50,7 @@ export function SheetModal({ visible, onClose, children }: Props) {
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType={instantExit ? 'none' : 'slide'}
       onRequestClose={onClose}
     >
       {/* No Android o Modal abre numa Dialog própria, fora do

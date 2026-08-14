@@ -29,6 +29,7 @@ import { SheetModal } from '@/shared/components/SheetModal'
 import { CategoryBadge } from '@/shared/components/CategoryBadge'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { SpotLocationMap } from '@/features/spots/components/SpotLocationMap'
+import { useSheetExit } from '@/shared/hooks/useSheetExit'
 import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { useSpot } from '@/features/spots/hooks/useSpot'
@@ -61,7 +62,7 @@ export default function SpotDetailScreen() {
   const [renewError, setRenewError] = useState<string | null>(null)
   // 429 no renovar (mesma cota diária do gerar) → folha de cota esgotada com
   // upsell, em vez de erro inline.
-  const [renewQuotaReached, setRenewQuotaReached] = useState(false)
+  const quotaSheet = useSheetExit()
   const { data: profile } = useMyProfile()
   const isPremium = !!profile?.isPremium
   const highlightRenew = renewParam === '1'
@@ -121,7 +122,7 @@ export default function SpotDetailScreen() {
       // upsell do Premium, igual ao fluxo de sugestões. 409 (cancelado/
       // encerrado) e demais ficam inline.
       onError: err => {
-        if (isTooManyRequestsError(err)) setRenewQuotaReached(true)
+        if (isTooManyRequestsError(err)) quotaSheet.open()
         else setRenewError(getApiError(err).message)
       },
     })
@@ -286,20 +287,19 @@ export default function SpotDetailScreen() {
       </ScrollView>
 
       <SheetModal
-        visible={renewQuotaReached}
-        onClose={() => setRenewQuotaReached(false)}
+        visible={quotaSheet.visible}
+        onClose={quotaSheet.close}
+        instantExit={quotaSheet.instantExit}
       >
         <View className="px-5 pb-2">
           <SpotQuotaExhausted
             isPremium={isPremium}
-            onUpgrade={() => {
-              setRenewQuotaReached(false)
-              router.push('/billing/upgrade')
-            }}
-            onSeeMap={() => {
-              setRenewQuotaReached(false)
-              router.replace('/(tabs)/map')
-            }}
+            onUpgrade={() =>
+              quotaSheet.exitTo(() => router.push('/billing/upgrade'))
+            }
+            onSeeMap={() =>
+              quotaSheet.exitTo(() => router.replace('/(tabs)/map'))
+            }
           />
         </View>
       </SheetModal>
