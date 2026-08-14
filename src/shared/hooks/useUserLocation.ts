@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { AppState } from 'react-native'
 import * as Location from 'expo-location'
 
 type Coords = [number, number]
@@ -31,6 +32,9 @@ export function useUserLocation(): Result {
   const [coords, setCoords] = useState<Coords | null>(null)
   const [status, setStatus] = useState<LocationStatus>('loading')
   const mounted = useRef(true)
+  // Lido dentro do listener de AppState, que é assinado uma vez só.
+  const statusRef = useRef<LocationStatus>('loading')
+  statusRef.current = status
 
   useEffect(() => {
     mounted.current = true
@@ -69,6 +73,20 @@ export function useUserLocation(): Result {
 
   useEffect(() => {
     void resolve(false)
+  }, [resolve])
+
+  // A permissão pode ser concedida FORA do app, nos Ajustes do sistema — e o
+  // mapa é uma aba, que não desmonta. Sem reler no foreground, a concessão só
+  // aparecia depois de matar e reabrir o app.
+  // Só relê quando ainda não está pronta: com 'ready' quem acompanha a posição
+  // é o useUserLiveLocation, e reler aqui gastaria GPS a cada volta ao app.
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', state => {
+      if (state === 'active' && statusRef.current !== 'ready') {
+        void resolve(false)
+      }
+    })
+    return () => subscription.remove()
   }, [resolve])
 
   const request = useCallback(() => resolve(true), [resolve])

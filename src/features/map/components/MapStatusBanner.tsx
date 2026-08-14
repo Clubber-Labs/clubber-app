@@ -27,13 +27,15 @@ export function MapStatusBanner({
   return (
     <Container
       onPress={onPress}
-      className={`absolute ${top === undefined ? 'top-16' : ''} self-center max-w-[92%] px-3 py-1.5 rounded-lg border flex-row items-center gap-1.5 bg-surface/90 border-line-strong ${
+      className={`absolute ${top === undefined ? 'top-16' : ''} self-center max-w-[92%] px-3 py-2 rounded-lg border flex-row items-center gap-1.5 bg-surface/90 border-line-strong ${
         onPress ? 'active:opacity-70' : ''
       }`}
       style={top === undefined ? undefined : { top }}
     >
       <StatusIcon size={14} color={colors.content} weight="fill" />
-      <Text className="shrink text-xs text-content leading-4">{message}</Text>
+      <Text className="shrink text-xs text-content text-center leading-4">
+        {message}
+      </Text>
     </Container>
   )
 }

@@ -372,8 +372,8 @@ export default function MapScreen() {
         !error && (
           <MapStatusBanner
             icon={GpsSlashIcon}
-            top={headerClearance + 84}
-            message="Sua posição é exibida somente para você. Habilite sua localização no mapa e descubra eventos e rolês perto de você."
+            top={headerClearance + 92}
+            message="Sua posição é exibida somente para você. Habilite sua localização no mapa e descubra rolês e eventos perto de você."
             onPress={() => void requestLocationAccess()}
           />
         )}
