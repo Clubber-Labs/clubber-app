@@ -35,7 +35,6 @@ import { EventHeatmapLayer } from '@/features/map/components/EventHeatmapLayer'
 import { EventMarkers } from '@/features/map/components/EventMarkers'
 import { EventPreviewCard } from '@/features/map/components/EventPreviewCard'
 import { LocationInviteCard } from '@/features/map/components/LocationInviteCard'
-import { LocationOffBanner } from '@/features/map/components/LocationOffBanner'
 import { useLocationInvite } from '@/features/map/hooks/useLocationInvite'
 import { MapStatusBanner } from '@/features/map/components/MapStatusBanner'
 import { MapSearchBar } from '@/features/map/components/MapSearchBar'
@@ -382,16 +381,6 @@ export default function MapScreen() {
           message="Não foi possível carregar os eventos."
         />
       )}
-
-      {locationStatus !== 'ready' &&
-        locationStatus !== 'loading' &&
-        !locationInvite.visible &&
-        !error && (
-          <LocationOffBanner
-            top={headerClearance + 8}
-            onPress={() => void requestLocationAccess()}
-          />
-        )}
 
       {!selectedEvent && !selectedSpot && !suggestionsOpen && (
         <>
