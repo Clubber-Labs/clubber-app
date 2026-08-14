@@ -5,21 +5,27 @@ import { BrandSticker } from './BrandSticker'
 // Wordmark "clu[b]ber" — Sora Bold com o primeiro b como sticker.
 // height = tamanho da fonte; o sticker escala junto (1.2x).
 // Requer Sora_700Bold carregada no _layout raiz (useFonts + gate do splash).
-export function BrandWordmark({ height = 16 }: { height?: number }) {
+export function BrandWordmark({
+  height = 16,
+  inverted = false,
+}: {
+  height?: number
+  inverted?: boolean
+}) {
   const t = {
-    fontFamily: 'Sora_700Bold',
+    fontFamily: 'Sora_800ExtraBold',
     fontSize: height,
     lineHeight: height,
-    letterSpacing: -0.025 * height,
-    color: colors.content,
+    letterSpacing: -0.052 * height,
+    color: inverted ? colors.background : colors.content,
   } as const
   return (
     <View className="flex-row items-end">
       <Text style={t}>clu</Text>
       <View
-        style={{ marginBottom: -height * 0.1, marginLeft: 0, marginRight: 0 }}
+        style={{ marginBottom: -height * 0.1, marginLeft: 0, marginRight: -1 }}
       >
-        <BrandSticker size={height * 1.6} />
+        <BrandSticker size={height * 1.6} inverted={inverted} />
       </View>
       <Text style={t}>ber</Text>
     </View>
