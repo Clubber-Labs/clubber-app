@@ -12,7 +12,11 @@ import { StatusBar } from 'expo-status-bar'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { StripeProvider } from '@stripe/stripe-react-native'
 import Constants from 'expo-constants'
-import { useFonts, Sora_700Bold } from '@expo-google-fonts/sora'
+import {
+  useFonts,
+  Sora_700Bold,
+  Sora_800ExtraBold,
+} from '@expo-google-fonts/sora'
 import * as ExpoSplash from 'expo-splash-screen'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { queryClient } from '@/shared/lib/queryClient'
@@ -165,7 +169,7 @@ export default function RootLayout() {
   const userId = useAuthStore(s => s.userId)
   const segments = useSegments() as string[]
   const insets = useSafeAreaInsets()
-  const [fontsLoaded] = useFonts({ Sora_700Bold })
+  const [fontsLoaded] = useFonts({ Sora_700Bold, Sora_800ExtraBold })
   // Splash global SÓ no boot: fontes carregando ou sessão indefinida. Nunca em
   // logout, navegação, resume ou loading local — e o fade de saída de 200ms dá
   // ao wordmark (que espera a fonte) seu momento mesmo quando a fonte é a

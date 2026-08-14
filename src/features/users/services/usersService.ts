@@ -54,6 +54,17 @@ export const usersService = {
       })
       .then(r => r.data),
 
+  // Rota PÚBLICA (o cadastro ainda não tem token) e case-sensitive, espelhando
+  // o predicado do POST /users: normalizar aqui faria o app dizer "indisponível"
+  // pra um username que o cadastro aceitaria.
+  checkUsernameAvailability: (
+    username: string,
+    signal?: AbortSignal,
+  ): Promise<{ available: boolean }> =>
+    api
+      .get('/users/username-available', { params: { username }, signal })
+      .then(r => r.data),
+
   searchUsers: ({
     q,
     cursor,
