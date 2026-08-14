@@ -64,7 +64,7 @@ export function useRegister() {
     mutationFn: async (data: RegisterInput) => {
       await authService.register(toPayload(data))
       const response = await authService.login({
-        email: data.email,
+        identifier: data.email,
         password: data.password,
       })
       const token = response.token

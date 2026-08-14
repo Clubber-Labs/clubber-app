@@ -496,7 +496,8 @@ Quando perceber qualquer desses, extraia.
 | **Mutation otimista** (like, follow, attendance, toggle) | Optimistic update + silent revert em erro | A UI muda na hora; em falha, volta. O usuário entende implicitamente que "não pegou" sem ler texto. |
 | **Optimistic remove** (delete post, delete comment) | Item some imediatamente; reaparece se backend falhar | Mesma lógica — o re-aparecer é o feedback. |
 | **Add otimista raso** (add post, add comment) | Sem otimismo; input mantém texto se falhar | User retenta tocando enviar de novo. Botão volta ao estado normal é o sinal de fim de ciclo. |
-| **Submit de formulário** (login, edit profile, create event) | Inline error próximo ao botão de submit | É o único lugar onde texto explícito faz sentido — o user submeteu deliberadamente e espera confirmação. |
+| **Validação de formulário** (login, cadastro, create event) | Banner no topo + borda acesa no campo + rolar e focar nele | O user submeteu deliberadamente e espera resposta, mas o texto sob o input polui e some fora da viewport. A mensagem é sempre a do campo que recebeu o foco. |
+| **Erro de submit vindo da API** (409, 5xx) | Banner, ou marcação no campo quando o backend diz qual é | Mesmo canal da validação, pra não existirem dois lugares onde erro aparece. |
 | **Erro crítico bloqueante** (sem rede, 500 persistente) | Banner sutil no topo (a implementar) | Estado global, dismissable, não-modal. |
 
 ### NÃO usar
@@ -504,6 +505,7 @@ Quando perceber qualquer desses, extraia.
 - **`Alert.alert`** — banido em todo o app, tanto pra feedback de erro quanto pra confirmações. Não combina com a estética do tema dark e quebra o fluxo visual.
 - **Toasts** (sonner, react-native-toast-message, etc) — foi removido propositalmente, não reintroduzir
 - **Texto inline "Não foi possível X"** em ações otimistas (likes, attendance, deletes) — polui a UI e duplica o feedback que o revert já dá
+- **Texto de validação abaixo do input** (`{errors.campo && <Text>...</Text>}`) — banido em todo o app. A mensagem vai pro banner e o campo se marca pela borda; ver `useFormErrorBanner`
 - **`console.error` de produção** para erros já tratados — só em paths de debug
 
 ### Confirmações destrutivas
@@ -547,9 +549,23 @@ return useMutation({
 
 Para deletes em listas (paginadas ou não), filtra o item do cache no `onMutate` e restaura no `onError`. Exemplo em [useDeletePost](src/features/events/hooks/usePosts.ts).
 
-### Padrão de form com erro inline
+### Padrão de erro de validação em formulário
 
-Para forms, use o `mutation.error` reativo OU um `useState<string | null>` no screen, renderizando uma `<Text className="text-red-500 text-sm text-center">` próximo ao botão de submit. Exemplo: [LoginForm](src/features/auth/components/LoginForm.tsx) (401 inline) e [EditProfileForm](src/features/users/components/EditProfileForm.tsx) (`inlineError` prop).
+Nenhum texto abaixo do input. Use [useFormErrorBanner](src/shared/hooks/useFormErrorBanner.ts) no `onInvalid` do `handleSubmit` (e no avanço de etapa, em forms multi-step):
+
+```tsx
+const form = useFormFocus()               // ou useKeyboardAwareForm()
+const showFormErrors = useFormErrorBanner(form)
+
+onPress={handleSubmit(onSubmit, errors => showFormErrors(messagesFromErrors(errors)))}
+```
+
+Ele mostra a mensagem no banner, rola até o primeiro campo inválido e o foca. O campo se marca sozinho pela borda — cada input já faz `errors.campo ? 'border-content' : 'border-line'`, e isso continua.
+
+Dois cuidados que o hook resolve e que uma implementação à mão erra:
+
+- **A mensagem é a do campo que ganhou o foco**, não a primeira do objeto de erros: a ordem do RHF é de registro, não visual, e as duas divergem em form com campo condicional — o banner falaria de um campo e a tela pularia pra outro.
+- **Dispare só em submit ou avanço de etapa.** Com `mode: 'onTouched'` o RHF revalida a cada blur; chamar ali daria um banner por campo tocado.
 
 ### Diretiva específica para Copilot/code reviewers
 
@@ -557,10 +573,11 @@ Quando revisar um PR deste projeto e ver `mutation.mutate(args)` sem `onError`, 
 - ❌ Toast / `showError` / `showSuccess`
 - ❌ `Alert.alert(...)` para feedback de erro
 - ❌ Texto inline "Não foi possível X" em ações pontuais (likes, comments, posts, attendance, delete)
+- ❌ `{errors.campo && <Text>{errors.campo.message}</Text>}` abaixo do input — o padrão do app é banner + borda + foco
 
 Em vez disso, valide se:
 - ✅ A mutation tem optimistic update + revert (se for ação visualmente reversível)
-- ✅ É um form e tem inline error próximo ao botão
+- ✅ É um form e chama o `useFormErrorBanner` no `onInvalid` do submit
 - ✅ O contexto realmente justifica feedback explícito (raro, geralmente forms)
 
 Se a mutation não tem optimistic update e deveria ter, **essa é a sugestão correta** — adicionar o padrão canônico acima, não inventar feedback de UI.

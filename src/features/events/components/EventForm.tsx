@@ -22,11 +22,15 @@ import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import { SubcategorySelect } from '@/shared/components/SubcategorySelect'
 import { LocationPreview } from './LocationPreview'
 import { VenuePicker, type VenueSelection } from './VenuePicker'
-import { useUserLocation } from '@/shared/hooks/useUserLocation'
+import { useConsentedLocation } from '@/features/privacy/hooks/useConsentedLocation'
 import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
 import { colors } from '@/shared/theme'
 
 // Identidade estável: o useWatch do FormSubmitButton tem `name` nas deps do
+import {
+  useFormErrorBanner,
+  messagesFromErrors,
+} from '@/shared/hooks/useFormErrorBanner'
 // efeito de subscrição, e um literal inline re-assinaria a cada tecla digitada.
 const REQUIRED_FIELDS: Path<CreateEventInput>[] = [
   'title',
@@ -86,8 +90,9 @@ export function EventForm({
   const placeId = watch('placeId')
   const latitude = watch('latitude')
   const longitude = watch('longitude')
-  const { coords } = useUserLocation()
+  const { coords } = useConsentedLocation()
   const form = useKeyboardAwareForm()
+  const showFormErrors = useFormErrorBanner(form)
 
   function patchLocation(patch: Partial<VenueSelection>) {
     if ('address' in patch)
@@ -129,9 +134,6 @@ export function EventForm({
               />
             )}
           />
-          {errors.title && (
-            <Text className="text-content text-xs">{errors.title.message}</Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('description')}>
@@ -154,11 +156,6 @@ export function EventForm({
               />
             )}
           />
-          {errors.description && (
-            <Text className="text-content text-xs">
-              {errors.description.message}
-            </Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('date')}>
@@ -179,9 +176,6 @@ export function EventForm({
               />
             )}
           />
-          {errors.date && (
-            <Text className="text-content text-xs">{errors.date.message}</Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('endDate')}>
@@ -203,11 +197,6 @@ export function EventForm({
               />
             )}
           />
-          {errors.endDate && (
-            <Text className="text-content text-xs">
-              {errors.endDate.message}
-            </Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('categories')}>
@@ -221,11 +210,6 @@ export function EventForm({
               <CategoryMultiSelect value={value} onChange={onChange} />
             )}
           />
-          {errors.categories && (
-            <Text className="text-content text-xs">
-              {errors.categories.message}
-            </Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('subcategories')}>
@@ -244,11 +228,6 @@ export function EventForm({
               />
             )}
           />
-          {errors.subcategories && (
-            <Text className="text-content text-xs">
-              {errors.subcategories.message}
-            </Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('address')}>
@@ -265,11 +244,6 @@ export function EventForm({
             coords={coords}
             hasError={!!errors.address}
           />
-          {errors.address && (
-            <Text className="text-content text-xs">
-              {errors.address.message}
-            </Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('latitude')}>
@@ -345,7 +319,9 @@ export function EventForm({
           control={control}
           required={REQUIRED_FIELDS}
           label={submitting ? submittingLabel : submitLabel}
-          onPress={handleSubmit(onSubmit, form.focusFirstError)}
+          onPress={handleSubmit(onSubmit, errors =>
+            showFormErrors(messagesFromErrors(errors)),
+          )}
           loading={submitting}
         />
       </View>

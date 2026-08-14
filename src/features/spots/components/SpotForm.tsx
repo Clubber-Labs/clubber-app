@@ -32,6 +32,10 @@ import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
 import { colors } from '@/shared/theme'
 
 // Identidade estável: o useWatch do FormSubmitButton tem `name` nas deps do
+import {
+  useFormErrorBanner,
+  messagesFromErrors,
+} from '@/shared/hooks/useFormErrorBanner'
 // efeito de subscrição, e um literal inline re-assinaria a cada tecla digitada.
 const REQUIRED_FIELDS: Path<CreateSpotInput>[] = [
   'title',
@@ -104,6 +108,7 @@ export function SpotForm({
   const startsAt = watch('startsAt')
   const selectedCategories = watch('categories')
   const form = useKeyboardAwareForm()
+  const showFormErrors = useFormErrorBanner(form)
 
   return (
     <KeyboardAvoidingView
@@ -142,9 +147,6 @@ export function SpotForm({
               />
             )}
           />
-          {errors.title && (
-            <Text className="text-content text-xs">{errors.title.message}</Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('description')}>
@@ -168,11 +170,6 @@ export function SpotForm({
               />
             )}
           />
-          {errors.description && (
-            <Text className="text-content text-xs">
-              {errors.description.message}
-            </Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('startsAt')}>
@@ -232,11 +229,6 @@ export function SpotForm({
                     />
                   )}
                 />
-                {errors.startsAt && (
-                  <Text className="text-content text-xs">
-                    {errors.startsAt.message}
-                  </Text>
-                )}
               </View>
               <View className="gap-1" {...form.anchor('endsAt')}>
                 <Text className="text-sm font-medium text-content-tertiary">
@@ -265,11 +257,6 @@ export function SpotForm({
           <Text className="text-content-subtle text-xs">
             O rolê pode durar no máximo 24 horas.
           </Text>
-          {errors.endsAt && (
-            <Text className="text-content text-xs">
-              {errors.endsAt.message}
-            </Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('categories')}>
@@ -290,11 +277,6 @@ export function SpotForm({
               />
             )}
           />
-          {errors.categories && (
-            <Text className="text-content text-xs">
-              {errors.categories.message}
-            </Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('subcategories')}>
@@ -313,11 +295,6 @@ export function SpotForm({
               />
             )}
           />
-          {errors.subcategories && (
-            <Text className="text-content text-xs">
-              {errors.subcategories.message}
-            </Text>
-          )}
         </View>
 
         <Controller
@@ -383,7 +360,9 @@ export function SpotForm({
           required={REQUIRED_FIELDS}
           label={submitting ? 'Publicando...' : 'Publicar rolê'}
           icon={SparkleIcon}
-          onPress={handleSubmit(onSubmit, form.focusFirstError)}
+          onPress={handleSubmit(onSubmit, errors =>
+            showFormErrors(messagesFromErrors(errors)),
+          )}
           loading={submitting}
         />
       </View>

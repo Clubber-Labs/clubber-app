@@ -35,7 +35,11 @@ export function StepPrivacy({ control, errors }: Props) {
         </Text>
       </View>
 
-      <View className="bg-surface-sunken border border-line rounded-xl overflow-hidden">
+      {/* Sem texto de erro sob o controle: a mensagem vai pro banner e o cartão
+          acende, que é a "borda" possível pra um switch. */}
+      <View
+        className={`bg-surface-sunken border ${errors.termsAccepted ? 'border-content' : 'border-line'} rounded-xl overflow-hidden`}
+      >
         <View className="flex-row items-center justify-between px-4 py-3 border-b border-line">
           <View className="flex-row items-center gap-2 flex-1">
             <LockIcon size={14} color={colors.brandText} weight="fill" />
@@ -75,12 +79,6 @@ export function StepPrivacy({ control, errors }: Props) {
             )}
           />
         </View>
-
-        {errors.termsAccepted && (
-          <Text className="px-4 pb-4 text-content text-xs">
-            {errors.termsAccepted.message}
-          </Text>
-        )}
       </View>
 
       {ORDERED_CATEGORIES.map(cat => {

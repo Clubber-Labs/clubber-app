@@ -56,11 +56,6 @@ export function StepAccount({ control, errors, email }: Props) {
               />
             )}
           />
-          {errors.username && (
-            <Text className="text-content text-xs">
-              {errors.username.message}
-            </Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('phone')}>
@@ -83,9 +78,6 @@ export function StepAccount({ control, errors, email }: Props) {
               />
             )}
           />
-          {errors.phone && (
-            <Text className="text-content text-xs">{errors.phone.message}</Text>
-          )}
         </View>
       </View>
     </View>

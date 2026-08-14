@@ -4,6 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { editSpotSchema, type EditSpotInput } from '../schemas/editSpotSchema'
+import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
+import {
+  useFormErrorBanner,
+  messagesFromErrors,
+} from '@/shared/hooks/useFormErrorBanner'
 import type { Spot } from '../types'
 import { colors } from '@/shared/theme'
 
@@ -33,12 +38,15 @@ export function EditSpotForm({
     },
   })
 
+  const form = useKeyboardAwareForm()
+  const showFormErrors = useFormErrorBanner(form)
+
   return (
     <ScrollView
+      {...form.scrollProps}
       contentContainerStyle={{ padding: 20, paddingBottom: 40, gap: 20 }}
-      keyboardShouldPersistTaps="handled"
     >
-      <View className="gap-1">
+      <View className="gap-1" {...form.anchor('title')}>
         <Text className="text-sm font-medium text-content-tertiary">
           Título
         </Text>
@@ -47,6 +55,7 @@ export function EditSpotForm({
           name="title"
           render={({ field: { onChange, value } }) => (
             <TextInput
+              {...form.input('title')}
               className={`border ${errors.title ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
               placeholderTextColor={colors.contentSubtle}
               value={value}
@@ -54,12 +63,9 @@ export function EditSpotForm({
             />
           )}
         />
-        {errors.title && (
-          <Text className="text-content text-xs">{errors.title.message}</Text>
-        )}
       </View>
 
-      <View className="gap-1">
+      <View className="gap-1" {...form.anchor('description')}>
         <Text className="text-sm font-medium text-content-tertiary">
           Descrição{' '}
           <Text className="text-content-subtle text-xs">(opcional)</Text>
@@ -69,6 +75,7 @@ export function EditSpotForm({
           name="description"
           render={({ field: { onChange, value } }) => (
             <TextInput
+              {...form.input('description')}
               className={`border ${errors.description ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content min-h-[96px]`}
               placeholder="Combina os detalhes com a galera..."
               placeholderTextColor={colors.contentSubtle}
@@ -79,18 +86,15 @@ export function EditSpotForm({
             />
           )}
         />
-        {errors.description && (
-          <Text className="text-content text-xs">
-            {errors.description.message}
-          </Text>
-        )}
       </View>
 
       <FormError message={submitError} />
 
       <Button
         label={submitting ? 'Salvando...' : 'Salvar alterações'}
-        onPress={handleSubmit(onSubmit)}
+        onPress={handleSubmit(onSubmit, errors =>
+          showFormErrors(messagesFromErrors(errors)),
+        )}
         loading={submitting}
       />
     </ScrollView>

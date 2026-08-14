@@ -67,7 +67,7 @@ export default function LoginScreen() {
             Entre na sua conta para continuar
           </Text>
 
-          <LoginForm defaultEmail={defaultEmail} />
+          <LoginForm defaultIdentifier={defaultEmail} />
 
           <AuthDivider />
 

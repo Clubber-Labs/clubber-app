@@ -58,10 +58,13 @@ export type KeyboardAwareForm = {
   /** Espalhe na View que envolve o campo (rótulo + controle + erro). */
   anchor: (name: string) => { ref: (node: View | null) => void }
   scrollToField: (name: string) => void
-  /** Rola e foca o campo mais alto entre os informados. */
-  focusFirstOf: (names: string[]) => void
+  /**
+   * Rola e foca o campo mais alto entre os informados, e DEVOLVE qual foi —
+   * quem mostra a mensagem precisa falar do mesmo campo que ganhou o foco.
+   */
+  focusFirstOf: (names: string[]) => Promise<string | null>
   /** Passe como onInvalid do handleSubmit: rola e foca o primeiro erro. */
-  focusFirstError: (errors: Record<string, unknown>) => void
+  focusFirstError: (errors: Record<string, unknown>) => Promise<string | null>
 }
 
 /**
@@ -210,9 +213,9 @@ export function useKeyboardAwareForm(
   )
 
   const focusFirstOf = useCallback(
-    async (names: string[]) => {
+    async (names: string[]): Promise<string | null> => {
       const candidates = names.filter(name => !!targetOf(name))
-      if (!candidates.length) return
+      if (!candidates.length) return null
       // Ordem de montagem não é ordem visual (campos condicionais entram
       // depois), então o "primeiro" é o mais alto na tela.
       const measured = await Promise.all(
@@ -228,6 +231,7 @@ export function useKeyboardAwareForm(
       // um movimento a mais, e ainda por cima medindo a tela sem teclado.
       if (!field || keyboardTop.current !== null)
         await reveal(targetOf(first.name))
+      return first.name
     },
     [reveal, targetOf],
   )

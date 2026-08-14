@@ -17,7 +17,7 @@ import {
   type EventCluster,
 } from '@/features/map/hooks/useEventClusters'
 import { useMapCamera } from '@/features/map/hooks/useMapCamera'
-import { useUserLocation } from '@/shared/hooks/useUserLocation'
+import { useLocationGate } from '@/features/privacy/hooks/useLocationGate'
 import { useUserLiveLocation } from '@/shared/hooks/useUserLiveLocation'
 import { useMapLightPreset } from '@/shared/hooks/useMapLightPreset'
 import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
@@ -63,7 +63,11 @@ export default function MapScreen() {
     focusLng?: string
     suggest?: string
   }>()
-  const { coords: userCoords, status: locationStatus } = useUserLocation()
+  const {
+    coords: userCoords,
+    status: locationStatus,
+    ensure: ensureLocation,
+  } = useLocationGate()
   const livePos = useUserLiveLocation(locationStatus === 'ready')
   const myPos = livePos ?? userCoords
   const profile = useMyProfile()
@@ -205,15 +209,25 @@ export default function MapScreen() {
     focusOnEvent([spot.longitude, spot.latitude])
   }
 
-  // Centraliza na posição ATUAL (live), com fallback pro fix inicial; sem coords,
-  // orienta conforme o estado da permissão.
-  function recenter() {
+  // Centraliza na posição ATUAL (live), com fallback pro fix inicial. Sem
+  // coords, ESTE toque é o gesto que autoriza pedir — a coreografia de
+  // consentimento e permissão fica no useLocationGate; aqui ficam só o texto do
+  // pedido, a câmera e o que fazer com cada desfecho.
+  async function recenter() {
     if (myPos) {
       flyTo(myPos, USER_ZOOM, 600)
-    } else if (locationStatus === 'denied') {
+      return
+    }
+    const result = await ensureLocation({
+      title: 'Mostrar você no mapa',
+      message:
+        'Para isso precisamos usar sua localização precisa. Você pode desligar quando quiser em Perfil → Privacidade.',
+    })
+    // 'refused' sai em silêncio: a pessoa acabou de dizer não.
+    if (result === 'denied') {
       showBanner('Ative a localização nos ajustes para ver você no mapa.')
       Linking.openSettings()
-    } else if (locationStatus === 'error') {
+    } else if (result === 'error') {
       showBanner('Não foi possível obter sua localização.')
     }
   }

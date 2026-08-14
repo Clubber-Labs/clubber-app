@@ -13,6 +13,10 @@ import { PasswordInput } from '@/shared/components/PasswordInput'
 import { PasswordStrengthMeter } from '@/shared/components/PasswordStrengthMeter'
 
 // Identidade estável: o useWatch do FormSubmitButton tem `name` nas deps do
+import {
+  useFormErrorBanner,
+  messagesFromErrors,
+} from '@/shared/hooks/useFormErrorBanner'
 // efeito de subscrição, e um literal inline re-assinaria a cada tecla digitada.
 const REQUIRED_FIELDS: Path<ResetPasswordInput>[] = [
   'newPassword',
@@ -54,6 +58,7 @@ export function StepNewPassword({
 
   const newPassword = watch('newPassword') ?? ''
   const form = useFormFocus()
+  const showFormErrors = useFormErrorBanner(form)
 
   return (
     <View className="gap-5">
@@ -87,11 +92,6 @@ export function StepNewPassword({
               />
             )}
           />
-          {errors.newPassword && (
-            <Text className="text-content text-xs">
-              {errors.newPassword.message}
-            </Text>
-          )}
           <PasswordStrengthMeter password={newPassword} email={email} />
         </View>
 
@@ -114,11 +114,6 @@ export function StepNewPassword({
               />
             )}
           />
-          {errors.confirmPassword && (
-            <Text className="text-content text-xs">
-              {errors.confirmPassword.message}
-            </Text>
-          )}
         </View>
       </View>
 
@@ -139,7 +134,9 @@ export function StepNewPassword({
             control={control}
             required={REQUIRED_FIELDS}
             label={isSubmitting ? 'Redefinindo...' : 'Redefinir senha'}
-            onPress={handleSubmit(onSubmit, form.focusFirstError)}
+            onPress={handleSubmit(onSubmit, errors =>
+              showFormErrors(messagesFromErrors(errors)),
+            )}
             loading={isSubmitting}
           />
         </View>

@@ -70,11 +70,6 @@ export function StepAccount({ control, errors }: Props) {
               />
             )}
           />
-          {errors.username && (
-            <Text className="text-content text-xs">
-              {errors.username.message}
-            </Text>
-          )}
           {showAvailability && (
             <Text
               className={`text-xs ${AVAILABILITY_TEXT[availability].className}`}
@@ -104,9 +99,6 @@ export function StepAccount({ control, errors }: Props) {
               />
             )}
           />
-          {errors.email && (
-            <Text className="text-content text-xs">{errors.email.message}</Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('phone')}>
@@ -128,9 +120,6 @@ export function StepAccount({ control, errors }: Props) {
               />
             )}
           />
-          {errors.phone && (
-            <Text className="text-content text-xs">{errors.phone.message}</Text>
-          )}
         </View>
       </View>
     </View>

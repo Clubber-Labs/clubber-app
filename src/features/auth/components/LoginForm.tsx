@@ -11,14 +11,19 @@ import { isUnauthorizedError } from '@/shared/lib/apiError'
 import { colors } from '@/shared/theme'
 
 // Identidade estável: o useWatch do FormSubmitButton tem `name` nas deps do
+import {
+  useFormErrorBanner,
+  messagesFromErrors,
+} from '@/shared/hooks/useFormErrorBanner'
 // efeito de subscrição, e um literal inline re-assinaria a cada tecla digitada.
-const REQUIRED_FIELDS: Path<LoginInput>[] = ['email', 'password']
+const REQUIRED_FIELDS: Path<LoginInput>[] = ['identifier', 'password']
 
 type Props = {
-  defaultEmail?: string
+  /** Pré-preenche o campo — o cadastro manda o e-mail recém-criado. */
+  defaultIdentifier?: string
 }
 
-export function LoginForm({ defaultEmail }: Props) {
+export function LoginForm({ defaultIdentifier }: Props) {
   const { mutate: login, isPending, error } = useLogin()
   const {
     control,
@@ -26,31 +31,29 @@ export function LoginForm({ defaultEmail }: Props) {
     formState: { errors },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: defaultEmail ?? '' },
+    defaultValues: { identifier: defaultIdentifier ?? '' },
   })
   const form = useFormFocus()
+  const showFormErrors = useFormErrorBanner(form)
 
   return (
     <View className="gap-4">
       <Controller
         control={control}
-        name="email"
+        name="identifier"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            {...form.input('email')}
-            className={`border ${errors.email ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
-            placeholder="E-mail"
+            {...form.input('identifier')}
+            className={`border ${errors.identifier ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
+            placeholder="E-mail ou nome de usuário"
             placeholderTextColor={colors.contentSubtle}
             onChangeText={onChange}
             value={value}
             autoCapitalize="none"
-            keyboardType="email-address"
+            autoCorrect={false}
           />
         )}
       />
-      {errors.email && (
-        <Text className="text-content text-sm">{errors.email.message}</Text>
-      )}
 
       <Controller
         control={control}
@@ -67,9 +70,6 @@ export function LoginForm({ defaultEmail }: Props) {
           />
         )}
       />
-      {errors.password && (
-        <Text className="text-content text-sm">{errors.password.message}</Text>
-      )}
 
       <View className="flex-row justify-end">
         <Link href="/(auth)/forgot-password">
@@ -83,7 +83,7 @@ export function LoginForm({ defaultEmail }: Props) {
         message={
           error
             ? isUnauthorizedError(error)
-              ? 'E-mail ou senha incorretos.'
+              ? 'E-mail, nome de usuário ou senha incorretos.'
               : 'Não foi possível entrar. Tente novamente.'
             : null
         }
@@ -93,7 +93,10 @@ export function LoginForm({ defaultEmail }: Props) {
         control={control}
         required={REQUIRED_FIELDS}
         label={isPending ? 'Entrando...' : 'Entrar'}
-        onPress={handleSubmit(data => login(data), form.focusFirstError)}
+        onPress={handleSubmit(
+          data => login(data),
+          errors => showFormErrors(messagesFromErrors(errors)),
+        )}
         loading={isPending}
       />
     </View>

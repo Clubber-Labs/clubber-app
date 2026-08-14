@@ -28,6 +28,10 @@ import { StepProfile } from './steps/StepProfile'
 import { StepPrivacy } from './steps/StepPrivacy'
 import { getApiError } from '@/shared/lib/apiError'
 import { resolveConflictField } from '@/shared/utils/conflictField'
+import {
+  useFormErrorBanner,
+  messagesFromErrors,
+} from '@/shared/hooks/useFormErrorBanner'
 
 const STEPS = REGISTER_STEP_FIELDS
 
@@ -103,6 +107,8 @@ export function RegisterForm() {
   })
 
   const form = useFormFocus()
+
+  const showFormErrors = useFormErrorBanner(form)
   const totalSteps = STEPS.length
   const isLastStep = currentStep === totalSteps - 1
 
@@ -149,14 +155,16 @@ export function RegisterForm() {
       return
     }
 
-    const failed: (keyof RegisterInput)[] = []
+    const messages: Record<string, string> = {}
     for (const issue of result.error.issues) {
       const field = issue.path[0] as keyof RegisterInput
-      if (failed.includes(field)) continue
-      failed.push(field)
+      if (messages[field]) continue
+      messages[field] = issue.message
       setError(field, { message: issue.message })
     }
-    form.focusFirstOf(failed)
+    // Banner + borda + foco: o texto sob o input saiu do app (ver
+    // useFormErrorBanner), então é aqui que a etapa comunica o que falta.
+    void showFormErrors(messages)
   }
 
   function handleBack() {
@@ -189,7 +197,7 @@ export function RegisterForm() {
       goToStep(target, 'back')
       return
     }
-    form.focusFirstError(formErrors)
+    void showFormErrors(messagesFromErrors(formErrors))
   }
 
   const progressWidth = progress.interpolate({
