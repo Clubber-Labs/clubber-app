@@ -219,23 +219,24 @@ export default function MapScreen() {
    * e o fluxo ficava impossível de prever.
    */
   async function requestLocationAccess() {
+    // Sem banner nos casos que LEVAM a algum lugar: os ajustes abrindo e a tela
+    // de privacidade (que mostra o estado revogado no topo) já são a resposta.
+    // Texto ali seria o terceiro aviso sobre a mesma coisa.
     if (locationStatus === 'denied') {
-      showBanner('Ative a localização nos ajustes para ver você no mapa.')
       Linking.openSettings()
       return
     }
     if (locationStatus === 'revoked') {
       // Revogação se desfaz no app, não nos ajustes do sistema — mandar pra lá
       // faria a pessoa ativar a permissão e continuar sem ver nada.
-      showBanner('Você revogou seus consentimentos. Revise em Privacidade.')
       router.push('/profile/privacy')
       return
     }
     const result = await grantLocation()
     if (result === 'denied') {
-      showBanner('Ative a localização nos ajustes para ver você no mapa.')
       Linking.openSettings()
     } else if (result === 'error') {
+      // Único caso sem destino: aqui o texto é o feedback que existe.
       showBanner('Não foi possível obter sua localização.')
     }
   }
