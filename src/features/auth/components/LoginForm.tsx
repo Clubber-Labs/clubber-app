@@ -9,12 +9,12 @@ import { FormError } from '@/shared/components/FormError'
 import { useFormFocus } from '@/shared/lib/formFocus'
 import { isUnauthorizedError } from '@/shared/lib/apiError'
 import { colors } from '@/shared/theme'
-
-// Identidade estável: o useWatch do FormSubmitButton tem `name` nas deps do
 import {
   useFormErrorBanner,
   messagesFromErrors,
 } from '@/shared/hooks/useFormErrorBanner'
+
+// Identidade estável: o useWatch do FormSubmitButton tem `name` nas deps do
 // efeito de subscrição, e um literal inline re-assinaria a cada tecla digitada.
 const REQUIRED_FIELDS: Path<LoginInput>[] = ['identifier', 'password']
 

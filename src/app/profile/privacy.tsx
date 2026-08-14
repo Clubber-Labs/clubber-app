@@ -13,15 +13,15 @@ import {
   ArrowSquareOutIcon,
   DownloadSimpleIcon,
   EnvelopeSimpleIcon,
-  GearSixIcon,
 } from 'phosphor-react-native'
 import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
+import { DevicePermissionRow } from '@/features/privacy/components/DevicePermissionRow'
+import { useNotificationConsent } from '@/features/notifications/hooks/useNotificationConsent'
 import { useConsent } from '@/features/privacy/hooks/useConsent'
 import { useProductPreferences } from '@/features/privacy/hooks/useProductPreferences'
 import { CONSENT_VERSION } from '@/features/privacy/services/consentService'
 import {
   COMMUNICATION_ITEMS,
-  DEVICE_PERMISSION_ITEMS,
   PRODUCT_PREFERENCE_ITEMS,
 } from '@/features/privacy/constants'
 import { useConfirm } from '@/shared/lib/confirm'
@@ -47,6 +47,8 @@ export default function PrivacyScreen() {
   const { consent, isRevoked, updateConsent, revokeAll, exportData } =
     useConsent()
   const { preferences, updatePreference } = useProductPreferences()
+  const { osPush, osLocation, enableNotifications, enableLocation } =
+    useNotificationConsent()
   const [exporting, setExporting] = useState(false)
   const confirm = useConfirm()
   const showBanner = useBanner()
@@ -121,41 +123,22 @@ export default function PrivacyScreen() {
             app não consegue honrar faz o usuário arrastar e nada acontecer. */}
         <SectionTitle
           title="Permissões do dispositivo"
-          hint="Controladas pelo sistema. Toque para abrir os ajustes do aparelho."
+          hint="Quem decide é o sistema. Toque para permitir, ou para abrir os ajustes se já tiver recusado."
         />
         <View className="bg-surface-sunken border border-line rounded-xl overflow-hidden">
-          {DEVICE_PERMISSION_ITEMS.map((item, index) => (
-            <Pressable
-              key={item.key}
-              onPress={() => Linking.openSettings()}
-              className={`flex-row items-center px-4 py-4 active:opacity-70 ${
-                index < DEVICE_PERMISSION_ITEMS.length - 1
-                  ? 'border-b border-line'
-                  : ''
-              }`}
-            >
-              <View className="flex-1 mr-4">
-                <Text className="text-sm font-semibold text-content">
-                  {item.label}
-                </Text>
-                <Text className="text-xs text-content-muted mt-1 leading-4">
-                  {item.description}
-                </Text>
-              </View>
-              <View className="flex-row items-center gap-2">
-                <Text
-                  className={`text-xs font-semibold ${
-                    consent[item.key]
-                      ? 'text-success-text'
-                      : 'text-content-subtle'
-                  }`}
-                >
-                  {consent[item.key] ? 'Ativado' : 'Desativado'}
-                </Text>
-                <GearSixIcon size={16} color={colors.contentSubtle} />
-              </View>
-            </Pressable>
-          ))}
+          <DevicePermissionRow
+            label="Localização"
+            description="Mostra rolês perto de você no mapa e avisa quando algo acontece por perto."
+            status={osLocation}
+            onPress={() => void enableLocation()}
+          />
+          <DevicePermissionRow
+            label="Notificações"
+            description="Convites, atividade de quem você segue e avisos dos rolês que você confirmou."
+            status={osPush}
+            onPress={() => void enableNotifications()}
+            isLast
+          />
         </View>
 
         {/* Bloco 2 — consentimento de verdade: opt-in, desligado por padrão. */}

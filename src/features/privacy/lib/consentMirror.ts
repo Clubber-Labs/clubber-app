@@ -11,7 +11,16 @@ type DevicePermissions = {
   pushNotifications: boolean
 }
 
-/** Lê o estado REAL das permissões. Nunca pede — só consulta. */
+/**
+ * Lê o estado REAL das permissões. Nunca pede — só consulta.
+ *
+ * `locationPrecise` é herança do nome antigo do campo: o app usa localização
+ * GROSSA por desenho (geohash de ~1,2km, calculado no aparelho — ver
+ * locationSync), então a localização aproximada do iOS 14+ atende igual e
+ * `granted` é o teste certo. A API também não ajudaria a distinguir: o
+ * PermissionDetailsLocationIOS do expo-location só expõe `scope`
+ * (whenInUse/always/none), não a acurácia concedida.
+ */
 export async function readDevicePermissions(): Promise<DevicePermissions> {
   const [location, push] = await Promise.all([
     Location.getForegroundPermissionsAsync(),

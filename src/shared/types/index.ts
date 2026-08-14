@@ -277,9 +277,10 @@ export type UserProfile = {
   socialFeed?: boolean
   socialVisibility?: boolean
   analytics?: boolean
-  // Resumo do consentimento, pra tela nenhuma precisar de uma segunda chamada.
-  // `given: false` = revogado no Art. 18 — é a fonte da verdade do estado
-  // revogado, e permissão de SO concedida depois não o desfaz.
+  // Resumo do consentimento que vem junto do perfil. Hoje o app consome só o
+  // `version` (aviso de política atualizada); o estado revogado em runtime sai
+  // do consentStore, hidratado do GET /consent — mesma origem no servidor, e
+  // uma fonte só no client.
   consent?: {
     given: boolean
     version: string
