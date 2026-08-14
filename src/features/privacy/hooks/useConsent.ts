@@ -6,6 +6,7 @@ import {
   CONSENT_VERSION,
   type ConsentFields,
 } from '../services/consentService'
+import { resolveConsent } from '../lib/resolveConsent'
 import { useAuthStore } from '@/features/auth/store/authStore'
 
 /**
@@ -36,37 +37,17 @@ export function useConsent() {
 
   // Ações do store — referências estáveis do Zustand
   const hydrate = useConsentStore(s => s.hydrate)
-  const markPending = useConsentStore(s => s.markPending)
   const setMany = useConsentStore(s => s.setMany)
   const markSynced = useConsentStore(s => s.markSynced)
   const markUnsynced = useConsentStore(s => s.markUnsynced)
   const revoke = useConsentStore(s => s.revoke)
 
-  // Carrega consentimento do backend na primeira vez (status 'unknown' após boot)
+  // Retentativa: o login/boot já resolve o consentimento, então 'unknown' aqui
+  // significa que aquela chamada falhou por rede.
   useEffect(() => {
     if (!isAuth || consentStatus !== 'unknown') return
-
-    consentService
-      .get()
-      .then(record => {
-        hydrate({
-          locationPrecise: record.locationPrecise,
-          socialFeed: record.socialFeed,
-          socialVisibility: record.socialVisibility,
-          pushNotifications: record.pushNotifications,
-          marketing: record.marketing,
-          analytics: record.analytics,
-          surveys: record.surveys,
-          consentGiven: true,
-          consentVersion: record.consentVersion,
-          revokedAt: record.revokedAt,
-        })
-      })
-      .catch(() => {
-        // 404 = usuário novo, nunca deu consentimento → aguarda tela de consent
-        markPending()
-      })
-  }, [isAuth, consentStatus, hydrate, markPending])
+    void resolveConsent()
+  }, [isAuth, consentStatus])
 
   // Sync automático com debounce — lê estado atual do store via getState()
   // para evitar closure stale mesmo que o effect rode antes da última atualização

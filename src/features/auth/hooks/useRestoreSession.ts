@@ -15,6 +15,7 @@ import {
 import { isUnauthorizedError, isNotFoundError } from '@/shared/lib/apiError'
 import { setUnauthorizedHandler } from '@/shared/lib/api'
 import { setAccountRecovery } from '@/features/account/lib/accountRecovery'
+import { resolveConsentIfUnknown } from '@/features/privacy/lib/resolveConsent'
 import { needsRolePreferences } from '@/shared/utils/rolePreferences'
 import type { UserProfile } from '@/shared/types'
 
@@ -84,6 +85,7 @@ export function useRestoreSession() {
       setProfileIncomplete(incomplete)
       await saveProfileIncomplete(incomplete)
       await saveUserId(session.profile.id)
+      await resolveConsentIfUnknown()
       setUser(session.profile.id)
     } else if (session.kind === 'inactive') {
       // Boot com conta inativa: grava o marker (welcome-back no relogin) e vai

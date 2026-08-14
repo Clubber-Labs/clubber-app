@@ -50,7 +50,7 @@ export default function ConsentScreen() {
     setLoading(true)
     try {
       await grantConsent(override ?? fields)
-      router.replace('/(tabs)/feed')
+      router.replace('/(tabs)/map')
     } finally {
       setLoading(false)
     }

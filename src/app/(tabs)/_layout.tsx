@@ -10,6 +10,10 @@ import type { Icon } from 'phosphor-react-native'
 import { useInbox } from '@/features/chat/hooks/useInbox'
 import { GlassTabBar } from '@/shared/components/GlassTabBar'
 
+// Mapa é a home da shell autenticada: é onde todo caminho de entrada aterrissa
+// e pra onde o back do Android volta. A ordem da barra segue o array TABS.
+export const unstable_settings = { anchor: 'map/index' }
+
 type TabConfig = {
   name: string
   title: string

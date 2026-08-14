@@ -13,7 +13,7 @@ export default function Index() {
   }
 
   if (status === 'authenticated') {
-    return <Redirect href="/(tabs)/feed" />
+    return <Redirect href="/(tabs)/map" />
   }
 
   return (
