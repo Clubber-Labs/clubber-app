@@ -34,6 +34,8 @@ import { EventClustersLayer } from '@/features/map/components/EventClustersLayer
 import { EventHeatmapLayer } from '@/features/map/components/EventHeatmapLayer'
 import { EventMarkers } from '@/features/map/components/EventMarkers'
 import { EventPreviewCard } from '@/features/map/components/EventPreviewCard'
+import { LocationInviteCard } from '@/features/map/components/LocationInviteCard'
+import { useLocationInvite } from '@/features/map/hooks/useLocationInvite'
 import { MapStatusBanner } from '@/features/map/components/MapStatusBanner'
 import { MapSearchBar } from '@/features/map/components/MapSearchBar'
 import { MapCategoryChips } from '@/features/map/components/MapCategoryChips'
@@ -67,7 +69,9 @@ export default function MapScreen() {
     coords: userCoords,
     status: locationStatus,
     ensure: ensureLocation,
+    grant: grantLocation,
   } = useLocationGate()
+  const locationInvite = useLocationInvite(locationStatus)
   const livePos = useUserLiveLocation(locationStatus === 'ready')
   const myPos = livePos ?? userCoords
   const profile = useMyProfile()
@@ -392,6 +396,16 @@ export default function MapScreen() {
           suggest={suggest}
           onChoose={chooseSuggestion}
           onClose={() => setSuggestionsOpen(false)}
+        />
+      )}
+
+      {locationInvite.visible && !selectedEvent && !selectedSpot && (
+        <LocationInviteCard
+          onEnable={() => {
+            locationInvite.dismiss()
+            void grantLocation()
+          }}
+          onDismiss={locationInvite.dismiss}
         />
       )}
 

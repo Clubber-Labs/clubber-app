@@ -30,6 +30,23 @@ export function useLocationGate() {
   const { coords, status, request } = useConsentedLocation()
   const confirm = useConfirm()
 
+  /**
+   * Dispara o prompt nativo direto, SEM o confirm. Para quem já é o priming —
+   * o card do mapa, por exemplo: dois pedidos seguidos pela mesma coisa.
+   */
+  const grant = useCallback(async (): Promise<LocationGateResult> => {
+    const result = await request()
+    // Espelha o desfecho no servidor — concedido ou negado, os dois são
+    // estado do dispositivo que o backend precisa conhecer.
+    void syncConsentMirror()
+
+    if (result === 'ready') return 'ready'
+    if (result === 'error') return 'error'
+    if (result === 'denied') return 'denied'
+    // Continua 'askable' depois do prompt = dispensado sem conceder (Android).
+    return 'refused'
+  }, [request])
+
   const ensure = useCallback(
     async (prompt: PrimingPrompt): Promise<LocationGateResult> => {
       if (status === 'ready') return 'ready'
@@ -38,20 +55,10 @@ export function useLocationGate() {
 
       const ok = await confirm({ ...prompt, confirmLabel: 'Permitir' })
       if (!ok) return 'refused'
-
-      const result = await request()
-      // Espelha o desfecho no servidor — concedido ou negado, os dois são
-      // estado do dispositivo que o backend precisa conhecer.
-      void syncConsentMirror()
-
-      if (result === 'ready') return 'ready'
-      if (result === 'error') return 'error'
-      if (result === 'denied') return 'denied'
-      // Continua 'askable' depois do prompt = dispensado sem conceder (Android).
-      return 'refused'
+      return grant()
     },
-    [status, confirm, request],
+    [status, confirm, grant],
   )
 
-  return { coords, status, ensure }
+  return { coords, status, ensure, grant }
 }
