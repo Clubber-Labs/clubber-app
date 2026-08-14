@@ -37,6 +37,7 @@ import { EventPreviewCard } from '@/features/map/components/EventPreviewCard'
 import { LocationInviteCard } from '@/features/map/components/LocationInviteCard'
 import { useLocationInvite } from '@/features/map/hooks/useLocationInvite'
 import { MapStatusBanner } from '@/features/map/components/MapStatusBanner'
+import { GpsSlashIcon } from 'phosphor-react-native'
 import { MapSearchBar } from '@/features/map/components/MapSearchBar'
 import { MapCategoryChips } from '@/features/map/components/MapCategoryChips'
 import { MapFiltersSheet } from '@/features/map/components/MapFiltersSheet'
@@ -363,6 +364,19 @@ export default function MapScreen() {
           <ActivityIndicator size="small" color={colors.brandEmphasis} />
         </View>
       )}
+
+      {locationStatus !== 'ready' &&
+        locationStatus !== 'loading' &&
+        !locationInvite.visible &&
+        !isLoading &&
+        !error && (
+          <MapStatusBanner
+            icon={GpsSlashIcon}
+            top={headerClearance + 84}
+            message="Sua posição é exibida somente para você. Habilite sua localização no mapa e descubra eventos e rolês perto de você."
+            onPress={() => void requestLocationAccess()}
+          />
+        )}
 
       {!isLoading && truncated && !error && showEvents && (
         <View
