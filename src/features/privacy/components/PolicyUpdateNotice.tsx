@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Linking, Pressable, Text, View } from 'react-native'
+import { Pressable, Text, View } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { SheetModal } from '@/shared/components/SheetModal'
+import { openDocument } from '@/shared/lib/openDocument'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { CONSENT_VERSION } from '../services/consentService'
 
@@ -51,7 +52,7 @@ export function PolicyUpdateNotice() {
         </Text>
 
         <Pressable
-          onPress={() => Linking.openURL(PRIVACY_URL)}
+          onPress={() => openDocument(PRIVACY_URL)}
           className="py-3 active:opacity-70"
         >
           <Text className="text-brand-text text-sm font-medium">

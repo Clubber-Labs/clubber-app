@@ -1,4 +1,5 @@
-import { Linking, Text } from 'react-native'
+import { Text } from 'react-native'
+import { openDocument } from '@/shared/lib/openDocument'
 
 const TERMS_URL = 'https://clubber.social/termos'
 const PRIVACY_URL = 'https://clubber.social/privacidade'
@@ -21,14 +22,14 @@ export function LegalNotice({ action = 'criar sua conta' }: Props) {
       Ao {action}, você concorda com os{' '}
       <Text
         className="text-content-muted underline"
-        onPress={() => Linking.openURL(TERMS_URL)}
+        onPress={() => openDocument(TERMS_URL)}
       >
         Termos de Uso
       </Text>{' '}
       e com a{' '}
       <Text
         className="text-content-muted underline"
-        onPress={() => Linking.openURL(PRIVACY_URL)}
+        onPress={() => openDocument(PRIVACY_URL)}
       >
         Política de Privacidade
       </Text>

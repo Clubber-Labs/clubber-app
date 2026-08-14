@@ -46,6 +46,7 @@
     "expo-splash-screen": "~31.0.13",
     "expo-status-bar": "~3.0.9",
     "expo-video": "~3.0.16",
+    "expo-web-browser": "~15.0.11",
     "nativewind": "^4.2.3",
     "ngeohash": "^0.6.3",
     "phosphor-react-native": "^3.0.6",

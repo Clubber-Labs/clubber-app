@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ActivityIndicator, Linking } from 'react-native'
+import { View, Text, Pressable, ActivityIndicator } from 'react-native'
 import {
   XCircleIcon,
   InfoIcon,
@@ -6,6 +6,7 @@ import {
   ArrowSquareOutIcon,
 } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
+import { openDocument } from '@/shared/lib/openDocument'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -85,7 +86,7 @@ export function DataLossWarning({
       </Pressable>
 
       <Pressable
-        onPress={() => Linking.openURL('https://clubber.social/privacidade')}
+        onPress={() => openDocument('https://clubber.social/privacidade')}
         className="flex-row items-center gap-2 px-1"
       >
         <ArrowSquareOutIcon size={14} color={colors.brandText} />

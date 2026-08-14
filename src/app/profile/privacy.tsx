@@ -26,6 +26,7 @@ import {
 } from '@/features/privacy/constants'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useBanner } from '@/shared/lib/banner'
+import { openDocument } from '@/shared/lib/openDocument'
 import { colors } from '@/shared/theme'
 
 const PRIVACY_URL = 'https://clubber.social/privacidade'
@@ -199,7 +200,7 @@ export default function PrivacyScreen() {
         />
         <View className="bg-surface-sunken border border-line rounded-xl overflow-hidden">
           <Pressable
-            onPress={() => Linking.openURL(PRIVACY_URL)}
+            onPress={() => openDocument(PRIVACY_URL)}
             className="flex-row items-center justify-between px-4 py-4 border-b border-line active:opacity-70"
           >
             <View className="flex-1">
