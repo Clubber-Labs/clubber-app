@@ -16,8 +16,11 @@ import { Button } from '@/shared/components/Button'
 import { FormSubmitButton } from '@/shared/components/FormSubmitButton'
 import { useFormFocus } from '@/shared/lib/formFocus'
 import { useBanner } from '@/shared/lib/banner'
-import { getApiError, isConflictError } from '@/shared/lib/apiError'
 import { getConflictMessage } from '@/shared/utils/conflictMessage'
+import {
+  resolveConflictField,
+  type ConflictFieldEntry,
+} from '@/shared/utils/conflictField'
 import { parseLocalDate, toLocalIsoDate } from '@/shared/utils/dateFormat'
 import type { UserProfile } from '@/shared/types'
 
@@ -50,11 +53,10 @@ const FIELD_TO_STEP: Partial<Record<keyof CompleteProfileInput, number>> = {
   preferredSubcategories: 2,
 }
 
-const CONFLICT_FIELD_MAP: {
-  keyword: string
-  field: 'phone' | 'username'
-  message: string
-}[] = [
+// Este form salva via PUT /users/:id, cujo 409 nasce do tratador de unique
+// constraint do Prisma e NÃO traz `field` — aqui o match por texto é o caminho
+// principal, não o fallback (o resolveConflictField cobre os dois).
+const CONFLICT_FIELD_MAP: ConflictFieldEntry<'phone' | 'username'>[] = [
   { keyword: 'telefone', field: 'phone', message: 'Telefone já cadastrado.' },
   { keyword: 'phone', field: 'phone', message: 'Telefone já cadastrado.' },
   {
@@ -160,15 +162,12 @@ export function CompleteProfileForm({ profile }: Props) {
   }
 
   function handleApiError(error: unknown) {
-    if (isConflictError(error)) {
-      const lower = getApiError(error).message.toLowerCase()
-      const match = CONFLICT_FIELD_MAP.find(m => lower.includes(m.keyword))
-      if (match) {
-        setError(match.field, { message: match.message })
-        const step = FIELD_TO_STEP[match.field]
-        if (step !== undefined && step !== currentStep) goToStep(step, 'back')
-        return
-      }
+    const match = resolveConflictField(error, CONFLICT_FIELD_MAP)
+    if (match) {
+      setError(match.field, { message: match.message })
+      const step = FIELD_TO_STEP[match.field]
+      if (step !== undefined && step !== currentStep) goToStep(step, 'back')
+      return
     }
     showBanner(
       getConflictMessage(error) ??
