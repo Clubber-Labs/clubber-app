@@ -35,6 +35,8 @@ export function useUserLocation(): Result {
   // Lido dentro do listener de AppState, que é assinado uma vez só.
   const statusRef = useRef<LocationStatus>('loading')
   statusRef.current = status
+  const coordsRef = useRef<Coords | null>(null)
+  coordsRef.current = coords
 
   useEffect(() => {
     mounted.current = true
@@ -54,9 +56,16 @@ export function useUserLocation(): Result {
           // pros ajustes seria absurdo, o que falta é o prompt. canAskAgain
           // separa os dois — no iOS ele cai pra false na primeira recusa.
           const next = permission.canAskAgain ? 'askable' : 'denied'
-          if (mounted.current) setStatus(next)
+          if (mounted.current) {
+            setStatus(next)
+            // Limpa a posição junto: revogada a permissão, o marcador do
+            // usuário não pode continuar no mapa com o último fix conhecido.
+            setCoords(null)
+          }
           return next
         }
+        // Permissão intacta e posição em mãos: relê sem gastar GPS de novo.
+        if (statusRef.current === 'ready' && coordsRef.current) return 'ready'
         const pos = await Location.getCurrentPositionAsync({})
         if (mounted.current) {
           setCoords([pos.coords.longitude, pos.coords.latitude])
@@ -75,16 +84,15 @@ export function useUserLocation(): Result {
     void resolve(false)
   }, [resolve])
 
-  // A permissão pode ser concedida FORA do app, nos Ajustes do sistema — e o
-  // mapa é uma aba, que não desmonta. Sem reler no foreground, a concessão só
+  // A permissão muda FORA do app, nos Ajustes do sistema — nos dois sentidos —
+  // e o mapa é uma aba, que não desmonta. Sem reler no foreground, a mudança só
   // aparecia depois de matar e reabrir o app.
-  // Só relê quando ainda não está pronta: com 'ready' quem acompanha a posição
-  // é o useUserLiveLocation, e reler aqui gastaria GPS a cada volta ao app.
+  // Relê SEMPRE: ler a permissão é barato, e pular quando está 'ready' fazia a
+  // revogação passar batido, que é o caso mais grave dos dois. Quem economiza
+  // GPS é o resolve, que não busca posição nova se nada mudou.
   useEffect(() => {
     const subscription = AppState.addEventListener('change', state => {
-      if (state === 'active' && statusRef.current !== 'ready') {
-        void resolve(false)
-      }
+      if (state === 'active') void resolve(false)
     })
     return () => subscription.remove()
   }, [resolve])
