@@ -4,6 +4,7 @@ import { Link, useLocalSearchParams, useRouter } from 'expo-router'
 import { LoginForm } from '@/features/auth/components/LoginForm'
 import { AuthDivider } from '@/features/auth/components/AuthDivider'
 import { SocialLoginButtons } from '@/features/auth/components/SocialLoginButtons'
+import { LegalNotice } from '@/features/auth/components/LegalNotice'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useBanner } from '@/shared/lib/banner'
 import { FormFocusProvider } from '@/shared/lib/formFocus'
@@ -72,6 +73,10 @@ export default function LoginScreen() {
           <AuthDivider />
 
           <SocialLoginButtons />
+
+          <View className="mt-4">
+            <LegalNotice action="entrar" />
+          </View>
 
           <View className="flex-row justify-center mt-6 gap-1">
             <Text className="text-content-muted">Não tem uma conta?</Text>

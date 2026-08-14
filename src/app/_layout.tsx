@@ -24,14 +24,9 @@ import { ConfirmProvider } from '@/shared/lib/confirm'
 import { OpenInMapsProvider } from '@/shared/lib/openInMaps'
 import { BannerProvider } from '@/shared/lib/banner'
 import { useAuthStore } from '@/features/auth/store/authStore'
-import {
-  useConsentStore,
-  selectNeedsConsent,
-  selectNeedsVersionBump,
-  selectConsentHydrated,
-} from '@/features/privacy/store/consentStore'
-import { CONSENT_VERSION } from '@/features/privacy/services/consentService'
 import { useRestoreSession } from '@/features/auth/hooks/useRestoreSession'
+import { useConsentMirror } from '@/features/privacy/hooks/useConsentMirror'
+import { PolicyUpdateNotice } from '@/features/privacy/components/PolicyUpdateNotice'
 import { endSession } from '@/features/auth/lib/session'
 import { initFacebookSDK } from '@/features/auth/lib/facebookLogin'
 import { SessionUnavailable } from '@/features/auth/components/SessionUnavailable'
@@ -59,19 +54,12 @@ function AuthGuard() {
   const segments = useSegments()
   const router = useRouter()
 
-  const needsConsent = useConsentStore(selectNeedsConsent)
-  const needsVersionBump = useConsentStore(s =>
-    selectNeedsVersionBump(s, CONSENT_VERSION),
-  )
-
   useEffect(() => {
     if (status === 'loading' || status === 'offline') return
 
     const inAuthGroup = segments[0] === '(auth)'
     const onCompleteProfile =
       inAuthGroup && (segments as string[])[1] === 'complete-profile'
-    const onConsentScreen =
-      inAuthGroup && (segments as string[])[1] === 'consent'
 
     if (status === 'unauthenticated' && !inAuthGroup) {
       // Sessão expirada vai direto pro login (banner "sessão expirou" mora lá);
@@ -89,26 +77,10 @@ function AuthGuard() {
       return
     }
 
-    // Gate de consentimento: usuário autenticado com perfil completo mas sem consentimento
-    // (novo usuário) ou com versão desatualizada (version bump) → tela de consent.
-    if (
-      status === 'authenticated' &&
-      !profileIncomplete &&
-      (needsConsent || needsVersionBump) &&
-      !onConsentScreen
-    ) {
-      router.replace('/(auth)/consent')
-      return
-    }
-
-    // Autenticado, com perfil e consentimento OK → sai do grupo auth
-    if (
-      status === 'authenticated' &&
-      !profileIncomplete &&
-      !needsConsent &&
-      !needsVersionBump &&
-      inAuthGroup
-    ) {
+    // Consentimento NÃO é portão: o registro já existe quando o usuário chega
+    // (criado na transação do cadastro) e política nova vira aviso dispensável,
+    // não bloqueio. Autenticado com perfil completo → app.
+    if (status === 'authenticated' && !profileIncomplete && inAuthGroup) {
       router.replace('/(tabs)/map')
     }
   }, [
@@ -116,8 +88,6 @@ function AuthGuard() {
     profileIncomplete,
     onboardingSeen,
     sessionExpired,
-    needsConsent,
-    needsVersionBump,
     segments,
     router,
   ])
@@ -163,6 +133,7 @@ function chromeFor(path: string): Chrome {
 
 export default function RootLayout() {
   const { retry } = useRestoreSession()
+  useConsentMirror()
   const status = useAuthStore(s => s.status)
   const isAuthenticated = useAuthStore(s => s.isAuthenticated)
   const profileIncomplete = useAuthStore(s => s.profileIncomplete)
@@ -192,18 +163,10 @@ export default function RootLayout() {
     endSession({ expired: true })
   }, [])
 
-  // Esconde GlobalHeader durante o fluxo de completar perfil — a tela
-  // ainda está em (auth), mas isAuthenticated já é true.
-  const consentHydrated = useConsentStore(selectConsentHydrated)
-  const needsConsentRoot = useConsentStore(selectNeedsConsent)
-  const needsVersionBumpRoot = useConsentStore(s =>
-    selectNeedsVersionBump(s, CONSENT_VERSION),
-  )
-  const onConsentFlow =
-    !consentHydrated || needsConsentRoot || needsVersionBumpRoot
   // Sessão pronta = header global liberado. É a única parte do cromo que não sai
   // da rota, e só muda em login/logout — nunca no meio de uma transição.
-  const sessionReady = isAuthenticated && !profileIncomplete && !onConsentFlow
+  // Consentimento não entra mais aqui: deixou de ser etapa do fluxo de entrada.
+  const sessionReady = isAuthenticated && !profileIncomplete
   const header = sessionReady ? chromeFor(segments.join('/')).header : 'nenhum'
 
   // O route.name do Stack raiz traz o /index das pastas sem layout próprio
@@ -258,6 +221,7 @@ export default function RootLayout() {
                     onMounted={hideNativeSplash}
                   />
                   <AuthGuard />
+                  {sessionReady && <PolicyUpdateNotice />}
                   {chatActive && userId && (
                     <>
                       <ChatRealtimeMount

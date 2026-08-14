@@ -32,10 +32,6 @@ export default function AuthLayout() {
       <Stack.Screen name="register" options={inset} />
       <Stack.Screen name="forgot-password" options={inset} />
       <Stack.Screen
-        name="consent"
-        options={{ gestureEnabled: false, ...inset }}
-      />
-      <Stack.Screen
         name="complete-profile"
         options={{ gestureEnabled: false, ...inset }}
       />

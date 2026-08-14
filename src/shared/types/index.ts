@@ -271,6 +271,20 @@ export type UserProfile = {
   accountStatus?: AccountStatus
   deactivatedAt?: string | null
   scheduledDeletionAt?: string | null
+  // Preferências de produto (opt-out, default true no servidor). Vivem no
+  // perfil, e NÃO no registro de consentimento: são configuração, não
+  // declaração de vontade. Só em /users/me.
+  socialFeed?: boolean
+  socialVisibility?: boolean
+  analytics?: boolean
+  // Resumo do consentimento, pra tela nenhuma precisar de uma segunda chamada.
+  // `given: false` = revogado no Art. 18 — é a fonte da verdade do estado
+  // revogado, e permissão de SO concedida depois não o desfaz.
+  consent?: {
+    given: boolean
+    version: string
+    revokedAt: string | null
+  }
 }
 
 export type UserEventSummary = {

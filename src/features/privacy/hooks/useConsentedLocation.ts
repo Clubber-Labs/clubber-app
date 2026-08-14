@@ -1,16 +1,27 @@
-import { useUserLocation } from '@/shared/hooks/useUserLocation'
-import { useConsentStore, selectCanUseLocation } from '../store/consentStore'
+import {
+  useUserLocation,
+  type LocationStatus,
+} from '@/shared/hooks/useUserLocation'
+import { useConsentStore, selectConsentRevoked } from '../store/consentStore'
+
+export type ConsentedLocationStatus = LocationStatus | 'revoked'
 
 /**
- * Localização amarrada ao consentimento de localização precisa.
+ * Posição do usuário respeitando a revogação do Art. 18.
  *
- * Enquanto ele estiver desligado o app não consulta o sistema — é o que a tela
- * de consentimento promete ("Usamos sua posição em tempo real para exibir
- * eventos próximos...") e o que useLocationSync e useSuggestSpots já faziam.
- * Existe como ponto único de composição pra nenhum componente precisar ler o
- * store de consentimento por conta própria.
+ * A permissão do SO é a fonte da verdade sobre o dispositivo, mas ela não
+ * desfaz uma revogação: quem revogou e depois reativou a permissão nos Ajustes
+ * continua revogado até religar algo no app. Por isso 'revoked' é um estado
+ * próprio — mandar essa pessoa pros ajustes do sistema não resolveria nada.
  */
-export function useConsentedLocation() {
-  const allowed = useConsentStore(selectCanUseLocation)
-  return useUserLocation(allowed)
+export function useConsentedLocation(): {
+  coords: [number, number] | null
+  status: ConsentedLocationStatus
+  request: () => Promise<LocationStatus>
+} {
+  const revoked = useConsentStore(selectConsentRevoked)
+  const { coords, status, request } = useUserLocation()
+
+  if (revoked) return { coords: null, status: 'revoked', request }
+  return { coords, status, request }
 }

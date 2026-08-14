@@ -85,7 +85,7 @@ export function DataLossWarning({
       </Pressable>
 
       <Pressable
-        onPress={() => Linking.openURL('https://clubber.app/privacidade')}
+        onPress={() => Linking.openURL('https://clubber.social/privacidade')}
         className="flex-row items-center gap-2 px-1"
       >
         <ArrowSquareOutIcon size={14} color={colors.brandText} />

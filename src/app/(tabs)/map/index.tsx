@@ -227,6 +227,11 @@ export default function MapScreen() {
     if (result === 'denied') {
       showBanner('Ative a localização nos ajustes para ver você no mapa.')
       Linking.openSettings()
+    } else if (result === 'revoked') {
+      // Revogação se desfaz no app, não nos ajustes do sistema — mandar pra lá
+      // faria a pessoa ativar a permissão e continuar sem ver nada.
+      showBanner('Você revogou seus consentimentos. Revise em Privacidade.')
+      router.push('/profile/privacy')
     } else if (result === 'error') {
       showBanner('Não foi possível obter sua localização.')
     }

@@ -1,5 +1,6 @@
 // Padrão otimista canônico — ver CLAUDE.md → "Tratamento de erros e feedback".
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNotificationPriming } from '@/features/notifications/hooks/useNotificationPriming'
 import type { InfiniteData, QueryKey } from '@tanstack/react-query'
 import { eventsService } from '../services/eventsService'
 import { invalidateEventViews } from './cacheKeys'
@@ -201,6 +202,7 @@ function useAttendanceSnapshot(eventId: string) {
 
 export function useSetAttendance(eventId: string) {
   const { snapshot, queryClient } = useAttendanceSnapshot(eventId)
+  const { primeAfterSocialAction } = useNotificationPriming()
 
   return useMutation({
     mutationFn: (type: AttendanceType) =>
@@ -211,6 +213,10 @@ export function useSetAttendance(eventId: string) {
       return snap
     },
     onError: (_err, _vars, ctx) => ctx && restore(queryClient, eventId, ctx),
+    // Confirmar presença é a primeira ação com peso social do fluxo: a partir
+    // daqui existe o que notificar, e é onde o priming de push faz sentido.
+    // Silencioso se a permissão já foi resolvida ou já perguntamos uma vez.
+    onSuccess: () => void primeAfterSocialAction(),
     onSettled: () => invalidateEventViews(queryClient, eventId, 'none'),
   })
 }

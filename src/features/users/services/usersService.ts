@@ -21,6 +21,11 @@ export type UpdateMePayload = {
   // preferências; omitir a chave não altera. Por isso é opcional aqui.
   preferredCategories?: string[]
   preferredSubcategories?: string[]
+  // Preferências de produto (opt-out). Moram no perfil, não em /consent —
+  // mandá-las num PATCH /consent é erro de validação.
+  socialFeed?: boolean
+  socialVisibility?: boolean
+  analytics?: boolean
 }
 
 export const usersService = {

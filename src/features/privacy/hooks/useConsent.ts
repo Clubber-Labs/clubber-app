@@ -1,160 +1,83 @@
-import { useCallback, useEffect } from 'react'
-import { isAxiosError } from 'axios'
-import { useConsentStore, selectNeedsVersionBump } from '../store/consentStore'
-import {
-  consentService,
-  CONSENT_VERSION,
-  type ConsentFields,
-} from '../services/consentService'
-import { resolveConsent } from '../lib/resolveConsent'
-import { useAuthStore } from '@/features/auth/store/authStore'
+import { useCallback } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useConsentStore } from '../store/consentStore'
+import { consentService, type ConsentFields } from '../services/consentService'
+import { hydrateConsentRecord } from '../lib/consentMirror'
+import { userKeys } from '@/features/users/hooks/cacheKeys'
 
 /**
- * Hook principal de consentimento.
- * - Carrega dados do backend ao logar (status 'unknown' → hydrate ou markPending)
- * - Sincroniza automaticamente via debounce 1.5s quando isSynced = false
- * - Expõe grantConsent, updateConsent, revokeAll, exportData, auditLog
+ * Estado e ações do consentimento. Não existe mais "conceder": o registro nasce
+ * com a conta, e toda escrita é um PATCH parcial.
  */
 export function useConsent() {
-  const isAuth = useAuthStore(s => s.isAuthenticated)
-  const consentStatus = useConsentStore(s => s.status)
-  const isSynced = useConsentStore(s => s.isSynced)
-  const needsVersionBump = useConsentStore(s =>
-    selectNeedsVersionBump(s, CONSENT_VERSION),
-  )
+  const queryClient = useQueryClient()
 
-  // Campos reativos — cada um re-renderiza apenas quando seu valor muda
   const locationPrecise = useConsentStore(s => s.locationPrecise)
-  const socialFeed = useConsentStore(s => s.socialFeed)
-  const socialVisibility = useConsentStore(s => s.socialVisibility)
   const pushNotifications = useConsentStore(s => s.pushNotifications)
   const marketing = useConsentStore(s => s.marketing)
-  const analytics = useConsentStore(s => s.analytics)
   const surveys = useConsentStore(s => s.surveys)
   const consentVersion = useConsentStore(s => s.consentVersion)
-  const consentGiven = useConsentStore(s => s.consentGiven)
   const revokedAt = useConsentStore(s => s.revokedAt)
-
-  // Ações do store — referências estáveis do Zustand
-  const hydrate = useConsentStore(s => s.hydrate)
   const setMany = useConsentStore(s => s.setMany)
-  const markSynced = useConsentStore(s => s.markSynced)
-  const markUnsynced = useConsentStore(s => s.markUnsynced)
-  const revoke = useConsentStore(s => s.revoke)
 
-  // Retentativa: o login/boot já resolve o consentimento, então 'unknown' aqui
-  // significa que aquela chamada falhou por rede.
-  useEffect(() => {
-    if (!isAuth || consentStatus !== 'unknown') return
-    void resolveConsent()
-  }, [isAuth, consentStatus])
-
-  // Sync automático com debounce — lê estado atual do store via getState()
-  // para evitar closure stale mesmo que o effect rode antes da última atualização
-  useEffect(() => {
-    if (!isAuth || isSynced) return
-
-    const t = setTimeout(async () => {
-      const s = useConsentStore.getState()
-      try {
-        await consentService.update({
-          locationPrecise: s.locationPrecise,
-          socialFeed: s.socialFeed,
-          socialVisibility: s.socialVisibility,
-          pushNotifications: s.pushNotifications,
-          marketing: s.marketing,
-          analytics: s.analytics,
-          surveys: s.surveys,
-        })
-        useConsentStore.getState().markSynced()
-      } catch {
-        // Mantém isSynced = false → retry no próximo ciclo
-      }
-    }, 1500)
-
-    return () => clearTimeout(t)
-  }, [isAuth, isSynced])
-
-  // ── Ações públicas ───────────────────────────────────────────
-
-  const grantConsent = useCallback(
-    async (fields: ConsentFields) => {
-      hydrate({
-        ...fields,
-        consentGiven: true,
-        consentVersion: CONSENT_VERSION,
-      })
-      try {
-        await consentService.create(fields)
-        markSynced()
-      } catch (err) {
-        if (isAxiosError(err) && err.response?.status === 409) {
-          try {
-            await consentService.update(fields)
-            markSynced()
-            return
-          } catch {
-            // fall through to markUnsynced
-          }
-        }
-        // isSynced = false → retry automático via debounce
-        markUnsynced()
-      }
-    },
-    [hydrate, markSynced, markUnsynced],
-  )
-
+  /**
+   * Otimista com reconciliação: o switch vira na hora, mas se o PATCH falhar
+   * ele volta e quem chama mostra o erro. Numa tela de privacidade, UI dizendo
+   * que gravou sem ter gravado é grave.
+   */
   const updateConsent = useCallback(
-    async (fields: Partial<ConsentFields>) => {
-      setMany(fields)
+    async (patch: Partial<ConsentFields>): Promise<boolean> => {
+      const before = useConsentStore.getState()
+      const previous = Object.fromEntries(
+        Object.keys(patch).map(key => [
+          key,
+          before[key as keyof ConsentFields],
+        ]),
+      ) as Partial<ConsentFields>
+
+      setMany(patch)
       try {
-        await consentService.update(fields)
-        markSynced()
+        const record = await consentService.update(patch)
+        useConsentStore.getState().hydrate(record)
+        return true
       } catch {
-        // Retry automático
+        setMany(previous)
+        return false
       }
     },
-    [setMany, markSynced],
+    [setMany],
   )
 
-  const revokeAll = useCallback(async () => {
-    revoke()
+  /**
+   * Art. 18: desliga consentimentos E as preferências de produto do perfil, e
+   * apaga a localização guardada. O perfil precisa ser recarregado — os toggles
+   * de preferência ficaram desatualizados na tela.
+   */
+  const revokeAll = useCallback(async (): Promise<boolean> => {
     try {
       await consentService.revokeAll()
-      markSynced()
+      await hydrateConsentRecord()
+      await queryClient.invalidateQueries({ queryKey: userKeys.me })
+      return true
     } catch {
-      // Retry automático
+      return false
     }
-  }, [revoke, markSynced])
+  }, [queryClient])
 
-  const exportData = useCallback(async () => {
-    return consentService.export()
-  }, [])
-
-  const auditLog = useCallback(async () => {
-    return consentService.auditLog()
-  }, [])
+  const exportData = useCallback(() => consentService.export(), [])
 
   return {
     consent: {
       locationPrecise,
-      socialFeed,
-      socialVisibility,
       pushNotifications,
       marketing,
-      analytics,
       surveys,
       consentVersion,
-      consentGiven,
-      status: consentStatus,
       revokedAt,
     },
-    isSynced,
-    needsVersionBump,
-    grantConsent,
+    isRevoked: !!revokedAt,
     updateConsent,
     revokeAll,
     exportData,
-    auditLog,
   }
 }

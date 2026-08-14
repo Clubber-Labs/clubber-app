@@ -5,8 +5,6 @@ type Coords = [number, number]
 export type LocationStatus =
   /** Ainda resolvendo o estado da permissão. */
   | 'loading'
-  /** Sem consentimento de localização precisa — o sistema nem foi consultado. */
-  | 'unconsented'
   /** Sistema ainda pode perguntar (nunca perguntou, ou negou e permite retry). */
   | 'askable'
   /** Negada de forma definitiva — só os ajustes do sistema resolvem. */
@@ -18,24 +16,18 @@ type Result = {
   coords: Coords | null
   status: LocationStatus
   /**
-   * Pede a permissão ao SISTEMA. Só a partir de um gesto explícito do usuário.
-   * Ignora `allowed` de propósito: quem chama resolve o consentimento no mesmo
-   * gesto, e o store pode não ter propagado quando o pedido sai.
+   * Dispara o prompt NATIVO. Só a partir de um gesto explícito, e depois de um
+   * priming — no iOS o prompt aparece uma única vez na vida do app.
    */
   request: () => Promise<LocationStatus>
 }
 
 /**
- * Posição atual do usuário, sem pedir nada na montagem — só CONSULTA o que já
- * foi decidido. O pedido virou ação explícita porque um prompt frio na abertura
- * gasta a única chance que existe: no iOS, negado uma vez, o app não pode
- * perguntar de novo — só resta mandar o usuário pros ajustes.
- *
- * `allowed` é o consentimento de localização precisa (LGPD). Vem por parâmetro,
- * e não do store, porque shared/ não importa de features/ — quem compõe os dois
- * é o useConsentedLocation. Mesma convenção do useUserLiveLocation(enabled).
+ * Posição atual do usuário. Na montagem apenas CONSULTA a permissão; nunca
+ * pede. O pedido é ação explícita (request), atrás de um priming — ver
+ * useLocationGate.
  */
-export function useUserLocation(allowed: boolean): Result {
+export function useUserLocation(): Result {
   const [coords, setCoords] = useState<Coords | null>(null)
   const [status, setStatus] = useState<LocationStatus>('loading')
   const mounted = useRef(true)
@@ -76,13 +68,8 @@ export function useUserLocation(allowed: boolean): Result {
   )
 
   useEffect(() => {
-    if (!allowed) {
-      setStatus('unconsented')
-      setCoords(null)
-      return
-    }
     void resolve(false)
-  }, [allowed, resolve])
+  }, [resolve])
 
   const request = useCallback(() => resolve(true), [resolve])
 
