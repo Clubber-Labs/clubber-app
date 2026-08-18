@@ -6,10 +6,17 @@ import { ArtSocial } from './components/slides/ArtSocial'
 import { ArtFinal } from './components/slides/ArtFinal'
 import type { ArtProps } from './types'
 
+// Título e corpo são CHAVES do dicionário, traduzidas no render pela tela:
+// frase pronta aqui congelaria o idioma no import do módulo. As unions mantêm
+// o gate do typecheck — chave inexistente não compila.
+type SlideName = 'opening' | 'map' | 'spot' | 'social' | 'final'
+type SlideTitleKey = `onboarding.slides.${Exclude<SlideName, 'final'>}.title`
+type SlideBodyKey = `onboarding.slides.${SlideName}.body`
+
 export type Slide = {
   art: (props: ArtProps) => ReactElement
-  title?: string
-  body: string
+  titleKey?: SlideTitleKey
+  bodyKey: SlideBodyKey
   // Arte que ocupa a tela inteira atrás do texto (mapa) em vez de bloco no fluxo.
   fullBleed?: boolean
 }
@@ -20,29 +27,29 @@ export type Slide = {
 export const SLIDES: Slide[] = [
   {
     art: ArtOpening,
-    title: 'Sempre tem coisa rolando',
-    body: 'Festa, balada, trilha, camping, after. O Clubber mostra o que tá vivo — agora.',
+    titleKey: 'onboarding.slides.opening.title',
+    bodyKey: 'onboarding.slides.opening.body',
   },
   {
     art: ArtMap,
     fullBleed: true,
-    title: 'Eventos no lugar exato',
-    body: 'Cada gota é algo acontecendo de verdade — de dia, de tarde, de madrugada.',
+    titleKey: 'onboarding.slides.map.title',
+    bodyKey: 'onboarding.slides.map.body',
   },
   {
     art: ArtSpot,
     fullBleed: true,
-    title: 'Rolê é o que você inventar',
-    body: 'Esquenta, show, café, after — solta um balão e virou ponto de encontro.',
+    titleKey: 'onboarding.slides.spot.title',
+    bodyKey: 'onboarding.slides.spot.body',
   },
   {
     art: ArtSocial,
-    title: 'Chega junto',
-    body: 'Veja quem vai, entre na conversa e combine o rolê — tudo dentro do Clubber.',
+    titleKey: 'onboarding.slides.social.title',
+    bodyKey: 'onboarding.slides.social.body',
   },
   {
-    // Sem title: o wordmark é o herói da tela final.
+    // Sem título: o wordmark é o herói da tela final.
     art: ArtFinal,
-    body: 'Cria sua conta, vire um Clubber e descubra o que tá rolando perto de você.',
+    bodyKey: 'onboarding.slides.final.body',
   },
 ]

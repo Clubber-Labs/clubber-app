@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { View, Text, Pressable, useWindowDimensions } from 'react-native'
 import Animated, {
   useAnimatedRef,
@@ -22,6 +23,7 @@ import { OnboardingFooter } from '@/features/onboarding/components/OnboardingFoo
 // a versão JS-driven derrubava frames durante o arrasto.
 export default function OnboardingScreen() {
   const router = useRouter()
+  const { t } = useTranslation()
   const insets = useSafeAreaInsets()
   const { width } = useWindowDimensions()
   const [page, setPage] = useState(0)
@@ -63,8 +65,8 @@ export default function OnboardingScreen() {
         scrollEventThrottle={16}
         className="flex-1"
       >
-        {SLIDES.map(({ art: Art, title, body, fullBleed }, i) => (
-          <View key={body} style={{ width }}>
+        {SLIDES.map(({ art: Art, titleKey, bodyKey, fullBleed }, i) => (
+          <View key={bodyKey} style={{ width }}>
             <SlideFrame index={i} width={width} scrollX={scrollX}>
               {/* Mapa full-bleed atrás do texto; no fluxo entra um espaçador
                   do mesmo tamanho do bloco de arte pra manter o texto alinhado
@@ -77,13 +79,13 @@ export default function OnboardingScreen() {
                   <Art active={i === page} />
                 )}
                 <View className="gap-3">
-                  {!!title && (
+                  {!!titleKey && (
                     <Text className="text-5xl font-bold text-content text-center">
-                      {title}
+                      {t(titleKey)}
                     </Text>
                   )}
                   <Text className="text-xl text-content-muted text-center leading-6">
-                    {body}
+                    {t(bodyKey)}
                   </Text>
                 </View>
               </View>
@@ -101,7 +103,9 @@ export default function OnboardingScreen() {
       >
         <BrandSticker size={40} />
         <Pressable onPress={() => router.replace('/(auth)/login')} hitSlop={8}>
-          <Text className="text-content-subtle font-medium">Pular</Text>
+          <Text className="text-content-subtle font-medium">
+            {t('onboarding.skip')}
+          </Text>
         </Pressable>
       </View>
 

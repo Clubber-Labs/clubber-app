@@ -1,4 +1,5 @@
 import { ScrollView, View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'expo-router'
 import { RegisterForm } from '@/features/auth/components/RegisterForm'
 import { BrandStickerWordmark, BrandWordmark } from '@/shared/components/brand'
@@ -6,6 +7,7 @@ import { FormFocusProvider } from '@/shared/lib/formFocus'
 import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
 
 export default function RegisterScreen() {
+  const { t } = useTranslation()
   const form = useKeyboardAwareForm()
 
   return (
@@ -31,9 +33,13 @@ export default function RegisterScreen() {
           <RegisterForm />
 
           <View className="flex-row justify-center mt-6 gap-1">
-            <Text className="text-content-muted">Já tem uma conta?</Text>
+            <Text className="text-content-muted">
+              {t('auth.register.hasAccount')}
+            </Text>
             <Link href="/(auth)/login">
-              <Text className="text-brand-text font-semibold">Entrar</Text>
+              <Text className="text-brand-text font-semibold">
+                {t('auth.register.signIn')}
+              </Text>
             </Link>
           </View>
         </View>

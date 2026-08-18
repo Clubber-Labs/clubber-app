@@ -13,6 +13,7 @@ import {
 } from '@/shared/lib/secureStore'
 import { useBanner } from '@/shared/lib/banner'
 import { getApiError } from '@/shared/lib/apiError'
+import { i18n } from '@/shared/i18n'
 import { needsRolePreferences } from '@/shared/utils/rolePreferences'
 import { maybeShowWelcomeBack } from '@/features/account/lib/welcomeBack'
 import { userKeys } from '@/features/users/hooks/cacheKeys'
@@ -29,8 +30,9 @@ type SocialMutationResult =
 function mapSocialError(error: unknown, provider: SocialProvider): string {
   if (isAxiosError(error)) return getApiError(error).message
 
-  const providerName = provider === 'google' ? 'Google' : 'Facebook'
-  return `Não conseguimos entrar com ${providerName}. Tente novamente ou use e-mail/senha.`
+  return i18n.t('auth.social.fallback', {
+    provider: provider === 'google' ? 'Google' : 'Facebook',
+  })
 }
 
 async function getProviderToken(
@@ -112,9 +114,10 @@ export function useSocialLogin(provider: SocialProvider) {
     onError: async error => {
       await clearAuthSession()
       if (error instanceof Error && error.message === 'missing_email') {
-        const providerName = provider === 'google' ? 'Google' : 'Facebook'
         showBanner(
-          `Sua conta ${providerName} precisa permitir o acesso ao e-mail para entrar.`,
+          i18n.t('auth.social.missingEmail', {
+            provider: provider === 'google' ? 'Google' : 'Facebook',
+          }),
         )
         return
       }

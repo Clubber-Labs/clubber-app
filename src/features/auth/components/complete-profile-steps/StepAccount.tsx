@@ -1,4 +1,5 @@
 import { View, Text, TextInput } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import { formatPhone, phoneDigits } from '@/shared/utils/masks'
@@ -14,13 +15,16 @@ type Props = {
 
 export function StepAccount({ control, errors, email }: Props) {
   const form = useFormFocus()
+  const { t } = useTranslation()
 
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-content">Sua conta</Text>
+        <Text className="text-2xl font-bold text-content">
+          {t('auth.register.account.title')}
+        </Text>
         <Text className="text-sm text-content-muted">
-          Escolha como as pessoas vão te encontrar.
+          {t('auth.completeProfile.account.subtitle')}
         </Text>
       </View>
 
@@ -28,7 +32,7 @@ export function StepAccount({ control, errors, email }: Props) {
         {!!email && (
           <View className="gap-1">
             <Text className="text-sm font-medium text-content-tertiary">
-              E-mail
+              {t('auth.fields.email')}
             </Text>
             <View className="border border-line bg-surface rounded-full px-4 py-3.5 opacity-70">
               <Text className="text-base text-content-tertiary">{email}</Text>
@@ -38,7 +42,7 @@ export function StepAccount({ control, errors, email }: Props) {
 
         <View className="gap-1" {...form.anchor('username')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Nome de usuário
+            {t('auth.fields.usernameLong')}
           </Text>
           <Controller
             control={control}
@@ -47,7 +51,7 @@ export function StepAccount({ control, errors, email }: Props) {
               <TextInput
                 {...form.input('username')}
                 className={`border ${errors.username ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
-                placeholder="joaosilva"
+                placeholder={t('auth.fields.usernamePlaceholder')}
                 placeholderTextColor={colors.contentSubtle}
                 autoCapitalize="none"
                 onChangeText={onChange}
@@ -60,7 +64,7 @@ export function StepAccount({ control, errors, email }: Props) {
 
         <View className="gap-1" {...form.anchor('phone')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Telefone
+            {t('auth.fields.phone')}
           </Text>
           <Controller
             control={control}
@@ -69,7 +73,7 @@ export function StepAccount({ control, errors, email }: Props) {
               <TextInput
                 {...form.input('phone')}
                 className={`border ${errors.phone ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
-                placeholder="(11) 99999-9999"
+                placeholder={t('auth.fields.phonePlaceholder')}
                 placeholderTextColor={colors.contentSubtle}
                 keyboardType="phone-pad"
                 onChangeText={text => onChange(phoneDigits(text))}

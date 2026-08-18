@@ -1,4 +1,5 @@
 import { View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useForm, Controller, type Path } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -57,6 +58,7 @@ export function StepNewPassword({
   })
 
   const newPassword = watch('newPassword') ?? ''
+  const { t } = useTranslation()
   const form = useFormFocus()
   const showFormErrors = useFormErrorBanner(form)
 
@@ -64,17 +66,17 @@ export function StepNewPassword({
     <View className="gap-5">
       <View className="gap-1">
         <Text className="text-2xl font-bold text-content">
-          Criar nova senha
+          {t('auth.forgotPassword.newPassword.title')}
         </Text>
         <Text className="text-sm text-content-muted">
-          Use 8+ caracteres com letras e números.
+          {t('auth.forgotPassword.newPassword.subtitle')}
         </Text>
       </View>
 
       <View className="gap-4">
         <View className="gap-2" {...form.anchor('newPassword')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Nova senha
+            {t('auth.forgotPassword.newPassword.label')}
           </Text>
           <Controller
             control={control}
@@ -84,7 +86,7 @@ export function StepNewPassword({
                 {...form.input('newPassword')}
                 value={value}
                 onChangeText={onChange}
-                placeholder="Mínimo 8 caracteres"
+                placeholder={t('auth.fields.passwordPlaceholder')}
                 error={!!errors.newPassword}
                 textContentType="newPassword"
                 autoComplete="password-new"
@@ -97,7 +99,7 @@ export function StepNewPassword({
 
         <View className="gap-1" {...form.anchor('confirmPassword')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Confirmar senha
+            {t('auth.fields.confirmPassword')}
           </Text>
           <Controller
             control={control}
@@ -107,7 +109,7 @@ export function StepNewPassword({
                 {...form.input('confirmPassword')}
                 value={value}
                 onChangeText={onChange}
-                placeholder="Repita a senha"
+                placeholder={t('auth.fields.confirmPasswordPlaceholder')}
                 error={!!errors.confirmPassword}
                 textContentType="newPassword"
                 autoComplete="password-new"
@@ -121,19 +123,27 @@ export function StepNewPassword({
 
       {showResendHint && (
         <Text className="text-content-muted text-xs text-center">
-          Toque em “Voltar” para pedir um novo código.
+          {t('auth.forgotPassword.newPassword.resendHint')}
         </Text>
       )}
 
       <View className="flex-row gap-3">
         <View className="flex-1">
-          <Button label="Voltar" onPress={onBack} variant="secondary" />
+          <Button
+            label={t('common.back')}
+            onPress={onBack}
+            variant="secondary"
+          />
         </View>
         <View className="flex-1">
           <FormSubmitButton
             control={control}
             required={REQUIRED_FIELDS}
-            label={isSubmitting ? 'Redefinindo...' : 'Redefinir senha'}
+            label={
+              isSubmitting
+                ? t('auth.forgotPassword.newPassword.resetting')
+                : t('auth.forgotPassword.newPassword.reset')
+            }
             onPress={handleSubmit(onSubmit, errors =>
               showFormErrors(messagesFromErrors(errors)),
             )}

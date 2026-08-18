@@ -1,4 +1,5 @@
 import { View, Text, TextInput } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Controller, useWatch } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import type { RegisterInput } from '../../schemas/registerSchema'
@@ -15,22 +16,31 @@ type Props = {
   errors: FieldErrors<RegisterInput>
 }
 
+// A label é CHAVE (traduzida no render): frase pronta aqui congelaria o idioma
+// no import do módulo — mesma armadilha dos schemas Zod.
 const AVAILABILITY_TEXT: Record<
   Exclude<UsernameAvailability, 'idle'>,
-  { label: string; className: string }
+  {
+    label:
+      | 'auth.register.account.checking'
+      | 'auth.register.account.available'
+      | 'errors.USERNAME_TAKEN'
+    className: string
+  }
 > = {
   checking: {
-    label: 'Verificando disponibilidade...',
+    label: 'auth.register.account.checking',
     className: 'text-content-subtle',
   },
-  available: { label: 'Disponível', className: 'text-success-text' },
-  taken: {
-    label: 'Este nome de usuário já está em uso.',
-    className: 'text-content',
+  available: {
+    label: 'auth.register.account.available',
+    className: 'text-success-text',
   },
+  taken: { label: 'errors.USERNAME_TAKEN', className: 'text-content' },
 }
 
 export function StepAccount({ control, errors }: Props) {
+  const { t } = useTranslation()
   const form = useFormFocus()
   // O watch mora nesta etapa, e não no RegisterForm, pra digitar no username
   // re-renderizar só aqui — mesma razão do FormSubmitButton assinar apenas os
@@ -44,16 +54,18 @@ export function StepAccount({ control, errors }: Props) {
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-content">Sua conta</Text>
+        <Text className="text-2xl font-bold text-content">
+          {t('auth.register.account.title')}
+        </Text>
         <Text className="text-sm text-content-muted">
-          Esses dados são usados para acessar o Clubber.
+          {t('auth.register.account.subtitle')}
         </Text>
       </View>
 
       <View className="gap-4">
         <View className="gap-1" {...form.anchor('username')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Username
+            {t('auth.fields.username')}
           </Text>
           <Controller
             control={control}
@@ -62,7 +74,7 @@ export function StepAccount({ control, errors }: Props) {
               <TextInput
                 {...form.input('username')}
                 className={`border ${usernameFlagged ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
-                placeholder="joaosilva"
+                placeholder={t('auth.fields.usernamePlaceholder')}
                 placeholderTextColor={colors.contentSubtle}
                 onChangeText={onChange}
                 value={value}
@@ -74,14 +86,14 @@ export function StepAccount({ control, errors }: Props) {
             <Text
               className={`text-xs ${AVAILABILITY_TEXT[availability].className}`}
             >
-              {AVAILABILITY_TEXT[availability].label}
+              {t(AVAILABILITY_TEXT[availability].label)}
             </Text>
           )}
         </View>
 
         <View className="gap-1" {...form.anchor('email')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            E-mail
+            {t('auth.fields.email')}
           </Text>
           <Controller
             control={control}
@@ -90,7 +102,7 @@ export function StepAccount({ control, errors }: Props) {
               <TextInput
                 {...form.input('email')}
                 className={`border ${errors.email ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
-                placeholder="joao@email.com"
+                placeholder={t('auth.fields.emailPlaceholder')}
                 placeholderTextColor={colors.contentSubtle}
                 onChangeText={onChange}
                 value={value}
@@ -103,7 +115,7 @@ export function StepAccount({ control, errors }: Props) {
 
         <View className="gap-1" {...form.anchor('phone')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Telefone
+            {t('auth.fields.phone')}
           </Text>
           <Controller
             control={control}
@@ -112,7 +124,7 @@ export function StepAccount({ control, errors }: Props) {
               <TextInput
                 {...form.input('phone')}
                 className={`border ${errors.phone ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
-                placeholder="(11) 99999-9999"
+                placeholder={t('auth.fields.phonePlaceholder')}
                 placeholderTextColor={colors.contentSubtle}
                 onChangeText={text => onChange(phoneDigits(text))}
                 value={formatPhone(value ?? '')}

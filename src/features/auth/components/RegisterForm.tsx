@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   View,
   Text,
@@ -52,6 +53,7 @@ const FIELD_TO_STEP = new Map<keyof RegisterInput, number>(
 const CONFLICT_FIELDS = ['phone', 'email', 'username'] as const
 
 export function RegisterForm() {
+  const { t } = useTranslation()
   const { mutate: register, isPending } = useRegister()
   const [currentStep, setCurrentStep] = useState(0)
   const [genericError, setGenericError] = useState<string | null>(null)
@@ -204,7 +206,11 @@ export function RegisterForm() {
         <View className="flex-row gap-3">
           {currentStep > 0 && (
             <View className="flex-1">
-              <Button label="Voltar" onPress={handleBack} variant="secondary" />
+              <Button
+                label={t('common.back')}
+                onPress={handleBack}
+                variant="secondary"
+              />
             </View>
           )}
           <View className="flex-1">
@@ -212,7 +218,11 @@ export function RegisterForm() {
               <FormSubmitButton
                 control={control}
                 required={STEP_REQUIRED[currentStep]}
-                label={isPending ? 'Criando conta...' : 'Criar conta'}
+                label={
+                  isPending
+                    ? t('auth.register.creating')
+                    : t('auth.register.create')
+                }
                 onPress={handleSubmit(data => {
                   setGenericError(null)
                   register(data, { onError: handleApiError })
@@ -227,7 +237,7 @@ export function RegisterForm() {
               <FormSubmitButton
                 control={control}
                 required={STEP_REQUIRED[currentStep]}
-                label="Continuar"
+                label={t('common.continue')}
                 onPress={handleNext}
                 disabled={rolesStepBlocked}
               />

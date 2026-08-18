@@ -1,4 +1,5 @@
 import { View, Text, TextInput } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'expo-router'
 import { useForm, Controller, type Path } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -24,6 +25,7 @@ type Props = {
 }
 
 export function LoginForm({ defaultIdentifier }: Props) {
+  const { t } = useTranslation()
   const { mutate: login, isPending, error } = useLogin()
   const {
     control,
@@ -45,7 +47,7 @@ export function LoginForm({ defaultIdentifier }: Props) {
           <TextInput
             {...form.input('identifier')}
             className={`border ${errors.identifier ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
-            placeholder="E-mail ou nome de usuário"
+            placeholder={t('auth.login.identifierPlaceholder')}
             placeholderTextColor={colors.contentSubtle}
             onChangeText={onChange}
             value={value}
@@ -62,7 +64,7 @@ export function LoginForm({ defaultIdentifier }: Props) {
           <TextInput
             {...form.input('password')}
             className={`border ${errors.password ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
-            placeholder="Senha"
+            placeholder={t('auth.login.passwordPlaceholder')}
             placeholderTextColor={colors.contentSubtle}
             onChangeText={onChange}
             value={value}
@@ -74,7 +76,7 @@ export function LoginForm({ defaultIdentifier }: Props) {
       <View className="flex-row justify-end">
         <Link href="/(auth)/forgot-password">
           <Text className="text-brand-text text-sm font-medium">
-            Esqueci minha senha
+            {t('auth.login.forgotPassword')}
           </Text>
         </Link>
       </View>
@@ -83,8 +85,8 @@ export function LoginForm({ defaultIdentifier }: Props) {
         message={
           error
             ? isUnauthorizedError(error)
-              ? 'E-mail, nome de usuário ou senha incorretos.'
-              : 'Não foi possível entrar. Tente novamente.'
+              ? t('auth.login.wrongCredentials')
+              : t('auth.login.loginFailed')
             : null
         }
       />
@@ -92,7 +94,7 @@ export function LoginForm({ defaultIdentifier }: Props) {
       <FormSubmitButton
         control={control}
         required={REQUIRED_FIELDS}
-        label={isPending ? 'Entrando...' : 'Entrar'}
+        label={isPending ? t('auth.login.submitting') : t('auth.login.submit')}
         onPress={handleSubmit(
           data => login(data),
           errors => showFormErrors(messagesFromErrors(errors)),

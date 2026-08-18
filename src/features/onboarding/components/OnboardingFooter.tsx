@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { View } from 'react-native'
 import Animated, {
   Extrapolation,
@@ -35,6 +36,7 @@ export function OnboardingFooter({
   onLogin,
 }: Props) {
   const last = page === lastIdx
+  const { t } = useTranslation()
   const [singleH, setSingleH] = useState(0)
   const [stackH, setStackH] = useState(0)
 
@@ -87,7 +89,7 @@ export function OnboardingFooter({
           onLayout={e => setSingleH(e.nativeEvent.layout.height)}
           style={singleStyle}
         >
-          <Button label="Continuar" size="lg" onPress={onNext} />
+          <Button label={t('common.continue')} size="lg" onPress={onNext} />
         </Animated.View>
         <Animated.View
           pointerEvents={last ? 'auto' : 'none'}
@@ -109,9 +111,13 @@ export function OnboardingFooter({
           ]}
         >
           <View className="gap-3">
-            <Button label="Criar conta" size="lg" onPress={onRegister} />
             <Button
-              label="Já tenho conta"
+              label={t('onboarding.createAccount')}
+              size="lg"
+              onPress={onRegister}
+            />
+            <Button
+              label={t('onboarding.haveAccount')}
               variant="neutral"
               size="lg"
               onPress={onLogin}

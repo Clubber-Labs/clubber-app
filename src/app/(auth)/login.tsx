@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { View, Text, ScrollView, Pressable } from 'react-native'
 import { Link, useLocalSearchParams, useRouter } from 'expo-router'
 import { LoginForm } from '@/features/auth/components/LoginForm'
@@ -13,6 +14,7 @@ import { deleteOnboardingSeen } from '@/shared/lib/secureStore'
 import { BrandStickerWordmark, BrandWordmark } from '@/shared/components/brand'
 
 export default function LoginScreen() {
+  const { t } = useTranslation()
   const params = useLocalSearchParams<{ email?: string }>()
   const defaultEmail =
     typeof params.email === 'string' ? params.email : undefined
@@ -35,10 +37,10 @@ export default function LoginScreen() {
   // Sessão caiu por 401 → avisa uma vez e zera o flag (não repete ao revisitar).
   useEffect(() => {
     if (sessionExpired) {
-      showBanner('Sua sessão expirou. Entre novamente.')
+      showBanner(t('auth.login.sessionExpired'))
       acknowledgeExpired()
     }
-  }, [sessionExpired, showBanner, acknowledgeExpired])
+  }, [sessionExpired, showBanner, acknowledgeExpired, t])
 
   return (
     <FormFocusProvider value={form}>
@@ -62,10 +64,10 @@ export default function LoginScreen() {
           </View>
 
           <Text className="text-3xl font-bold text-content mb-2">
-            Bem-vindo de volta
+            {t('auth.login.welcome')}
           </Text>
           <Text className="text-content-muted mb-8">
-            Entre na sua conta para continuar
+            {t('auth.login.subtitle')}
           </Text>
 
           <LoginForm defaultIdentifier={defaultEmail} />
@@ -75,13 +77,17 @@ export default function LoginScreen() {
           <SocialLoginButtons />
 
           <View className="mt-4">
-            <LegalNotice action="entrar" />
+            <LegalNotice action={t('auth.legal.actionSignIn')} />
           </View>
 
           <View className="flex-row justify-center mt-6 gap-1">
-            <Text className="text-content-muted">Não tem uma conta?</Text>
+            <Text className="text-content-muted">
+              {t('auth.login.noAccount')}
+            </Text>
             <Link href="/(auth)/register">
-              <Text className="text-brand-text font-semibold">Cadastre-se</Text>
+              <Text className="text-brand-text font-semibold">
+                {t('auth.login.signUp')}
+              </Text>
             </Link>
           </View>
         </View>

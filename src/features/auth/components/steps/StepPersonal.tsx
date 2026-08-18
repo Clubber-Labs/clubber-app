@@ -1,4 +1,5 @@
 import { View, Text, TextInput } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import type { RegisterInput } from '../../schemas/registerSchema'
@@ -13,15 +14,18 @@ type Props = {
 
 export function StepPersonal({ control, errors }: Props) {
   const form = useFormFocus()
+  const { t } = useTranslation()
   const maxBirthdate = new Date()
   maxBirthdate.setFullYear(maxBirthdate.getFullYear() - 16)
 
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-content">Dados pessoais</Text>
+        <Text className="text-2xl font-bold text-content">
+          {t('auth.register.personal.title')}
+        </Text>
         <Text className="text-sm text-content-muted">
-          Seu nome real ajuda as pessoas a te encontrarem.
+          {t('auth.register.personal.subtitle')}
         </Text>
       </View>
 
@@ -29,7 +33,7 @@ export function StepPersonal({ control, errors }: Props) {
         <View className="flex-row gap-3">
           <View className="flex-1 gap-1" {...form.anchor('name')}>
             <Text className="text-sm font-medium text-content-tertiary">
-              Nome
+              {t('auth.fields.name')}
             </Text>
             <Controller
               control={control}
@@ -38,7 +42,7 @@ export function StepPersonal({ control, errors }: Props) {
                 <TextInput
                   {...form.input('name')}
                   className={`border ${errors.name ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
-                  placeholder="João"
+                  placeholder={t('auth.fields.namePlaceholder')}
                   placeholderTextColor={colors.contentSubtle}
                   onChangeText={onChange}
                   value={value}
@@ -50,7 +54,7 @@ export function StepPersonal({ control, errors }: Props) {
 
           <View className="flex-1 gap-1" {...form.anchor('lastname')}>
             <Text className="text-sm font-medium text-content-tertiary">
-              Sobrenome
+              {t('auth.fields.lastname')}
             </Text>
             <Controller
               control={control}
@@ -59,7 +63,7 @@ export function StepPersonal({ control, errors }: Props) {
                 <TextInput
                   {...form.input('lastname')}
                   className={`border ${errors.lastname ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
-                  placeholder="Silva"
+                  placeholder={t('auth.fields.lastnamePlaceholder')}
                   placeholderTextColor={colors.contentSubtle}
                   onChangeText={onChange}
                   value={value}
@@ -72,7 +76,7 @@ export function StepPersonal({ control, errors }: Props) {
 
         <View className="gap-1" {...form.anchor('birthdate')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Data de nascimento
+            {t('auth.fields.birthdate')}
           </Text>
           <Controller
             control={control}
@@ -81,7 +85,7 @@ export function StepPersonal({ control, errors }: Props) {
               <DatePicker
                 value={value}
                 onChange={onChange}
-                placeholder="Selecione sua data de nascimento"
+                placeholder={t('auth.fields.birthdatePlaceholder')}
                 maximumDate={maxBirthdate}
                 hasError={!!errors.birthdate}
               />

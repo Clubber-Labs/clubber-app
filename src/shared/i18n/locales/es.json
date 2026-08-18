@@ -245,6 +245,151 @@
     }
   },
   "auth": {
+    "login": {
+      "welcome": "Hola de nuevo",
+      "subtitle": "Entra en tu cuenta para continuar",
+      "identifierPlaceholder": "Correo o nombre de usuario",
+      "passwordPlaceholder": "Contraseña",
+      "forgotPassword": "Olvidé mi contraseña",
+      "wrongCredentials": "Correo, nombre de usuario o contraseña incorrectos.",
+      "loginFailed": "No se pudo entrar. Inténtalo de nuevo.",
+      "submitting": "Entrando...",
+      "submit": "Entrar",
+      "noAccount": "¿No tienes una cuenta?",
+      "signUp": "Regístrate",
+      "sessionExpired": "Tu sesión expiró. Entra de nuevo."
+    },
+    "register": {
+      "hasAccount": "¿Ya tienes una cuenta?",
+      "signIn": "Entrar",
+      "creating": "Creando cuenta...",
+      "create": "Crear cuenta",
+      "personal": {
+        "title": "Datos personales",
+        "subtitle": "Tu nombre real ayuda a que te encuentren."
+      },
+      "account": {
+        "title": "Tu cuenta",
+        "subtitle": "Estos datos se usan para entrar en Clubber.",
+        "checking": "Verificando disponibilidad...",
+        "available": "Disponible"
+      },
+      "password": {
+        "title": "Crea tu contraseña",
+        "subtitle": "Usa al menos 8 caracteres."
+      },
+      "profile": {
+        "title": "Tu perfil",
+        "subtitle": "Elige al menos 2 categorías de planes. La bio y la privacidad son opcionales.",
+        "categoriesHint": "Elige al menos 2 — personaliza tu feed con lo que va contigo.",
+        "privateHint": "Solo los seguidores aprobados verán tu contenido"
+      }
+    },
+    "fields": {
+      "name": "Nombre",
+      "namePlaceholder": "Juan",
+      "lastname": "Apellido",
+      "lastnamePlaceholder": "García",
+      "birthdate": "Fecha de nacimiento",
+      "birthdatePlaceholder": "Selecciona tu fecha de nacimiento",
+      "username": "Nombre de usuario",
+      "usernameLong": "Nombre de usuario",
+      "usernamePlaceholder": "juangarcia",
+      "email": "Correo",
+      "emailPlaceholder": "juan@email.com",
+      "emailAccessibility": "Correo de la cuenta",
+      "phone": "Teléfono",
+      "phonePlaceholder": "(11) 99999-9999",
+      "password": "Contraseña",
+      "passwordPlaceholder": "Mínimo 8 caracteres",
+      "confirmPassword": "Confirmar contraseña",
+      "confirmPasswordPlaceholder": "Repite la contraseña",
+      "bio": "Bio",
+      "bioOptional": "(opcional)",
+      "bioPlaceholder": "Cuenta algo sobre ti...",
+      "privateProfile": "Perfil privado",
+      "categories": "Categorías de planes"
+    },
+    "completeProfile": {
+      "title": "Completa tu perfil",
+      "subtitle": "Faltan algunos datos para que empieces a usar Clubber.",
+      "exit": "Salir",
+      "exitTitle": "Salir y volver al inicio de sesión",
+      "exitMessage": "Tus datos no se guardarán. Tendrás que entrar de nuevo para completar tu perfil.",
+      "loadError": "No pudimos cargar tu perfil. Revisa tu conexión.",
+      "saving": "Guardando...",
+      "finish": "Concluir",
+      "identity": {
+        "title": "¿Cómo te llaman?",
+        "subtitle": "Confirma tu nombre y cuándo naciste."
+      },
+      "account": {
+        "subtitle": "Elige cómo te va a encontrar la gente."
+      },
+      "interests": {
+        "title": "Casi listo",
+        "subtitle": "Personaliza tu perfil y lo que aparece en tu feed.",
+        "categoriesHint": "Elige al menos 2 para personalizar tu feed. Puedes cambiarlo después.",
+        "privateHint": "Solo los seguidores aprobados verán tu perfil."
+      }
+    },
+    "forgotPassword": {
+      "title": "Recuperar contraseña",
+      "subtitle": "Escribe el correo de tu cuenta y te enviaremos un código.",
+      "sending": "Enviando...",
+      "send": "Enviar código",
+      "remembered": "¿Recordaste tu contraseña?",
+      "code": {
+        "title": "Escribe el código",
+        "sentTo": "Enviamos un código de 6 dígitos a {{email}}.",
+        "resending": "Reenviando...",
+        "resendIn": "Reenviar en {{time}}",
+        "resend": "Reenviar código"
+      },
+      "newPassword": {
+        "title": "Crear nueva contraseña",
+        "subtitle": "Usa 8+ caracteres con letras y números.",
+        "label": "Nueva contraseña",
+        "resendHint": "Toca «Volver» para pedir un nuevo código.",
+        "resetting": "Restableciendo...",
+        "reset": "Restablecer contraseña"
+      },
+      "success": {
+        "title": "¡Contraseña restablecida!",
+        "subtitle": "Tu contraseña se actualizó correctamente.",
+        "entering": "Entrando...",
+        "enter": "Entrar en la app",
+        "goToLogin": "Ir al inicio de sesión"
+      },
+      "errors": {
+        "requestFailed": "No se pudo enviar ahora. Inténtalo de nuevo.",
+        "tooManyRequests": "Demasiadas solicitudes. Inténtalo en unos instantes.",
+        "tooManyAttempts": "Demasiados intentos. Espera un momento e inténtalo de nuevo.",
+        "codeInvalid": "Código inválido o vencido. Revísalo e inténtalo de nuevo.",
+        "codeExpired": "El código puede haber vencido o es incorrecto. Pide uno nuevo.",
+        "resetFailed": "No se pudo restablecer ahora. Inténtalo de nuevo.",
+        "loginFailed": "No se pudo entrar ahora. Inténtalo de nuevo."
+      }
+    },
+    "social": {
+      "connecting": "Conectando…",
+      "continueGoogle": "Continuar con Google",
+      "continueFacebook": "Continuar con Facebook",
+      "fallback": "No pudimos iniciar sesión con {{provider}}. Inténtalo de nuevo o usa correo/contraseña.",
+      "missingEmail": "Tu cuenta de {{provider}} debe permitir el acceso al correo para entrar."
+    },
+    "divider": {
+      "or": "O"
+    },
+    "sessionUnavailable": {
+      "title": "Sin conexión",
+      "message": "No pudimos validar tu sesión. Revisa tu internet e inténtalo de nuevo."
+    },
+    "legal": {
+      "notice": "Al {{action}}, aceptas los <terms>Términos de Uso</terms> y la <privacy>Política de Privacidad</privacy>.",
+      "actionCreate": "crear tu cuenta",
+      "actionSignIn": "iniciar sesión"
+    },
     "errors": {
       "nameMin": "Mínimo 4 caracteres",
       "nameMax": "Máximo 25 caracteres",
@@ -273,6 +418,38 @@
       "passwordMax": "Máximo 72 caracteres",
       "newPasswordConfirm": "Confirma la nueva contraseña",
       "passwordWeak": "Usa 8+ caracteres con letras y números, evitando contraseñas obvias."
+    }
+  },
+  "onboarding": {
+    "skip": "Saltar",
+    "createAccount": "Crear cuenta",
+    "haveAccount": "Ya tengo cuenta",
+    "slides": {
+      "opening": {
+        "title": "Siempre hay algo pasando",
+        "body": "Fiesta, discotecas, rutas, camping, afters. Clubber muestra lo que está vivo — ahora."
+      },
+      "map": {
+        "title": "Eventos en el lugar exacto",
+        "body": "Cada gota es algo pasando de verdad — de día, de tarde, de madrugada."
+      },
+      "spot": {
+        "title": "Un plan es lo que tú inventes",
+        "body": "Previa, concierto, café, after — suelta un globo y ya es punto de encuentro."
+      },
+      "social": {
+        "title": "Súmate",
+        "body": "Mira quién va, entra a la conversación y arma el plan — todo dentro de Clubber."
+      },
+      "final": {
+        "body": "Crea tu cuenta, vuélvete un Clubber y descubre qué está pasando cerca de ti."
+      }
+    },
+    "artSocial": {
+      "eventTitle": "Festival en la Cantera",
+      "attendees": "Théo y 4 más van",
+      "msg1": "¿Dónde es el after? 🌤️",
+      "msg2": "¡Buenaa! Lo veo en Clubber."
     }
   },
   "notifications": {
