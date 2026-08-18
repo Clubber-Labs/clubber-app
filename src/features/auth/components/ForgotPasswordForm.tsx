@@ -145,7 +145,7 @@ export function ForgotPasswordForm({ defaultEmail }: Props) {
     setLoginError(null)
     // Login normal com a nova senha; no sucesso o AuthGuard leva pro app.
     login.mutate(
-      { email, password: pendingPassword },
+      { identifier: email, password: pendingPassword },
       {
         onError: () =>
           setLoginError('Não foi possível entrar agora. Tente novamente.'),

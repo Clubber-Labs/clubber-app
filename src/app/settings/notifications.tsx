@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
 import { useRouter } from 'expo-router'
 import { ShieldCheckIcon } from 'phosphor-react-native'
-import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
+import { DevicePermissionRow } from '@/features/privacy/components/DevicePermissionRow'
 import {
   useMyProfile,
   useUpdateProfile,
@@ -13,7 +13,6 @@ import {
   NOTIFY_RADIUS_MIN_KM,
   NOTIFY_RADIUS_MAX_KM,
 } from '@/features/notifications/store/notificationPrefsStore'
-import { OsPermissionWarning } from '@/features/notifications/components/OsPermissionWarning'
 import { RadiusSlider } from '@/shared/components/RadiusSlider'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import { InterestsMultiSelect } from '@/shared/components/InterestsMultiSelect'
@@ -21,14 +20,8 @@ import { SettingsRow } from '@/shared/components/SettingsRow'
 
 export default function NotificationSettingsScreen() {
   const router = useRouter()
-  const {
-    pushConsent,
-    locationConsent,
-    osPush,
-    osLocation,
-    togglePush,
-    toggleLocation,
-  } = useNotificationConsent()
+  const { osPush, osLocation, enableNotifications, enableLocation } =
+    useNotificationConsent()
   const { notifyRadiusKm, saveRadius } = useNotificationPrefs()
   const { data: profile } = useMyProfile()
   const updateProfile = useUpdateProfile(profile?.id ?? '')
@@ -81,25 +74,21 @@ export default function NotificationSettingsScreen() {
       </View>
 
       <View className="mx-4 mt-4 bg-surface-sunken border border-line rounded-xl overflow-hidden">
-        <ConsentToggleRow
+        {/* Permissão do SISTEMA, não toggle do app: mostra o estado real e
+            leva ao lugar onde ele muda de verdade. */}
+        <DevicePermissionRow
           label="Notificações push"
-          description="Enviar notificações push neste aparelho sobre convites, atividade da sua rede e eventos perto de você."
-          value={pushConsent}
-          onChange={v => void togglePush(v)}
+          description="Convites, atividade da sua rede e eventos perto de você."
+          status={osPush}
+          onPress={() => void enableNotifications()}
         />
-        {pushConsent && osPush === 'denied' && (
-          <OsPermissionWarning message="A permissão de notificações está negada no sistema — o push não chega até você reativá-la." />
-        )}
-        <ConsentToggleRow
+        <DevicePermissionRow
           label="Eventos perto de você"
-          description="Usar sua localização aproximada (~1km, calculada no aparelho) para avisar de eventos próximos. A posição exata nunca sai do seu celular."
-          value={locationConsent}
-          onChange={v => void toggleLocation(v)}
-          isLast={!(locationConsent && osLocation === 'denied')}
+          description="Usa sua localização aproximada (~1km, calculada no aparelho) para avisar de eventos próximos. A posição exata nunca sai do seu celular."
+          status={osLocation}
+          onPress={() => void enableLocation()}
+          isLast
         />
-        {locationConsent && osLocation === 'denied' && (
-          <OsPermissionWarning message="A permissão de localização está negada no sistema — os avisos de proximidade não funcionam sem ela." />
-        )}
       </View>
 
       <View className="mx-4 mt-4 bg-surface-sunken border border-line rounded-xl px-4 py-4">
@@ -109,7 +98,7 @@ export default function NotificationSettingsScreen() {
           max={NOTIFY_RADIUS_MAX_KM}
           value={notifyRadiusKm}
           onCommit={km => void saveRadius(km)}
-          disabled={!locationConsent}
+          disabled={osLocation !== 'granted'}
         />
         <Text className="text-xs text-content-subtle mt-1">
           Distância máxima de um evento novo para você ser avisado.

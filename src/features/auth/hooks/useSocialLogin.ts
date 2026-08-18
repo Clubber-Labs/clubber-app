@@ -15,7 +15,6 @@ import { useBanner } from '@/shared/lib/banner'
 import { getConflictMessage } from '@/shared/utils/conflictMessage'
 import { needsRolePreferences } from '@/shared/utils/rolePreferences'
 import { maybeShowWelcomeBack } from '@/features/account/lib/welcomeBack'
-import { resolveConsent } from '@/features/privacy/lib/resolveConsent'
 import { userKeys } from '@/features/users/hooks/cacheKeys'
 import type { SocialProvider } from '../schemas/socialLoginSchema'
 
@@ -123,10 +122,6 @@ export function useSocialLogin(provider: SocialProvider) {
       // Seed do cache do useMe pra evitar refetch imediato e pré-popular o form
       // de completar perfil sem flash de loading.
       queryClient.setQueryData(userKeys.me, response.user)
-
-      // Mesma razão do profileIncomplete abaixo: o gate de consentimento precisa
-      // estar resolvido antes de o status virar 'authenticated'.
-      await resolveConsent()
 
       // Ordem importa: setar profileIncomplete ANTES de setUser pra evitar
       // flicker pro feed antes do AuthGuard redirecionar pra complete-profile.

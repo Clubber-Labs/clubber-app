@@ -1,41 +1,103 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { AppState } from 'react-native'
 import * as Location from 'expo-location'
 
 type Coords = [number, number]
-export type LocationStatus = 'loading' | 'denied' | 'error' | 'ready'
+export type LocationStatus =
+  /** Ainda resolvendo o estado da permissão. */
+  | 'loading'
+  /** Sistema ainda pode perguntar (nunca perguntou, ou negou e permite retry). */
+  | 'askable'
+  /** Negada de forma definitiva — só os ajustes do sistema resolvem. */
+  | 'denied'
+  | 'error'
+  | 'ready'
 
 type Result = {
   coords: Coords | null
   status: LocationStatus
+  /**
+   * Dispara o prompt NATIVO. Só a partir de um gesto explícito, e depois de um
+   * priming — no iOS o prompt aparece uma única vez na vida do app.
+   */
+  request: () => Promise<LocationStatus>
 }
 
+/**
+ * Posição atual do usuário. Na montagem apenas CONSULTA a permissão; nunca
+ * pede. O pedido é ação explícita (request), atrás de um priming — ver
+ * useLocationGate.
+ */
 export function useUserLocation(): Result {
   const [coords, setCoords] = useState<Coords | null>(null)
   const [status, setStatus] = useState<LocationStatus>('loading')
+  const mounted = useRef(true)
+  // Lido dentro do listener de AppState, que é assinado uma vez só.
+  const statusRef = useRef<LocationStatus>('loading')
+  statusRef.current = status
+  const coordsRef = useRef<Coords | null>(null)
+  coordsRef.current = coords
 
   useEffect(() => {
-    let cancelled = false
-    async function load() {
-      try {
-        const permission = await Location.requestForegroundPermissionsAsync()
-        if (cancelled) return
-        if (permission.status !== 'granted') {
-          setStatus('denied')
-          return
-        }
-        const pos = await Location.getCurrentPositionAsync({})
-        if (cancelled) return
-        setCoords([pos.coords.longitude, pos.coords.latitude])
-        setStatus('ready')
-      } catch {
-        if (!cancelled) setStatus('error')
-      }
-    }
-    load()
+    mounted.current = true
     return () => {
-      cancelled = true
+      mounted.current = false
     }
   }, [])
 
-  return { coords, status }
+  const resolve = useCallback(
+    async (prompt: boolean): Promise<LocationStatus> => {
+      try {
+        const permission = prompt
+          ? await Location.requestForegroundPermissionsAsync()
+          : await Location.getForegroundPermissionsAsync()
+        if (permission.status !== 'granted') {
+          // 'undetermined' (nunca perguntado) não é negativa: mandar essa pessoa
+          // pros ajustes seria absurdo, o que falta é o prompt. canAskAgain
+          // separa os dois — no iOS ele cai pra false na primeira recusa.
+          const next = permission.canAskAgain ? 'askable' : 'denied'
+          if (mounted.current) {
+            setStatus(next)
+            // Limpa a posição junto: revogada a permissão, o marcador do
+            // usuário não pode continuar no mapa com o último fix conhecido.
+            setCoords(null)
+          }
+          return next
+        }
+        // Permissão intacta e posição em mãos: relê sem gastar GPS de novo.
+        if (statusRef.current === 'ready' && coordsRef.current) return 'ready'
+        const pos = await Location.getCurrentPositionAsync({})
+        if (mounted.current) {
+          setCoords([pos.coords.longitude, pos.coords.latitude])
+          setStatus('ready')
+        }
+        return 'ready'
+      } catch {
+        if (mounted.current) setStatus('error')
+        return 'error'
+      }
+    },
+    [],
+  )
+
+  useEffect(() => {
+    void resolve(false)
+  }, [resolve])
+
+  // A permissão muda FORA do app, nos Ajustes do sistema — nos dois sentidos —
+  // e o mapa é uma aba, que não desmonta. Sem reler no foreground, a mudança só
+  // aparecia depois de matar e reabrir o app.
+  // Relê SEMPRE: ler a permissão é barato, e pular quando está 'ready' fazia a
+  // revogação passar batido, que é o caso mais grave dos dois. Quem economiza
+  // GPS é o resolve, que não busca posição nova se nada mudou.
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', state => {
+      if (state === 'active') void resolve(false)
+    })
+    return () => subscription.remove()
+  }, [resolve])
+
+  const request = useCallback(() => resolve(true), [resolve])
+
+  return { coords, status, request }
 }

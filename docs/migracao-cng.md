@@ -54,7 +54,7 @@ Fazer junto da preparação de loja (Apple US$ 99/ano, Google US$ 25 único):
    paridade da fase 1 é o que garante que ele sai certo).
 5. Pendências do rename ConnectAI→Clubber que dependem das contas:
    re-provisionar push/Firebase (bundle id `com.netobonato.clubber`), Stripe,
-   domínio clubber.app.
+   domínio clubber.social.
 6. Atualizar CLAUDE.md (fluxo de build muda) e apagar a seção de proibição do
    `prebuild --clean` — ele vira o caminho normal.
 

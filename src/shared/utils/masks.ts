@@ -1,5 +1,19 @@
+/** Celular com DDD: 11 dígitos. Fixo com DDD: 10. */
+export const PHONE_MAX_DIGITS = 11
+
+/**
+ * Dígitos prontos pro formulário: sem máscara e LIMITADOS ao máximo.
+ *
+ * O corte tem que estar aqui, e não só no formatPhone: o display já cortava em
+ * 11, então digitar o 12º guardava um dígito invisível — o campo mostrava um
+ * número certo e a validação reclamava de "máximo 11" sem nada pra corrigir.
+ */
+export function phoneDigits(raw: string): string {
+  return raw.replace(/\D/g, '').slice(0, PHONE_MAX_DIGITS)
+}
+
 export function formatPhone(raw: string): string {
-  const d = raw.replace(/\D/g, '').slice(0, 11)
+  const d = phoneDigits(raw)
   if (d.length === 0) return ''
   if (d.length <= 2) return `(${d}`
   if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`

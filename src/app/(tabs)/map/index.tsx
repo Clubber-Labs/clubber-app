@@ -17,7 +17,7 @@ import {
   type EventCluster,
 } from '@/features/map/hooks/useEventClusters'
 import { useMapCamera } from '@/features/map/hooks/useMapCamera'
-import { useUserLocation } from '@/shared/hooks/useUserLocation'
+import { useLocationGate } from '@/features/privacy/hooks/useLocationGate'
 import { useUserLiveLocation } from '@/shared/hooks/useUserLiveLocation'
 import { useMapLightPreset } from '@/shared/hooks/useMapLightPreset'
 import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
@@ -34,7 +34,10 @@ import { EventClustersLayer } from '@/features/map/components/EventClustersLayer
 import { EventHeatmapLayer } from '@/features/map/components/EventHeatmapLayer'
 import { EventMarkers } from '@/features/map/components/EventMarkers'
 import { EventPreviewCard } from '@/features/map/components/EventPreviewCard'
+import { LocationInviteCard } from '@/features/map/components/LocationInviteCard'
+import { useLocationInvite } from '@/features/map/hooks/useLocationInvite'
 import { MapStatusBanner } from '@/features/map/components/MapStatusBanner'
+import { GpsSlashIcon } from 'phosphor-react-native'
 import { MapSearchBar } from '@/features/map/components/MapSearchBar'
 import { MapCategoryChips } from '@/features/map/components/MapCategoryChips'
 import { MapFiltersSheet } from '@/features/map/components/MapFiltersSheet'
@@ -63,7 +66,12 @@ export default function MapScreen() {
     focusLng?: string
     suggest?: string
   }>()
-  const { coords: userCoords, status: locationStatus } = useUserLocation()
+  const {
+    coords: userCoords,
+    status: locationStatus,
+    grant: grantLocation,
+  } = useLocationGate()
+  const locationInvite = useLocationInvite(locationStatus)
   const livePos = useUserLiveLocation(locationStatus === 'ready')
   const myPos = livePos ?? userCoords
   const profile = useMyProfile()
@@ -205,17 +213,42 @@ export default function MapScreen() {
     focusOnEvent([spot.longitude, spot.latitude])
   }
 
-  // Centraliza na posição ATUAL (live), com fallback pro fix inicial; sem coords,
-  // orienta conforme o estado da permissão.
-  function recenter() {
-    if (myPos) {
-      flyTo(myPos, USER_ZOOM, 600)
-    } else if (locationStatus === 'denied') {
-      showBanner('Ative a localização nos ajustes para ver você no mapa.')
+  /**
+   * Caminho ÚNICO pra pedir acesso à localização — card, banner e o botão de
+   * centralizar entram todos por aqui. Antes cada um tinha seu próprio pedido,
+   * e o fluxo ficava impossível de prever.
+   */
+  async function requestLocationAccess() {
+    // Sem banner nos casos que LEVAM a algum lugar: os ajustes abrindo e a tela
+    // de privacidade (que mostra o estado revogado no topo) já são a resposta.
+    // Texto ali seria o terceiro aviso sobre a mesma coisa.
+    if (locationStatus === 'denied') {
       Linking.openSettings()
-    } else if (locationStatus === 'error') {
+      return
+    }
+    if (locationStatus === 'revoked') {
+      // Revogação se desfaz no app, não nos ajustes do sistema — mandar pra lá
+      // faria a pessoa ativar a permissão e continuar sem ver nada.
+      router.push('/profile/privacy')
+      return
+    }
+    const result = await grantLocation()
+    if (result === 'denied') {
+      Linking.openSettings()
+    } else if (result === 'error') {
+      // Único caso sem destino: aqui o texto é o feedback que existe.
       showBanner('Não foi possível obter sua localização.')
     }
+  }
+
+  // Centraliza na posição ATUAL (live), com fallback pro fix inicial. Sem
+  // coords, o toque vira o pedido de acesso.
+  async function recenter() {
+    if (myPos) {
+      flyTo(myPos, USER_ZOOM, 600)
+      return
+    }
+    await requestLocationAccess()
   }
 
   function expandCluster(cluster: EventCluster) {
@@ -333,6 +366,22 @@ export default function MapScreen() {
         </View>
       )}
 
+      {/* Um aviso por vez nessa faixa: o de truncamento reage ao zoom que a
+          pessoa acabou de dar, enquanto este fica enquanto faltar permissão. */}
+      {locationStatus !== 'ready' &&
+        locationStatus !== 'loading' &&
+        !locationInvite.visible &&
+        !isLoading &&
+        !truncated &&
+        !error && (
+          <MapStatusBanner
+            icon={GpsSlashIcon}
+            top={headerClearance + 92}
+            message="Sua posição é exibida somente para você. Habilite sua localização no mapa e descubra rolês e eventos perto de você."
+            onPress={() => void requestLocationAccess()}
+          />
+        )}
+
       {!isLoading && truncated && !error && showEvents && (
         <View
           className="absolute self-center bg-surface/90 px-3 py-1.5 rounded-lg border border-line-strong"
@@ -373,6 +422,16 @@ export default function MapScreen() {
           suggest={suggest}
           onChoose={chooseSuggestion}
           onClose={() => setSuggestionsOpen(false)}
+        />
+      )}
+
+      {locationInvite.visible && !selectedEvent && !selectedSpot && (
+        <LocationInviteCard
+          onEnable={() => {
+            locationInvite.hide()
+            void requestLocationAccess()
+          }}
+          onDismiss={locationInvite.hide}
         />
       )}
 

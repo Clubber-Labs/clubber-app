@@ -3,6 +3,7 @@ import { clearAuthSession, getRefreshToken } from '@/shared/lib/secureStore'
 import { authService } from '../services/authService'
 import { useAuthStore } from '../store/authStore'
 import { useConsentStore } from '@/features/privacy/store/consentStore'
+import { clearConsentMirror } from '@/features/privacy/lib/consentMirror'
 import { usePresenceStore } from '@/features/chat/store/presenceStore'
 import { useTypingStore } from '@/features/chat/store/typingStore'
 import { disablePush } from '@/features/notifications/lib/pushRegistration'
@@ -62,6 +63,8 @@ async function runEndSession({ expired = false }: { expired?: boolean } = {}) {
   await clearAuthSession()
   queryClient.clear()
   useConsentStore.getState().reset()
+  // Sem o último valor enviado, o próximo login re-espelha a permissão do zero.
+  await clearConsentMirror()
   // Estado efêmero do chat (presença/digitando) é estado de módulo: zera pra não
   // vazar entre contas na mesma sessão de app.
   usePresenceStore.getState().reset()

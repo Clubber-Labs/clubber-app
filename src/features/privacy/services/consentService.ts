@@ -1,12 +1,18 @@
 import { api } from '@/shared/lib/api'
 
+/**
+ * O que o registro de consentimento guarda hoje. As preferências de produto
+ * (socialFeed, socialVisibility, analytics) NÃO moram aqui — são campos do
+ * perfil, editadas por PUT /users/:id. Mandá-las num PATCH daqui é erro 400.
+ */
 export type ConsentFields = {
+  /** Espelho da permissão do SO — escrito pelo app quando ela muda. */
   locationPrecise: boolean
-  socialFeed: boolean
-  socialVisibility: boolean
+  /** Espelho da permissão do SO — idem. */
   pushNotifications: boolean
+  /** Consentimento de verdade: opt-in explícito. */
   marketing: boolean
-  analytics: boolean
+  /** Consentimento de verdade: opt-in explícito. */
   surveys: boolean
 }
 
@@ -20,92 +26,42 @@ export type ConsentRecord = ConsentFields & {
   revokedAt: string | null
 }
 
-export const CONSENT_VERSION = '1.0'
-
-export const CONSENT_ITEMS: Array<{
-  key: keyof ConsentFields
-  label: string
-  description: string
-  category:
-    | 'location'
-    | 'social'
-    | 'notifications'
-    | 'analytics'
-    | 'marketing'
-    | 'research'
-}> = [
-  {
-    key: 'locationPrecise',
-    label: 'Localização precisa (GPS)',
-    description:
-      'Usamos sua posição em tempo real para exibir eventos próximos no mapa e no mapa de calor e, se as notificações estiverem ativas, avisar de eventos perto de você (sua posição aproximada é calculada no aparelho).',
-    category: 'location',
-  },
-  {
-    key: 'socialFeed',
-    label: 'Feed social personalizado',
-    description:
-      'Mostramos no seu feed eventos que amigos curtiram, confirmaram ou criaram.',
-    category: 'social',
-  },
-  {
-    key: 'socialVisibility',
-    label: 'Visibilidade de atividades',
-    description:
-      'Suas confirmações e comentários podem aparecer no feed de outros usuários.',
-    category: 'social',
-  },
-  {
-    key: 'pushNotifications',
-    label: 'Notificações push',
-    description:
-      'Alertas sobre novos eventos próximos, convites e atividade da sua rede.',
-    category: 'notifications',
-  },
-  {
-    key: 'marketing',
-    label: 'Comunicações de marketing',
-    description:
-      'Novidades da plataforma, promoções e ofertas do plano Premium.',
-    category: 'marketing',
-  },
-  {
-    key: 'analytics',
-    label: 'Analytics e métricas de uso',
-    description:
-      'Dados anônimos de como você usa o app para melhorarmos a plataforma.',
-    category: 'analytics',
-  },
-  {
-    key: 'surveys',
-    label: 'Participação em pesquisas',
-    description:
-      'Convites voluntários para pesquisas de satisfação e melhoria do produto.',
-    category: 'research',
-  },
-]
-
-export const CATEGORY_LABELS: Record<string, string> = {
-  location: '📍 Localização',
-  social: '👥 Rede Social',
-  notifications: '🔔 Notificações',
-  analytics: '📊 Analytics',
-  marketing: '📣 Marketing',
-  research: '🔬 Participação em pesquisas',
+export type ConsentExport = {
+  exportedAt: string
+  currentConsent: ConsentRecord
+  preferences: {
+    socialFeed: boolean
+    socialVisibility: boolean
+    analytics: boolean
+  }
+  termsAcceptances: {
+    document: string
+    version: string
+    acceptedAt: string
+  }[]
+  history: unknown[]
 }
 
+/** Versão vigente dos documentos. Compare com o `consent.version` do perfil. */
+export const CONSENT_VERSION = '1.0'
+
 export const consentService = {
+  // Sempre 200 pra usuário autenticado: 404 aqui é bug de backend, não fluxo.
   get: (): Promise<ConsentRecord> => api.get('/consent').then(r => r.data),
 
-  create: (data: ConsentFields): Promise<ConsentRecord> =>
-    api.post('/consent', data).then(r => r.data),
-
+  // Body parcial — só o que mudou. Não existe POST: toda escrita é PATCH.
   update: (data: Partial<ConsentFields>): Promise<ConsentRecord> =>
     api.patch('/consent', data).then(r => r.data),
 
-  revokeAll: (): Promise<void> => api.delete('/consent').then(r => r.data),
+  // Art. 18: desliga os consentimentos E as preferências de produto do perfil,
+  // e apaga a localização guardada. Quem chama precisa recarregar o perfil.
+  revokeAll: (): Promise<{ message: string }> =>
+    api.delete('/consent').then(r => r.data),
 
-  export: (): Promise<unknown> => api.get('/consent/export').then(r => r.data),
+  // Operação pesada (5/min): só a partir de ação explícita, nunca em retry.
+  export: (): Promise<ConsentExport> =>
+    api.get('/consent/export').then(r => r.data),
 
-  auditLog: () => api.get('/consent/audit').then(r => r.data),
+  auditLog: (params?: { limit?: number; cursor?: string }) =>
+    api.get('/consent/audit', { params }).then(r => r.data),
 }

@@ -39,11 +39,6 @@ export function StepInterests({ control, errors }: Props) {
               <CategoryMultiSelect value={value ?? []} onChange={onChange} />
             )}
           />
-          {errors.preferredCategories && (
-            <Text className="text-content text-xs">
-              {errors.preferredCategories.message}
-            </Text>
-          )}
 
           <Controller
             control={control}
@@ -52,11 +47,6 @@ export function StepInterests({ control, errors }: Props) {
               <InterestsMultiSelect value={value ?? []} onChange={onChange} />
             )}
           />
-          {errors.preferredSubcategories && (
-            <Text className="text-content text-xs">
-              {errors.preferredSubcategories.message}
-            </Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('bio')}>
@@ -82,9 +72,6 @@ export function StepInterests({ control, errors }: Props) {
               />
             )}
           />
-          {errors.bio && (
-            <Text className="text-content text-xs">{errors.bio.message}</Text>
-          )}
         </View>
 
         <Controller

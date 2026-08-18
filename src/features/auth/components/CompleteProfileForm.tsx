@@ -22,6 +22,10 @@ import {
   type ConflictFieldEntry,
 } from '@/shared/utils/conflictField'
 import { parseLocalDate, toLocalIsoDate } from '@/shared/utils/dateFormat'
+import {
+  useFormErrorBanner,
+  messagesFromErrors,
+} from '@/shared/hooks/useFormErrorBanner'
 import type { UserProfile } from '@/shared/types'
 
 type Props = {
@@ -103,6 +107,7 @@ export function CompleteProfileForm({ profile }: Props) {
     control,
     handleSubmit,
     trigger,
+    getFieldState,
     setError,
     formState: { errors },
   } = useForm<CompleteProfileInput>({
@@ -112,6 +117,8 @@ export function CompleteProfileForm({ profile }: Props) {
   })
 
   const form = useFormFocus()
+
+  const showFormErrors = useFormErrorBanner(form)
   const totalSteps = STEPS.length
   const isLastStep = currentStep === totalSteps - 1
 
@@ -150,7 +157,14 @@ export function CompleteProfileForm({ profile }: Props) {
     const results = await Promise.all(fields.map(name => trigger(name)))
     const failed = fields.filter((_, index) => !results[index])
     if (failed.length) {
-      form.focusFirstOf(failed)
+      // getFieldState e não `errors`: o estado do render atual ainda é o de
+      // antes do trigger, e o banner mostraria a mensagem anterior.
+      const messages: Record<string, string> = {}
+      for (const field of failed) {
+        const message = getFieldState(field).error?.message
+        if (message) messages[field] = message
+      }
+      void showFormErrors(messages)
       return
     }
     goToStep(currentStep + 1, 'forward')
@@ -227,7 +241,9 @@ export function CompleteProfileForm({ profile }: Props) {
               control={control}
               required={STEP_REQUIRED[currentStep]}
               label={isPending ? 'Salvando...' : 'Concluir'}
-              onPress={handleSubmit(onSubmit, form.focusFirstError)}
+              onPress={handleSubmit(onSubmit, errors =>
+                showFormErrors(messagesFromErrors(errors)),
+              )}
               loading={isPending}
               disabled={rolesBlocked}
             />

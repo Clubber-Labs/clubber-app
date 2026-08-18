@@ -14,7 +14,7 @@ import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import { useActiveTabPress } from '@/shared/hooks/useActiveTabPress'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
-import { useUserLocation } from '@/shared/hooks/useUserLocation'
+import { useConsentedLocation } from '@/features/privacy/hooks/useConsentedLocation'
 import { flattenInfiniteList } from '@/shared/utils/infiniteList'
 import type { EventStatus, FeedEvent } from '@/shared/types'
 import { colors } from '@/shared/theme'
@@ -26,7 +26,7 @@ export function FeedList() {
   const [statusFilter, setStatusFilter] = useState<EventStatus[]>([])
   // coords vêm como [lng, lat] (convenção Mapbox). Só envia near com permissão
   // concedida; negado/erro → feed sem proximidade (descoberta só por categoria).
-  const { coords, status: locationStatus } = useUserLocation()
+  const { coords, status: locationStatus } = useConsentedLocation()
   const locationResolved = locationStatus !== 'loading'
   const near =
     locationStatus === 'ready' && coords

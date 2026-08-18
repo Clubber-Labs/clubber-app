@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { PHONE_MAX_DIGITS } from '@/shared/utils/masks'
 import {
   MIN_PREFERRED_CATEGORIES,
   MIN_PREFERRED_CATEGORIES_MESSAGE,
@@ -24,7 +25,7 @@ export const editProfileSchema = z.object({
   phone: z
     .string()
     .min(10, 'Mínimo 10 dígitos')
-    .max(11, 'Máximo 11 dígitos')
+    .max(PHONE_MAX_DIGITS, `Máximo ${PHONE_MAX_DIGITS} dígitos`)
     .regex(/^\d+$/, 'Apenas números'),
   bio: z.string().max(255, 'Máximo 255 caracteres'),
   isPrivate: z.boolean(),
