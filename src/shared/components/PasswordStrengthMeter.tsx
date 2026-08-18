@@ -1,8 +1,10 @@
 import { View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { CheckCircleIcon, CircleIcon } from 'phosphor-react-native'
 import {
   evaluatePasswordStrength,
   type PasswordChecks,
+  type PasswordLevel,
 } from '@/shared/utils/passwordStrength'
 import { colors } from '@/shared/theme'
 
@@ -11,28 +13,36 @@ type Props = {
   email?: string
 }
 
-const REQUIREMENTS: { key: keyof PasswordChecks; label: string }[] = [
-  { key: 'length', label: '8+ caracteres' },
-  { key: 'lettersAndNumbers', label: 'Letras e números' },
-  { key: 'notObvious', label: 'Evite senhas óbvias' },
+const REQUIREMENTS: {
+  key: keyof PasswordChecks
+  label: `shared.passwordStrength.${'length' | 'lettersAndNumbers' | 'notObvious'}`
+}[] = [
+  { key: 'length', label: 'shared.passwordStrength.length' },
+  {
+    key: 'lettersAndNumbers',
+    label: 'shared.passwordStrength.lettersAndNumbers',
+  },
+  { key: 'notObvious', label: 'shared.passwordStrength.notObvious' },
 ]
 
+const BAR_COLOR: Record<PasswordLevel, string> = {
+  weak: 'bg-danger',
+  medium: 'bg-warning',
+  strong: 'bg-success',
+}
+
+const LABEL_COLOR: Record<PasswordLevel, string> = {
+  weak: 'text-danger-text',
+  medium: 'text-warning',
+  strong: 'text-success-text',
+}
+
 export function PasswordStrengthMeter({ password, email }: Props) {
+  const { t } = useTranslation()
+
   if (password.length === 0) return null
 
-  const { score, label, checks } = evaluatePasswordStrength(password, email)
-  const barColor =
-    label === 'fraca'
-      ? 'bg-danger'
-      : label === 'média'
-        ? 'bg-warning'
-        : 'bg-success'
-  const labelColor =
-    label === 'fraca'
-      ? 'text-danger-text'
-      : label === 'média'
-        ? 'text-warning'
-        : 'text-success-text'
+  const { score, level, checks } = evaluatePasswordStrength(password, email)
 
   return (
     <View className="gap-2">
@@ -40,18 +50,22 @@ export function PasswordStrengthMeter({ password, email }: Props) {
         {[0, 1, 2, 3].map(i => (
           <View
             key={i}
-            className={`h-1 flex-1 rounded-full ${i < score ? barColor : 'bg-surface-elevated'}`}
+            className={`h-1 flex-1 rounded-full ${i < score ? BAR_COLOR[level] : 'bg-surface-elevated'}`}
           />
         ))}
       </View>
 
       <View className="flex-row justify-between">
-        <Text className="text-xs text-content-subtle">Força da senha</Text>
-        <Text className={`text-xs font-medium ${labelColor}`}>{label}</Text>
+        <Text className="text-xs text-content-subtle">
+          {t('shared.passwordStrength.title')}
+        </Text>
+        <Text className={`text-xs font-medium ${LABEL_COLOR[level]}`}>
+          {t(`shared.passwordStrength.${level}`)}
+        </Text>
       </View>
 
       <View className="gap-1 mt-1">
-        {REQUIREMENTS.map(({ key, label: text }) => {
+        {REQUIREMENTS.map(({ key, label }) => {
           const ok = checks[key]
           return (
             <View key={key} className="flex-row items-center gap-2">
@@ -67,7 +81,7 @@ export function PasswordStrengthMeter({ password, email }: Props) {
               <Text
                 className={`text-xs ${ok ? 'text-content-tertiary' : 'text-content-subtle'}`}
               >
-                {text}
+                {t(label)}
               </Text>
             </View>
           )

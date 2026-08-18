@@ -1,4 +1,5 @@
 import { View, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import {
   CaretLeftIcon,
   ListIcon,
@@ -39,6 +40,7 @@ export function GlobalHeader({
   onNotificationsPress,
   onBackPress,
 }: Props) {
+  const { t } = useTranslation()
   const router = useRouter()
   const segments = useSegments()
   const insets = useSafeAreaInsets()
@@ -88,8 +90,8 @@ export function GlobalHeader({
             className="w-9 h-9 items-center justify-center"
             accessibilityLabel={
               hasPendingRequests
-                ? 'Abrir menu (solicitações pendentes)'
-                : 'Abrir menu'
+                ? t('shared.header.openMenuPending')
+                : t('shared.header.openMenu')
             }
           >
             <ListIcon size={26} color={colors.contentBright} />
@@ -102,7 +104,7 @@ export function GlobalHeader({
           <Pressable
             onPress={() => setMapFiltersOpen(true)}
             className="w-9 h-9 items-center justify-center"
-            accessibilityLabel="Filtrar eventos"
+            accessibilityLabel={t('shared.header.filterEvents')}
           >
             <SlidersHorizontalIcon size={24} color={colors.contentBright} />
             {hasMapFilters && (
@@ -121,8 +123,10 @@ export function GlobalHeader({
             className="w-9 h-9 items-center justify-center"
             accessibilityLabel={
               unreadNotifications > 0
-                ? `Notificações (${unreadNotifications} não lidas)`
-                : 'Notificações'
+                ? t('shared.header.notificationsUnread', {
+                    count: unreadNotifications,
+                  })
+                : t('shared.header.notifications')
             }
           >
             <BellIcon size={24} color={colors.contentSecondary} />

@@ -14,6 +14,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated'
 import { runOnJS } from 'react-native-worklets'
+import { useTranslation } from 'react-i18next'
 import { Button } from './Button'
 import { colors } from '@/shared/theme'
 
@@ -32,6 +33,7 @@ type Props = {
 }
 
 export function MapsChooserSheet({ visible, title, options, onClose }: Props) {
+  const { t } = useTranslation()
   const insets = useSafeAreaInsets()
 
   // Arrastar a alça pra baixo fecha: segue o dedo; além do limiar (ou num flick),
@@ -87,7 +89,7 @@ export function MapsChooserSheet({ visible, title, options, onClose }: Props) {
                 </View>
                 <View className="flex-1">
                   <Text className="text-content text-base font-bold">
-                    Abrir com
+                    {t('shared.mapsChooser.title')}
                   </Text>
                   {!!title && (
                     <Text
@@ -128,7 +130,11 @@ export function MapsChooserSheet({ visible, title, options, onClose }: Props) {
               </View>
 
               <View className="mt-3">
-                <Button label="Cancelar" variant="neutral" onPress={onClose} />
+                <Button
+                  label={t('common.cancel')}
+                  variant="neutral"
+                  onPress={onClose}
+                />
               </View>
             </Pressable>
           </Animated.View>

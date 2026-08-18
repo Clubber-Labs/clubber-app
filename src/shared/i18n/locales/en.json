@@ -29,7 +29,7 @@
     "ACCOUNT_ANONYMIZED": "This account was deleted.",
     "ACCOUNT_BANNED": "This account has been banned.",
     "ACCOUNT_SUSPENDED": "Account suspended until {{until}}.",
-    "ACTIVE_SPOT_LIMIT": "You already have {{max}} active spots.",
+    "ACTIVE_SPOT_LIMIT": "You already have {{max}} active hangouts.",
     "ALREADY_BLOCKED": "You already blocked this person.",
     "ALREADY_FOLLOWING": "You already follow this person.",
     "ALREADY_MEMBER": "This person is already in the group.",
@@ -50,11 +50,11 @@
     "DUPLICATE_VALUE": "That value is already in use by another account.",
     "EMAIL_SEND_FAILED": "We couldn't send the email. Try again shortly.",
     "EMAIL_TAKEN": "This email is already registered to another account.",
-    "ENDS_AT_AFTER_EVENT_DATE": "The spot can't end after the hangout.",
+    "ENDS_AT_AFTER_EVENT_DATE": "The hangout can't end after the event.",
     "ENDS_AT_IN_PAST": "The end time is in the past.",
     "END_DATE_BEFORE_START": "The end can't be before the start.",
-    "EVENT_ACCESS_DENIED": "You don't have access to this hangout.",
-    "EVENT_NOT_FOUND": "This hangout no longer exists.",
+    "EVENT_ACCESS_DENIED": "You don't have access to this event.",
+    "EVENT_NOT_FOUND": "This event no longer exists.",
     "FILE_TOO_LARGE": "The file is larger than {{maxMb}} MB.",
     "FOLLOWER_NOT_FOUND": "This person is not among your followers.",
     "FOLLOW_NOT_FOUND": "You don't follow this person.",
@@ -90,11 +90,11 @@
     "NOTIFICATION_NOT_FOUND": "This notification no longer exists.",
     "NOT_COMMENT_AUTHOR": "You can only change your own comments.",
     "NOT_CONVERSATION_MEMBER": "You're not in this conversation.",
-    "NOT_EVENT_AUTHOR": "Only the hangout creator can do that.",
+    "NOT_EVENT_AUTHOR": "Only the event creator can do that.",
     "NOT_MESSAGE_AUTHOR": "You can only change your own messages.",
     "NOT_POST_AUTHOR": "You can only change your own posts.",
     "NOT_PROFILE_OWNER": "You can only edit your own profile.",
-    "NOT_SPOT_CREATOR": "Only the spot creator can do that.",
+    "NOT_SPOT_CREATOR": "Only the hangout creator can do that.",
     "NO_USERS_TO_INVITE": "Pick at least one person to invite.",
     "PARTICIPANT_NOT_FOUND": "This person is not in the group.",
     "PASSWORD_REQUIRED": "Enter your password to continue.",
@@ -111,7 +111,7 @@
     "PROMOTION_NOT_FOUND": "This promotion no longer exists.",
     "PROMOTION_OVERLAP": "There is already a promotion in this period.",
     "PROMOTION_TOO_LONG": "A promotion can last at most {{maxDays}} days.",
-    "PUBLIC_EVENT_NO_INVITES": "Public hangouts don’t use invites.",
+    "PUBLIC_EVENT_NO_INVITES": "Public events don’t use invites.",
     "RADIUS_TOO_LARGE": "The radius can be at most {{maxKm}} km.",
     "REACTION_NOT_FOUND": "This reaction no longer exists.",
     "REPORTED_CONTENT_GONE": "This content no longer exists.",
@@ -125,13 +125,13 @@
     "SOCIAL_PROVIDER_MISCONFIGURED": "This sign-in method is unavailable right now.",
     "SOCIAL_PROVIDER_UNAVAILABLE": "{{provider}} is unavailable. Try again shortly.",
     "SOCIAL_USER_MISSING": "We couldn't find an account linked to that sign-in.",
-    "SPOT_CANCELED": "This spot was canceled.",
-    "SPOT_FRIENDS_ONLY": "This spot is for friends only.",
-    "SPOT_INACTIVE": "This spot is no longer active.",
-    "SPOT_NOT_FOUND": "This spot no longer exists.",
+    "SPOT_CANCELED": "This hangout was canceled.",
+    "SPOT_FRIENDS_ONLY": "This hangout is for friends only.",
+    "SPOT_INACTIVE": "This hangout is no longer active.",
+    "SPOT_NOT_FOUND": "This hangout no longer exists.",
     "SPOT_NO_PREFERENCES": "Pick your interests to get suggestions.",
-    "SPOT_RADIUS_TOO_LARGE": "Spot radius can be at most {{maxKm}} km.",
-    "SPOT_WINDOW_TOO_LONG": "A spot window can last at most {{maxHours}} hours.",
+    "SPOT_RADIUS_TOO_LARGE": "Hangout radius can be at most {{maxKm}} km.",
+    "SPOT_WINDOW_TOO_LONG": "A hangout can last at most {{maxHours}} hours.",
     "STARTS_AT_IN_PAST": "The start date is in the past.",
     "STORAGE_QUOTA_EXCEEDED": "You've reached your storage limit.",
     "SUBCATEGORY_INCOHERENT": "Subcategory {{key}} doesn't match the chosen category.",
@@ -180,6 +180,68 @@
     "interval": {
       "month": "month",
       "year": "year"
+    }
+  },
+  "shared": {
+    "addressLink": {
+      "openInMaps": "Open in maps app"
+    },
+    "createFab": {
+      "title": "Create",
+      "event": "Event",
+      "eventHint": "With date, place and guest list",
+      "spot": "Hangout",
+      "spotHint": "A quick meetup near you"
+    },
+    "datePicker": {
+      "placeholder": "Select a date",
+      "date": "Date",
+      "dateTime": "Date and time"
+    },
+    "header": {
+      "openMenu": "Open menu",
+      "openMenuPending": "Open menu (pending requests)",
+      "filterEvents": "Filter events",
+      "notifications": "Notifications",
+      "notificationsUnread_one": "Notifications ({{count}} unread)",
+      "notificationsUnread_other": "Notifications ({{count}} unread)"
+    },
+    "interests": {
+      "title": "Interests",
+      "musicGenres": "Music genres",
+      "pickCategoriesFirst": "Pick categories to unlock interests."
+    },
+    "livePill": {
+      "now": "Happening now"
+    },
+    "mapsChooser": {
+      "title": "Open with"
+    },
+    "otp": {
+      "label": "{{length}}-digit verification code",
+      "filled": "{{filled}} of {{total}} digits entered"
+    },
+    "passwordInput": {
+      "show": "Show password",
+      "hide": "Hide password"
+    },
+    "passwordStrength": {
+      "title": "Password strength",
+      "weak": "weak",
+      "medium": "medium",
+      "strong": "strong",
+      "length": "8+ characters",
+      "lettersAndNumbers": "Letters and numbers",
+      "notObvious": "Avoid obvious passwords"
+    },
+    "search": {
+      "placeholder": "Search...",
+      "clear": "Clear search"
+    },
+    "wheel": {
+      "date": "Date",
+      "hour": "Hour",
+      "minute": "Min"
     }
   },
   "auth": {

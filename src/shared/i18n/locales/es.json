@@ -29,7 +29,7 @@
     "ACCOUNT_ANONYMIZED": "Esta cuenta fue eliminada.",
     "ACCOUNT_BANNED": "Esta cuenta fue baneada.",
     "ACCOUNT_SUSPENDED": "Cuenta suspendida hasta {{until}}.",
-    "ACTIVE_SPOT_LIMIT": "Ya tienes {{max}} spots activos.",
+    "ACTIVE_SPOT_LIMIT": "Ya tienes {{max}} planes activos.",
     "ALREADY_BLOCKED": "Ya bloqueaste a esta persona.",
     "ALREADY_FOLLOWING": "Ya sigues a esta persona.",
     "ALREADY_MEMBER": "Esta persona ya está en el grupo.",
@@ -50,11 +50,11 @@
     "DUPLICATE_VALUE": "Ese dato ya está en uso en otra cuenta.",
     "EMAIL_SEND_FAILED": "No pudimos enviar el correo. Inténtalo en unos instantes.",
     "EMAIL_TAKEN": "Este correo ya está registrado en otra cuenta.",
-    "ENDS_AT_AFTER_EVENT_DATE": "El spot no puede terminar después del plan.",
+    "ENDS_AT_AFTER_EVENT_DATE": "El plan no puede terminar después del evento.",
     "ENDS_AT_IN_PAST": "La hora de fin ya pasó.",
     "END_DATE_BEFORE_START": "El fin no puede ser antes del inicio.",
-    "EVENT_ACCESS_DENIED": "No tienes acceso a este plan.",
-    "EVENT_NOT_FOUND": "Este plan ya no existe.",
+    "EVENT_ACCESS_DENIED": "No tienes acceso a este evento.",
+    "EVENT_NOT_FOUND": "Este evento ya no existe.",
     "FILE_TOO_LARGE": "El archivo supera {{maxMb}} MB.",
     "FOLLOWER_NOT_FOUND": "Esta persona no está entre tus seguidores.",
     "FOLLOW_NOT_FOUND": "No sigues a esta persona.",
@@ -90,11 +90,11 @@
     "NOTIFICATION_NOT_FOUND": "Esta notificación ya no existe.",
     "NOT_COMMENT_AUTHOR": "Solo puedes cambiar tus propios comentarios.",
     "NOT_CONVERSATION_MEMBER": "No participas en esta conversación.",
-    "NOT_EVENT_AUTHOR": "Solo quien creó el plan puede hacer eso.",
+    "NOT_EVENT_AUTHOR": "Solo quien creó el evento puede hacer eso.",
     "NOT_MESSAGE_AUTHOR": "Solo puedes cambiar tus propios mensajes.",
     "NOT_POST_AUTHOR": "Solo puedes cambiar tus propias publicaciones.",
     "NOT_PROFILE_OWNER": "Solo puedes editar tu propio perfil.",
-    "NOT_SPOT_CREATOR": "Solo quien creó el spot puede hacer eso.",
+    "NOT_SPOT_CREATOR": "Solo quien creó el plan puede hacer eso.",
     "NO_USERS_TO_INVITE": "Elige al menos una persona para invitar.",
     "PARTICIPANT_NOT_FOUND": "Esta persona no está en el grupo.",
     "PASSWORD_REQUIRED": "Escribe tu contraseña para continuar.",
@@ -111,7 +111,7 @@
     "PROMOTION_NOT_FOUND": "Esta promoción ya no existe.",
     "PROMOTION_OVERLAP": "Ya hay una promoción en este período.",
     "PROMOTION_TOO_LONG": "La promoción puede durar como máximo {{maxDays}} días.",
-    "PUBLIC_EVENT_NO_INVITES": "Los planes públicos no usan invitaciones.",
+    "PUBLIC_EVENT_NO_INVITES": "Los eventos públicos no usan invitaciones.",
     "RADIUS_TOO_LARGE": "El radio puede ser como máximo {{maxKm}} km.",
     "REACTION_NOT_FOUND": "Esta reacción ya no existe.",
     "REPORTED_CONTENT_GONE": "Este contenido ya no existe.",
@@ -125,13 +125,13 @@
     "SOCIAL_PROVIDER_MISCONFIGURED": "Este inicio de sesión no está disponible ahora.",
     "SOCIAL_PROVIDER_UNAVAILABLE": "{{provider}} no está disponible. Inténtalo en unos instantes.",
     "SOCIAL_USER_MISSING": "No encontramos una cuenta ligada a ese inicio de sesión.",
-    "SPOT_CANCELED": "Este spot fue cancelado.",
-    "SPOT_FRIENDS_ONLY": "Este spot es solo para amigos.",
-    "SPOT_INACTIVE": "Este spot ya no está activo.",
-    "SPOT_NOT_FOUND": "Este spot ya no existe.",
+    "SPOT_CANCELED": "Este plan fue cancelado.",
+    "SPOT_FRIENDS_ONLY": "Este plan es solo para amigos.",
+    "SPOT_INACTIVE": "Este plan ya no está activo.",
+    "SPOT_NOT_FOUND": "Este plan ya no existe.",
     "SPOT_NO_PREFERENCES": "Elige tus intereses para recibir sugerencias.",
-    "SPOT_RADIUS_TOO_LARGE": "El radio del spot puede ser como máximo {{maxKm}} km.",
-    "SPOT_WINDOW_TOO_LONG": "La ventana del spot puede durar como máximo {{maxHours}} horas.",
+    "SPOT_RADIUS_TOO_LARGE": "El radio del plan puede ser como máximo {{maxKm}} km.",
+    "SPOT_WINDOW_TOO_LONG": "Un plan puede durar como máximo {{maxHours}} horas.",
     "STARTS_AT_IN_PAST": "La fecha de inicio ya pasó.",
     "STORAGE_QUOTA_EXCEEDED": "Alcanzaste el límite de almacenamiento.",
     "SUBCATEGORY_INCOHERENT": "La subcategoría {{key}} no coincide con la categoría elegida.",
@@ -180,6 +180,68 @@
     "interval": {
       "month": "mes",
       "year": "año"
+    }
+  },
+  "shared": {
+    "addressLink": {
+      "openInMaps": "Abrir en la app de mapas"
+    },
+    "createFab": {
+      "title": "Crear",
+      "event": "Evento",
+      "eventHint": "Con fecha, lugar y lista de asistentes",
+      "spot": "Plan",
+      "spotHint": "Un encuentro rápido cerca de ti"
+    },
+    "datePicker": {
+      "placeholder": "Selecciona una fecha",
+      "date": "Fecha",
+      "dateTime": "Fecha y hora"
+    },
+    "header": {
+      "openMenu": "Abrir menú",
+      "openMenuPending": "Abrir menú (solicitudes pendientes)",
+      "filterEvents": "Filtrar eventos",
+      "notifications": "Notificaciones",
+      "notificationsUnread_one": "Notificaciones ({{count}} sin leer)",
+      "notificationsUnread_other": "Notificaciones ({{count}} sin leer)"
+    },
+    "interests": {
+      "title": "Intereses",
+      "musicGenres": "Géneros musicales",
+      "pickCategoriesFirst": "Elige categorías para desbloquear intereses."
+    },
+    "livePill": {
+      "now": "Ahora mismo"
+    },
+    "mapsChooser": {
+      "title": "Abrir con"
+    },
+    "otp": {
+      "label": "Código de verificación de {{length}} dígitos",
+      "filled": "{{filled}} de {{total}} dígitos completados"
+    },
+    "passwordInput": {
+      "show": "Mostrar contraseña",
+      "hide": "Ocultar contraseña"
+    },
+    "passwordStrength": {
+      "title": "Seguridad de la contraseña",
+      "weak": "débil",
+      "medium": "media",
+      "strong": "fuerte",
+      "length": "8+ caracteres",
+      "lettersAndNumbers": "Letras y números",
+      "notObvious": "Evita contraseñas obvias"
+    },
+    "search": {
+      "placeholder": "Buscar...",
+      "clear": "Borrar búsqueda"
+    },
+    "wheel": {
+      "date": "Fecha",
+      "hour": "Hora",
+      "minute": "Min"
     }
   },
   "auth": {

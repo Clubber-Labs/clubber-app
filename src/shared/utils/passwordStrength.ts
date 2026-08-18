@@ -26,9 +26,14 @@ export type PasswordChecks = {
   notObvious: boolean
 }
 
+// `level` é discriminador, não texto de tela — a UI o traduz. Enquanto era
+// 'fraca' | 'média' | 'forte', o mesmo valor era comparado no componente e
+// renderizado; traduzir a exibição quebraria a comparação junto.
+export type PasswordLevel = 'weak' | 'medium' | 'strong'
+
 export type PasswordStrength = {
   score: number // 0..4
-  label: 'fraca' | 'média' | 'forte'
+  level: PasswordLevel
   checks: PasswordChecks
 }
 
@@ -68,8 +73,9 @@ export function evaluatePasswordStrength(
   // Bônus: senha longa com símbolo é mais forte que o mínimo exigido.
   if (password.length >= 12 && /[^a-zA-Z0-9]/.test(password)) score++
 
-  const label = score <= 1 ? 'fraca' : score === 2 ? 'média' : 'forte'
-  return { score, label, checks }
+  const level: PasswordLevel =
+    score <= 1 ? 'weak' : score === 2 ? 'medium' : 'strong'
+  return { score, level, checks }
 }
 
 // Predicado único da política — usado pelo Zod e pelo medidor pra não divergirem.

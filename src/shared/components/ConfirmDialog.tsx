@@ -1,4 +1,5 @@
 import { Modal, View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 export type ConfirmOptions = {
   title: string
@@ -21,6 +22,7 @@ export function ConfirmDialog({
   onCancel,
   onConfirm,
 }: Props) {
+  const { t } = useTranslation()
   return (
     <Modal
       visible={visible}
@@ -52,7 +54,7 @@ export function ConfirmDialog({
               className="flex-1 py-3 rounded-xl border border-line-strong items-center"
             >
               <Text className="text-content-secondary font-semibold text-base">
-                {options.cancelLabel ?? 'Cancelar'}
+                {options.cancelLabel ?? t('common.cancel')}
               </Text>
             </Pressable>
             <Pressable
@@ -60,7 +62,7 @@ export function ConfirmDialog({
               className={`flex-1 py-3 rounded-xl items-center ${options.destructive ? 'bg-danger-strong' : 'bg-brand'}`}
             >
               <Text className="text-content font-semibold text-base">
-                {options.confirmLabel ?? 'Confirmar'}
+                {options.confirmLabel ?? t('common.confirm')}
               </Text>
             </Pressable>
           </View>
