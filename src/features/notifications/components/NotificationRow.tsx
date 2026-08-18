@@ -2,6 +2,7 @@ import { View, Text, Pressable, StyleSheet } from 'react-native'
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { formatRelative } from '@/shared/utils/dateFormat'
+import { useLocale } from '@/shared/hooks/useLocale'
 import {
   notificationVisual,
   type NotificationTone,
@@ -34,6 +35,7 @@ const TILE: Record<NotificationTone, { box: string; icon: string }> = {
 }
 
 export function NotificationRow({ notification, onPress }: Props) {
+  const locale = useLocale()
   const { type, title, body, createdAt, readAt, data } = notification
   const actor = data?.actor
   const unread = readAt === null
@@ -109,7 +111,7 @@ export function NotificationRow({ notification, onPress }: Props) {
           </Text>
         ) : null}
         <Text className="text-content-subtle text-xs mt-1">
-          {formatRelative(createdAt)}
+          {formatRelative(createdAt, locale)}
         </Text>
       </View>
 

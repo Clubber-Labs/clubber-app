@@ -6,6 +6,7 @@ import {
   WHEEL_VISIBLE_ITEMS,
 } from './WheelColumn'
 import { formatWheelDay } from '@/shared/utils/dateFormat'
+import { useLocale } from '@/shared/hooks/useLocale'
 
 type Props = {
   value: Date
@@ -54,6 +55,7 @@ export function WheelDateTimePicker({
   minimumDate,
   maximumDate,
 }: Props) {
+  const locale = useLocale()
   // Limites como escalares, não como Date: chamadores passam `new Date()` inline
   // e a identidade muda a cada render — os números não, então as listas abaixo
   // mantêm identidade estável e as colunas não se reposicionam à toa.
@@ -85,10 +87,10 @@ export function WheelDateTimePicker({
   const dateItems = useMemo(
     () =>
       Array.from({ length: maxOffset + 1 }, (_, i) => ({
-        label: formatWheelDay(addDays(base, i)),
+        label: formatWheelDay(addDays(base, i), locale),
         value: i,
       })),
-    [maxOffset, base],
+    [maxOffset, base, locale],
   )
 
   // Memoiza pelo intervalo, não pelo dia/hora: fora dos extremos a lista é sempre

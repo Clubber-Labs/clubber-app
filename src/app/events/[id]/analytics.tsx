@@ -17,6 +17,7 @@ import { AnalyticsExportButton } from '@/features/event-analytics/components/Ana
 import { PremiumAnalyticsGate } from '@/features/event-analytics/components/PremiumAnalyticsGate'
 import { Button } from '@/shared/components/Button'
 import { formatRelative } from '@/shared/utils/dateFormat'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { colors } from '@/shared/theme'
 
 function Header({ onBack }: { onBack: () => void }) {
@@ -33,6 +34,7 @@ function Header({ onBack }: { onBack: () => void }) {
 }
 
 export default function EventAnalyticsScreen() {
+  const locale = useLocale()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const userId = useAuthStore(s => s.userId)
@@ -136,7 +138,7 @@ export default function EventAnalyticsScreen() {
           showsVerticalScrollIndicator={false}
         >
           <Text className="text-content-subtle text-xs mb-3">
-            Atualizado {formatRelative(stats.updatedAt)}
+            Atualizado {formatRelative(stats.updatedAt, locale)}
           </Text>
 
           <AnalyticsSummaryCards totals={stats.totals} />

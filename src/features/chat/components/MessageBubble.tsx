@@ -10,6 +10,7 @@ import { MessageStatusIcon } from './MessageStatusIcon'
 import { MessageReactions } from './MessageReactions'
 import { attachmentReplyLabel } from '../utils/attachmentPreview'
 import { formatMessageTime } from '../utils/messageTime'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { LONG_PRESS_DELAY_MS } from '../utils/longPress'
 import type { AggregatedReaction } from '../utils/reactions'
 import type { MessageMeta } from '../utils/groupMessages'
@@ -52,6 +53,7 @@ export function MessageBubble({
   onPressReply,
   onToggleReaction,
 }: Props) {
+  const locale = useLocale()
   const { isMine } = meta
   const topMargin = meta.startsRun ? 'mt-3' : 'mt-0.5'
 
@@ -154,7 +156,7 @@ export function MessageBubble({
               className={`text-[11px] ${isMine ? 'text-brand-text-bright' : 'text-content-subtle'}`}
             >
               {edited ? 'editada · ' : ''}
-              {formatMessageTime(message.createdAt)}
+              {formatMessageTime(message.createdAt, locale)}
             </Text>
             <MessageStatusIcon status={status} />
           </View>

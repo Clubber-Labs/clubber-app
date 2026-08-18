@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
+import { useLocale } from '@/shared/hooks/useLocale'
+import { formatDateTime, formatShortDate } from '@/shared/utils/dateFormat'
 import { SheetModal } from './SheetModal'
 import { WheelDatePicker } from './WheelDatePicker'
 import { WheelDateTimePicker } from './WheelDateTimePicker'
@@ -16,14 +18,10 @@ type Props = {
   mode?: Mode
 }
 
-function formatValue(value: Date, mode: Mode): string {
-  if (mode === 'datetime') {
-    return `${value.toLocaleDateString('pt-BR')} ${value.toLocaleTimeString(
-      'pt-BR',
-      { hour: '2-digit', minute: '2-digit' },
-    )}`
-  }
-  return value.toLocaleDateString('pt-BR')
+function formatValue(value: Date, mode: Mode, locale: string): string {
+  return mode === 'datetime'
+    ? formatDateTime(value, locale)
+    : formatShortDate(value, locale)
 }
 
 // Campo de data/hora: mostra o valor e abre a roda própria (tema dark da marca)
@@ -40,6 +38,7 @@ export function DatePicker({
 }: Props) {
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState<Date>(value ?? minimumDate ?? new Date())
+  const locale = useLocale()
 
   function handleOpen() {
     setDraft(value ?? minimumDate ?? new Date())
@@ -62,7 +61,7 @@ export function DatePicker({
             value ? 'text-base text-content' : 'text-base text-content-subtle'
           }
         >
-          {value ? formatValue(value, mode) : placeholder}
+          {value ? formatValue(value, mode, locale) : placeholder}
         </Text>
       </Pressable>
 

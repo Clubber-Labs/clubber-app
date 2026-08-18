@@ -3,6 +3,7 @@ import { View, Text, Pressable } from 'react-native'
 import type { LayoutChangeEvent } from 'react-native'
 import Svg, { Line, Polyline, Circle } from 'react-native-svg'
 import { formatDayMonthYear } from '@/shared/utils/dateFormat'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { colors } from '@/shared/theme'
 import type { EventAnalyticsTimelinePoint } from '../types'
 
@@ -32,6 +33,7 @@ type Props = {
 // Gráfico interativo: toque numa faixa do dia pra ver os valores e toque na
 // legenda pra ligar/desligar cada série.
 export function AnalyticsLineChart({ timeline }: Props) {
+  const locale = useLocale()
   const [width, setWidth] = useState(0)
   const [hidden, setHidden] = useState<Record<MetricKey, boolean>>({
     views: false,
@@ -106,7 +108,7 @@ export function AnalyticsLineChart({ timeline }: Props) {
       {selectedPoint ? (
         <View className="mb-2">
           <Text className="text-content-secondary text-xs font-semibold">
-            {formatDayMonthYear(selectedPoint.date)}
+            {formatDayMonthYear(selectedPoint.date, locale)}
           </Text>
           <View className="flex-row gap-4 mt-1">
             {SERIES.map(s => (
@@ -214,10 +216,10 @@ export function AnalyticsLineChart({ timeline }: Props) {
       {timeline.length > 1 && (
         <View className="flex-row justify-between mt-2">
           <Text className="text-content-subtle text-xs">
-            {formatDayMonthYear(timeline[0].date)}
+            {formatDayMonthYear(timeline[0].date, locale)}
           </Text>
           <Text className="text-content-subtle text-xs">
-            {formatDayMonthYear(timeline[timeline.length - 1].date)}
+            {formatDayMonthYear(timeline[timeline.length - 1].date, locale)}
           </Text>
         </View>
       )}

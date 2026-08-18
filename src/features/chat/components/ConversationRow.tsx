@@ -10,6 +10,7 @@ import {
   lastMessagePreview,
 } from '../utils/conversationDisplay'
 import { formatInboxTime } from '../utils/messageTime'
+import { useLocale } from '@/shared/hooks/useLocale'
 import type { InboxItem } from '../types'
 
 type Props = {
@@ -19,11 +20,14 @@ type Props = {
 }
 
 export function ConversationRow({ item, myId, onPress }: Props) {
+  const locale = useLocale()
   const title = conversationTitle(item, myId)
   const preview = lastMessagePreview(item, myId)
   const italic = isPreviewItalic(item)
   const unread = item.unreadCount > 0
-  const time = item.lastMessageAt ? formatInboxTime(item.lastMessageAt) : ''
+  const time = item.lastMessageAt
+    ? formatInboxTime(item.lastMessageAt, locale)
+    : ''
 
   // Ponto online só em DM (presença é por usuário). Grupo → sem ponto.
   const other =

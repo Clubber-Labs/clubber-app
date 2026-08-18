@@ -38,7 +38,11 @@ function PrivatePill() {
 function TopChips({ event, isPast }: { event: FeedEvent; isPast: boolean }) {
   return (
     <View className="flex-row items-start justify-between">
-      <EventDateChip date={event.date} muted={isPast} />
+      <EventDateChip
+        date={event.date}
+        timezone={event.timezone}
+        muted={isPast}
+      />
       <View className="flex-row items-center gap-1.5">
         {event.isFeatured && <SponsoredBadge />}
         {!event.isPublic && <PrivatePill />}

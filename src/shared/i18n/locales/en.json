@@ -10,5 +10,43 @@
     "retry": "Try again",
     "loading": "Loading",
     "genericError": "Something went wrong. Try again."
+  },
+  "format": {
+    "date": {
+      "shortDate": "MM/dd/yyyy",
+      "dayMonth": "MM/dd",
+      "dateTime": "MM/dd/yyyy h:mm a",
+      "time": "h:mm a",
+      "dayOfMonth": "MMMM d",
+      "dayOfMonthYear": "MMMM d, yyyy",
+      "dayOfMonthAtTime": "MMMM d 'at' h:mm a",
+      "weekday": "EEE",
+      "wheelDay": "EEEEEE, MMM d",
+      "monthShort": "MMM"
+    },
+    "relative": {
+      "now": "now",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "yesterday": "Yesterday",
+      "lastSeen": "seen {{distance}}"
+    },
+    "unit": {
+      "meter": "{{value}} m",
+      "kilometer": "{{value}} km",
+      "foot": "{{value}} ft",
+      "mile": "{{value}} mi"
+    },
+    "interval": {
+      "month": "month",
+      "year": "year"
+    }
+  },
+  "notifications": {
+    "sections": {
+      "today": "Today",
+      "thisWeek": "This week",
+      "older": "Earlier"
+    }
   }
 }

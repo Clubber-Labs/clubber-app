@@ -126,6 +126,9 @@ export type FeedEvent = {
   createdAt: string
   date: string
   endDate?: string | null
+  // IANA do local do evento: a hora exibida é a de parede DE LÁ, não a do
+  // aparelho de quem lê. Aditivo — pode não vir em resposta antiga.
+  timezone?: string | null
   status?: EventStatus | null
   canceledAt?: string | null
   latitude: number
@@ -161,6 +164,7 @@ export type EventDetail = {
   description: string
   date: string
   endDate?: string | null
+  timezone?: string | null
   status?: EventStatus | null
   isFeatured?: boolean
   latitude: number

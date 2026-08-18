@@ -8,6 +8,7 @@ import {
   conversationTitle,
 } from '../utils/conversationDisplay'
 import { lastSeenLabel } from '../utils/presence'
+import { useLocale } from '@/shared/hooks/useLocale'
 import type { Conversation } from '../types'
 import { colors } from '@/shared/theme'
 
@@ -24,6 +25,7 @@ export function ConversationHeader({
   myId,
   onPressDetails,
 }: Props) {
+  const locale = useLocale()
   const isDirect = conversation.type === 'DIRECT'
   const title = conversationTitle(conversation, myId)
   const other = conversation.participants.find(p => p.userId !== myId)?.user
@@ -37,7 +39,7 @@ export function ConversationHeader({
       : presence?.online
         ? 'online'
         : presence?.lastSeenAt
-          ? lastSeenLabel(presence.lastSeenAt)
+          ? lastSeenLabel(presence.lastSeenAt, locale)
           : other
             ? `@${other.username}`
             : ''
