@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { View, TextInput, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { EyeIcon, EyeSlashIcon } from 'phosphor-react-native'
 import type { ComponentProps, Ref } from 'react'
 import { colors } from '@/shared/theme'
@@ -31,6 +32,7 @@ export function PasswordInput({
   ref,
   onFocus,
 }: Props) {
+  const { t } = useTranslation()
   const [visible, setVisible] = useState(false)
 
   return (
@@ -56,7 +58,11 @@ export function PasswordInput({
         onPress={() => setVisible(v => !v)}
         hitSlop={8}
         accessibilityRole="button"
-        accessibilityLabel={visible ? 'Ocultar senha' : 'Mostrar senha'}
+        accessibilityLabel={
+          visible
+            ? t('shared.passwordInput.hide')
+            : t('shared.passwordInput.show')
+        }
       >
         {visible ? (
           <EyeSlashIcon size={20} color={colors.contentSubtle} />

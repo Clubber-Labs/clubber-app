@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { View, Text, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useCategories } from '@/shared/hooks/useCategories'
 import { pruneIncoherentTags } from '@/shared/utils/taxonomy'
 import { InterestGroup } from './InterestGroup'
@@ -21,6 +22,7 @@ export function SubcategorySelect({
   onChange,
   max = 10,
 }: Props) {
+  const { t } = useTranslation()
   const {
     categories,
     genresFor,
@@ -74,7 +76,7 @@ export function SubcategorySelect({
   if (selectedCategories.length === 0) {
     return (
       <Text className="text-content-subtle text-xs">
-        Escolha categorias para liberar interesses.
+        {t('shared.interests.pickCategoriesFirst')}
       </Text>
     )
   }
@@ -100,7 +102,7 @@ export function SubcategorySelect({
         />
       ))}
       <InterestGroup
-        title="Gêneros musicais"
+        title={t('shared.interests.musicGenres')}
         items={genres}
         selected={value}
         onToggle={toggle}

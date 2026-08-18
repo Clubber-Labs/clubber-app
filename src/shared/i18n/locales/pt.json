@@ -182,6 +182,68 @@
       "year": "ano"
     }
   },
+  "shared": {
+    "addressLink": {
+      "openInMaps": "Abrir no app de mapas"
+    },
+    "createFab": {
+      "title": "Criar",
+      "event": "Evento",
+      "eventHint": "Com data, local e lista de presença",
+      "spot": "Rolê",
+      "spotHint": "Um encontro rápido perto de você"
+    },
+    "datePicker": {
+      "placeholder": "Selecione uma data",
+      "date": "Data",
+      "dateTime": "Data e hora"
+    },
+    "header": {
+      "openMenu": "Abrir menu",
+      "openMenuPending": "Abrir menu (solicitações pendentes)",
+      "filterEvents": "Filtrar eventos",
+      "notifications": "Notificações",
+      "notificationsUnread_one": "Notificações ({{count}} não lida)",
+      "notificationsUnread_other": "Notificações ({{count}} não lidas)"
+    },
+    "interests": {
+      "title": "Interesses",
+      "musicGenres": "Gêneros musicais",
+      "pickCategoriesFirst": "Escolha categorias para liberar interesses."
+    },
+    "livePill": {
+      "now": "Rolando agora"
+    },
+    "mapsChooser": {
+      "title": "Abrir com"
+    },
+    "otp": {
+      "label": "Código de verificação de 6 dígitos",
+      "filled": "{{filled}} de {{total}} dígitos preenchidos"
+    },
+    "passwordInput": {
+      "show": "Mostrar senha",
+      "hide": "Ocultar senha"
+    },
+    "passwordStrength": {
+      "title": "Força da senha",
+      "weak": "fraca",
+      "medium": "média",
+      "strong": "forte",
+      "length": "8+ caracteres",
+      "lettersAndNumbers": "Letras e números",
+      "notObvious": "Evite senhas óbvias"
+    },
+    "search": {
+      "placeholder": "Buscar...",
+      "clear": "Limpar busca"
+    },
+    "wheel": {
+      "date": "Data",
+      "hour": "Hora",
+      "minute": "Min"
+    }
+  },
   "auth": {
     "errors": {
       "nameMin": "Mínimo 4 caracteres",

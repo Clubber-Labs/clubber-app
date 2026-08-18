@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useLocale } from '@/shared/hooks/useLocale'
 import { formatDateTime, formatShortDate } from '@/shared/utils/dateFormat'
 import { SheetModal } from './SheetModal'
@@ -30,12 +31,13 @@ function formatValue(value: Date, mode: Mode, locale: string): string {
 export function DatePicker({
   value,
   onChange,
-  placeholder = 'Selecione uma data',
+  placeholder,
   maximumDate,
   minimumDate,
   hasError,
   mode = 'date',
 }: Props) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState<Date>(value ?? minimumDate ?? new Date())
   const locale = useLocale()
@@ -61,7 +63,9 @@ export function DatePicker({
             value ? 'text-base text-content' : 'text-base text-content-subtle'
           }
         >
-          {value ? formatValue(value, mode, locale) : placeholder}
+          {value
+            ? formatValue(value, mode, locale)
+            : (placeholder ?? t('shared.datePicker.placeholder'))}
         </Text>
       </Pressable>
 
@@ -69,11 +73,13 @@ export function DatePicker({
         <View className="px-5 pt-1">
           <View className="flex-row items-center justify-between pb-3">
             <Text className="text-content text-xl font-extrabold">
-              {mode === 'datetime' ? 'Data e hora' : 'Data'}
+              {mode === 'datetime'
+                ? t('shared.datePicker.dateTime')
+                : t('shared.datePicker.date')}
             </Text>
             <Pressable onPress={handleConfirm} hitSlop={8}>
               <Text className="text-brand-text text-[15px] font-bold">
-                Confirmar
+                {t('common.confirm')}
               </Text>
             </Pressable>
           </View>

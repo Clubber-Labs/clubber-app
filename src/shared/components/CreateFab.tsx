@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import {
   PlusIcon,
   CaretRightIcon,
@@ -20,6 +21,7 @@ type Props = {
 // formal × rolê) em vez de FABs distintos por tela. Cada opção dispara o fluxo
 // que a tela hospedeira passar (o rolê fora do mapa navega até ele).
 export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
+  const { t } = useTranslation()
   const sheet = useSheetExit()
   const tabBarClearance = useTabBarClearance()
 
@@ -28,7 +30,7 @@ export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
       <Pressable
         onPress={sheet.open}
         accessibilityRole="button"
-        accessibilityLabel="Criar"
+        accessibilityLabel={t('shared.createFab.title')}
         className="absolute right-4 h-14 w-14 items-center justify-center rounded-full bg-content"
         style={{
           bottom: tabBarClearance,
@@ -49,18 +51,18 @@ export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
       >
         <View className="px-4 pb-2">
           <Text className="px-1 pb-2 text-lg font-bold text-content">
-            Criar
+            {t('shared.createFab.title')}
           </Text>
           <CreateOption
             icon={CalendarBlankIcon}
-            title="Evento"
-            subtitle="Com data, local e lista de presença"
+            title={t('shared.createFab.event')}
+            subtitle={t('shared.createFab.eventHint')}
             onPress={() => sheet.exitTo(onCreateEvent)}
           />
           <CreateOption
             icon={SparkleIcon}
-            title="Rolê"
-            subtitle="Um encontro rápido perto de você"
+            title={t('shared.createFab.spot')}
+            subtitle={t('shared.createFab.spotHint')}
             onPress={() => sheet.exitTo(onCreateSpot)}
           />
         </View>

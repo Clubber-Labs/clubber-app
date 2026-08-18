@@ -182,6 +182,68 @@
       "year": "year"
     }
   },
+  "shared": {
+    "addressLink": {
+      "openInMaps": "Open in maps app"
+    },
+    "createFab": {
+      "title": "Create",
+      "event": "Event",
+      "eventHint": "With date, place and guest list",
+      "spot": "Hangout",
+      "spotHint": "A quick meetup near you"
+    },
+    "datePicker": {
+      "placeholder": "Select a date",
+      "date": "Date",
+      "dateTime": "Date and time"
+    },
+    "header": {
+      "openMenu": "Open menu",
+      "openMenuPending": "Open menu (pending requests)",
+      "filterEvents": "Filter events",
+      "notifications": "Notifications",
+      "notificationsUnread_one": "Notifications ({{count}} unread)",
+      "notificationsUnread_other": "Notifications ({{count}} unread)"
+    },
+    "interests": {
+      "title": "Interests",
+      "musicGenres": "Music genres",
+      "pickCategoriesFirst": "Pick categories to unlock interests."
+    },
+    "livePill": {
+      "now": "Happening now"
+    },
+    "mapsChooser": {
+      "title": "Open with"
+    },
+    "otp": {
+      "label": "6-digit verification code",
+      "filled": "{{filled}} of {{total}} digits entered"
+    },
+    "passwordInput": {
+      "show": "Show password",
+      "hide": "Hide password"
+    },
+    "passwordStrength": {
+      "title": "Password strength",
+      "weak": "weak",
+      "medium": "medium",
+      "strong": "strong",
+      "length": "8+ characters",
+      "lettersAndNumbers": "Letters and numbers",
+      "notObvious": "Avoid obvious passwords"
+    },
+    "search": {
+      "placeholder": "Search...",
+      "clear": "Clear search"
+    },
+    "wheel": {
+      "date": "Date",
+      "hour": "Hour",
+      "minute": "Min"
+    }
+  },
   "auth": {
     "errors": {
       "nameMin": "At least 4 characters",

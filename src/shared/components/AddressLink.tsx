@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { Pressable, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useOpenInMaps } from '../lib/openInMaps'
 import { hasMapTarget, type MapTarget } from '../utils/mapLinks'
 
@@ -11,6 +12,7 @@ type Props = MapTarget & {
 // Torna um endereço (texto + ícone) tocável: abre o seletor de apps de mapas.
 // Sem alvo de localização, renderiza o conteúdo estático (não vira botão).
 export function AddressLink({ children, className, ...target }: Props) {
+  const { t } = useTranslation()
   const openInMaps = useOpenInMaps()
 
   if (!hasMapTarget(target)) {
@@ -22,7 +24,7 @@ export function AddressLink({ children, className, ...target }: Props) {
       className={className}
       onPress={() => openInMaps(target)}
       accessibilityRole="button"
-      accessibilityHint="Abrir no app de mapas"
+      accessibilityHint={t('shared.addressLink.openInMaps')}
     >
       {children}
     </Pressable>

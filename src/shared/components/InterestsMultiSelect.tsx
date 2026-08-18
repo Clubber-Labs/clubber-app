@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { CaretDownIcon, CaretUpIcon } from 'phosphor-react-native'
 import { useCategories } from '@/shared/hooks/useCategories'
 import { InterestGroup } from './InterestGroup'
@@ -15,6 +16,7 @@ type Props = {
 // Recolhido por padrão (accordion) para não alongar o formulário. Sem regra de
 // coerência — no perfil o usuário marca qualquer interesse livremente.
 export function InterestsMultiSelect({ value, onChange, max = 30 }: Props) {
+  const { t } = useTranslation()
   const { categories, genres, isLoading } = useCategories()
   const [expanded, setExpanded] = useState(false)
 
@@ -36,7 +38,9 @@ export function InterestsMultiSelect({ value, onChange, max = 30 }: Props) {
         className="flex-row items-center justify-between bg-surface border border-line rounded-xl px-4 py-3.5"
       >
         <View className="flex-row items-center gap-2">
-          <Text className="text-base font-medium text-content">Interesses</Text>
+          <Text className="text-base font-medium text-content">
+            {t('shared.interests.title')}
+          </Text>
           {value.length > 0 && (
             <View className="bg-brand rounded-full px-2 py-0.5">
               <Text className="text-content text-xs font-semibold">
@@ -72,7 +76,7 @@ export function InterestsMultiSelect({ value, onChange, max = 30 }: Props) {
               />
             ))}
             <InterestGroup
-              title="Gêneros musicais"
+              title={t('shared.interests.musicGenres')}
               items={genres}
               selected={value}
               onToggle={toggle}

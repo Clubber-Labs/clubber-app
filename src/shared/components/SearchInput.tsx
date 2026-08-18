@@ -1,5 +1,6 @@
 import { MagnifyingGlassIcon, XCircleIcon } from 'phosphor-react-native'
 import { forwardRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, Pressable, TextInput, View } from 'react-native'
 import { GlassSurface } from '@/shared/components/GlassSurface'
 import { colors } from '@/shared/theme'
@@ -17,9 +18,10 @@ type Props = {
 // Input de busca genérico (ícone + clear + loading), dark theme. Reusável por
 // qualquer busca (pessoas, eventos…). Sem padding externo — o caller posiciona.
 export const SearchInput = forwardRef<TextInput, Props>(function SearchInput(
-  { value, onChange, loading, placeholder = 'Buscar...', variant = 'default' },
+  { value, onChange, loading, placeholder, variant = 'default' },
   ref,
 ) {
+  const { t } = useTranslation()
   const hasText = value.length > 0
   const overlay = variant === 'overlay'
   const fieldClass = overlay
@@ -31,7 +33,7 @@ export const SearchInput = forwardRef<TextInput, Props>(function SearchInput(
       ref={ref}
       value={value}
       onChangeText={onChange}
-      placeholder={placeholder}
+      placeholder={placeholder ?? t('shared.search.placeholder')}
       placeholderTextColor={overlay ? colors.contentMuted : colors.content}
       autoCapitalize="none"
       autoCorrect={false}
@@ -61,7 +63,7 @@ export const SearchInput = forwardRef<TextInput, Props>(function SearchInput(
           <Pressable
             onPress={() => onChange('')}
             hitSlop={10}
-            accessibilityLabel="Limpar busca"
+            accessibilityLabel={t('shared.search.clear')}
           >
             <XCircleIcon size={20} color={colors.contentSubtle} />
           </Pressable>

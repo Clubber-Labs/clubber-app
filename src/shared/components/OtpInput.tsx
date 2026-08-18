@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { Pressable, View, Text, TextInput } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   value: string
@@ -20,6 +21,7 @@ export function OtpInput({
   error,
   onComplete,
 }: Props) {
+  const { t } = useTranslation()
   const inputRef = useRef<TextInput>(null)
 
   function handleChange(text: string) {
@@ -59,9 +61,12 @@ export function OtpInput({
         autoFocus={autoFocus}
         caretHidden
         className="absolute w-full h-full opacity-0"
-        accessibilityLabel="Código de verificação de 6 dígitos"
+        accessibilityLabel={t('shared.otp.label')}
         accessibilityValue={{
-          text: `${value.length} de ${length} dígitos preenchidos`,
+          text: t('shared.otp.filled', {
+            filled: value.length,
+            total: length,
+          }),
         }}
       />
     </Pressable>

@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import {
   WheelColumn,
   WHEEL_ITEM_HEIGHT,
@@ -55,6 +56,7 @@ export function WheelDateTimePicker({
   minimumDate,
   maximumDate,
 }: Props) {
+  const { t } = useTranslation()
   const locale = useLocale()
   // Limites como escalares, não como Date: chamadores passam `new Date()` inline
   // e a identidade muda a cada render — os números não, então as listas abaixo
@@ -123,13 +125,13 @@ export function WheelDateTimePicker({
     <View>
       <View className="flex-row mb-1">
         <Text style={{ flex: 1 }} className={COLUMN_LABEL}>
-          Data
+          {t('shared.wheel.date')}
         </Text>
         <Text style={{ flex: 1 }} className={COLUMN_LABEL}>
-          Hora
+          {t('shared.wheel.hour')}
         </Text>
         <Text style={{ flex: 1 }} className={COLUMN_LABEL}>
-          Min
+          {t('shared.wheel.minute')}
         </Text>
       </View>
 
