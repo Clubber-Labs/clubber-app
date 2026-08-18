@@ -44,9 +44,6 @@ export function StepProfile({ control, errors }: Props) {
               />
             )}
           />
-          {errors.bio && (
-            <Text className="text-content text-xs">{errors.bio.message}</Text>
-          )}
         </View>
 
         <View className="flex-row items-center justify-between bg-surface border border-line rounded-xl px-4 py-3.5">
@@ -90,11 +87,6 @@ export function StepProfile({ control, errors }: Props) {
               <CategoryMultiSelect value={value ?? []} onChange={onChange} />
             )}
           />
-          {errors.preferredCategories && (
-            <Text className="text-content text-xs">
-              {errors.preferredCategories.message}
-            </Text>
-          )}
 
           <Controller
             control={control}
@@ -103,11 +95,6 @@ export function StepProfile({ control, errors }: Props) {
               <InterestsMultiSelect value={value ?? []} onChange={onChange} />
             )}
           />
-          {errors.preferredSubcategories && (
-            <Text className="text-content text-xs">
-              {errors.preferredSubcategories.message}
-            </Text>
-          )}
         </View>
       </View>
     </View>

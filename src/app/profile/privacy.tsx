@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import {
   ActivityIndicator,
   Linking,
@@ -10,187 +10,180 @@ import {
 } from 'react-native'
 import { Stack } from 'expo-router'
 import {
-  LockIcon,
   ArrowSquareOutIcon,
   DownloadSimpleIcon,
-  ClockIcon,
   EnvelopeSimpleIcon,
 } from 'phosphor-react-native'
 import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
+import { DevicePermissionRow } from '@/features/privacy/components/DevicePermissionRow'
+import { useNotificationConsent } from '@/features/notifications/hooks/useNotificationConsent'
 import { useConsent } from '@/features/privacy/hooks/useConsent'
+import { useProductPreferences } from '@/features/privacy/hooks/useProductPreferences'
+import { CONSENT_VERSION } from '@/features/privacy/services/consentService'
 import {
-  CATEGORY_LABELS,
-  CONSENT_VERSION,
-  type ConsentFields,
-} from '@/features/privacy/services/consentService'
-import {
-  ORDERED_CATEGORIES,
-  groupItemsByCategory,
+  COMMUNICATION_ITEMS,
+  PRODUCT_PREFERENCE_ITEMS,
 } from '@/features/privacy/constants'
 import { useConfirm } from '@/shared/lib/confirm'
+import { useBanner } from '@/shared/lib/banner'
+import { openDocument } from '@/shared/lib/openDocument'
 import { colors } from '@/shared/theme'
 
+const PRIVACY_URL = 'https://clubber.social/privacidade'
+const PRIVACY_EMAIL = 'privacidade@clubber.social'
+
+function SectionTitle({ title, hint }: { title: string; hint: string }) {
+  return (
+    <View className="px-1 mb-2 mt-6">
+      <Text className="text-sm font-semibold text-content">{title}</Text>
+      <Text className="text-xs text-content-muted mt-0.5 leading-4">
+        {hint}
+      </Text>
+    </View>
+  )
+}
+
 export default function PrivacyScreen() {
-  const {
-    consent,
-    updateConsent,
-    revokeAll,
-    exportData,
-    auditLog,
-    isSynced,
-    needsVersionBump,
-  } = useConsent()
+  const { consent, isRevoked, updateConsent, revokeAll, exportData } =
+    useConsent()
+  const { preferences, updatePreference } = useProductPreferences()
+  const { osPush, osLocation, enableNotifications, enableLocation } =
+    useNotificationConsent()
   const [exporting, setExporting] = useState(false)
-  const [exportError, setExportError] = useState<string | null>(null)
   const confirm = useConfirm()
+  const showBanner = useBanner()
 
-  const itemsByCategory = useMemo(() => groupItemsByCategory(), [])
-
-  const fieldValues: ConsentFields = {
-    locationPrecise: consent.locationPrecise,
-    socialFeed: consent.socialFeed,
-    socialVisibility: consent.socialVisibility,
-    pushNotifications: consent.pushNotifications,
-    marketing: consent.marketing,
-    analytics: consent.analytics,
-    surveys: consent.surveys,
+  async function handleConsentToggle(
+    key: 'marketing' | 'surveys',
+    value: boolean,
+  ) {
+    const ok = await updateConsent({ [key]: value })
+    if (!ok) showBanner('Não foi possível salvar. Verifique sua conexão.')
   }
 
-  async function handleToggle(key: keyof ConsentFields, value: boolean) {
-    await updateConsent({ [key]: value })
-  }
-
-  async function handleRevokeAll() {
-    const ok = await confirm({
-      title: 'Revogar todos os consentimentos',
-      message:
-        'Isso desativa todas as funcionalidades opcionais. Você pode reativar a qualquer momento.',
-      confirmLabel: 'Revogar tudo',
-      destructive: true,
-    })
-    if (ok) revokeAll()
+  async function handlePreferenceToggle(
+    key: 'socialFeed' | 'socialVisibility' | 'analytics',
+    value: boolean,
+  ) {
+    const ok = await updatePreference(key, value)
+    if (!ok) showBanner('Não foi possível salvar. Verifique sua conexão.')
   }
 
   async function handleExport() {
+    if (exporting) return
     setExporting(true)
-    setExportError(null)
     try {
       const data = await exportData()
-      await Share.share({
-        title: 'Meus dados LGPD — Clubber',
-        message: JSON.stringify(data, null, 2),
-      })
+      await Share.share({ message: JSON.stringify(data, null, 2) })
     } catch {
-      setExportError('Não foi possível exportar seus dados. Tente novamente.')
+      showBanner('Não foi possível exportar agora. Tente novamente.')
     } finally {
       setExporting(false)
     }
   }
 
-  async function handleAuditLog() {
-    try {
-      const data = await auditLog()
-      await Share.share({
-        title: 'Histórico de consentimentos — Clubber',
-        message: JSON.stringify(data, null, 2),
-      })
-    } catch {
-      // silent — falha no log de auditoria não bloqueia o usuário
-    }
+  async function handleRevokeAll() {
+    const ok = await confirm({
+      title: 'Revogar consentimentos',
+      message:
+        'Você deixa de receber notificações e comunicações, sua localização é apagada, e o feed social e o compartilhamento de atividades são desligados.',
+      confirmLabel: 'Revogar',
+      destructive: true,
+    })
+    if (!ok) return
+    const done = await revokeAll()
+    showBanner(
+      done
+        ? 'Consentimentos revogados.'
+        : 'Não foi possível revogar agora. Tente novamente.',
+    )
   }
 
   return (
     <>
-      <Stack.Screen options={{ headerShown: false }} />
+      <Stack.Screen options={{ title: 'Privacidade' }} />
       <ScrollView
         className="flex-1 bg-background"
-        contentContainerStyle={{ paddingBottom: 40 }}
-        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ padding: 16, paddingBottom: 48 }}
       >
-        {/* Header */}
-        <View className="px-4 pt-6 pb-4 border-b border-line">
-          <Text className="text-xl font-bold text-content">Privacidade</Text>
-          <Text className="text-content-muted text-sm mt-1">
-            Controle como o Clubber usa seus dados — LGPD nº 13.709/2018.
-          </Text>
-
-          {!isSynced && (
-            <View className="flex-row items-center gap-2 mt-2">
-              <ActivityIndicator size="small" color={colors.brandText} />
-              <Text className="text-brand-text text-xs">
-                Salvando preferências…
-              </Text>
-            </View>
-          )}
-
-          {needsVersionBump && (
-            <View className="mt-2 bg-warning-surface-strong border border-warning rounded-lg px-3 py-2">
-              <Text className="text-warning text-xs">
-                ⚠️ Nossa Política de Privacidade foi atualizada para a v
-                {CONSENT_VERSION}. Revise suas preferências abaixo.
-              </Text>
-            </View>
-          )}
-        </View>
-
-        {/* Essencial — sempre ativo */}
-        <View className="mx-4 mt-4 bg-surface-sunken border border-line rounded-xl overflow-hidden">
-          <View className="flex-row items-center justify-between px-4 py-3 border-b border-line">
-            <View className="flex-row items-center gap-2">
-              <LockIcon weight="fill" size={14} color={colors.brandText} />
-              <Text className="text-sm font-semibold text-brand-text">
-                Dados essenciais
-              </Text>
-            </View>
-            <Text className="text-xs text-content-subtle">Sempre ativo</Text>
-          </View>
-          <View className="px-4 py-3">
-            <Text className="text-xs text-content-muted leading-4">
-              Necessários para autenticação, operação da conta e moderação de
-              segurança. Não podem ser desativados.
+        {isRevoked && (
+          <View className="bg-surface border border-danger rounded-xl px-4 py-3 mb-2">
+            <Text className="text-sm font-semibold text-danger-text">
+              Consentimentos revogados
+            </Text>
+            <Text className="text-xs text-content-muted mt-1 leading-4">
+              Você não recebe notificações nem comunicações, mesmo que a
+              permissão do sistema esteja ativa. Ligue uma opção em Comunicações
+              para voltar atrás.
             </Text>
           </View>
+        )}
+
+        {/* Bloco 1 — quem decide é o SO. Nada aqui é switch: um controle que o
+            app não consegue honrar faz o usuário arrastar e nada acontecer. */}
+        <SectionTitle
+          title="Permissões do dispositivo"
+          hint="Quem decide é o sistema. Toque para permitir, ou para abrir os ajustes se já tiver recusado."
+        />
+        <View className="bg-surface-sunken border border-line rounded-xl overflow-hidden">
+          <DevicePermissionRow
+            label="Localização"
+            description="Mostra rolês perto de você no mapa e avisa quando algo acontece por perto."
+            status={osLocation}
+            onPress={() => void enableLocation()}
+          />
+          <DevicePermissionRow
+            label="Notificações"
+            description="Convites, atividade de quem você segue e avisos dos rolês que você confirmou."
+            status={osPush}
+            onPress={() => void enableNotifications()}
+            isLast
+          />
         </View>
 
-        {/* Seções configuráveis */}
-        {ORDERED_CATEGORIES.map(cat => {
-          const items = itemsByCategory[cat]
-          if (!items?.length) return null
+        {/* Bloco 2 — consentimento de verdade: opt-in, desligado por padrão. */}
+        <SectionTitle
+          title="Comunicações"
+          hint="Desligadas por padrão. Você escolhe o que quer receber."
+        />
+        <View className="bg-surface-sunken border border-line rounded-xl overflow-hidden">
+          {COMMUNICATION_ITEMS.map((item, index) => (
+            <ConsentToggleRow
+              key={item.key}
+              label={item.label}
+              description={item.description}
+              value={consent[item.key]}
+              onChange={value => handleConsentToggle(item.key, value)}
+              isLast={index === COMMUNICATION_ITEMS.length - 1}
+            />
+          ))}
+        </View>
 
-          return (
-            <View
-              key={cat}
-              className="mx-4 mt-3 bg-surface-sunken border border-line rounded-xl overflow-hidden"
-            >
-              <View className="px-4 py-3 border-b border-line">
-                <Text className="text-sm font-semibold text-content-tertiary">
-                  {CATEGORY_LABELS[cat]}
-                </Text>
-              </View>
-              {items.map((item, idx) => (
-                <ConsentToggleRow
-                  key={item.key}
-                  label={item.label}
-                  description={item.description}
-                  value={fieldValues[item.key]}
-                  onChange={v => handleToggle(item.key, v)}
-                  isLast={idx === items.length - 1}
-                />
-              ))}
-            </View>
-          )
-        })}
+        {/* Bloco 3 — preferência de produto: ligada por padrão, opt-out. */}
+        <SectionTitle
+          title="Preferências"
+          hint="Ligadas por padrão. Desligue o que não fizer sentido pra você."
+        />
+        <View className="bg-surface-sunken border border-line rounded-xl overflow-hidden">
+          {PRODUCT_PREFERENCE_ITEMS.map((item, index) => (
+            <ConsentToggleRow
+              key={item.key}
+              label={item.label}
+              description={item.description}
+              value={preferences[item.key]}
+              onChange={value => handlePreferenceToggle(item.key, value)}
+              isLast={index === PRODUCT_PREFERENCE_ITEMS.length - 1}
+            />
+          ))}
+        </View>
 
-        {/* Direitos LGPD */}
-        <View className="mx-4 mt-5 bg-surface-sunken border border-line rounded-xl overflow-hidden">
-          <View className="px-4 py-3 border-b border-line">
-            <Text className="text-sm font-semibold text-content-tertiary">
-              ⚖️ Direitos LGPD (Art. 18)
-            </Text>
-          </View>
-
+        <SectionTitle
+          title="Seus direitos"
+          hint="Lei nº 13.709/2018 (LGPD), Art. 18."
+        />
+        <View className="bg-surface-sunken border border-line rounded-xl overflow-hidden">
           <Pressable
-            onPress={() => Linking.openURL('https://clubber.app/privacidade')}
+            onPress={() => openDocument(PRIVACY_URL)}
             className="flex-row items-center justify-between px-4 py-4 border-b border-line active:opacity-70"
           >
             <View className="flex-1">
@@ -198,8 +191,7 @@ export default function PrivacyScreen() {
                 Política de Privacidade
               </Text>
               <Text className="text-xs text-content-subtle mt-0.5">
-                Versão {consent.consentVersion ?? CONSENT_VERSION} · Vigência:
-                02/06/2026
+                Versão {consent.consentVersion ?? CONSENT_VERSION}
               </Text>
             </View>
             <ArrowSquareOutIcon size={16} color={colors.contentSubtle} />
@@ -212,14 +204,11 @@ export default function PrivacyScreen() {
           >
             <View className="flex-1">
               <Text className="text-sm font-medium text-content">
-                Exportar meus dados
+                Baixar meus dados
               </Text>
               <Text className="text-xs text-content-subtle mt-0.5">
-                Receba seu histórico de consentimentos (Art. 18, V)
+                Seu histórico de consentimentos e preferências (Art. 18, V)
               </Text>
-              {exportError && (
-                <Text className="text-danger text-xs mt-1">{exportError}</Text>
-              )}
             </View>
             {exporting ? (
               <ActivityIndicator size="small" color={colors.brandText} />
@@ -229,22 +218,7 @@ export default function PrivacyScreen() {
           </Pressable>
 
           <Pressable
-            onPress={handleAuditLog}
-            className="flex-row items-center justify-between px-4 py-4 border-b border-line active:opacity-70"
-          >
-            <View className="flex-1">
-              <Text className="text-sm font-medium text-content">
-                Ver histórico de consentimentos
-              </Text>
-              <Text className="text-xs text-content-subtle mt-0.5">
-                Registro de alterações de privacidade (Art. 18, I)
-              </Text>
-            </View>
-            <ClockIcon size={16} color={colors.contentSubtle} />
-          </Pressable>
-
-          <Pressable
-            onPress={() => Linking.openURL('mailto:privacidade@clubber.app')}
+            onPress={() => Linking.openURL(`mailto:${PRIVACY_EMAIL}`)}
             className="flex-row items-center justify-between px-4 py-4 border-b border-line active:opacity-70"
           >
             <View className="flex-1">
@@ -252,7 +226,7 @@ export default function PrivacyScreen() {
                 Falar com a equipe de privacidade
               </Text>
               <Text className="text-xs text-content-subtle mt-0.5">
-                privacidade@clubber.app
+                {PRIVACY_EMAIL}
               </Text>
             </View>
             <EnvelopeSimpleIcon size={16} color={colors.contentSubtle} />
@@ -263,17 +237,17 @@ export default function PrivacyScreen() {
             className="px-4 py-4 active:opacity-70"
           >
             <Text className="text-sm font-medium text-danger-text">
-              Revogar todos os consentimentos
+              Revogar consentimentos
             </Text>
             <Text className="text-xs text-content-subtle mt-0.5">
-              Desativa todas as funcionalidades opcionais (Art. 8, §5)
+              Desliga comunicações, notificações e preferências, e apaga sua
+              localização
             </Text>
           </Pressable>
         </View>
 
         <Text className="text-content-faint text-xs text-center mt-5 mx-8 leading-4">
-          Alterações salvas automaticamente. Prazo de resposta: até 15 dias
-          úteis.
+          Prazo de resposta a solicitações: até 15 dias úteis.
         </Text>
       </ScrollView>
     </>

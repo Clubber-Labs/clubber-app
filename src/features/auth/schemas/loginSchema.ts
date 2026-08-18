@@ -1,8 +1,15 @@
 import { z } from 'zod'
 
+// `identifier` = e-mail OU nome de usuário, resolvido no backend. String livre
+// de propósito, espelhando o loginBodySchema de lá: username não restringe
+// charset, então validar como e-mail recusaria identificador válido aqui.
 export const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  identifier: z
+    .string()
+    .trim()
+    .min(1, 'Informe seu e-mail ou nome de usuário')
+    .max(255),
+  password: z.string().min(6, 'Mínimo 6 caracteres'),
 })
 
 export type LoginInput = z.infer<typeof loginSchema>

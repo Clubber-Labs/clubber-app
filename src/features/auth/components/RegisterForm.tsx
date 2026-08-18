@@ -9,7 +9,6 @@ import {
 import { useForm, useWatch, type FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
-  DEFAULT_REGISTER_CONSENTS,
   REGISTER_STEP_FIELDS,
   registerSchema,
   registerStepSchemas,
@@ -25,9 +24,13 @@ import { StepPersonal } from './steps/StepPersonal'
 import { StepAccount } from './steps/StepAccount'
 import { StepPassword } from './steps/StepPassword'
 import { StepProfile } from './steps/StepProfile'
-import { StepPrivacy } from './steps/StepPrivacy'
+import { LegalNotice } from './LegalNotice'
 import { getApiError } from '@/shared/lib/apiError'
 import { resolveConflictField } from '@/shared/utils/conflictField'
+import {
+  useFormErrorBanner,
+  messagesFromErrors,
+} from '@/shared/hooks/useFormErrorBanner'
 
 const STEPS = REGISTER_STEP_FIELDS
 
@@ -38,7 +41,6 @@ const STEP_REQUIRED: (keyof RegisterInput)[][] = [
   ['username', 'email', 'phone'],
   ['password', 'confirmPassword'],
   ['preferredCategories'],
-  ['termsAccepted'],
 ]
 
 const FIELD_TO_STEP = new Map<keyof RegisterInput, number>(
@@ -97,12 +99,12 @@ export function RegisterForm() {
     defaultValues: {
       isPrivate: false,
       preferredCategories: [],
-      termsAccepted: false,
-      consents: { ...DEFAULT_REGISTER_CONSENTS },
     },
   })
 
   const form = useFormFocus()
+
+  const showFormErrors = useFormErrorBanner(form)
   const totalSteps = STEPS.length
   const isLastStep = currentStep === totalSteps - 1
 
@@ -149,14 +151,16 @@ export function RegisterForm() {
       return
     }
 
-    const failed: (keyof RegisterInput)[] = []
+    const messages: Record<string, string> = {}
     for (const issue of result.error.issues) {
       const field = issue.path[0] as keyof RegisterInput
-      if (failed.includes(field)) continue
-      failed.push(field)
+      if (messages[field]) continue
+      messages[field] = issue.message
       setError(field, { message: issue.message })
     }
-    form.focusFirstOf(failed)
+    // Banner + borda + foco: o texto sob o input saiu do app (ver
+    // useFormErrorBanner), então é aqui que a etapa comunica o que falta.
+    void showFormErrors(messages)
   }
 
   function handleBack() {
@@ -189,7 +193,7 @@ export function RegisterForm() {
       goToStep(target, 'back')
       return
     }
-    form.focusFirstError(formErrors)
+    void showFormErrors(messagesFromErrors(formErrors))
   }
 
   const progressWidth = progress.interpolate({
@@ -202,7 +206,6 @@ export function RegisterForm() {
     <StepAccount control={control} errors={errors} />,
     <StepPassword control={control} errors={errors} />,
     <StepProfile control={control} errors={errors} />,
-    <StepPrivacy control={control} errors={errors} />,
   ]
 
   return (
@@ -259,6 +262,8 @@ export function RegisterForm() {
             )}
           </View>
         </View>
+
+        {isLastStep && <LegalNotice />}
       </View>
     </KeyboardAvoidingView>
   )

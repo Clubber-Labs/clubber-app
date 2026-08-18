@@ -11,6 +11,10 @@ import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
 
 // Identidade estável: o useWatch do FormSubmitButton tem `name` nas deps do
+import {
+  useFormErrorBanner,
+  messagesFromErrors,
+} from '@/shared/hooks/useFormErrorBanner'
 // efeito de subscrição, e um literal inline re-assinaria a cada tecla digitada.
 const REQUIRED_FIELDS: Path<ForgotPasswordEmailInput>[] = ['email']
 
@@ -36,6 +40,7 @@ export function StepEmail({
     defaultValues: { email: defaultEmail ?? '' },
   })
   const form = useFormFocus()
+  const showFormErrors = useFormErrorBanner(form)
 
   return (
     <View className="gap-5">
@@ -69,9 +74,6 @@ export function StepEmail({
             />
           )}
         />
-        {errors.email && (
-          <Text className="text-content text-xs">{errors.email.message}</Text>
-        )}
       </View>
 
       <FormError message={serverError} />
@@ -82,7 +84,7 @@ export function StepEmail({
         label={isSubmitting ? 'Enviando...' : 'Enviar código'}
         onPress={handleSubmit(
           data => onSubmit(data.email),
-          form.focusFirstError,
+          errors => showFormErrors(messagesFromErrors(errors)),
         )}
         loading={isSubmitting}
       />

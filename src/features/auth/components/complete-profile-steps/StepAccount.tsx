@@ -1,7 +1,7 @@
 import { View, Text, TextInput } from 'react-native'
 import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
-import { formatPhone } from '@/shared/utils/masks'
+import { formatPhone, phoneDigits } from '@/shared/utils/masks'
 import type { CompleteProfileInput } from '../../schemas/completeProfileSchema'
 import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
@@ -56,11 +56,6 @@ export function StepAccount({ control, errors, email }: Props) {
               />
             )}
           />
-          {errors.username && (
-            <Text className="text-content text-xs">
-              {errors.username.message}
-            </Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('phone')}>
@@ -77,15 +72,12 @@ export function StepAccount({ control, errors, email }: Props) {
                 placeholder="(11) 99999-9999"
                 placeholderTextColor={colors.contentSubtle}
                 keyboardType="phone-pad"
-                onChangeText={text => onChange(text.replace(/\D/g, ''))}
+                onChangeText={text => onChange(phoneDigits(text))}
                 onBlur={onBlur}
                 value={formatPhone(value ?? '')}
               />
             )}
           />
-          {errors.phone && (
-            <Text className="text-content text-xs">{errors.phone.message}</Text>
-          )}
         </View>
       </View>
     </View>

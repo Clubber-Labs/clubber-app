@@ -42,11 +42,6 @@ export function StepPassword({ control, errors }: Props) {
               />
             )}
           />
-          {errors.password && (
-            <Text className="text-content text-xs">
-              {errors.password.message}
-            </Text>
-          )}
         </View>
 
         <View className="gap-1" {...form.anchor('confirmPassword')}>
@@ -68,11 +63,6 @@ export function StepPassword({ control, errors }: Props) {
               />
             )}
           />
-          {errors.confirmPassword && (
-            <Text className="text-content text-xs">
-              {errors.confirmPassword.message}
-            </Text>
-          )}
         </View>
       </View>
     </View>

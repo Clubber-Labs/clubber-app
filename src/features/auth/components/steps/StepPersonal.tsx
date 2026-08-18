@@ -46,11 +46,6 @@ export function StepPersonal({ control, errors }: Props) {
                 />
               )}
             />
-            {errors.name && (
-              <Text className="text-content text-xs">
-                {errors.name.message}
-              </Text>
-            )}
           </View>
 
           <View className="flex-1 gap-1" {...form.anchor('lastname')}>
@@ -72,11 +67,6 @@ export function StepPersonal({ control, errors }: Props) {
                 />
               )}
             />
-            {errors.lastname && (
-              <Text className="text-content text-xs">
-                {errors.lastname.message}
-              </Text>
-            )}
           </View>
         </View>
 
@@ -97,11 +87,6 @@ export function StepPersonal({ control, errors }: Props) {
               />
             )}
           />
-          {errors.birthdate && (
-            <Text className="text-content text-xs">
-              {errors.birthdate.message}
-            </Text>
-          )}
         </View>
       </View>
     </View>

@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { DEFAULT_CONSENT_FIELDS } from '@/features/privacy/constants'
 import {
   MIN_PREFERRED_CATEGORIES,
   MIN_PREFERRED_CATEGORIES_MESSAGE,
@@ -8,20 +7,10 @@ import {
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
 } from '@/shared/utils/username'
-import type { ConsentFields } from '@/features/privacy/services/consentService'
+import { PHONE_MAX_DIGITS } from '@/shared/utils/masks'
 
-export const DEFAULT_REGISTER_CONSENTS: ConsentFields = DEFAULT_CONSENT_FIELDS
-
-const consentFieldsSchema = z.object({
-  locationPrecise: z.boolean(),
-  socialFeed: z.boolean(),
-  socialVisibility: z.boolean(),
-  pushNotifications: z.boolean(),
-  marketing: z.boolean(),
-  analytics: z.boolean(),
-  surveys: z.boolean(),
-}) satisfies z.ZodType<ConsentFields>
-
+// Um objeto por etapa do formulário. O aceite dos documentos NÃO é campo daqui:
+// o backend registra na transação do cadastro, e a tela só informa (LegalNotice).
 // Um objeto por etapa do formulário. O schema completo é a soma deles, então os
 // campos continuam definidos uma vez só — mas cada etapa também sabe se validar
 // sozinha, o que o schema inteiro não consegue fazer no meio do cadastro (ver
@@ -62,7 +51,7 @@ const accountStep = z.object({
   phone: z
     .string()
     .min(10, 'Mínimo 10 dígitos')
-    .max(11, 'Máximo 11 dígitos')
+    .max(PHONE_MAX_DIGITS, `Máximo ${PHONE_MAX_DIGITS} dígitos`)
     .regex(/^\d+$/, 'Apenas números'),
 })
 
@@ -84,22 +73,11 @@ const profileStep = z.object({
     .optional(),
 })
 
-const privacyStep = z.object({
-  termsAccepted: z.boolean(),
-  consents: consentFieldsSchema,
-})
-
 const passwordsMatch = (data: { password: string; confirmPassword: string }) =>
   data.password === data.confirmPassword
 const PASSWORD_MISMATCH = {
   message: 'As senhas não coincidem',
   path: ['confirmPassword'],
-}
-
-const acceptedTerms = (data: { termsAccepted: boolean }) => data.termsAccepted
-const TERMS_REQUIRED = {
-  message: 'É necessário aceitar os Termos de Uso e a Política de Privacidade.',
-  path: ['termsAccepted'],
 }
 
 export const registerSchema = z
@@ -108,10 +86,8 @@ export const registerSchema = z
     ...accountStep.shape,
     ...passwordStep.shape,
     ...profileStep.shape,
-    ...privacyStep.shape,
   })
   .refine(passwordsMatch, PASSWORD_MISMATCH)
-  .refine(acceptedTerms, TERMS_REQUIRED)
 
 // O que o botão "Continuar" valida. Precisa ser um schema POR ETAPA porque um
 // .refine() de objeto só roda com o objeto inteiro válido: no meio do cadastro
@@ -123,7 +99,6 @@ export const registerStepSchemas = [
   accountStep,
   passwordStep.refine(passwordsMatch, PASSWORD_MISMATCH),
   profileStep,
-  privacyStep.refine(acceptedTerms, TERMS_REQUIRED),
 ]
 
 // Ordem das etapas = ordem dos campos em cada objeto. Deriva do schema pra não
@@ -133,14 +108,13 @@ export const REGISTER_STEP_FIELDS = [
   accountStep,
   passwordStep,
   profileStep,
-  privacyStep,
 ].map(step => Object.keys(step.shape)) as (keyof RegisterInput)[][]
 
 export type RegisterInput = z.infer<typeof registerSchema>
 
 export type RegisterPayload = Omit<
   RegisterInput,
-  'confirmPassword' | 'birthdate' | 'termsAccepted' | 'consents'
+  'confirmPassword' | 'birthdate'
 > & {
   birthdate: string
 }
