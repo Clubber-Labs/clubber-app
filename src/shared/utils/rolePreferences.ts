@@ -6,9 +6,13 @@ import type { UserProfile } from '@/shared/types'
 // antes para o usuário nunca chegar a enviar.
 export const MIN_PREFERRED_CATEGORIES = 2
 
+// Ainda copy de tela (EditPreferencesScreen) — a validação do schema já usa
+// `auth.errors.categoriesMin`. As duas frases se juntam quando a Fase 3 migrar
+// a tela.
+export const MIN_PREFERRED_CATEGORIES_MESSAGE = `Escolha ao menos ${MIN_PREFERRED_CATEGORIES} categorias de rolê`
+
 // Mensagem única da regra (validação dos schemas e aviso inline), derivada da
 // constante para não dessincronizar do limite se ele mudar.
-export const MIN_PREFERRED_CATEGORIES_MESSAGE = `Escolha ao menos ${MIN_PREFERRED_CATEGORIES} categorias de rolê`
 
 // true quando o perfil ainda não atingiu o mínimo de categorias de rolê. Trata
 // o campo ausente (selects reduzidos) como 0 — nunca quebra.

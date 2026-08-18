@@ -5,11 +5,11 @@ import { z } from 'zod'
 export const editSpotSchema = z.object({
   title: z
     .string()
-    .min(3, 'Título deve ter ao menos 3 caracteres')
-    .max(100, 'Título deve ter no máximo 100 caracteres'),
+    .min(3, 'spots.errors.titleMin')
+    .max(100, 'spots.errors.titleMax'),
   description: z
     .string()
-    .max(2000, 'Descrição deve ter no máximo 2000 caracteres')
+    .max(2000, 'spots.errors.descriptionMax')
     .optional()
     .or(z.literal('')),
 })

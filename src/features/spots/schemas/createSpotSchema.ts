@@ -9,39 +9,39 @@ export const createSpotSchema = z
   .object({
     title: z
       .string()
-      .min(3, 'Título deve ter ao menos 3 caracteres')
-      .max(100, 'Título deve ter no máximo 100 caracteres'),
+      .min(3, 'spots.errors.titleMin')
+      .max(100, 'spots.errors.titleMax'),
     description: z
       .string()
-      .max(2000, 'Descrição deve ter no máximo 2000 caracteres')
+      .max(2000, 'spots.errors.descriptionMax')
       .optional()
       .or(z.literal('')),
     categories: z
       .array(z.string())
-      .min(1, 'Selecione ao menos uma categoria')
-      .max(5, 'Selecione no máximo 5 categorias'),
+      .min(1, 'spots.errors.categoriesMin')
+      .max(5, 'spots.errors.categoriesMax'),
     // Subcategorias/gêneros (chaves de 2º nível). Coerência garantida na UI
     // (SubcategorySelect). Imutável após a criação — não há edição. O form provê
     // o default [] (como categories, é sempre presente nos values).
-    subcategories: z.array(z.string()).max(10, 'No máximo 10 interesses'),
+    subcategories: z.array(z.string()).max(10, 'spots.errors.subcategoriesMax'),
     visibility: z.enum(['PUBLIC', 'FRIENDS']),
     // Herdados do candidato escolhido — não são editáveis no form.
     placeId: z.string().min(1),
     latitude: z.number().min(-90).max(90),
     longitude: z.number().min(-180).max(180),
-    startsAt: z.date({ error: 'Horário de início é obrigatório' }),
-    endsAt: z.date({ error: 'Horário de término é obrigatório' }),
+    startsAt: z.date({ error: 'spots.errors.startsAtRequired' }),
+    endsAt: z.date({ error: 'spots.errors.endsAtRequired' }),
   })
   .refine(data => data.endsAt > data.startsAt, {
-    message: 'Horário de término deve ser depois do início',
+    message: 'spots.errors.endsAfterStart',
     path: ['endsAt'],
   })
   .refine(data => data.endsAt.getTime() > Date.now(), {
-    message: 'O rolê precisa terminar no futuro',
+    message: 'spots.errors.endsInFuture',
     path: ['endsAt'],
   })
   .refine(data => data.endsAt.getTime() <= Date.now() + SPOT_MAX_WINDOW_MS, {
-    message: 'O rolê pode durar no máximo 24 horas a partir de agora',
+    message: 'spots.errors.windowTooLong',
     path: ['endsAt'],
   })
 

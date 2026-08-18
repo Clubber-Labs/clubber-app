@@ -1,8 +1,5 @@
 import { z } from 'zod'
-import {
-  MIN_PREFERRED_CATEGORIES,
-  MIN_PREFERRED_CATEGORIES_MESSAGE,
-} from '@/shared/utils/rolePreferences'
+import { MIN_PREFERRED_CATEGORIES } from '@/shared/utils/rolePreferences'
 import {
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
@@ -18,15 +15,15 @@ import { PHONE_MAX_DIGITS } from '@/shared/utils/masks'
 const personalStep = z.object({
   name: z
     .string()
-    .min(4, 'Mínimo 4 caracteres')
-    .max(25, 'Máximo 25 caracteres')
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, 'Apenas letras'),
+    .min(4, 'auth.errors.nameMin')
+    .max(25, 'auth.errors.nameMax')
+    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, 'auth.errors.lettersOnly'),
   lastname: z
     .string()
-    .min(4, 'Mínimo 4 caracteres')
-    .max(55, 'Máximo 55 caracteres')
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, 'Apenas letras'),
-  birthdate: z.date({ error: 'Data de nascimento é obrigatória' }).refine(
+    .min(4, 'auth.errors.lastnameMin')
+    .max(55, 'auth.errors.lastnameMax')
+    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, 'auth.errors.lettersOnly'),
+  birthdate: z.date({ error: 'auth.errors.birthdateRequired' }).refine(
     date => {
       const today = new Date()
       const minimum = new Date(
@@ -36,7 +33,7 @@ const personalStep = z.object({
       )
       return date <= minimum
     },
-    { message: 'Você precisa ter pelo menos 16 anos para usar o Clubber.' },
+    { message: 'auth.errors.minimumAge' },
   ),
 })
 
@@ -45,38 +42,38 @@ const accountStep = z.object({
   // consultar — divergir aqui faria o app consultar valor que o cadastro recusa.
   username: z
     .string()
-    .min(USERNAME_MIN_LENGTH, `Mínimo ${USERNAME_MIN_LENGTH} caracteres`)
-    .max(USERNAME_MAX_LENGTH, `Máximo ${USERNAME_MAX_LENGTH} caracteres`),
-  email: z.string().email('E-mail inválido'),
+    .min(USERNAME_MIN_LENGTH, 'auth.errors.usernameMin')
+    .max(USERNAME_MAX_LENGTH, 'auth.errors.usernameMax'),
+  email: z.string().email('auth.errors.emailInvalid'),
   phone: z
     .string()
-    .min(10, 'Mínimo 10 dígitos')
-    .max(PHONE_MAX_DIGITS, `Máximo ${PHONE_MAX_DIGITS} dígitos`)
-    .regex(/^\d+$/, 'Apenas números'),
+    .min(10, 'auth.errors.phoneMin')
+    .max(PHONE_MAX_DIGITS, 'auth.errors.phoneMax')
+    .regex(/^\d+$/, 'auth.errors.digitsOnly'),
 })
 
 const passwordStep = z.object({
-  password: z.string().min(8, 'Mínimo 8 caracteres'),
-  confirmPassword: z.string().min(1, 'Confirme sua senha'),
+  password: z.string().min(8, 'auth.errors.passwordMin'),
+  confirmPassword: z.string().min(1, 'auth.errors.passwordConfirm'),
 })
 
 const profileStep = z.object({
-  bio: z.string().max(255, 'Máximo 255 caracteres').optional(),
+  bio: z.string().max(255, 'auth.errors.bioMax').optional(),
   isPrivate: z.boolean(),
   preferredCategories: z
     .array(z.string())
-    .min(MIN_PREFERRED_CATEGORIES, MIN_PREFERRED_CATEGORIES_MESSAGE)
-    .max(10, 'No máximo 10 categorias'),
+    .min(MIN_PREFERRED_CATEGORIES, 'auth.errors.categoriesMin')
+    .max(10, 'auth.errors.categoriesMax'),
   preferredSubcategories: z
     .array(z.string())
-    .max(30, 'No máximo 30 interesses')
+    .max(30, 'auth.errors.subcategoriesMax')
     .optional(),
 })
 
 const passwordsMatch = (data: { password: string; confirmPassword: string }) =>
   data.password === data.confirmPassword
 const PASSWORD_MISMATCH = {
-  message: 'As senhas não coincidem',
+  message: 'auth.errors.passwordMismatch',
   path: ['confirmPassword'],
 }
 

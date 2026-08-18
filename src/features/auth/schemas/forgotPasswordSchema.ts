@@ -5,26 +5,26 @@ import {
 } from '@/shared/utils/passwordStrength'
 
 export const forgotPasswordEmailSchema = z.object({
-  email: z.string().email('E-mail inválido'),
+  email: z.string().email('auth.errors.emailInvalid'),
 })
 
 export type ForgotPasswordEmailInput = z.infer<typeof forgotPasswordEmailSchema>
 
 export const resetPasswordSchema = z
   .object({
-    email: z.string().email('E-mail inválido'),
+    email: z.string().email('auth.errors.emailInvalid'),
     code: z
       .string()
-      .length(6, 'O código tem 6 dígitos')
-      .regex(/^\d{6}$/, 'O código tem 6 dígitos'),
+      .length(6, 'auth.errors.codeSixDigits')
+      .regex(/^\d{6}$/, 'auth.errors.codeSixDigits'),
     newPassword: z
       .string()
-      .min(1, 'Informe a nova senha')
-      .max(MAX_PASSWORD_LENGTH, 'Máximo 72 caracteres'),
-    confirmPassword: z.string().min(1, 'Confirme a nova senha'),
+      .min(1, 'auth.errors.newPasswordRequired')
+      .max(MAX_PASSWORD_LENGTH, 'auth.errors.passwordMax'),
+    confirmPassword: z.string().min(1, 'auth.errors.newPasswordConfirm'),
   })
   .refine(data => data.newPassword === data.confirmPassword, {
-    message: 'As senhas não coincidem',
+    message: 'auth.errors.passwordMismatch',
     path: ['confirmPassword'],
   })
   // A política forte vive em passwordStrength.ts; o schema só a aplica, evitando
@@ -40,8 +40,7 @@ export const resetPasswordSchema = z
       ctx.addIssue({
         code: 'custom',
         path: ['newPassword'],
-        message:
-          'Use 8+ caracteres com letras e números, evitando senhas óbvias.',
+        message: 'auth.errors.passwordWeak',
       })
     }
   })
