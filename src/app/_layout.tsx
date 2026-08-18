@@ -19,6 +19,9 @@ import {
 } from '@expo-google-fonts/sora'
 import * as ExpoSplash from 'expo-splash-screen'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { I18nextProvider } from 'react-i18next'
+import { i18n } from '@/shared/i18n'
+import { useLocaleHydrated } from '@/shared/hooks/useLocaleHydrated'
 import { queryClient } from '@/shared/lib/queryClient'
 import { ConfirmProvider } from '@/shared/lib/confirm'
 import { OpenInMapsProvider } from '@/shared/lib/openInMaps'
@@ -141,11 +144,12 @@ export default function RootLayout() {
   const segments = useSegments() as string[]
   const insets = useSafeAreaInsets()
   const [fontsLoaded] = useFonts({ Sora_700Bold, Sora_800ExtraBold })
-  // Splash global SÓ no boot: fontes carregando ou sessão indefinida. Nunca em
-  // logout, navegação, resume ou loading local — e o fade de saída de 200ms dá
-  // ao wordmark (que espera a fonte) seu momento mesmo quando a fonte é a
-  // última a resolver.
-  const showSplash = !fontsLoaded || status === 'loading'
+  const localeHydrated = useLocaleHydrated()
+  // Splash global SÓ no boot: fontes carregando, sessão indefinida ou idioma
+  // ainda não hidratado. Nunca em logout, navegação, resume ou loading local —
+  // e o fade de saída de 200ms dá ao wordmark (que espera a fonte) seu momento
+  // mesmo quando a fonte é a última a resolver.
+  const showSplash = !fontsLoaded || status === 'loading' || !localeHydrated
 
   const hideNativeSplash = useCallback(() => {
     ExpoSplash.hideAsync().catch(() => {})
@@ -188,54 +192,59 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        <QueryClientProvider client={queryClient}>
-          <StripeProvider publishableKey={stripePublishableKey}>
-            <ConfirmProvider>
-              <OpenInMapsProvider>
-                <BannerProvider>
-                  <StatusBar style="light" />
-                  {/* Raiz sem inset e header absoluto: a altura daqui pra baixo
+        {/* Acima do resto: ConfirmProvider e BannerProvider precisam de `t`. */}
+        <I18nextProvider i18n={i18n}>
+          <QueryClientProvider client={queryClient}>
+            <StripeProvider publishableKey={stripePublishableKey}>
+              <ConfirmProvider>
+                <OpenInMapsProvider>
+                  <BannerProvider>
+                    <StatusBar style="light" />
+                    {/* Raiz sem inset e header absoluto: a altura daqui pra baixo
                       não pode depender da rota (ver chromeFor). */}
-                  <View className="flex-1 bg-background">
-                    <Stack
-                      screenOptions={({ route }) => ({
-                        headerShown: false,
-                        contentStyle: {
-                          backgroundColor: colors.background,
-                          paddingTop: topPaddingFor(route.name),
-                        },
-                      })}
-                    />
-                    {header !== 'nenhum' && (
-                      <View className="absolute top-0 left-0 right-0">
-                        <GlobalHeader floating={header === 'vidro'} />
-                      </View>
-                    )}
-                    {status === 'offline' && (
-                      <SessionUnavailable onRetry={retry} />
-                    )}
-                  </View>
-                  <SplashOverlay
-                    visible={showSplash}
-                    showWordmark={fontsLoaded}
-                    onMounted={hideNativeSplash}
-                  />
-                  <AuthGuard />
-                  {sessionReady && <PolicyUpdateNotice />}
-                  {chatActive && userId && (
-                    <>
-                      <ChatRealtimeMount
-                        myId={userId}
-                        onAuthError={handleSocketAuthError}
+                    <View className="flex-1 bg-background">
+                      <Stack
+                        screenOptions={({ route }) => ({
+                          headerShown: false,
+                          contentStyle: {
+                            backgroundColor: colors.background,
+                            paddingTop: topPaddingFor(route.name),
+                          },
+                        })}
                       />
-                      <NotificationsMount onAuthError={handleSocketAuthError} />
-                    </>
-                  )}
-                </BannerProvider>
-              </OpenInMapsProvider>
-            </ConfirmProvider>
-          </StripeProvider>
-        </QueryClientProvider>
+                      {header !== 'nenhum' && (
+                        <View className="absolute top-0 left-0 right-0">
+                          <GlobalHeader floating={header === 'vidro'} />
+                        </View>
+                      )}
+                      {status === 'offline' && (
+                        <SessionUnavailable onRetry={retry} />
+                      )}
+                    </View>
+                    <SplashOverlay
+                      visible={showSplash}
+                      showWordmark={fontsLoaded}
+                      onMounted={hideNativeSplash}
+                    />
+                    <AuthGuard />
+                    {sessionReady && <PolicyUpdateNotice />}
+                    {chatActive && userId && (
+                      <>
+                        <ChatRealtimeMount
+                          myId={userId}
+                          onAuthError={handleSocketAuthError}
+                        />
+                        <NotificationsMount
+                          onAuthError={handleSocketAuthError}
+                        />
+                      </>
+                    )}
+                  </BannerProvider>
+                </OpenInMapsProvider>
+              </ConfirmProvider>
+            </StripeProvider>
+          </QueryClientProvider>
+        </I18nextProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   )

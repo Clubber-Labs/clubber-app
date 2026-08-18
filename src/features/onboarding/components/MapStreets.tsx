@@ -22,7 +22,12 @@ export function MapStreets({ streets }: { streets: Street[] }) {
           style={{
             backgroundColor: colors.lineStrong,
             ...(s.axis === 'h'
-              ? { left: -120, right: -120, top: s.at, height: s.thickness ?? 14 }
+              ? {
+                  left: -120,
+                  right: -120,
+                  top: s.at,
+                  height: s.thickness ?? 14,
+                }
               : {
                   top: -120,
                   bottom: -120,
