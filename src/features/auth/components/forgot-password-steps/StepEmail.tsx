@@ -1,4 +1,5 @@
 import { View, Text, TextInput } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useForm, Controller, type Path } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -39,21 +40,24 @@ export function StepEmail({
     resolver: zodResolver(forgotPasswordEmailSchema),
     defaultValues: { email: defaultEmail ?? '' },
   })
+  const { t } = useTranslation()
   const form = useFormFocus()
   const showFormErrors = useFormErrorBanner(form)
 
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-content">Recuperar senha</Text>
+        <Text className="text-2xl font-bold text-content">
+          {t('auth.forgotPassword.title')}
+        </Text>
         <Text className="text-sm text-content-muted">
-          Informe o e-mail da sua conta e enviaremos um código.
+          {t('auth.forgotPassword.subtitle')}
         </Text>
       </View>
 
       <View className="gap-1" {...form.anchor('email')}>
         <Text className="text-sm font-medium text-content-tertiary">
-          E-mail
+          {t('auth.fields.email')}
         </Text>
         <Controller
           control={control}
@@ -62,7 +66,7 @@ export function StepEmail({
             <TextInput
               {...form.input('email')}
               className={`border ${errors.email ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
-              placeholder="joao@email.com"
+              placeholder={t('auth.fields.emailPlaceholder')}
               placeholderTextColor={colors.contentSubtle}
               onChangeText={onChange}
               value={value}
@@ -70,7 +74,7 @@ export function StepEmail({
               autoCorrect={false}
               keyboardType="email-address"
               textContentType="emailAddress"
-              accessibilityLabel="E-mail da conta"
+              accessibilityLabel={t('auth.fields.emailAccessibility')}
             />
           )}
         />
@@ -81,7 +85,11 @@ export function StepEmail({
       <FormSubmitButton
         control={control}
         required={REQUIRED_FIELDS}
-        label={isSubmitting ? 'Enviando...' : 'Enviar código'}
+        label={
+          isSubmitting
+            ? t('auth.forgotPassword.sending')
+            : t('auth.forgotPassword.send')
+        }
         onPress={handleSubmit(
           data => onSubmit(data.email),
           errors => showFormErrors(messagesFromErrors(errors)),

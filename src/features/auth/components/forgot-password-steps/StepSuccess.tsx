@@ -1,4 +1,5 @@
 import { View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { CheckCircleIcon } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
@@ -17,6 +18,7 @@ export function StepSuccess({
   onEnter,
   onGoToLogin,
 }: Props) {
+  const { t } = useTranslation()
   return (
     <View className="gap-6 items-center pt-4">
       <View className="w-16 h-16 rounded-full bg-success-strong/20 items-center justify-center">
@@ -25,23 +27,27 @@ export function StepSuccess({
 
       <View className="gap-1">
         <Text className="text-2xl font-bold text-content text-center">
-          Senha redefinida!
+          {t('auth.forgotPassword.success.title')}
         </Text>
         <Text className="text-sm text-content-muted text-center">
-          Sua senha foi atualizada com sucesso.
+          {t('auth.forgotPassword.success.subtitle')}
         </Text>
       </View>
 
       <View className="w-full gap-3">
         <FormError message={loginError} />
         <Button
-          label={isLoggingIn ? 'Entrando...' : 'Entrar no app'}
+          label={
+            isLoggingIn
+              ? t('auth.forgotPassword.success.entering')
+              : t('auth.forgotPassword.success.enter')
+          }
           onPress={onEnter}
           loading={isLoggingIn}
         />
         {loginError && (
           <Button
-            label="Ir para o login"
+            label={t('auth.forgotPassword.success.goToLogin')}
             onPress={onGoToLogin}
             variant="secondary"
           />

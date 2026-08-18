@@ -1,4 +1,5 @@
 import { View, Text, TextInput } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import type { RegisterInput } from '../../schemas/registerSchema'
@@ -12,20 +13,23 @@ type Props = {
 
 export function StepPassword({ control, errors }: Props) {
   const form = useFormFocus()
+  const { t } = useTranslation()
 
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-content">Crie sua senha</Text>
+        <Text className="text-2xl font-bold text-content">
+          {t('auth.register.password.title')}
+        </Text>
         <Text className="text-sm text-content-muted">
-          Use pelo menos 8 caracteres.
+          {t('auth.register.password.subtitle')}
         </Text>
       </View>
 
       <View className="gap-4">
         <View className="gap-1" {...form.anchor('password')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Senha
+            {t('auth.fields.password')}
           </Text>
           <Controller
             control={control}
@@ -34,7 +38,7 @@ export function StepPassword({ control, errors }: Props) {
               <TextInput
                 {...form.input('password')}
                 className={`border ${errors.password ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
-                placeholder="Mínimo 8 caracteres"
+                placeholder={t('auth.fields.passwordPlaceholder')}
                 placeholderTextColor={colors.contentSubtle}
                 onChangeText={onChange}
                 value={value}
@@ -46,7 +50,7 @@ export function StepPassword({ control, errors }: Props) {
 
         <View className="gap-1" {...form.anchor('confirmPassword')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Confirmar senha
+            {t('auth.fields.confirmPassword')}
           </Text>
           <Controller
             control={control}
@@ -55,7 +59,7 @@ export function StepPassword({ control, errors }: Props) {
               <TextInput
                 {...form.input('confirmPassword')}
                 className={`border ${errors.confirmPassword ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
-                placeholder="Repita a senha"
+                placeholder={t('auth.fields.confirmPasswordPlaceholder')}
                 placeholderTextColor={colors.contentSubtle}
                 onChangeText={onChange}
                 value={value}

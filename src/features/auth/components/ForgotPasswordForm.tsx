@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Animated, KeyboardAvoidingView, Platform } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useForgotPassword } from '../hooks/useForgotPassword'
@@ -27,6 +28,7 @@ type Props = {
 
 export function ForgotPasswordForm({ defaultEmail }: Props) {
   const router = useRouter()
+  const { t } = useTranslation()
   const forgot = useForgotPassword()
   const reset = useResetPassword()
   const login = useLogin()
@@ -69,10 +71,10 @@ export function ForgotPasswordForm({ defaultEmail }: Props) {
 
   function handleForgotError(error: unknown) {
     if (isTooManyRequestsError(error)) {
-      showBanner('Muitas solicitações. Tente novamente em instantes.')
+      showBanner(t('auth.forgotPassword.errors.tooManyRequests'))
       return
     }
-    setForgotError('Não foi possível enviar agora. Tente novamente.')
+    setForgotError(t('auth.forgotPassword.errors.requestFailed'))
   }
 
   function handleEmailSubmit(value: string) {
@@ -107,7 +109,7 @@ export function ForgotPasswordForm({ defaultEmail }: Props) {
 
   function handleResetError(error: unknown) {
     if (isTooManyRequestsError(error)) {
-      showBanner('Muitas tentativas. Aguarde um momento e tente novamente.')
+      showBanner(t('auth.forgotPassword.errors.tooManyAttempts'))
       return
     }
     // 400 é genérico (errado/expirado/travado); escala a copy após 2 falhas.
@@ -116,12 +118,12 @@ export function ForgotPasswordForm({ defaultEmail }: Props) {
       setFailedAttempts(next)
       setResetError(
         next >= 2
-          ? 'O código pode ter expirado ou está incorreto. Peça um novo código.'
-          : 'Código inválido ou expirado. Verifique e tente novamente.',
+          ? t('auth.forgotPassword.errors.codeExpired')
+          : t('auth.forgotPassword.errors.codeInvalid'),
       )
       return
     }
-    setResetError('Não foi possível redefinir agora. Tente novamente.')
+    setResetError(t('auth.forgotPassword.errors.resetFailed'))
   }
 
   function handleResetSubmit(data: ResetPasswordInput) {
@@ -148,7 +150,7 @@ export function ForgotPasswordForm({ defaultEmail }: Props) {
       { identifier: email, password: pendingPassword },
       {
         onError: () =>
-          setLoginError('Não foi possível entrar agora. Tente novamente.'),
+          setLoginError(t('auth.forgotPassword.errors.loginFailed')),
       },
     )
   }

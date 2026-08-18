@@ -1,4 +1,5 @@
 import { View, Text, TextInput, Switch, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
@@ -14,23 +15,26 @@ type Props = {
 
 export function StepInterests({ control, errors }: Props) {
   const form = useFormFocus()
+  const { t } = useTranslation()
 
   return (
     <View className="gap-5">
       <View className="gap-1">
-        <Text className="text-2xl font-bold text-content">Quase lá</Text>
+        <Text className="text-2xl font-bold text-content">
+          {t('auth.completeProfile.interests.title')}
+        </Text>
         <Text className="text-sm text-content-muted">
-          Personalize seu perfil e o que aparece no seu feed.
+          {t('auth.completeProfile.interests.subtitle')}
         </Text>
       </View>
 
       <View className="gap-5">
         <View className="gap-2" {...form.anchor('preferredCategories')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Categorias de rolê
+            {t('auth.fields.categories')}
           </Text>
           <Text className="text-xs text-content-subtle">
-            Escolha ao menos 2 pra personalizar seu feed. Dá pra mudar depois.
+            {t('auth.completeProfile.interests.categoriesHint')}
           </Text>
           <Controller
             control={control}
@@ -51,7 +55,10 @@ export function StepInterests({ control, errors }: Props) {
 
         <View className="gap-1" {...form.anchor('bio')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Bio <Text className="text-content-subtle text-xs">(opcional)</Text>
+            {t('auth.fields.bio')}{' '}
+            <Text className="text-content-subtle text-xs">
+              {t('auth.fields.bioOptional')}
+            </Text>
           </Text>
           <Controller
             control={control}
@@ -60,7 +67,7 @@ export function StepInterests({ control, errors }: Props) {
               <TextInput
                 {...form.input('bio')}
                 className={`border ${errors.bio ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
-                placeholder="Conte algo sobre você..."
+                placeholder={t('auth.fields.bioPlaceholder')}
                 placeholderTextColor={colors.contentSubtle}
                 multiline
                 numberOfLines={3}
@@ -84,10 +91,10 @@ export function StepInterests({ control, errors }: Props) {
             >
               <View className="flex-1 mr-3">
                 <Text className="text-content text-base font-medium">
-                  Perfil privado
+                  {t('auth.fields.privateProfile')}
                 </Text>
                 <Text className="text-content-muted text-xs mt-0.5">
-                  Apenas seguidores aprovados verão seu perfil.
+                  {t('auth.completeProfile.interests.privateHint')}
                 </Text>
               </View>
               <Switch

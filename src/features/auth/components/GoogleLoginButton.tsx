@@ -1,9 +1,11 @@
 import { Pressable, Text, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useSocialLogin } from '../hooks/useSocialLogin'
 import { GoogleGIcon } from './GoogleGIcon'
 import { colors } from '@/shared/theme'
 
 export function GoogleLoginButton() {
+  const { t } = useTranslation()
   const { mutate, isPending } = useSocialLogin('google')
 
   return (
@@ -18,7 +20,9 @@ export function GoogleLoginButton() {
         <GoogleGIcon size={18} />
       )}
       <Text className="font-semibold text-base text-background">
-        {isPending ? 'Conectando…' : 'Continuar com Google'}
+        {isPending
+          ? t('auth.social.connecting')
+          : t('auth.social.continueGoogle')}
       </Text>
     </Pressable>
   )

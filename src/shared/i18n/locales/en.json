@@ -245,6 +245,151 @@
     }
   },
   "auth": {
+    "login": {
+      "welcome": "Welcome back",
+      "subtitle": "Sign in to your account to continue",
+      "identifierPlaceholder": "Email or username",
+      "passwordPlaceholder": "Password",
+      "forgotPassword": "I forgot my password",
+      "wrongCredentials": "Wrong email, username or password.",
+      "loginFailed": "Couldn't sign in. Try again.",
+      "submitting": "Signing in...",
+      "submit": "Sign in",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "sessionExpired": "Your session expired. Sign in again."
+    },
+    "register": {
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "creating": "Creating account...",
+      "create": "Create account",
+      "personal": {
+        "title": "About you",
+        "subtitle": "Your real name helps people find you."
+      },
+      "account": {
+        "title": "Your account",
+        "subtitle": "You’ll use these to sign in to Clubber.",
+        "checking": "Checking availability...",
+        "available": "Available"
+      },
+      "password": {
+        "title": "Create your password",
+        "subtitle": "Use at least 8 characters."
+      },
+      "profile": {
+        "title": "Your profile",
+        "subtitle": "Pick at least 2 hangout categories. Bio and privacy are optional.",
+        "categoriesHint": "Pick at least 2 — it tunes your feed to what fits you.",
+        "privateHint": "Only approved followers will see your content"
+      }
+    },
+    "fields": {
+      "name": "First name",
+      "namePlaceholder": "John",
+      "lastname": "Last name",
+      "lastnamePlaceholder": "Smith",
+      "birthdate": "Date of birth",
+      "birthdatePlaceholder": "Select your date of birth",
+      "username": "Username",
+      "usernameLong": "Username",
+      "usernamePlaceholder": "johnsmith",
+      "email": "Email",
+      "emailPlaceholder": "john@email.com",
+      "emailAccessibility": "Account email",
+      "phone": "Phone",
+      "phonePlaceholder": "(11) 99999-9999",
+      "password": "Password",
+      "passwordPlaceholder": "At least 8 characters",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat the password",
+      "bio": "Bio",
+      "bioOptional": "(optional)",
+      "bioPlaceholder": "Tell us something about you...",
+      "privateProfile": "Private profile",
+      "categories": "Hangout categories"
+    },
+    "completeProfile": {
+      "title": "Complete your profile",
+      "subtitle": "A few details are missing before you can start using Clubber.",
+      "exit": "Leave",
+      "exitTitle": "Leave and go back to sign-in",
+      "exitMessage": "Your details won't be saved. You'll need to sign in again to complete your profile.",
+      "loadError": "We couldn't load your profile. Check your connection.",
+      "saving": "Saving...",
+      "finish": "Finish",
+      "identity": {
+        "title": "What do people call you?",
+        "subtitle": "Confirm your name and when you were born."
+      },
+      "account": {
+        "subtitle": "Choose how people will find you."
+      },
+      "interests": {
+        "title": "Almost there",
+        "subtitle": "Personalize your profile and what shows up in your feed.",
+        "categoriesHint": "Pick at least 2 to tune your feed. You can change it later.",
+        "privateHint": "Only approved followers will see your profile."
+      }
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "subtitle": "Enter your account email and we'll send you a code.",
+      "sending": "Sending...",
+      "send": "Send code",
+      "remembered": "Remembered your password?",
+      "code": {
+        "title": "Enter the code",
+        "sentTo": "We sent a 6-digit code to {{email}}.",
+        "resending": "Resending...",
+        "resendIn": "Resend in {{time}}",
+        "resend": "Resend code"
+      },
+      "newPassword": {
+        "title": "Create a new password",
+        "subtitle": "Use 8+ characters with letters and numbers.",
+        "label": "New password",
+        "resendHint": "Tap “Back” to request a new code.",
+        "resetting": "Resetting...",
+        "reset": "Reset password"
+      },
+      "success": {
+        "title": "Password reset!",
+        "subtitle": "Your password was updated successfully.",
+        "entering": "Signing in...",
+        "enter": "Enter the app",
+        "goToLogin": "Go to sign-in"
+      },
+      "errors": {
+        "requestFailed": "Couldn't send it right now. Try again.",
+        "tooManyRequests": "Too many requests. Try again shortly.",
+        "tooManyAttempts": "Too many attempts. Wait a moment and try again.",
+        "codeInvalid": "Invalid or expired code. Check it and try again.",
+        "codeExpired": "The code may have expired or is wrong. Request a new one.",
+        "resetFailed": "Couldn't reset it right now. Try again.",
+        "loginFailed": "Couldn't sign in right now. Try again."
+      }
+    },
+    "social": {
+      "connecting": "Connecting…",
+      "continueGoogle": "Continue with Google",
+      "continueFacebook": "Continue with Facebook",
+      "fallback": "We couldn't sign you in with {{provider}}. Try again or use email/password.",
+      "missingEmail": "Your {{provider}} account must allow email access to sign in."
+    },
+    "divider": {
+      "or": "Or"
+    },
+    "sessionUnavailable": {
+      "title": "No connection",
+      "message": "We couldn't validate your session. Check your internet and try again."
+    },
+    "legal": {
+      "notice": "By {{action}}, you agree to the <terms>Terms of Use</terms> and the <privacy>Privacy Policy</privacy>.",
+      "actionCreate": "creating your account",
+      "actionSignIn": "signing in"
+    },
     "errors": {
       "nameMin": "At least 4 characters",
       "nameMax": "At most 25 characters",
@@ -273,6 +418,38 @@
       "passwordMax": "At most 72 characters",
       "newPasswordConfirm": "Confirm the new password",
       "passwordWeak": "Use 8+ characters with letters and numbers, avoiding obvious passwords."
+    }
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "createAccount": "Create account",
+    "haveAccount": "I already have an account",
+    "slides": {
+      "opening": {
+        "title": "Something's always on",
+        "body": "Parties, clubbing, trails, camping, afters. Clubber shows what’s alive — right now."
+      },
+      "map": {
+        "title": "Events, right where they are",
+        "body": "Every drop is something really happening — by day, evening or late night."
+      },
+      "spot": {
+        "title": "A hangout is whatever you make it",
+        "body": "Pre-game, gig, coffee, after — drop a balloon and it becomes a meetup."
+      },
+      "social": {
+        "title": "Pull up",
+        "body": "See who’s going, join the chat and set up the hangout — all inside Clubber."
+      },
+      "final": {
+        "body": "Create your account, become a Clubber and see what’s going on near you."
+      }
+    },
+    "artSocial": {
+      "eventTitle": "Festival at the Quarry",
+      "attendees": "Théo and 4 more are in",
+      "msg1": "Where’s the after? 🌤️",
+      "msg2": "Nicee. I’ll check Clubber!"
     }
   },
   "notifications": {

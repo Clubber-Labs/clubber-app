@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { View, Animated } from 'react-native'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useTranslation } from 'react-i18next'
 import { MIN_PREFERRED_CATEGORIES } from '@/shared/utils/rolePreferences'
 import {
   completeProfileSchema,
@@ -80,6 +81,7 @@ function defaultsFromProfile(
 }
 
 export function CompleteProfileForm({ profile }: Props) {
+  const { t } = useTranslation()
   const { mutate: complete, isPending } = useCompleteProfile(profile.id)
   const showBanner = useBanner()
   const [currentStep, setCurrentStep] = useState(0)
@@ -212,7 +214,11 @@ export function CompleteProfileForm({ profile }: Props) {
       <View className="flex-row gap-3">
         {currentStep > 0 && (
           <View className="flex-1">
-            <Button label="Voltar" onPress={handleBack} variant="secondary" />
+            <Button
+              label={t('common.back')}
+              onPress={handleBack}
+              variant="secondary"
+            />
           </View>
         )}
         <View className="flex-1">
@@ -220,7 +226,11 @@ export function CompleteProfileForm({ profile }: Props) {
             <FormSubmitButton
               control={control}
               required={STEP_REQUIRED[currentStep]}
-              label={isPending ? 'Salvando...' : 'Concluir'}
+              label={
+                isPending
+                  ? t('auth.completeProfile.saving')
+                  : t('auth.completeProfile.finish')
+              }
               onPress={handleSubmit(onSubmit, errors =>
                 showFormErrors(messagesFromErrors(errors)),
               )}
@@ -231,7 +241,7 @@ export function CompleteProfileForm({ profile }: Props) {
             <FormSubmitButton
               control={control}
               required={STEP_REQUIRED[currentStep]}
-              label="Continuar"
+              label={t('common.continue')}
               onPress={handleNext}
             />
           )}

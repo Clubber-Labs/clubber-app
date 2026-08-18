@@ -1,4 +1,5 @@
 import { StyleSheet, View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg'
 import { LivePill } from '@/shared/components/LivePill'
 import { SPECTRUM } from '@/shared/theme'
@@ -8,6 +9,7 @@ import type { ArtProps } from '../../types'
 
 // Slide 4 — Chega junto: card do evento + conversa, subindo em cascata.
 export function ArtSocial({ active }: ArtProps) {
+  const { t } = useTranslation()
   return (
     <View className="gap-2.5" style={{ width: ART_BOX.width }}>
       <Enter active={active} variant="rise">
@@ -36,12 +38,12 @@ export function ArtSocial({ active }: ArtProps) {
               />
             </Svg>
             <View className="self-start">
-              <LivePill label="Rolando agora" />
+              <LivePill />
             </View>
           </View>
           <View className="p-3 gap-2">
             <Text className="text-[13px] font-bold text-content">
-              Festival na Pedreira
+              {t('onboarding.artSocial.eventTitle')}
             </Text>
             <View className="flex-row items-center gap-2">
               <View className="flex-row">
@@ -60,7 +62,7 @@ export function ArtSocial({ active }: ArtProps) {
                 </View>
               </View>
               <Text className="text-[11px] text-content-muted">
-                Théo e mais 4 vão
+                {t('onboarding.artSocial.attendees')}
               </Text>
             </View>
           </View>
@@ -69,11 +71,13 @@ export function ArtSocial({ active }: ArtProps) {
       <Enter active={active} variant="rise" delay={160}>
         <View className="rounded-2xl bg-surface border border-line p-3 gap-2">
           <View className="max-w-[85%] rounded-xl rounded-bl-sm bg-surface-elevated px-3 py-1.5">
-            <Text className="text-sm text-content">Onde é o after? 🌤️</Text>
+            <Text className="text-sm text-content">
+              {t('onboarding.artSocial.msg1')}
+            </Text>
           </View>
           <View className="max-w-[85%] self-end rounded-xl rounded-br-sm bg-surface-high px-3 py-1.5">
             <Text className="text-sm text-content">
-              Boaa. Vou ver no Clubber!
+              {t('onboarding.artSocial.msg2')}
             </Text>
           </View>
         </View>

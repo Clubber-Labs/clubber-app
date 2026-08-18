@@ -8,6 +8,7 @@ import {
   Platform,
 } from 'react-native'
 import { Stack } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import { CaretLeftIcon } from 'phosphor-react-native'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { useLogout } from '@/features/auth/hooks/useLogout'
@@ -19,6 +20,7 @@ import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
 import { colors } from '@/shared/theme'
 
 export default function CompleteProfileScreen() {
+  const { t } = useTranslation()
   const { data: profile, isLoading, isError, refetch } = useMyProfile()
   const logout = useLogout()
   const confirm = useConfirm()
@@ -26,11 +28,10 @@ export default function CompleteProfileScreen() {
 
   async function handleExit() {
     const ok = await confirm({
-      title: 'Sair e voltar pro login',
-      message:
-        'Suas informações não serão salvas. Você precisará entrar novamente pra completar o perfil.',
-      confirmLabel: 'Voltar',
-      cancelLabel: 'Continuar',
+      title: t('auth.completeProfile.exitTitle'),
+      message: t('auth.completeProfile.exitMessage'),
+      confirmLabel: t('common.back'),
+      cancelLabel: t('common.continue'),
       destructive: true,
     })
     if (ok) await logout()
@@ -49,7 +50,9 @@ export default function CompleteProfileScreen() {
           className="flex-row items-center gap-1 px-6 pt-4 self-start"
         >
           <CaretLeftIcon size={22} color={colors.content} />
-          <Text className="text-content font-semibold text-base">Sair</Text>
+          <Text className="text-content font-semibold text-base">
+            {t('auth.completeProfile.exit')}
+          </Text>
         </Pressable>
 
         <ScrollView
@@ -57,10 +60,10 @@ export default function CompleteProfileScreen() {
           contentContainerStyle={{ padding: 24, paddingTop: 16 }}
         >
           <Text className="text-3xl font-bold text-content mb-2">
-            Complete seu perfil
+            {t('auth.completeProfile.title')}
           </Text>
           <Text className="text-content-muted mb-8">
-            Faltam algumas informações pra você começar a usar o Clubber.
+            {t('auth.completeProfile.subtitle')}
           </Text>
 
           {isLoading ? (
@@ -70,10 +73,10 @@ export default function CompleteProfileScreen() {
           ) : isError || !profile ? (
             <View className="items-center py-12 gap-4">
               <Text className="text-content text-base text-center">
-                Não conseguimos carregar seu perfil. Verifique sua conexão.
+                {t('auth.completeProfile.loadError')}
               </Text>
               <Button
-                label="Tentar novamente"
+                label={t('common.retry')}
                 onPress={() => refetch()}
                 variant="secondary"
               />
