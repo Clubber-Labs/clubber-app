@@ -1,0 +1,14 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "close": "Close",
+    "back": "Back",
+    "continue": "Continue",
+    "retry": "Try again",
+    "loading": "Loading",
+    "genericError": "Something went wrong. Try again."
+  }
+}

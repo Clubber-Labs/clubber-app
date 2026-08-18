@@ -10,6 +10,9 @@ const PROFILE_INCOMPLETE_KEY = 'auth_profile_incomplete'
 // Flag de aparelho (sobrevive a logout de propósito): quem já viu o
 // onboarding cai direto no login quando deslogado.
 const ONBOARDING_SEEN_KEY = 'onboarding_seen'
+// Idioma escolhido — de aparelho, como o onboarding: trocar de conta não
+// devolve a interface pro idioma do sistema.
+const LOCALE_PREFERENCE_KEY = 'locale_preference'
 
 export const saveToken = (token: string) =>
   SecureStore.setItemAsync(TOKEN_KEY, token)
@@ -43,6 +46,13 @@ export const getOnboardingSeen = async (): Promise<boolean> =>
   (await SecureStore.getItemAsync(ONBOARDING_SEEN_KEY)) === '1'
 export const deleteOnboardingSeen = () =>
   SecureStore.deleteItemAsync(ONBOARDING_SEEN_KEY)
+
+export const saveLocalePreference = (locale: string) =>
+  SecureStore.setItemAsync(LOCALE_PREFERENCE_KEY, locale)
+export const getLocalePreference = () =>
+  SecureStore.getItemAsync(LOCALE_PREFERENCE_KEY)
+export const deleteLocalePreference = () =>
+  SecureStore.deleteItemAsync(LOCALE_PREFERENCE_KEY)
 
 export const saveAuthSession = (token: string, userId: string) =>
   Promise.all([saveToken(token), saveUserId(userId)])
