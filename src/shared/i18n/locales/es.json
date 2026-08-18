@@ -195,7 +195,7 @@
       "usernameMax": "Máximo 25 caracteres",
       "emailInvalid": "Correo no válido",
       "phoneMin": "Mínimo 10 dígitos",
-      "phoneMax": "Máximo 15 dígitos",
+      "phoneMax": "Máximo 11 dígitos",
       "digitsOnly": "Solo números",
       "passwordMin": "Mínimo 8 caracteres",
       "passwordConfirm": "Confirma tu contraseña",

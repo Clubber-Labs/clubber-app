@@ -3,6 +3,10 @@ import { i18n } from '@/shared/i18n'
 // Mensagem de schema Zod guarda a CHAVE, não a frase: `z.string().min(4, '...')`
 // é avaliado no import do módulo, então traduzir ali congelaria o idioma no
 // boot. A tradução acontece na hora de exibir (ver messagesFromErrors).
+//
+// Consequência: o número que aparece na frase ("Máximo 11 dígitos") deixou de
+// ser derivado da constante do schema (PHONE_MAX_DIGITS). Mudar um limite exige
+// mudar a copy nos três dicionários — o typecheck não pega isso.
 export const VALIDATION_KEYS = [
   'auth.errors.nameMin',
   'auth.errors.nameMax',
