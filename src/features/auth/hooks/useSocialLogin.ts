@@ -12,7 +12,7 @@ import {
   clearAuthSession,
 } from '@/shared/lib/secureStore'
 import { useBanner } from '@/shared/lib/banner'
-import { getConflictMessage } from '@/shared/utils/conflictMessage'
+import { getApiError } from '@/shared/lib/apiError'
 import { needsRolePreferences } from '@/shared/utils/rolePreferences'
 import { maybeShowWelcomeBack } from '@/features/account/lib/welcomeBack'
 import { userKeys } from '@/features/users/hooks/cacheKeys'
@@ -22,42 +22,14 @@ type SocialMutationResult =
   | { kind: 'authenticated'; profileIncomplete: boolean }
   | { kind: 'cancelled' }
 
-// Função pura: mapeia o erro do SDK ou do backend pra uma mensagem PT-BR.
-// Banner usa essa mensagem. Cancelamento NUNCA chega aqui — é filtrado antes.
+// Erro vindo da API passa pelo contrato de código (getApiError já traduz e já
+// interpola o provider nos códigos que o trazem em `params`). Só o que nasce no
+// SDK, sem resposta HTTP, precisa de mensagem própria aqui.
+// Cancelamento NUNCA chega aqui — é filtrado antes.
 function mapSocialError(error: unknown, provider: SocialProvider): string {
+  if (isAxiosError(error)) return getApiError(error).message
+
   const providerName = provider === 'google' ? 'Google' : 'Facebook'
-
-  // 409 (conflict) tem prioridade — significa que algum dado do provider já
-  // existe vinculado a outra conta (caso raro: backend não fez link por email).
-  const conflictMsg = getConflictMessage(error)
-  if (conflictMsg) return conflictMsg
-
-  if (isAxiosError(error)) {
-    const status = error.response?.status
-    const backendMessage = error.response?.data?.message as string | undefined
-
-    if (status === 400) {
-      const lower = (backendMessage ?? '').toLowerCase()
-      if (lower.includes('email')) {
-        return `Sua conta ${providerName} precisa ter um e-mail verificado para entrar.`
-      }
-      return backendMessage ?? `Não foi possível entrar com ${providerName}.`
-    }
-    if (status === 401) {
-      return `Sua sessão do ${providerName} expirou. Tente novamente.`
-    }
-    if (status === 502) {
-      return `Não conseguimos validar com o ${providerName}. Tente novamente em instantes.`
-    }
-    if (status && status >= 500) {
-      return 'Tivemos um problema no servidor. Tente novamente em instantes.'
-    }
-    if (!error.response) {
-      return `Sem conexão. Verifique sua internet e tente entrar com ${providerName} novamente.`
-    }
-    return backendMessage ?? `Não foi possível entrar com ${providerName}.`
-  }
-
   return `Não conseguimos entrar com ${providerName}. Tente novamente ou use e-mail/senha.`
 }
 

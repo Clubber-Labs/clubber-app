@@ -16,11 +16,8 @@ import { Button } from '@/shared/components/Button'
 import { FormSubmitButton } from '@/shared/components/FormSubmitButton'
 import { useFormFocus } from '@/shared/lib/formFocus'
 import { useBanner } from '@/shared/lib/banner'
-import { getConflictMessage } from '@/shared/utils/conflictMessage'
-import {
-  resolveConflictField,
-  type ConflictFieldEntry,
-} from '@/shared/utils/conflictField'
+import { getApiError } from '@/shared/lib/apiError'
+import { resolveConflictField } from '@/shared/utils/conflictField'
 import { parseLocalDate, toLocalIsoDate } from '@/shared/utils/dateFormat'
 import {
   useFormErrorBanner,
@@ -57,23 +54,9 @@ const FIELD_TO_STEP: Partial<Record<keyof CompleteProfileInput, number>> = {
   preferredSubcategories: 2,
 }
 
-// Este form salva via PUT /users/:id, cujo 409 nasce do tratador de unique
-// constraint do Prisma e NÃO traz `field` — aqui o match por texto é o caminho
-// principal, não o fallback (o resolveConflictField cobre os dois).
-const CONFLICT_FIELD_MAP: ConflictFieldEntry<'phone' | 'username'>[] = [
-  { keyword: 'telefone', field: 'phone', message: 'Telefone já cadastrado.' },
-  { keyword: 'phone', field: 'phone', message: 'Telefone já cadastrado.' },
-  {
-    keyword: 'usuário',
-    field: 'username',
-    message: 'Nome de usuário já está em uso.',
-  },
-  {
-    keyword: 'username',
-    field: 'username',
-    message: 'Nome de usuário já está em uso.',
-  },
-]
+// O 409 do PUT /users/:id nasce do unique constraint do Prisma, que o backend
+// mapeia de volta pra coluna e devolve em `field`.
+const CONFLICT_FIELDS = ['phone', 'username'] as const
 
 // Inclui preferredCategories (default []) — sem isso o zod do completeProfile
 // (que estende editProfile, onde o campo é obrigatório) falha silenciosamente
@@ -176,17 +159,14 @@ export function CompleteProfileForm({ profile }: Props) {
   }
 
   function handleApiError(error: unknown) {
-    const match = resolveConflictField(error, CONFLICT_FIELD_MAP)
+    const match = resolveConflictField(error, CONFLICT_FIELDS)
     if (match) {
       setError(match.field, { message: match.message })
       const step = FIELD_TO_STEP[match.field]
       if (step !== undefined && step !== currentStep) goToStep(step, 'back')
       return
     }
-    showBanner(
-      getConflictMessage(error) ??
-        'Não foi possível salvar suas informações. Verifique sua conexão e tente de novo.',
-    )
+    showBanner(getApiError(error).message)
   }
 
   function onSubmit(values: CompleteProfileInput) {

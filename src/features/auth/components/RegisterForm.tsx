@@ -47,37 +47,9 @@ const FIELD_TO_STEP = new Map<keyof RegisterInput, number>(
   STEPS.flatMap((fields, step) => fields.map(field => [field, step] as const)),
 )
 
-// O POST /users declara o campo em `field`; o resolveConflictField prefere ele.
-// Os `keyword` são o fallback por texto, e continuam necessários — as frases
-// reais são "Este nome de usuário já está em uso." e "Este e-mail já está
-// cadastrado em outra conta", onde procurar por 'username'/'email' nunca casa.
-// Variante sem acento inclusa: a cópia do backend pode perder o acento e o
-// Hermes não garante String.normalize pra tirar por conta.
-const CONFLICT_FIELD_MAP: {
-  keyword: string
-  field: keyof RegisterInput
-  message: string
-}[] = [
-  { keyword: 'telefone', field: 'phone', message: 'Telefone já cadastrado.' },
-  { keyword: 'phone', field: 'phone', message: 'Telefone já cadastrado.' },
-  { keyword: 'e-mail', field: 'email', message: 'E-mail já cadastrado.' },
-  { keyword: 'email', field: 'email', message: 'E-mail já cadastrado.' },
-  {
-    keyword: 'nome de usuário',
-    field: 'username',
-    message: 'Este nome de usuário já está em uso.',
-  },
-  {
-    keyword: 'nome de usuario',
-    field: 'username',
-    message: 'Este nome de usuário já está em uso.',
-  },
-  {
-    keyword: 'username',
-    field: 'username',
-    message: 'Este nome de usuário já está em uso.',
-  },
-]
+// O 409 do backend já diz o campo em `field` e a copy vem traduzida do
+// dicionário — aqui só declaramos quais campos deste form podem conflitar.
+const CONFLICT_FIELDS = ['phone', 'email', 'username'] as const
 
 export function RegisterForm() {
   const { mutate: register, isPending } = useRegister()
@@ -170,7 +142,7 @@ export function RegisterForm() {
 
   function handleApiError(error: unknown) {
     setGenericError(null)
-    const fieldError = resolveConflictField(error, CONFLICT_FIELD_MAP)
+    const fieldError = resolveConflictField(error, CONFLICT_FIELDS)
     if (fieldError) {
       setError(fieldError.field, { message: fieldError.message })
       const targetStep = FIELD_TO_STEP.get(fieldError.field)
