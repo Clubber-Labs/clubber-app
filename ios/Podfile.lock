@@ -76,6 +76,8 @@ PODS:
     - ExpoModulesCore
   - ExpoLinking (8.0.11):
     - ExpoModulesCore
+  - ExpoLocalization (17.0.9):
+    - ExpoModulesCore
   - ExpoLocation (19.0.8):
     - ExpoModulesCore
   - ExpoModulesCore (3.0.29):
@@ -2397,6 +2399,7 @@ DEPENDENCIES:
   - "ExpoImagePicker (from `../node_modules/.pnpm/expo-image-picker@17.0.11_expo@54.0.33/node_modules/expo-image-picker/ios`)"
   - "ExpoKeepAwake (from `../node_modules/.pnpm/expo-keep-awake@15.0.8_expo@54.0.33_react@19.1.0/node_modules/expo-keep-awake/ios`)"
   - "ExpoLinking (from `../node_modules/.pnpm/expo-linking@8.0.11_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-native+m_4baa94f79161bde020304cb5b1521ee1/node_modules/expo-linking/ios`)"
+  - "ExpoLocalization (from `../node_modules/.pnpm/expo-localization@17.0.9_expo@54.0.33_react@19.1.0/node_modules/expo-localization/ios`)"
   - "ExpoLocation (from `../node_modules/.pnpm/expo-location@19.0.8_expo@54.0.33/node_modules/expo-location/ios`)"
   - "ExpoModulesCore (from `../node_modules/.pnpm/expo-modules-core@3.0.29_react-native@0.81.5_@babel+core@7.29.0_@react-native+metro-con_735f2573dfa801783c6fe100d5e39a43/node_modules/expo-modules-core`)"
   - "ExpoSecureStore (from `../node_modules/.pnpm/expo-secure-store@15.0.8_expo@54.0.33/node_modules/expo-secure-store/ios`)"
@@ -2553,6 +2556,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/.pnpm/expo-keep-awake@15.0.8_expo@54.0.33_react@19.1.0/node_modules/expo-keep-awake/ios"
   ExpoLinking:
     :path: "../node_modules/.pnpm/expo-linking@8.0.11_expo@54.0.33_react-native@0.81.5_@babel+core@7.29.0_@react-native+m_4baa94f79161bde020304cb5b1521ee1/node_modules/expo-linking/ios"
+  ExpoLocalization:
+    :path: "../node_modules/.pnpm/expo-localization@17.0.9_expo@54.0.33_react@19.1.0/node_modules/expo-localization/ios"
   ExpoLocation:
     :path: "../node_modules/.pnpm/expo-location@19.0.8_expo@54.0.33/node_modules/expo-location/ios"
   ExpoModulesCore:
@@ -2751,6 +2756,7 @@ SPEC CHECKSUMS:
   ExpoImagePicker: ade85e148f735fc7e6f27dfe3eef28eb3887e90a
   ExpoKeepAwake: 55f75eca6499bb9e4231ebad6f3e9cb8f99c0296
   ExpoLinking: 8f0aaf69aa56f832913030503b6263dc6f647f37
+  ExpoLocalization: d936ff63557366e2e487264f5b495b1f0637fabd
   ExpoLocation: d5b61cb4970fa982e39ca94246a206a0c3b812ca
   ExpoModulesCore: f3da4f1ab5a8375d0beafab763739dbee8446583
   ExpoSecureStore: d32f751874a2ceb5aaeebeb3578e165c1ba2b24a
