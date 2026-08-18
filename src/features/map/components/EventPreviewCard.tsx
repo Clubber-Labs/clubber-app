@@ -6,7 +6,8 @@ import { EventDateChip } from '@/features/events/components/EventDateChip'
 import { EventStatusBadge } from '@/features/events/components/EventStatusBadge'
 import { SponsoredBadge } from '@/features/featured-events/components/SponsoredBadge'
 import { EventAttendeesStack } from '@/features/events/components/EventAttendeesStack'
-import { distanceKm, formatDistance } from '@/shared/utils/distance'
+import { distanceKm } from '@/shared/utils/distance'
+import { useFormatDistance } from '@/shared/hooks/useFormatDistance'
 import { featuredAttendees } from '@/shared/utils/featuredAttendees'
 import { colors } from '@/shared/theme'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
@@ -28,6 +29,7 @@ export function EventPreviewCard({
   onClose,
   onSeeDetails,
 }: Props) {
+  const formatDistance = useFormatDistance()
   const tabBarClearance = useTabBarClearance()
   const cover = event.images[0]?.url
   const gradId = `preview-grad-${event.id}`

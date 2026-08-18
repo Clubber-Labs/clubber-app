@@ -21,6 +21,7 @@ import {
 import { getApiError, isTooManyRequestsError } from '@/shared/lib/apiError'
 import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
 import { formatShortDate } from '@/shared/utils/dateFormat'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { DeleteReasonStep } from '@/features/account/components/DeleteReasonStep'
 import { DataLossWarning } from '@/features/account/components/DataLossWarning'
 import { DeleteReauthStep } from '@/features/account/components/DeleteReauthStep'
@@ -31,6 +32,7 @@ type Step = 'reason' | 'warning' | 'reauth'
 type ExitInfo = { scheduledDeletionAt: string | null }
 
 export default function DeleteAccountScreen() {
+  const locale = useLocale()
   const router = useRouter()
   const { data: profile, isLoading } = useMyProfile()
   const deleteAccount = useDeleteAccount()
@@ -119,7 +121,7 @@ export default function DeleteAccountScreen() {
   // guard. gestureEnabled:false torna a tela terminal (sem swipe-back acidental).
   if (exitInfo) {
     const dateLabel = exitInfo.scheduledDeletionAt
-      ? formatShortDate(exitInfo.scheduledDeletionAt)
+      ? formatShortDate(exitInfo.scheduledDeletionAt, locale)
       : null
     return (
       <>

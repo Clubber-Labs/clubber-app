@@ -10,5 +10,43 @@
     "retry": "Tentar de novo",
     "loading": "Carregando",
     "genericError": "Algo deu errado. Tente de novo."
+  },
+  "format": {
+    "date": {
+      "shortDate": "dd/MM/yyyy",
+      "dayMonth": "dd/MM",
+      "dateTime": "dd/MM/yyyy HH:mm",
+      "time": "HH:mm",
+      "dayOfMonth": "d 'de' MMMM",
+      "dayOfMonthYear": "d 'de' MMMM 'de' yyyy",
+      "dayOfMonthAtTime": "d 'de' MMMM 'às' HH:mm",
+      "weekday": "EEE",
+      "wheelDay": "EEEEEE, d MMM",
+      "monthShort": "MMM"
+    },
+    "relative": {
+      "now": "agora",
+      "today": "Hoje",
+      "tomorrow": "Amanhã",
+      "yesterday": "Ontem",
+      "lastSeen": "visto {{distance}}"
+    },
+    "unit": {
+      "meter": "{{value}} m",
+      "kilometer": "{{value}} km",
+      "foot": "{{value}} pés",
+      "mile": "{{value}} mi"
+    },
+    "interval": {
+      "month": "mês",
+      "year": "ano"
+    }
+  },
+  "notifications": {
+    "sections": {
+      "today": "Hoje",
+      "thisWeek": "Esta semana",
+      "older": "Anteriores"
+    }
   }
 }

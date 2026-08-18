@@ -6,7 +6,8 @@ import {
   CaretRightIcon,
 } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
-import { formatDistance } from '@/shared/utils/distance'
+import { useFormatDistance } from '@/shared/hooks/useFormatDistance'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { formatRating, priceLevelSymbol } from '../utils/suggestionMeta'
 import { SpotSuggestionReason } from './SpotSuggestionReason'
 import type { SpotSuggestion } from '../types'
@@ -31,6 +32,8 @@ export function SpotSuggestionCard({
   onChoose,
   reason,
 }: Props) {
+  const formatDistance = useFormatDistance()
+  const locale = useLocale()
   const { rating, userRatingCount, priceLevel, openNow } = suggestion
   const isBest = rank === 1
   const price = priceLevelSymbol(priceLevel)
@@ -48,7 +51,7 @@ export function SpotSuggestionCard({
           <View className="flex-row items-center gap-1">
             <StarIcon size={12} color={colors.warning} weight="fill" />
             <Text className="text-content-tertiary text-xs font-semibold">
-              {formatRating(rating)}
+              {formatRating(rating, locale)}
               {typeof userRatingCount === 'number' && ` (${userRatingCount})`}
             </Text>
           </View>

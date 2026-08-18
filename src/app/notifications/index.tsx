@@ -16,9 +16,11 @@ import { useOpenNotification } from '@/features/notifications/hooks/useOpenNotif
 import { NotificationRow } from '@/features/notifications/components/NotificationRow'
 import { NotificationsEmptyState } from '@/features/notifications/components/NotificationsEmptyState'
 import { groupNotificationsByDay } from '@/features/notifications/utils/groupNotificationsByDay'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { colors } from '@/shared/theme'
 
 export default function NotificationsScreen() {
+  const locale = useLocale()
   const router = useRouter()
   const {
     notifications,
@@ -34,8 +36,8 @@ export default function NotificationsScreen() {
   const { refreshing, onRefresh } = usePullRefresh(refetch)
 
   const sections = useMemo(
-    () => groupNotificationsByDay(notifications),
-    [notifications],
+    () => groupNotificationsByDay(notifications, locale),
+    [notifications, locale],
   )
 
   return (

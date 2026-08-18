@@ -9,7 +9,9 @@ import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useCategories } from '@/shared/hooks/useCategories'
 import { formatSpotWindow, isSpotLiveNow } from '../utils/spotWindow'
 import { LivePill } from '@/shared/components/LivePill'
-import { distanceKm, formatDistance } from '@/shared/utils/distance'
+import { distanceKm } from '@/shared/utils/distance'
+import { useLocale } from '@/shared/hooks/useLocale'
+import { useFormatDistance } from '@/shared/hooks/useFormatDistance'
 import type { Spot } from '../types'
 import { colors } from '@/shared/theme'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
@@ -30,6 +32,8 @@ export function SpotPreviewCard({
   onClose,
   onSeeDetails,
 }: Props) {
+  const formatDistance = useFormatDistance()
+  const locale = useLocale()
   const tabBarClearance = useTabBarClearance()
   const { labelFor } = useCategories()
   const categoriesText = [...spot.categories, ...(spot.subcategories ?? [])]
@@ -40,7 +44,10 @@ export function SpotPreviewCard({
   const distance = userCoords
     ? formatDistance(distanceKm(userCoords, [spot.longitude, spot.latitude]))
     : null
-  const windowText = [formatSpotWindow(spot.startsAt, spot.endsAt), distance]
+  const windowText = [
+    formatSpotWindow(spot.startsAt, spot.endsAt, locale),
+    distance,
+  ]
     .filter(Boolean)
     .join(' · ')
   const live = isSpotLiveNow(spot.startsAt, spot.endsAt)

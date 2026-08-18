@@ -3,6 +3,7 @@ import { FlagIcon, HeartIcon, TrashIcon } from 'phosphor-react-native'
 import { useToggleCommentLike } from '../hooks/useComments'
 import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
 import { formatRelative } from '@/shared/utils/dateFormat'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { SwipeableRow } from '@/shared/components/SwipeableRow'
 import type { EventComment } from '@/shared/types'
 import { colors } from '@/shared/theme'
@@ -17,6 +18,7 @@ type Props = {
 }
 
 export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
+  const locale = useLocale()
   const navigateToProfile = useNavigateToProfile()
   const toggleLike = useToggleCommentLike(eventId)
 
@@ -40,7 +42,7 @@ export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
         </Pressable>
         <View className="flex-row items-center gap-2">
           <Text className="text-xs text-content-subtle">
-            {formatRelative(comment.createdAt)}
+            {formatRelative(comment.createdAt, locale)}
           </Text>
           {onReport && (
             <Pressable

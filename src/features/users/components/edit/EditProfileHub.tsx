@@ -18,11 +18,13 @@ import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useCategories } from '@/shared/hooks/useCategories'
 import { formatPhone } from '@/shared/utils/masks'
 import { formatDayMonthYear } from '@/shared/utils/dateFormat'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { colors } from '@/shared/theme'
 
 // Hub de edição: só navega e mostra o valor atual de cada campo. Cada linha
 // abre uma tela focada que salva o seu campo. O avatar é a única edição inline.
 export function EditProfileHub() {
+  const locale = useLocale()
   const router = useRouter()
   const { data: profile, isLoading } = useMyProfile()
   const uploadAvatar = useUploadAvatar()
@@ -150,7 +152,9 @@ export function EditProfileHub() {
             <Row
               label="Nascimento"
               value={
-                profile.birthdate ? formatDayMonthYear(profile.birthdate) : ''
+                profile.birthdate
+                  ? formatDayMonthYear(profile.birthdate, locale)
+                  : ''
               }
               placeholder="Adicionar"
               onPress={() => router.push('/profile/edit/birthdate')}

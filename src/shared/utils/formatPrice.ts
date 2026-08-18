@@ -1,28 +1,34 @@
+import { i18n } from '@/shared/i18n'
+
 /**
  * Formata um valor em centavos (como o Stripe envia) para moeda local.
- * Ex: formatPrice(1990, 'brl') → "R$ 19,90".
+ * Ex: formatPrice(1990, 'brl', 'pt') → "R$ 19,90".
  *
- * Usa Intl quando disponível; cai num formato BRL manual se o runtime
- * (Hermes sem ICU completo) não suportar a currency, pra nunca lançar.
+ * A moeda é do preço, o locale é de quem lê: um brasileiro com o app em inglês
+ * vê "R$19.90", não dólar. Cai num formato manual se o runtime (Hermes sem ICU
+ * completo) não suportar a currency, pra nunca lançar.
  */
-export function formatPrice(amountInCents: number, currency = 'BRL'): string {
+export function formatPrice(
+  amountInCents: number,
+  currency = 'BRL',
+  locale = 'pt',
+): string {
   const value = amountInCents / 100
   try {
-    return new Intl.NumberFormat('pt-BR', {
+    return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currency.toUpperCase(),
     }).format(value)
   } catch {
-    return `R$ ${value.toFixed(2).replace('.', ',')}`
+    return `${currency.toUpperCase()} ${value.toFixed(2)}`
   }
 }
 
-const INTERVAL_LABEL: Record<string, string> = {
-  month: 'mês',
-  year: 'ano',
-}
-
 /** "month" → "mês", "year" → "ano". Fallback: devolve o próprio termo. */
-export function formatInterval(interval: string): string {
-  return INTERVAL_LABEL[interval] ?? interval
+export function formatInterval(interval: string, locale: string): string {
+  if (interval === 'month')
+    return i18n.t('format.interval.month', { lng: locale })
+  if (interval === 'year')
+    return i18n.t('format.interval.year', { lng: locale })
+  return interval
 }

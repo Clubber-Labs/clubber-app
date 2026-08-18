@@ -37,11 +37,13 @@ import { useJoinSpot } from '@/features/spots/hooks/useJoinSpot'
 import { useCancelSpot } from '@/features/spots/hooks/useCancelSpot'
 import { useRenewSpot } from '@/features/spots/hooks/useRenewSpot'
 import { formatSpotWindow } from '@/features/spots/utils/spotWindow'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { SpotOwnerActions } from '@/features/spots/components/SpotOwnerActions'
 import { SpotQuotaExhausted } from '@/features/spots/components/SpotQuotaExhausted'
 import { colors } from '@/shared/theme'
 
 export default function SpotDetailScreen() {
+  const locale = useLocale()
   // renew=1 chega pelo deep-link da notificação SPOT_RENEWAL ("seu rolê está
   // acabando") — destaca o CTA de renovar.
   const { id, renew: renewParam } = useLocalSearchParams<{
@@ -223,7 +225,7 @@ export default function SpotDetailScreen() {
                 Quando
               </Text>
               <Text className="text-content-secondary text-sm font-semibold mt-0.5">
-                {formatSpotWindow(spot.startsAt, spot.endsAt)}
+                {formatSpotWindow(spot.startsAt, spot.endsAt, locale)}
               </Text>
             </View>
           </View>

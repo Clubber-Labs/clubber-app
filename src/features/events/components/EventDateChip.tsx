@@ -1,4 +1,6 @@
 import { View, Text } from 'react-native'
+import { useLocale } from '@/shared/hooks/useLocale'
+import { formatMonthShort } from '@/shared/utils/dateFormat'
 
 type Props = {
   date: string
@@ -8,17 +10,16 @@ type Props = {
   compact?: boolean
 }
 
-function parts(iso: string): { month: string; day: string } {
-  const d = new Date(iso)
-  const month = d
-    .toLocaleDateString('pt-BR', { month: 'short' })
-    .replace(/[^a-zA-Z]/g, '')
-    .toUpperCase()
-  return { month, day: String(d.getDate()) }
+// A abreviação vem com ponto em vários idiomas ("mar.", "ene.") — só o ponto
+// sai. Filtrar por [^a-zA-Z] comeria as acentuadas.
+function parts(iso: string, locale: string): { month: string; day: string } {
+  const month = formatMonthShort(iso, locale).replace(/\./g, '').toUpperCase()
+  return { month, day: String(new Date(iso).getDate()) }
 }
 
 export function EventDateChip({ date, muted = false, compact = false }: Props) {
-  const { month, day } = parts(date)
+  const locale = useLocale()
+  const { month, day } = parts(date, locale)
   return (
     <View
       className={`overflow-hidden rounded-lg border border-white/15 ${
