@@ -218,7 +218,7 @@
       "title": "Open with"
     },
     "otp": {
-      "label": "6-digit verification code",
+      "label": "{{length}}-digit verification code",
       "filled": "{{filled}} of {{total}} digits entered"
     },
     "passwordInput": {

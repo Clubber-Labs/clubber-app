@@ -218,7 +218,7 @@
       "title": "Abrir com"
     },
     "otp": {
-      "label": "Código de verificação de 6 dígitos",
+      "label": "Código de verificação de {{length}} dígitos",
       "filled": "{{filled}} de {{total}} dígitos preenchidos"
     },
     "passwordInput": {

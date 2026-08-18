@@ -61,7 +61,7 @@ export function OtpInput({
         autoFocus={autoFocus}
         caretHidden
         className="absolute w-full h-full opacity-0"
-        accessibilityLabel={t('shared.otp.label')}
+        accessibilityLabel={t('shared.otp.label', { length })}
         accessibilityValue={{
           text: t('shared.otp.filled', {
             filled: value.length,
