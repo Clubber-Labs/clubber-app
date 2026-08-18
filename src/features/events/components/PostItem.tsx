@@ -11,6 +11,7 @@ import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useDeletePost } from '../hooks/usePosts'
 import { formatRelative } from '@/shared/utils/dateFormat'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { formatFullName } from '@/shared/utils/fullName'
 import type { EventPost } from '@/shared/types'
 import { colors } from '@/shared/theme'
@@ -24,6 +25,7 @@ type Props = {
 }
 
 export function PostItem({ eventId, post, onReport }: Props) {
+  const locale = useLocale()
   const userId = useAuthStore(s => s.userId)
   const deletePost = useDeletePost(eventId)
   const navigateToProfile = useNavigateToProfile()
@@ -58,7 +60,7 @@ export function PostItem({ eventId, post, onReport }: Props) {
               {formatFullName(post.author.name, post.author.lastname)}
             </Text>
             <Text className="text-xs text-content-subtle">
-              @{post.author.username} · {formatRelative(post.createdAt)}
+              @{post.author.username} · {formatRelative(post.createdAt, locale)}
             </Text>
           </View>
         </Pressable>

@@ -19,6 +19,7 @@ import { FeedReasonBanner } from './FeedReasonBanner'
 import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { formatRelative, formatTime } from '@/shared/utils/dateFormat'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { formatFullName } from '@/shared/utils/fullName'
 import { featuredAttendees } from '@/shared/utils/featuredAttendees'
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg'
@@ -57,6 +58,7 @@ function CategoryChip({ categories }: { categories: string[] }) {
 }
 
 export function EventCard({ event, onPress, showReason = true }: Props) {
+  const locale = useLocale()
   const [expanded, setExpanded] = useState(false)
   // Medida real do card pro frame de destaque: Rect com "100%" não
   // re-resolve quando a altura do container muda (RNSVG/new arch) — a
@@ -137,7 +139,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
                 <Text className="font-semibold text-content-secondary">
                   {formatFullName(event.author.name, event.author.lastname)}
                 </Text>
-                {`  ·  ${formatRelative(event.createdAt)}`}
+                {`  ·  ${formatRelative(event.createdAt, locale)}`}
               </Text>
             </Pressable>
           )}
@@ -161,7 +163,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
             <View className="flex-row items-center gap-1">
               <ClockIcon size={14} color={colors.contentMuted} />
               <Text className="text-xs text-content-muted">
-                {formatTime(event.date)}
+                {formatTime(event.date, locale, event.timezone ?? undefined)}
               </Text>
             </View>
           </View>

@@ -1,7 +1,8 @@
 import { View, Text } from 'react-native'
 import { CrownIcon } from 'phosphor-react-native'
 import type { Subscription, SubscriptionStatus } from '../types'
-import { formatDateBR } from '../utils/formatDateBR'
+import { formatDayOfMonthYear } from '@/shared/utils/dateFormat'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { colors } from '@/shared/theme'
 
 const STATUS_LABEL: Record<SubscriptionStatus, string> = {
@@ -19,6 +20,7 @@ type Props = {
 }
 
 export function SubscriptionCard({ subscription }: Props) {
+  const locale = useLocale()
   const isTrial = subscription.status === 'TRIALING'
   const isPastDue = subscription.status === 'PAST_DUE'
 
@@ -44,19 +46,20 @@ export function SubscriptionCard({ subscription }: Props) {
 
       {isTrial && subscription.trialEndsAt && (
         <Text className="text-content-tertiary text-sm">
-          Teste grátis até {formatDateBR(subscription.trialEndsAt)}.
+          Teste grátis até{' '}
+          {formatDayOfMonthYear(subscription.trialEndsAt, locale)}.
         </Text>
       )}
 
       {subscription.cancelAtPeriodEnd ? (
         <Text className="text-warning text-sm">
           Cancelamento agendado: o acesso premium termina em{' '}
-          {formatDateBR(subscription.currentPeriodEnd)}.
+          {formatDayOfMonthYear(subscription.currentPeriodEnd, locale)}.
         </Text>
       ) : (
         <Text className="text-content-muted text-sm">
           {isTrial ? 'Primeira cobrança' : 'Próxima renovação'} em{' '}
-          {formatDateBR(subscription.currentPeriodEnd)}.
+          {formatDayOfMonthYear(subscription.currentPeriodEnd, locale)}.
         </Text>
       )}
 

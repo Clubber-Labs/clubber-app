@@ -9,6 +9,7 @@ import { useConfirm } from '@/shared/lib/confirm'
 import { getApiError } from '@/shared/lib/apiError'
 import { colors } from '@/shared/theme'
 import { formatShortDate } from '@/shared/utils/dateFormat'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { usePromoteEvent } from '../hooks/usePromoteEvent'
 import { useCancelPromotion } from '../hooks/useCancelPromotion'
 import { useFeaturedEvent } from '../hooks/useFeaturedEvent'
@@ -33,6 +34,7 @@ export function PromoteEventCard({
   isPremium,
   isFeatured,
 }: Props) {
+  const locale = useLocale()
   const router = useRouter()
   const confirm = useConfirm()
 
@@ -114,13 +116,13 @@ export function PromoteEventCard({
           <Text className="text-content-muted text-sm">
             De{' '}
             <Text className="text-content">
-              {formatShortDate(feature.startsAt)}
+              {formatShortDate(feature.startsAt, locale)}
             </Text>
           </Text>
           <Text className="text-content-muted text-sm">
             Até{' '}
             <Text className="text-content">
-              {formatShortDate(feature.endsAt)}
+              {formatShortDate(feature.endsAt, locale)}
             </Text>
           </Text>
         </View>

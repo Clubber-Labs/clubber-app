@@ -6,12 +6,14 @@ import { Button } from '@/shared/components/Button'
 import { SpotLocationMap } from '@/features/spots/components/SpotLocationMap'
 import { useSpot } from '@/features/spots/hooks/useSpot'
 import { formatSpotWindow } from '@/features/spots/utils/spotWindow'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { colors } from '@/shared/theme'
 
 // Tela de sucesso após publicar um spot: confirma que está "no ar" e leva às
 // próximas ações — convidar a galera (Share com o deep link do spot, o mesmo
 // modelo de convite do app) e abrir o chat do grupo criado na publicação.
 export default function SpotCreatedScreen() {
+  const locale = useLocale()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const { data: spot, isLoading, error } = useSpot(id)
@@ -70,7 +72,8 @@ export default function SpotCreatedScreen() {
             {spot.title}
           </Text>
           <Text className="text-content-subtle text-xs">
-            {formatSpotWindow(spot.startsAt, spot.endsAt)} · {visibilityLabel}
+            {formatSpotWindow(spot.startsAt, spot.endsAt, locale)} ·{' '}
+            {visibilityLabel}
           </Text>
         </View>
         <View className="flex-row items-center gap-1 rounded-md bg-success/20 border border-success/30 px-2 py-1">

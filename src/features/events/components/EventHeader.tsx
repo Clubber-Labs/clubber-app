@@ -17,7 +17,8 @@ import Svg, {
   Rect,
 } from 'react-native-svg'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { formatEventDate } from '@/shared/utils/dateFormat'
+import { formatDayOfMonthAtTime } from '@/shared/utils/dateFormat'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { formatFullName } from '@/shared/utils/fullName'
 import { CategoryBadge } from '@/shared/components/CategoryBadge'
 import { AddressLink } from '@/shared/components/AddressLink'
@@ -70,6 +71,7 @@ function MetaRow({
 }
 
 export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
+  const locale = useLocale()
   const insets = useSafeAreaInsets()
   const hasImages = event.images.length > 0
   const isPast = event.status === 'PAST' || event.status === 'CANCELED'
@@ -140,7 +142,11 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
             </View>
           </Pressable>
         </View>
-        <EventDateChip date={event.date} muted={isPast} />
+        <EventDateChip
+          date={event.date}
+          timezone={event.timezone}
+          muted={isPast}
+        />
       </View>
     </>
   )
@@ -221,7 +227,14 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
               chevron
             />
           </AddressLink>
-          <MetaRow icon={ClockIcon} title={formatEventDate(event.date)} />
+          <MetaRow
+            icon={ClockIcon}
+            title={formatDayOfMonthAtTime(
+              event.date,
+              locale,
+              event.timezone ?? undefined,
+            )}
+          />
         </View>
 
         {!!event.description && (

@@ -1,7 +1,11 @@
+import { i18n, type MeasurementSystem } from '@/shared/i18n'
+
 // Distância em km entre duas coordenadas no formato [longitude, latitude]
 // (convenção Mapbox usada no mapa). Haversine — precisão suficiente pra dar o
 // contexto de "perto de você" nos cards do mapa.
 const EARTH_RADIUS_KM = 6371
+const KM_PER_MILE = 1.609344
+const FEET_PER_KM = 3280.84
 
 export function distanceKm(
   from: [number, number],
@@ -21,9 +25,50 @@ function toRad(deg: number): number {
   return (deg * Math.PI) / 180
 }
 
-// "350 m" / "1,2 km" / "12 km" — vírgula decimal pt-BR.
-export function formatDistance(km: number): string {
-  if (km < 1) return `${Math.round(km * 1000)} m`
-  if (km < 10) return `${km.toFixed(1).replace('.', ',')} km`
-  return `${Math.round(km)} km`
+// `style: 'unit'` resolve separador decimal E rótulo de unidade de uma vez, mas
+// depende de dados de unidade do ICU que o Hermes nem sempre traz — mesmo motivo
+// do fallback em formatPrice. Degrada pro número formatado + rótulo do dicionário.
+function formatUnit(
+  value: number,
+  locale: string,
+  unit: 'meter' | 'kilometer' | 'foot' | 'mile',
+  maximumFractionDigits: number,
+): string {
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'unit',
+      unit,
+      unitDisplay: 'short',
+      maximumFractionDigits,
+    }).format(value)
+  } catch {
+    const number = new Intl.NumberFormat(locale, {
+      maximumFractionDigits,
+    }).format(value)
+    return i18n.t(`format.unit.${unit}` as const, {
+      lng: locale,
+      value: number,
+    })
+  }
+}
+
+// "350 m" / "1,2 km" / "12 km" — e milha/pé onde o aparelho pede. O sistema de
+// medida é do aparelho, não do idioma: es-US quer milhas tanto quanto en-US.
+export function formatDistance(
+  km: number,
+  locale: string,
+  system: MeasurementSystem = 'metric',
+): string {
+  if (system === 'metric') {
+    if (km < 1) return formatUnit(Math.round(km * 1000), locale, 'meter', 0)
+    if (km < 10) return formatUnit(km, locale, 'kilometer', 1)
+    return formatUnit(Math.round(km), locale, 'kilometer', 0)
+  }
+
+  const miles = km / KM_PER_MILE
+  if (miles < 0.1) {
+    return formatUnit(Math.round(km * FEET_PER_KM), locale, 'foot', 0)
+  }
+  if (miles < 10) return formatUnit(miles, locale, 'mile', 1)
+  return formatUnit(Math.round(miles), locale, 'mile', 0)
 }

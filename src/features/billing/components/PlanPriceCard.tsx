@@ -1,6 +1,7 @@
 import { View, Text } from 'react-native'
 import type { Plan } from '../types'
 import { formatInterval, formatPrice } from '@/shared/utils/formatPrice'
+import { useLocale } from '@/shared/hooks/useLocale'
 
 type Props = {
   plan: Plan | undefined
@@ -13,6 +14,7 @@ type Props = {
  * não renderiza nada — a tela e o CTA seguem funcionando sem o número.
  */
 export function PlanPriceCard({ plan, isLoading }: Props) {
+  const locale = useLocale()
   if (isLoading) {
     return (
       <View className="bg-surface border border-line rounded-2xl p-5 items-center">
@@ -24,8 +26,8 @@ export function PlanPriceCard({ plan, isLoading }: Props) {
 
   if (!plan) return null
 
-  const price = formatPrice(plan.amount, plan.currency)
-  const interval = formatInterval(plan.interval)
+  const price = formatPrice(plan.amount, plan.currency, locale)
+  const interval = formatInterval(plan.interval, locale)
   const hasTrial = plan.trialEligible && plan.trialDays > 0
 
   return (

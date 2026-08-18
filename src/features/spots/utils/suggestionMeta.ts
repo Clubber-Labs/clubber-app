@@ -1,9 +1,13 @@
 // Formatadores puros dos sinais de um lugar sugerido. A distância reaproveita
 // formatDistance (shared/utils/distance) convertendo metros → km no card.
 
-// Nota de avaliação (0..5) com vírgula decimal pt-BR: 4.5 → "4,5".
-export function formatRating(rating: number): string {
-  return rating.toFixed(1).replace('.', ',')
+// Nota de avaliação (0..5) com o separador decimal do locale: 4.5 → "4,5" em
+// pt/es, "4.5" em en.
+export function formatRating(rating: number, locale: string): string {
+  return new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  }).format(rating)
 }
 
 // Enum de faixa de preço (Google Places) → cifrões. Níveis sem preço útil

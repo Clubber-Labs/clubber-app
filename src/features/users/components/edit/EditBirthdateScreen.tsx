@@ -3,7 +3,12 @@ import { View, Text, ActivityIndicator } from 'react-native'
 import { EditFieldScaffold } from './EditFieldScaffold'
 import { useEditProfileField } from '../../hooks/useEditProfileField'
 import { WheelDatePicker } from '@/shared/components/WheelDatePicker'
-import { parseLocalDate, toLocalIsoDate } from '@/shared/utils/dateFormat'
+import {
+  formatDayOfMonthYear,
+  parseLocalDate,
+  toLocalIsoDate,
+} from '@/shared/utils/dateFormat'
+import { useLocale } from '@/shared/hooks/useLocale'
 import type { UserProfile } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
@@ -31,6 +36,7 @@ type FormProps = {
 }
 
 function BirthdateForm({ profile, save, saving }: FormProps) {
+  const locale = useLocale()
   const initial = profile.birthdate ? profile.birthdate.split('T')[0] : ''
   const [date, setDate] = useState<Date>(
     profile.birthdate ? parseLocalDate(profile.birthdate) : DEFAULT_BIRTHDATE,
@@ -60,11 +66,7 @@ function BirthdateForm({ profile, save, saving }: FormProps) {
       />
 
       <Text className="text-content-secondary text-center text-[15px] font-semibold mt-6">
-        {date.toLocaleDateString('pt-BR', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        })}
+        {formatDayOfMonthYear(date, locale)}
       </Text>
     </EditFieldScaffold>
   )

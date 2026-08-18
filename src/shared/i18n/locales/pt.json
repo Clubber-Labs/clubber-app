@@ -151,6 +151,37 @@
     "VIDEO_NOT_IN_CONVERSATION": "Este vídeo não pertence a esta conversa.",
     "VIDEO_UPLOAD_REQUIRES_R2": "O envio de vídeo está indisponível neste servidor."
   },
+  "format": {
+    "date": {
+      "shortDate": "dd/MM/yyyy",
+      "dayMonth": "dd/MM",
+      "dateTime": "dd/MM/yyyy HH:mm",
+      "time": "HH:mm",
+      "dayOfMonth": "d 'de' MMMM",
+      "dayOfMonthYear": "d 'de' MMMM 'de' yyyy",
+      "dayOfMonthAtTime": "d 'de' MMMM 'às' HH:mm",
+      "weekday": "EEE",
+      "wheelDay": "EEEEEE, d MMM",
+      "monthShort": "MMM"
+    },
+    "relative": {
+      "now": "agora",
+      "today": "Hoje",
+      "tomorrow": "Amanhã",
+      "yesterday": "Ontem",
+      "lastSeen": "visto {{distance}}"
+    },
+    "unit": {
+      "meter": "{{value}} m",
+      "kilometer": "{{value}} km",
+      "foot": "{{value}} pés",
+      "mile": "{{value}} mi"
+    },
+    "interval": {
+      "month": "mês",
+      "year": "ano"
+    }
+  },
   "auth": {
     "errors": {
       "nameMin": "Mínimo 4 caracteres",
@@ -180,6 +211,13 @@
       "passwordMax": "Máximo 72 caracteres",
       "newPasswordConfirm": "Confirme a nova senha",
       "passwordWeak": "Use 8+ caracteres com letras e números, evitando senhas óbvias."
+    }
+  },
+  "notifications": {
+    "sections": {
+      "today": "Hoje",
+      "thisWeek": "Esta semana",
+      "older": "Anteriores"
     }
   },
   "spots": {
