@@ -1,9 +1,12 @@
 import { View, Text } from 'react-native'
 import { useLocale } from '@/shared/hooks/useLocale'
-import { formatMonthShort } from '@/shared/utils/dateFormat'
+import { formatDayNumber, formatMonthShort } from '@/shared/utils/dateFormat'
 
 type Props = {
   date: string
+  // Fuso do local do evento: perto da meia-noite o selo mostraria um dia e o
+  // detalhe outro se cada um resolvesse a data num fuso diferente.
+  timezone?: string | null
   // Eventos passados/cancelados perdem o destaque da marca no mês.
   muted?: boolean
   // Versão menor para tiles densos (grade do perfil).
@@ -12,14 +15,25 @@ type Props = {
 
 // A abreviação vem com ponto em vários idiomas ("mar.", "ene.") — só o ponto
 // sai. Filtrar por [^a-zA-Z] comeria as acentuadas.
-function parts(iso: string, locale: string): { month: string; day: string } {
-  const month = formatMonthShort(iso, locale).replace(/\./g, '').toUpperCase()
-  return { month, day: String(new Date(iso).getDate()) }
+function parts(
+  iso: string,
+  locale: string,
+  timeZone?: string,
+): { month: string; day: string } {
+  const month = formatMonthShort(iso, locale, timeZone)
+    .replace(/\./g, '')
+    .toUpperCase()
+  return { month, day: formatDayNumber(iso, locale, timeZone) }
 }
 
-export function EventDateChip({ date, muted = false, compact = false }: Props) {
+export function EventDateChip({
+  date,
+  timezone,
+  muted = false,
+  compact = false,
+}: Props) {
   const locale = useLocale()
-  const { month, day } = parts(date, locale)
+  const { month, day } = parts(date, locale, timezone ?? undefined)
   return (
     <View
       className={`overflow-hidden rounded-lg border border-white/15 ${

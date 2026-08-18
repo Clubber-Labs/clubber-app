@@ -24,10 +24,12 @@ type DateInput = string | Date
 // rolê às 22h em Lisboa não pode virar 18h pra quem abre o app no Brasil. Sem
 // fuso, cai no do aparelho — que é o certo pra chat, notificação e "visto por
 // último".
-function at(value: DateInput, timeZone?: string): Date {
+export function zonedDate(value: DateInput, timeZone?: string): Date {
   const date = typeof value === 'string' ? new Date(value) : value
   return timeZone ? new TZDate(date, timeZone) : date
 }
+
+const at = zonedDate
 
 function render(
   value: DateInput,
@@ -155,6 +157,16 @@ export function formatDayOfMonthAtTime(
     locale,
     timeZone,
   )
+}
+
+// Só o número do dia. Fora do dicionário porque algarismo não muda de ordem
+// entre os idiomas suportados — mas o FUSO muda o dia, daí o parâmetro.
+export function formatDayNumber(
+  value: DateInput,
+  locale: string,
+  timeZone?: string,
+): string {
+  return render(value, 'd', locale, timeZone)
 }
 
 // Abreviação do mês pro selo de data (chip do card de evento).

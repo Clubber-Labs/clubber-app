@@ -81,7 +81,11 @@ export function EventPreviewCard({
             </Svg>
           )}
           <View className="absolute bottom-1 left-1">
-            <EventDateChip date={event.date} compact />
+            <EventDateChip
+              date={event.date}
+              timezone={event.timezone}
+              compact
+            />
           </View>
         </View>
 

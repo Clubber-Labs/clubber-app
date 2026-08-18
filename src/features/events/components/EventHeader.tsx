@@ -142,7 +142,11 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
             </View>
           </Pressable>
         </View>
-        <EventDateChip date={event.date} muted={isPast} />
+        <EventDateChip
+          date={event.date}
+          timezone={event.timezone}
+          muted={isPast}
+        />
       </View>
     </>
   )
