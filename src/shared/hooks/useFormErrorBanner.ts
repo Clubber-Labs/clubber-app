@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import type { FieldErrors } from 'react-hook-form'
 import { useBanner } from '@/shared/lib/banner'
+import { translateValidationMessage } from '@/shared/lib/validationKeys'
 import type { KeyboardAwareForm } from './useKeyboardAwareForm'
 
 const FALLBACK = 'Revise os campos destacados.'
@@ -26,7 +27,7 @@ export function messagesFromErrors(
   const messages: Record<string, string> = {}
   for (const [field, error] of Object.entries(errors)) {
     const message = findMessage(error)
-    if (message) messages[field] = message
+    if (message) messages[field] = translateValidationMessage(message)
   }
   return messages
 }

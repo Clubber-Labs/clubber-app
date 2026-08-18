@@ -5,7 +5,7 @@ import { editProfileSchema } from '@/features/users/schemas/editProfileSchema'
 // regular é opcional (o user já tinha registrado), mas no fluxo social ele
 // PRECISA preencher antes de liberar o app.
 export const completeProfileSchema = editProfileSchema.extend({
-  birthdate: z.date({ message: 'Data de nascimento é obrigatória' }),
+  birthdate: z.date({ message: 'auth.errors.birthdateRequired' }),
 })
 
 export type CompleteProfileInput = z.infer<typeof completeProfileSchema>

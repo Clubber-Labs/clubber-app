@@ -1,42 +1,39 @@
 import { z } from 'zod'
 import { PHONE_MAX_DIGITS } from '@/shared/utils/masks'
-import {
-  MIN_PREFERRED_CATEGORIES,
-  MIN_PREFERRED_CATEGORIES_MESSAGE,
-} from '@/shared/utils/rolePreferences'
+import { MIN_PREFERRED_CATEGORIES } from '@/shared/utils/rolePreferences'
 
 const NAME_REGEX = /^[a-zA-ZÀ-ÿ\s]+$/
 
 export const editProfileSchema = z.object({
   name: z
     .string()
-    .min(4, 'Mínimo 4 caracteres')
-    .max(25, 'Máximo 25 caracteres')
-    .regex(NAME_REGEX, 'Apenas letras'),
+    .min(4, 'auth.errors.nameMin')
+    .max(25, 'auth.errors.nameMax')
+    .regex(NAME_REGEX, 'auth.errors.lettersOnly'),
   lastname: z
     .string()
-    .min(4, 'Mínimo 4 caracteres')
-    .max(55, 'Máximo 55 caracteres')
-    .regex(NAME_REGEX, 'Apenas letras'),
+    .min(4, 'auth.errors.lastnameMin')
+    .max(55, 'auth.errors.lastnameMax')
+    .regex(NAME_REGEX, 'auth.errors.lettersOnly'),
   username: z
     .string()
-    .min(4, 'Mínimo 4 caracteres')
-    .max(25, 'Máximo 25 caracteres'),
+    .min(4, 'auth.errors.usernameMin')
+    .max(25, 'auth.errors.usernameMax'),
   phone: z
     .string()
-    .min(10, 'Mínimo 10 dígitos')
-    .max(PHONE_MAX_DIGITS, `Máximo ${PHONE_MAX_DIGITS} dígitos`)
-    .regex(/^\d+$/, 'Apenas números'),
-  bio: z.string().max(255, 'Máximo 255 caracteres'),
+    .min(10, 'auth.errors.phoneMin')
+    .max(PHONE_MAX_DIGITS, 'auth.errors.phoneMax')
+    .regex(/^\d+$/, 'auth.errors.digitsOnly'),
+  bio: z.string().max(255, 'auth.errors.bioMax'),
   isPrivate: z.boolean(),
   birthdate: z.date().optional(),
   preferredCategories: z
     .array(z.string())
-    .min(MIN_PREFERRED_CATEGORIES, MIN_PREFERRED_CATEGORIES_MESSAGE)
-    .max(10, 'No máximo 10 categorias'),
+    .min(MIN_PREFERRED_CATEGORIES, 'auth.errors.categoriesMin')
+    .max(10, 'auth.errors.categoriesMax'),
   preferredSubcategories: z
     .array(z.string())
-    .max(30, 'No máximo 30 interesses'),
+    .max(30, 'auth.errors.subcategoriesMax'),
 })
 
 export type EditProfileInput = z.infer<typeof editProfileSchema>

@@ -7,9 +7,9 @@ export const loginSchema = z.object({
   identifier: z
     .string()
     .trim()
-    .min(1, 'Informe seu e-mail ou nome de usuário')
+    .min(1, 'auth.errors.identifierRequired')
     .max(255),
-  password: z.string().min(6, 'Mínimo 6 caracteres'),
+  password: z.string().min(6, 'auth.errors.loginPasswordMin'),
 })
 
 export type LoginInput = z.infer<typeof loginSchema>
