@@ -5,21 +5,18 @@ import {
   WHEEL_ITEM_HEIGHT,
   WHEEL_VISIBLE_ITEMS,
 } from './WheelColumn'
+import { formatMonthShort } from '@/shared/utils/dateFormat'
+import { useLocale } from '@/shared/hooks/useLocale'
 
-const MONTHS_PT = [
-  'Jan',
-  'Fev',
-  'Mar',
-  'Abr',
-  'Mai',
-  'Jun',
-  'Jul',
-  'Ago',
-  'Set',
-  'Out',
-  'Nov',
-  'Dez',
-]
+// A abreviação do date-fns vem minúscula e às vezes com ponto ("jan.", "ene.");
+// a roda usa maiúscula inicial e sem ponto, como a tabela manual usava.
+function monthLabel(month: number, locale: string): string {
+  const raw = formatMonthShort(new Date(2000, month, 1), locale).replace(
+    /\./g,
+    '',
+  )
+  return raw.charAt(0).toUpperCase() + raw.slice(1)
+}
 
 type Props = {
   value: Date
@@ -53,6 +50,7 @@ export function WheelDatePicker({
   minimumDate,
   maximumDate,
 }: Props) {
+  const locale = useLocale()
   const day = value.getDate()
   const month = value.getMonth()
   const year = value.getFullYear()
@@ -81,8 +79,11 @@ export function WheelDatePicker({
   const monthTo = year === maxYear ? maxMonth : 11
   const months = useMemo(
     () =>
-      range(monthFrom, monthTo).map(m => ({ label: MONTHS_PT[m], value: m })),
-    [monthFrom, monthTo],
+      range(monthFrom, monthTo).map(m => ({
+        label: monthLabel(m, locale),
+        value: m,
+      })),
+    [monthFrom, monthTo, locale],
   )
 
   const dayFrom = year === minYear && month === minMonth ? minDay : 1
