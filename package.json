@@ -17,6 +17,7 @@
     "build:all": "eas build --platform all"
   },
   "dependencies": {
+    "@date-fns/tz": "^1.5.0",
     "@expo-google-fonts/sora": "^0.4.2",
     "@hookform/resolvers": "^5.2.2",
     "@react-native-async-storage/async-storage": "2.2.0",
