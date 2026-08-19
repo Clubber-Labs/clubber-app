@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { View, Text, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { EditFieldScaffold } from './EditFieldScaffold'
 import { useEditProfileField } from '../../hooks/useEditProfileField'
 import { WheelDatePicker } from '@/shared/components/WheelDatePicker'
@@ -36,6 +37,7 @@ type FormProps = {
 }
 
 function BirthdateForm({ profile, save, saving }: FormProps) {
+  const { t } = useTranslation()
   const locale = useLocale()
   const initial = profile.birthdate ? profile.birthdate.split('T')[0] : ''
   const [date, setDate] = useState<Date>(
@@ -48,14 +50,13 @@ function BirthdateForm({ profile, save, saving }: FormProps) {
 
   return (
     <EditFieldScaffold
-      title="Nascimento"
+      title={t('profile.edit.birthdate')}
       onSave={() => save({ birthdate: next })}
       saving={saving}
       canSave={canSave}
     >
       <Text className="text-content-muted text-[12.5px] leading-5 mb-6">
-        Sua idade confirma que você pode usar o Clubber. Não aparece no seu
-        perfil.
+        {t('profile.birthdate.help')}
       </Text>
 
       <WheelDatePicker

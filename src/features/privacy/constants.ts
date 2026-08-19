@@ -14,23 +14,26 @@ export const DEFAULT_CONSENT_FIELDS: ConsentFields = {
  * rótulo delas vive na tela, junto do estado lido do SO (DevicePermissionRow).
  */
 
-/** Consentimento de verdade: opt-in, desligado por padrão. */
-export const COMMUNICATION_ITEMS: {
-  key: 'marketing' | 'surveys'
-  label: string
-  description: string
-}[] = [
+/**
+ * Consentimento de verdade: opt-in, desligado por padrão. Guarda a CHAVE do
+ * dicionário — frase pronta avaliaria no import e congelaria o idioma no boot.
+ */
+export const COMMUNICATION_ITEMS = [
   {
     key: 'marketing',
-    label: 'Novidades e promoções',
-    description: 'Lançamentos, promoções e ofertas do plano Premium.',
+    labelKey: 'privacy.items.marketing.label',
+    descriptionKey: 'privacy.items.marketing.description',
   },
   {
     key: 'surveys',
-    label: 'Convites para pesquisas',
-    description: 'Convites voluntários para pesquisas de satisfação.',
+    labelKey: 'privacy.items.surveys.label',
+    descriptionKey: 'privacy.items.surveys.description',
   },
-]
+] as const satisfies readonly {
+  key: 'marketing' | 'surveys'
+  labelKey: string
+  descriptionKey: string
+}[]
 
 export type ProductPreferences = {
   socialFeed: boolean
@@ -39,27 +42,24 @@ export type ProductPreferences = {
 }
 
 /** Bloco 3 — preferências de produto: ligadas por padrão, opt-out. */
-export const PRODUCT_PREFERENCE_ITEMS: {
-  key: keyof ProductPreferences
-  label: string
-  description: string
-}[] = [
+export const PRODUCT_PREFERENCE_ITEMS = [
   {
     key: 'socialFeed',
-    label: 'Feed personalizado',
-    description:
-      'Mostra no seu feed rolês que seus amigos curtiram, confirmaram ou criaram.',
+    labelKey: 'privacy.items.socialFeed.label',
+    descriptionKey: 'privacy.items.socialFeed.description',
   },
   {
     key: 'socialVisibility',
-    label: 'Visibilidade das suas atividades',
-    description:
-      'Suas confirmações e comentários podem aparecer no feed de outras pessoas.',
+    labelKey: 'privacy.items.socialVisibility.label',
+    descriptionKey: 'privacy.items.socialVisibility.description',
   },
   {
     key: 'analytics',
-    label: 'Métricas de uso',
-    description:
-      'Dados de como o app é usado, para melhorarmos o que não está funcionando.',
+    labelKey: 'privacy.items.analytics.label',
+    descriptionKey: 'privacy.items.analytics.description',
   },
-]
+] as const satisfies readonly {
+  key: keyof ProductPreferences
+  labelKey: string
+  descriptionKey: string
+}[]

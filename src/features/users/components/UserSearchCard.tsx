@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { LockIcon } from 'phosphor-react-native'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { FollowButton } from './FollowButton'
@@ -16,6 +17,7 @@ type Props = {
 }
 
 export function UserSearchCard({ user }: Props) {
+  const { t } = useTranslation()
   const viewerId = useAuthStore(s => s.userId)
   const navigateToProfile = useNavigateToProfile()
   const { follow, unfollow } = useFollowUser(user.id)
@@ -30,7 +32,9 @@ export function UserSearchCard({ user }: Props) {
       <Pressable
         onPress={() => navigateToProfile(user.id)}
         className="flex-row items-center gap-3 flex-1"
-        accessibilityLabel={`Ver perfil de ${user.username}`}
+        accessibilityLabel={t('shared.viewProfile', {
+          username: user.username,
+        })}
       >
         <UserAvatar name={fullName} avatarUrl={user.avatarUrl} size={48} />
         <View className="flex-1">
@@ -58,7 +62,7 @@ export function UserSearchCard({ user }: Props) {
       </Pressable>
       <View>
         {isOwn ? (
-          <Text className="text-content-subtle text-sm">Você</Text>
+          <Text className="text-content-subtle text-sm">{t('users.you')}</Text>
         ) : (
           <FollowButton
             status={user.followStatus}

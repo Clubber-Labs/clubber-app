@@ -11,6 +11,8 @@ import {
   CameraIcon,
   CaretRightIcon,
 } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
+import type { TFunction } from 'i18next'
 import { useRouter } from 'expo-router'
 import { useMyProfile, useUploadAvatar } from '../../hooks/useProfile'
 import { usePickAvatar } from '../../hooks/usePickAvatar'
@@ -24,6 +26,7 @@ import { colors } from '@/shared/theme'
 // Hub de edição: só navega e mostra o valor atual de cada campo. Cada linha
 // abre uma tela focada que salva o seu campo. O avatar é a única edição inline.
 export function EditProfileHub() {
+  const { t } = useTranslation()
   const locale = useLocale()
   const router = useRouter()
   const { data: profile, isLoading } = useMyProfile()
@@ -47,12 +50,12 @@ export function EditProfileHub() {
         <Pressable
           onPress={() => router.back()}
           className="w-9 h-9 rounded-full bg-surface-elevated items-center justify-center"
-          accessibilityLabel="Voltar"
+          accessibilityLabel={t('common.back')}
         >
           <CaretLeftIcon size={22} color={colors.contentSecondary} />
         </Pressable>
         <Text className="flex-1 text-content text-lg font-extrabold">
-          Editar perfil
+          {t('profile.edit.title')}
         </Text>
       </View>
 
@@ -64,7 +67,7 @@ export function EditProfileHub() {
           <Pressable
             onPress={handlePickAvatar}
             disabled={uploadAvatar.isPending}
-            accessibilityLabel="Alterar foto de perfil"
+            accessibilityLabel={t('profile.edit.changePhotoLabel')}
           >
             <View
               style={{
@@ -94,78 +97,82 @@ export function EditProfileHub() {
             disabled={uploadAvatar.isPending}
           >
             <Text className="text-brand-text text-[13px] font-bold">
-              Alterar foto
+              {t('profile.edit.changePhoto')}
             </Text>
           </Pressable>
         </View>
 
         <View className="px-4">
-          <Group label="Perfil público">
+          <Group label={t('profile.edit.groupPublic')}>
             <Row
               first
-              label="Nome"
+              label={t('profile.edit.name')}
               value={profile.name}
               onPress={() => router.push('/profile/edit/name')}
             />
             <Row
-              label="Sobrenome"
+              label={t('profile.edit.lastname')}
               value={profile.lastname}
               onPress={() => router.push('/profile/edit/lastname')}
             />
             <Row
-              label="Usuário"
+              label={t('profile.edit.username')}
               value={`@${profile.username}`}
               onPress={() => router.push('/profile/edit/username')}
             />
             <Row
-              label="Bio"
+              label={t('profile.edit.bio')}
               value={profile.bio ?? ''}
-              placeholder="Adicionar bio"
+              placeholder={t('profile.edit.addBio')}
               onPress={() => router.push('/profile/edit/bio')}
             />
           </Group>
 
-          <Group label="Preferências de rolê">
+          <Group label={t('profile.edit.groupPreferences')}>
             <Row
               first
-              label="Categorias"
-              value={summarize(profile.preferredCategories, labelFor)}
-              placeholder="Escolher"
+              label={t('profile.edit.categories')}
+              value={summarize(profile.preferredCategories, labelFor, t)}
+              placeholder={t('profile.edit.choose')}
               onPress={() => router.push('/profile/edit/categories')}
             />
             <Row
-              label="Interesses"
-              value={summarize(profile.preferredSubcategories, labelFor)}
-              placeholder="Adicionar"
+              label={t('profile.edit.interests')}
+              value={summarize(profile.preferredSubcategories, labelFor, t)}
+              placeholder={t('profile.edit.add')}
               onPress={() => router.push('/profile/edit/interests')}
             />
           </Group>
 
-          <Group label="Conta">
+          <Group label={t('profile.edit.groupAccount')}>
             <Row
               first
-              label="Telefone"
+              label={t('profile.edit.phone')}
               value={profile.phone ? formatPhone(profile.phone) : ''}
-              placeholder="Adicionar"
+              placeholder={t('profile.edit.add')}
               onPress={() => router.push('/profile/edit/phone')}
             />
             <Row
-              label="Nascimento"
+              label={t('profile.edit.birthdate')}
               value={
                 profile.birthdate
                   ? formatDayMonthYear(profile.birthdate, locale)
                   : ''
               }
-              placeholder="Adicionar"
+              placeholder={t('profile.edit.add')}
               onPress={() => router.push('/profile/edit/birthdate')}
             />
           </Group>
 
-          <Group label="Privacidade">
+          <Group label={t('profile.edit.groupPrivacy')}>
             <Row
               first
-              label="Visibilidade"
-              value={profile.isPrivate ? 'Privado' : 'Público'}
+              label={t('profile.edit.visibility')}
+              value={
+                profile.isPrivate
+                  ? t('profile.edit.private')
+                  : t('profile.edit.public')
+              }
               onPress={() => router.push('/profile/edit/privacy')}
             />
           </Group>
@@ -228,9 +235,12 @@ function Row({
 function summarize(
   values: string[] | undefined,
   labelFor: (value: string) => string,
+  t: TFunction,
 ): string {
   if (!values || values.length === 0) return ''
   const shown = values.slice(0, 2).map(labelFor)
   const extra = values.length - shown.length
-  return extra > 0 ? `${shown.join(', ')} +${extra}` : shown.join(', ')
+  return extra > 0
+    ? t('profile.edit.summaryExtra', { list: shown.join(', '), count: extra })
+    : shown.join(', ')
 }

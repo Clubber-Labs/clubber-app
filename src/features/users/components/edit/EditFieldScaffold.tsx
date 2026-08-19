@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { CaretLeftIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { colors } from '@/shared/theme'
@@ -29,6 +30,7 @@ export function EditFieldScaffold({
   canSave,
   children,
 }: Props) {
+  const { t } = useTranslation()
   const router = useRouter()
 
   return (
@@ -40,7 +42,7 @@ export function EditFieldScaffold({
         <Pressable
           onPress={() => router.back()}
           className="w-9 h-9 rounded-full bg-surface-elevated items-center justify-center"
-          accessibilityLabel="Voltar"
+          accessibilityLabel={t('common.back')}
         >
           <CaretLeftIcon size={22} color={colors.contentSecondary} />
         </Pressable>
@@ -63,7 +65,7 @@ export function EditFieldScaffold({
                 canSave ? 'text-brand-text' : 'text-content-faint'
               }`}
             >
-              Salvar
+              {t('common.save')}
             </Text>
           )}
         </Pressable>

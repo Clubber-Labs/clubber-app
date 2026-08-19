@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Pressable, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { SheetModal } from '@/shared/components/SheetModal'
 import { openDocument } from '@/shared/lib/openDocument'
@@ -17,6 +18,7 @@ const PRIVACY_URL = 'https://clubber.social/privacidade'
  * eliminou. Dispensado uma vez, não volta pra mesma versão.
  */
 export function PolicyUpdateNotice() {
+  const { t } = useTranslation()
   const { data: profile } = useMyProfile()
   const [dismissedVersion, setDismissedVersion] = useState<string | null>(null)
   const [loaded, setLoaded] = useState(false)
@@ -43,12 +45,10 @@ export function PolicyUpdateNotice() {
     <SheetModal visible={loaded && outdated} onClose={dismiss}>
       <View className="px-5 pt-2 pb-6 gap-3">
         <Text className="text-xl font-bold text-content">
-          Atualizamos nossa Política de Privacidade
+          {t('privacy.policyNotice.title')}
         </Text>
         <Text className="text-sm text-content-muted leading-5">
-          Continuamos usando seus dados para as mesmas finalidades. Você pode
-          ler o que mudou e ajustar suas escolhas quando quiser em Perfil →
-          Privacidade.
+          {t('privacy.policyNotice.body')}
         </Text>
 
         <Pressable
@@ -56,7 +56,7 @@ export function PolicyUpdateNotice() {
           className="py-3 active:opacity-70"
         >
           <Text className="text-brand-text text-sm font-medium">
-            Ler a política
+            {t('privacy.policyNotice.read')}
           </Text>
         </Pressable>
 
@@ -64,7 +64,9 @@ export function PolicyUpdateNotice() {
           onPress={dismiss}
           className="bg-surface border border-line-strong rounded-full py-4 items-center active:opacity-80"
         >
-          <Text className="text-content font-semibold text-base">Entendi</Text>
+          <Text className="text-content font-semibold text-base">
+            {t('privacy.policyNotice.dismiss')}
+          </Text>
         </Pressable>
       </View>
     </SheetModal>

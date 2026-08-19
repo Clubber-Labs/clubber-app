@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { SparkleIcon } from 'phosphor-react-native'
 import Mapbox from '@rnmapbox/maps'
 import type { SpotSuggestion } from '../types'
@@ -16,6 +17,7 @@ const SIZE = 44
 // proposta, não spot publicado. O número liga o marcador ao card da lista
 // (mesma ordem ranqueada).
 export function SuggestionMarkers({ suggestions, onPress }: Props) {
+  const { t } = useTranslation()
   return (
     <>
       {suggestions.map((suggestion, index) => (
@@ -29,7 +31,9 @@ export function SuggestionMarkers({ suggestions, onPress }: Props) {
           <Pressable
             onPress={() => onPress(suggestion)}
             accessibilityRole="button"
-            accessibilityLabel={`Escolher sugestão ${suggestion.name}`}
+            accessibilityLabel={t('spots.markers.chooseSuggestion', {
+              name: suggestion.name,
+            })}
             hitSlop={6}
             style={{
               width: SIZE,

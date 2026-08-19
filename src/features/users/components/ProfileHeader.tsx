@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { CameraIcon } from 'phosphor-react-native'
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg'
 import { UserAvatar } from '@/shared/components/UserAvatar'
@@ -41,6 +42,7 @@ export function ProfileHeader({
   onFollowingPress,
   actions,
 }: Props) {
+  const { t } = useTranslation()
   const fullName = formatFullName(profile.name, profile.lastname)
   const editable = isOwnProfile && !!onAvatarPress
   // id por perfil: evita colisão de gradiente entre o perfil próprio e o de
@@ -73,7 +75,9 @@ export function ProfileHeader({
           <Pressable
             onPress={editable ? onAvatarPress : undefined}
             disabled={!editable || avatarUploading}
-            accessibilityLabel={editable ? 'Alterar foto de perfil' : undefined}
+            accessibilityLabel={
+              editable ? t('profile.edit.changePhotoLabel') : undefined
+            }
             className="relative"
           >
             <View

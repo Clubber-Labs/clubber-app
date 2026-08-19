@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Stack } from 'expo-router'
 import {
   ArrowSquareOutIcon,
@@ -44,6 +45,7 @@ function SectionTitle({ title, hint }: { title: string; hint: string }) {
 }
 
 export default function PrivacyScreen() {
+  const { t } = useTranslation()
   const { consent, isRevoked, updateConsent, revokeAll, exportData } =
     useConsent()
   const { preferences, updatePreference } = useProductPreferences()
@@ -58,7 +60,7 @@ export default function PrivacyScreen() {
     value: boolean,
   ) {
     const ok = await updateConsent({ [key]: value })
-    if (!ok) showBanner('Não foi possível salvar. Verifique sua conexão.')
+    if (!ok) showBanner(t('privacy.saveError'))
   }
 
   async function handlePreferenceToggle(
@@ -66,7 +68,7 @@ export default function PrivacyScreen() {
     value: boolean,
   ) {
     const ok = await updatePreference(key, value)
-    if (!ok) showBanner('Não foi possível salvar. Verifique sua conexão.')
+    if (!ok) showBanner(t('privacy.saveError'))
   }
 
   async function handleExport() {
@@ -76,7 +78,7 @@ export default function PrivacyScreen() {
       const data = await exportData()
       await Share.share({ message: JSON.stringify(data, null, 2) })
     } catch {
-      showBanner('Não foi possível exportar agora. Tente novamente.')
+      showBanner(t('privacy.exportError'))
     } finally {
       setExporting(false)
     }
@@ -84,24 +86,19 @@ export default function PrivacyScreen() {
 
   async function handleRevokeAll() {
     const ok = await confirm({
-      title: 'Revogar consentimentos',
-      message:
-        'Você deixa de receber notificações e comunicações, sua localização é apagada, e o feed social e o compartilhamento de atividades são desligados.',
-      confirmLabel: 'Revogar',
+      title: t('privacy.revokeTitle'),
+      message: t('privacy.revokeMessage'),
+      confirmLabel: t('privacy.revokeConfirm'),
       destructive: true,
     })
     if (!ok) return
     const done = await revokeAll()
-    showBanner(
-      done
-        ? 'Consentimentos revogados.'
-        : 'Não foi possível revogar agora. Tente novamente.',
-    )
+    showBanner(done ? t('privacy.revoked') : t('privacy.revokeError'))
   }
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Privacidade' }} />
+      <Stack.Screen options={{ title: t('privacy.title') }} />
       <ScrollView
         className="flex-1 bg-background"
         contentContainerStyle={{ padding: 16, paddingBottom: 48 }}
@@ -109,12 +106,10 @@ export default function PrivacyScreen() {
         {isRevoked && (
           <View className="bg-surface border border-danger rounded-xl px-4 py-3 mb-2">
             <Text className="text-sm font-semibold text-danger-text">
-              Consentimentos revogados
+              {t('privacy.revokedBannerTitle')}
             </Text>
             <Text className="text-xs text-content-muted mt-1 leading-4">
-              Você não recebe notificações nem comunicações, mesmo que a
-              permissão do sistema esteja ativa. Ligue uma opção em Comunicações
-              para voltar atrás.
+              {t('privacy.revokedBannerBody')}
             </Text>
           </View>
         )}
@@ -122,19 +117,19 @@ export default function PrivacyScreen() {
         {/* Bloco 1 — quem decide é o SO. Nada aqui é switch: um controle que o
             app não consegue honrar faz o usuário arrastar e nada acontecer. */}
         <SectionTitle
-          title="Permissões do dispositivo"
-          hint="Quem decide é o sistema. Toque para permitir, ou para abrir os ajustes se já tiver recusado."
+          title={t('privacy.deviceTitle')}
+          hint={t('privacy.deviceHint')}
         />
         <View className="bg-surface-sunken border border-line rounded-xl overflow-hidden">
           <DevicePermissionRow
-            label="Localização"
-            description="Mostra rolês perto de você no mapa e avisa quando algo acontece por perto."
+            label={t('privacy.locationLabel')}
+            description={t('privacy.locationDescription')}
             status={osLocation}
             onPress={() => void enableLocation()}
           />
           <DevicePermissionRow
-            label="Notificações"
-            description="Convites, atividade de quem você segue e avisos dos rolês que você confirmou."
+            label={t('privacy.notificationsLabel')}
+            description={t('privacy.notificationsDescription')}
             status={osPush}
             onPress={() => void enableNotifications()}
             isLast
@@ -143,15 +138,15 @@ export default function PrivacyScreen() {
 
         {/* Bloco 2 — consentimento de verdade: opt-in, desligado por padrão. */}
         <SectionTitle
-          title="Comunicações"
-          hint="Desligadas por padrão. Você escolhe o que quer receber."
+          title={t('privacy.communicationsTitle')}
+          hint={t('privacy.communicationsHint')}
         />
         <View className="bg-surface-sunken border border-line rounded-xl overflow-hidden">
           {COMMUNICATION_ITEMS.map((item, index) => (
             <ConsentToggleRow
               key={item.key}
-              label={item.label}
-              description={item.description}
+              label={t(item.labelKey)}
+              description={t(item.descriptionKey)}
               value={consent[item.key]}
               onChange={value => handleConsentToggle(item.key, value)}
               isLast={index === COMMUNICATION_ITEMS.length - 1}
@@ -161,15 +156,15 @@ export default function PrivacyScreen() {
 
         {/* Bloco 3 — preferência de produto: ligada por padrão, opt-out. */}
         <SectionTitle
-          title="Preferências"
-          hint="Ligadas por padrão. Desligue o que não fizer sentido pra você."
+          title={t('privacy.preferencesTitle')}
+          hint={t('privacy.preferencesHint')}
         />
         <View className="bg-surface-sunken border border-line rounded-xl overflow-hidden">
           {PRODUCT_PREFERENCE_ITEMS.map((item, index) => (
             <ConsentToggleRow
               key={item.key}
-              label={item.label}
-              description={item.description}
+              label={t(item.labelKey)}
+              description={t(item.descriptionKey)}
               value={preferences[item.key]}
               onChange={value => handlePreferenceToggle(item.key, value)}
               isLast={index === PRODUCT_PREFERENCE_ITEMS.length - 1}
@@ -178,8 +173,8 @@ export default function PrivacyScreen() {
         </View>
 
         <SectionTitle
-          title="Seus direitos"
-          hint="Lei nº 13.709/2018 (LGPD), Art. 18."
+          title={t('privacy.rightsTitle')}
+          hint={t('privacy.rightsHint')}
         />
         <View className="bg-surface-sunken border border-line rounded-xl overflow-hidden">
           <Pressable
@@ -188,10 +183,12 @@ export default function PrivacyScreen() {
           >
             <View className="flex-1">
               <Text className="text-sm font-medium text-content">
-                Política de Privacidade
+                {t('privacy.policy')}
               </Text>
               <Text className="text-xs text-content-subtle mt-0.5">
-                Versão {consent.consentVersion ?? CONSENT_VERSION}
+                {t('privacy.policyVersion', {
+                  version: consent.consentVersion ?? CONSENT_VERSION,
+                })}
               </Text>
             </View>
             <ArrowSquareOutIcon size={16} color={colors.contentSubtle} />
@@ -204,10 +201,10 @@ export default function PrivacyScreen() {
           >
             <View className="flex-1">
               <Text className="text-sm font-medium text-content">
-                Baixar meus dados
+                {t('privacy.export')}
               </Text>
               <Text className="text-xs text-content-subtle mt-0.5">
-                Seu histórico de consentimentos e preferências (Art. 18, V)
+                {t('privacy.exportHint')}
               </Text>
             </View>
             {exporting ? (
@@ -223,7 +220,7 @@ export default function PrivacyScreen() {
           >
             <View className="flex-1">
               <Text className="text-sm font-medium text-content">
-                Falar com a equipe de privacidade
+                {t('privacy.contact')}
               </Text>
               <Text className="text-xs text-content-subtle mt-0.5">
                 {PRIVACY_EMAIL}
@@ -237,17 +234,16 @@ export default function PrivacyScreen() {
             className="px-4 py-4 active:opacity-70"
           >
             <Text className="text-sm font-medium text-danger-text">
-              Revogar consentimentos
+              {t('privacy.revokeTitle')}
             </Text>
             <Text className="text-xs text-content-subtle mt-0.5">
-              Desliga comunicações, notificações e preferências, e apaga sua
-              localização
+              {t('privacy.revokeHint')}
             </Text>
           </Pressable>
         </View>
 
         <Text className="text-content-faint text-xs text-center mt-5 mx-8 leading-4">
-          Prazo de resposta a solicitações: até 15 dias úteis.
+          {t('privacy.responseTime')}
         </Text>
       </ScrollView>
     </>

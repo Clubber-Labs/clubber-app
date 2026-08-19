@@ -626,6 +626,10 @@
       "dailyLimit": "You've hit the daily limit of suggestions. Try again tomorrow.",
       "placesDown": "Place search is unavailable right now. Try again shortly.",
       "generic": "Couldn't generate suggestions. Try again."
+    },
+    "markers": {
+      "viewSpot": "View hangout {{title}}",
+      "chooseSuggestion": "Choose suggestion {{name}}"
     }
   },
   "events": {
@@ -877,7 +881,8 @@
       "report": "Report",
       "delete": "Delete",
       "deleteTitle": "Delete message",
-      "deleteMessage": "This message will be deleted for everyone."
+      "deleteMessage": "This message will be deleted for everyone.",
+      "reactWith": "React with {{emoji}}"
     },
     "media": {
       "gallery": "Gallery",
@@ -918,7 +923,8 @@
       "createWithCount": "Create group ({{count}})",
       "saving": "Saving…",
       "newGroup": "New group",
-      "createNew": "Create new group"
+      "createNew": "Create new group",
+      "manageParticipant": "Manage {{name}}"
     },
     "dm": {
       "viewProfile": "View profile",
@@ -933,7 +939,9 @@
       "selected": "{{name}}, selected",
       "you": "(you)",
       "newConversationTitle": "New conversation",
-      "cannotStart": "You can't start a conversation with this user"
+      "cannotStart": "You can't start a conversation with this user",
+      "chatWith": "Chat with {{name}}",
+      "removeSelected": "Remove {{name}}"
     },
     "reactions": {
       "label": "{{emoji}} {{count}}",
@@ -962,6 +970,182 @@
       "privacy": "Privacy",
       "about": "About the app"
     },
-    "eventsSection": "Events"
+    "eventsSection": "Events",
+    "edit": {
+      "title": "Edit profile",
+      "changePhoto": "Change photo",
+      "changePhotoLabel": "Change profile photo",
+      "groupPublic": "Public profile",
+      "groupPreferences": "Hangout preferences",
+      "groupAccount": "Account",
+      "groupPrivacy": "Privacy",
+      "name": "First name",
+      "lastname": "Last name",
+      "username": "Username",
+      "bio": "Bio",
+      "addBio": "Add bio",
+      "categories": "Categories",
+      "interests": "Interests",
+      "choose": "Choose",
+      "add": "Add",
+      "phone": "Phone",
+      "birthdate": "Date of birth",
+      "visibility": "Visibility",
+      "private": "Private",
+      "public": "Public",
+      "summaryExtra": "{{list}} +{{count}}"
+    },
+    "fields": {
+      "name": {
+        "title": "First name",
+        "help": "How you show up on your profile, in hangouts and on the map. 4 to 25 letters."
+      },
+      "lastname": {
+        "title": "Last name",
+        "help": "Your last name. 4 to 55 letters."
+      },
+      "username": {
+        "title": "Username",
+        "help": "It's how people find you in the app. At least 4 characters."
+      },
+      "phone": {
+        "title": "Phone",
+        "help": "Used for contact and account security. Digits only, with area code."
+      },
+      "bio": {
+        "title": "Bio",
+        "placeholder": "Tell people a bit about you"
+      }
+    },
+    "preferences": {
+      "categoriesTitle": "Hangout categories",
+      "categoriesHelp": "What you enjoy doing on a hangout — pick 2 to 10.",
+      "interestsHelp": "Themes, styles and genres you like. Pick freely.",
+      "countOfMax": "{{count}} of 10",
+      "countSelected": "{{count}} selected"
+    },
+    "birthdate": {
+      "help": "Your age confirms you can use Clubber. It doesn't show on your profile."
+    },
+    "visibility": {
+      "privateHint": "Only approved followers see your profile, hangouts and events.",
+      "publicHint": "Anyone can find you and see your hangouts and events."
+    },
+    "stats": {
+      "events": "Events",
+      "followers": "Followers",
+      "following": "Following"
+    },
+    "editButton": "Edit profile",
+    "message": "Send message",
+    "empty": {
+      "ownTitle": "No events yet",
+      "ownMessage": "Create your first hangout and it shows up here for everyone to find.",
+      "otherTitle": "No events yet",
+      "otherMessage": "When this person organizes something, it shows up here.",
+      "privateTitle": "This profile is private",
+      "privateMessage": "Follow to see the events this person organizes.",
+      "createEvent": "Create event"
+    },
+    "notFound": "User not found.",
+    "notFoundBanner": "User not found"
+  },
+  "users": {
+    "search": {
+      "placeholder": "Search people...",
+      "idle": "Type at least 2 characters to search.",
+      "noResults": "No users found."
+    },
+    "list": {
+      "privateTitle": "This profile is private.",
+      "privateMessage": "Follow to see followers and following.",
+      "noFollowers": "No followers yet.",
+      "notFollowing": "Not following anyone yet.",
+      "noRequests": "No pending requests."
+    },
+    "you": "You"
+  },
+  "follows": {
+    "follow": "Follow",
+    "following": "Following",
+    "requested": "Requested",
+    "unfollowTitle": "Unfollow",
+    "unfollowMessage": "Are you sure you want to unfollow?",
+    "cancelRequestTitle": "Cancel request",
+    "cancelRequestMessage": "Do you want to cancel your follow request?",
+    "cancelRequestConfirm": "Cancel request",
+    "no": "No",
+    "accept": "Accept",
+    "reject": "Decline",
+    "removeFollowerTitle": "Remove follower",
+    "removeFollowerMessage": "Remove @{{username}} from your followers?",
+    "remove": "Remove",
+    "removeFollowerLabel": "Remove @{{username}} from followers",
+    "unfollowFromListLabel": "Unfollow @{{username}}",
+    "unfollowFromListMessage": "Unfollow @{{username}}?"
+  },
+  "privacy": {
+    "title": "Privacy",
+    "saveError": "Couldn't save. Check your connection.",
+    "exportError": "Couldn't export right now. Try again.",
+    "revokeTitle": "Revoke consents",
+    "revokeMessage": "You stop receiving notifications and communications, your location is erased, and the social feed and activity sharing are turned off.",
+    "revokeConfirm": "Revoke",
+    "revoked": "Consents revoked.",
+    "revokeError": "Couldn't revoke right now. Try again.",
+    "revokedBannerTitle": "Consents revoked",
+    "revokedBannerBody": "You receive no notifications or communications, even if the system permission is on. Turn on an option under Communications to undo it.",
+    "deviceTitle": "Device permissions",
+    "deviceHint": "The system decides. Tap to allow, or to open settings if you've already denied it.",
+    "locationLabel": "Location",
+    "locationDescription": "Shows hangouts near you on the map and tells you when something happens nearby.",
+    "notificationsLabel": "Notifications",
+    "notificationsDescription": "Invites, activity from people you follow and alerts for hangouts you're going to.",
+    "communicationsTitle": "Communications",
+    "communicationsHint": "Off by default. You choose what you want to receive.",
+    "preferencesTitle": "Preferences",
+    "preferencesHint": "On by default. Turn off whatever doesn't make sense for you.",
+    "rightsTitle": "Your rights",
+    "rightsHint": "Brazilian data protection law (LGPD), Art. 18.",
+    "policy": "Privacy Policy",
+    "policyVersion": "Version {{version}}",
+    "export": "Download my data",
+    "exportHint": "Your consent and preference history (Art. 18, V)",
+    "contact": "Contact the privacy team",
+    "revokeHint": "Turns off communications, notifications and preferences, and erases your location",
+    "responseTime": "Response time for requests: up to 15 business days.",
+    "items": {
+      "marketing": {
+        "label": "News and promotions",
+        "description": "Launches, promotions and Premium plan offers."
+      },
+      "surveys": {
+        "label": "Survey invitations",
+        "description": "Voluntary invitations to satisfaction surveys."
+      },
+      "socialFeed": {
+        "label": "Personalized feed",
+        "description": "Shows hangouts your friends liked, joined or created in your feed."
+      },
+      "socialVisibility": {
+        "label": "Visibility of your activity",
+        "description": "Your RSVPs and comments can show up in other people's feeds."
+      },
+      "analytics": {
+        "label": "Usage metrics",
+        "description": "Data on how the app is used, so we can improve what isn't working."
+      }
+    },
+    "policyNotice": {
+      "title": "We updated our Privacy Policy",
+      "body": "We still use your data for the same purposes. You can read what changed and adjust your choices anytime under Profile → Privacy.",
+      "read": "Read the policy",
+      "dismiss": "Got it"
+    },
+    "permission": {
+      "granted": "On",
+      "denied": "Off",
+      "enable": "Turn on"
+    }
   }
 }

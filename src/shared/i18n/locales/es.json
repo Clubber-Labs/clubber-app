@@ -626,6 +626,10 @@
       "dailyLimit": "Alcanzaste el límite diario de sugerencias. Inténtalo mañana.",
       "placesDown": "La búsqueda de lugares no está disponible ahora. Inténtalo en un momento.",
       "generic": "No se pudieron generar sugerencias. Inténtalo de nuevo."
+    },
+    "markers": {
+      "viewSpot": "Ver plan {{title}}",
+      "chooseSuggestion": "Elegir sugerencia {{name}}"
     }
   },
   "events": {
@@ -877,7 +881,8 @@
       "report": "Denunciar",
       "delete": "Borrar",
       "deleteTitle": "Borrar mensaje",
-      "deleteMessage": "Este mensaje se borrará para todos."
+      "deleteMessage": "Este mensaje se borrará para todos.",
+      "reactWith": "Reaccionar con {{emoji}}"
     },
     "media": {
       "gallery": "Galería",
@@ -918,7 +923,8 @@
       "createWithCount": "Crear grupo ({{count}})",
       "saving": "Guardando…",
       "newGroup": "Nuevo grupo",
-      "createNew": "Crear nuevo grupo"
+      "createNew": "Crear nuevo grupo",
+      "manageParticipant": "Gestionar a {{name}}"
     },
     "dm": {
       "viewProfile": "Ver perfil",
@@ -933,7 +939,9 @@
       "selected": "{{name}}, seleccionado",
       "you": "(tú)",
       "newConversationTitle": "Nueva conversación",
-      "cannotStart": "No puedes iniciar una conversación con este usuario"
+      "cannotStart": "No puedes iniciar una conversación con este usuario",
+      "chatWith": "Conversar con {{name}}",
+      "removeSelected": "Quitar a {{name}}"
     },
     "reactions": {
       "label": "{{emoji}} {{count}}",
@@ -962,6 +970,182 @@
       "privacy": "Privacidad",
       "about": "Acerca de la app"
     },
-    "eventsSection": "Eventos"
+    "eventsSection": "Eventos",
+    "edit": {
+      "title": "Editar perfil",
+      "changePhoto": "Cambiar foto",
+      "changePhotoLabel": "Cambiar foto de perfil",
+      "groupPublic": "Perfil público",
+      "groupPreferences": "Preferencias de planes",
+      "groupAccount": "Cuenta",
+      "groupPrivacy": "Privacidad",
+      "name": "Nombre",
+      "lastname": "Apellido",
+      "username": "Usuario",
+      "bio": "Bio",
+      "addBio": "Agregar bio",
+      "categories": "Categorías",
+      "interests": "Intereses",
+      "choose": "Elegir",
+      "add": "Agregar",
+      "phone": "Teléfono",
+      "birthdate": "Nacimiento",
+      "visibility": "Visibilidad",
+      "private": "Privado",
+      "public": "Público",
+      "summaryExtra": "{{list}} +{{count}}"
+    },
+    "fields": {
+      "name": {
+        "title": "Nombre",
+        "help": "Cómo apareces en tu perfil, en los planes y en el mapa. De 4 a 25 letras."
+      },
+      "lastname": {
+        "title": "Apellido",
+        "help": "Tu apellido. De 4 a 55 letras."
+      },
+      "username": {
+        "title": "Nombre de usuario",
+        "help": "Es como te encuentran en la app. Mínimo 4 caracteres."
+      },
+      "phone": {
+        "title": "Teléfono",
+        "help": "Se usa para contacto y seguridad de la cuenta. Solo números, con código de área."
+      },
+      "bio": {
+        "title": "Bio",
+        "placeholder": "Cuenta un poco sobre ti"
+      }
+    },
+    "preferences": {
+      "categoriesTitle": "Categorías de planes",
+      "categoriesHelp": "Lo que te gusta hacer en un plan — elige de 2 a 10.",
+      "interestsHelp": "Temas, estilos y géneros que te gustan. Elección libre.",
+      "countOfMax": "{{count}} de 10",
+      "countSelected": "{{count}} seleccionados"
+    },
+    "birthdate": {
+      "help": "Tu edad confirma que puedes usar Clubber. No aparece en tu perfil."
+    },
+    "visibility": {
+      "privateHint": "Solo los seguidores aprobados ven tu perfil, planes y eventos.",
+      "publicHint": "Cualquiera puede encontrarte y ver tus planes y eventos."
+    },
+    "stats": {
+      "events": "Eventos",
+      "followers": "Seguidores",
+      "following": "Siguiendo"
+    },
+    "editButton": "Editar perfil",
+    "message": "Enviar mensaje",
+    "empty": {
+      "ownTitle": "Aún no hay eventos",
+      "ownMessage": "Crea tu primer plan y aparecerá aquí para que todos lo descubran.",
+      "otherTitle": "Aún no hay eventos",
+      "otherMessage": "Cuando esta persona organice algo, aparecerá aquí.",
+      "privateTitle": "Este perfil es privado",
+      "privateMessage": "Sigue para ver los eventos que organiza esta persona.",
+      "createEvent": "Crear evento"
+    },
+    "notFound": "Usuario no encontrado.",
+    "notFoundBanner": "Usuario no encontrado"
+  },
+  "users": {
+    "search": {
+      "placeholder": "Buscar personas...",
+      "idle": "Escribe al menos 2 caracteres para buscar.",
+      "noResults": "No se encontraron usuarios."
+    },
+    "list": {
+      "privateTitle": "Este perfil es privado.",
+      "privateMessage": "Sigue para ver seguidores y seguidos.",
+      "noFollowers": "Aún no hay seguidores.",
+      "notFollowing": "Todavía no sigue a nadie.",
+      "noRequests": "No hay solicitudes pendientes."
+    },
+    "you": "Tú"
+  },
+  "follows": {
+    "follow": "Seguir",
+    "following": "Siguiendo",
+    "requested": "Solicitado",
+    "unfollowTitle": "Dejar de seguir",
+    "unfollowMessage": "¿Seguro que quieres dejar de seguir?",
+    "cancelRequestTitle": "Cancelar solicitud",
+    "cancelRequestMessage": "¿Quieres cancelar tu solicitud de seguimiento?",
+    "cancelRequestConfirm": "Cancelar solicitud",
+    "no": "No",
+    "accept": "Aceptar",
+    "reject": "Rechazar",
+    "removeFollowerTitle": "Quitar seguidor",
+    "removeFollowerMessage": "¿Quitar a @{{username}} de tus seguidores?",
+    "remove": "Quitar",
+    "removeFollowerLabel": "Quitar a @{{username}} de tus seguidores",
+    "unfollowFromListLabel": "Dejar de seguir a @{{username}}",
+    "unfollowFromListMessage": "¿Dejar de seguir a @{{username}}?"
+  },
+  "privacy": {
+    "title": "Privacidad",
+    "saveError": "No se pudo guardar. Revisa tu conexión.",
+    "exportError": "No se pudo exportar ahora. Inténtalo de nuevo.",
+    "revokeTitle": "Revocar consentimientos",
+    "revokeMessage": "Dejas de recibir notificaciones y comunicaciones, se borra tu ubicación, y se desactivan el feed social y el compartir actividades.",
+    "revokeConfirm": "Revocar",
+    "revoked": "Consentimientos revocados.",
+    "revokeError": "No se pudo revocar ahora. Inténtalo de nuevo.",
+    "revokedBannerTitle": "Consentimientos revocados",
+    "revokedBannerBody": "No recibes notificaciones ni comunicaciones, aunque el permiso del sistema esté activo. Activa una opción en Comunicaciones para revertirlo.",
+    "deviceTitle": "Permisos del dispositivo",
+    "deviceHint": "Lo decide el sistema. Toca para permitir, o para abrir los ajustes si ya lo rechazaste.",
+    "locationLabel": "Ubicación",
+    "locationDescription": "Muestra planes cerca de ti en el mapa y te avisa cuando pasa algo cerca.",
+    "notificationsLabel": "Notificaciones",
+    "notificationsDescription": "Invitaciones, actividad de quienes sigues y avisos de los planes a los que vas.",
+    "communicationsTitle": "Comunicaciones",
+    "communicationsHint": "Desactivadas por defecto. Tú eliges qué quieres recibir.",
+    "preferencesTitle": "Preferencias",
+    "preferencesHint": "Activadas por defecto. Desactiva lo que no tenga sentido para ti.",
+    "rightsTitle": "Tus derechos",
+    "rightsHint": "Ley brasileña de protección de datos (LGPD), Art. 18.",
+    "policy": "Política de Privacidad",
+    "policyVersion": "Versión {{version}}",
+    "export": "Descargar mis datos",
+    "exportHint": "Tu historial de consentimientos y preferencias (Art. 18, V)",
+    "contact": "Hablar con el equipo de privacidad",
+    "revokeHint": "Desactiva comunicaciones, notificaciones y preferencias, y borra tu ubicación",
+    "responseTime": "Plazo de respuesta a solicitudes: hasta 15 días hábiles.",
+    "items": {
+      "marketing": {
+        "label": "Novedades y promociones",
+        "description": "Lanzamientos, promociones y ofertas del plan Premium."
+      },
+      "surveys": {
+        "label": "Invitaciones a encuestas",
+        "description": "Invitaciones voluntarias a encuestas de satisfacción."
+      },
+      "socialFeed": {
+        "label": "Feed personalizado",
+        "description": "Muestra en tu feed planes que tus amigos marcaron, confirmaron o crearon."
+      },
+      "socialVisibility": {
+        "label": "Visibilidad de tus actividades",
+        "description": "Tus confirmaciones y comentarios pueden aparecer en el feed de otras personas."
+      },
+      "analytics": {
+        "label": "Métricas de uso",
+        "description": "Datos de cómo se usa la app, para mejorar lo que no está funcionando."
+      }
+    },
+    "policyNotice": {
+      "title": "Actualizamos nuestra Política de Privacidad",
+      "body": "Seguimos usando tus datos con los mismos fines. Puedes leer qué cambió y ajustar tus opciones cuando quieras en Perfil → Privacidad.",
+      "read": "Leer la política",
+      "dismiss": "Entendido"
+    },
+    "permission": {
+      "granted": "Activado",
+      "denied": "Desactivado",
+      "enable": "Activar"
+    }
   }
 }

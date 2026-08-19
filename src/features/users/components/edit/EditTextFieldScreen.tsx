@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   type KeyboardTypeOptions,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { EditFieldScaffold } from './EditFieldScaffold'
 import { useEditProfileField } from '../../hooks/useEditProfileField'
 import { editProfileSchema } from '../../schemas/editProfileSchema'
@@ -17,9 +18,15 @@ import { colors } from '@/shared/theme'
 // editProfileSchema — cada tela manda só o PATCH do seu campo.
 export type TextFieldKey = 'name' | 'lastname' | 'username' | 'phone' | 'bio'
 
+// Chaves, não frases: a constante avalia no import e congelaria o idioma. As
+// uniões mantêm o gate do typecheck — chave inexistente não compila.
+type TitleKey = `profile.fields.${TextFieldKey}.title`
+type HelpKey = `profile.fields.${Exclude<TextFieldKey, 'bio'>}.help`
+
 type FieldConfig = {
-  title: string
-  help: string
+  titleKey: TitleKey
+  // Bio troca o help pelo contador de caracteres — sem chave.
+  helpKey: HelpKey | null
   keyboardType?: KeyboardTypeOptions
   autoCapitalize?: 'none' | 'words' | 'sentences'
   multiline?: boolean
@@ -29,33 +36,33 @@ type FieldConfig = {
 
 const FIELDS: Record<TextFieldKey, FieldConfig> = {
   name: {
-    title: 'Nome',
-    help: 'Como você aparece no perfil, nos rolês e no mapa. De 4 a 25 letras.',
+    titleKey: 'profile.fields.name.title',
+    helpKey: 'profile.fields.name.help',
     autoCapitalize: 'words',
     maxLength: 25,
   },
   lastname: {
-    title: 'Sobrenome',
-    help: 'Seu sobrenome. De 4 a 55 letras.',
+    titleKey: 'profile.fields.lastname.title',
+    helpKey: 'profile.fields.lastname.help',
     autoCapitalize: 'words',
     maxLength: 55,
   },
   username: {
-    title: 'Nome de usuário',
-    help: 'É como te encontram no app. Mínimo de 4 caracteres.',
+    titleKey: 'profile.fields.username.title',
+    helpKey: 'profile.fields.username.help',
     autoCapitalize: 'none',
     maxLength: 25,
     prefix: '@',
   },
   phone: {
-    title: 'Telefone',
-    help: 'Usado para contato e segurança da conta. Só números, com DDD.',
+    titleKey: 'profile.fields.phone.title',
+    helpKey: 'profile.fields.phone.help',
     keyboardType: 'number-pad',
     maxLength: 11,
   },
   bio: {
-    title: 'Bio',
-    help: '',
+    titleKey: 'profile.fields.bio.title',
+    helpKey: null,
     multiline: true,
     maxLength: 255,
   },
@@ -106,6 +113,7 @@ function TextFieldForm({
   saving,
   serverError,
 }: FormProps) {
+  const { t } = useTranslation()
   const config = FIELDS[field]
   const initial = String(profile[field] ?? '')
   const [value, setValue] = useState(initial)
@@ -119,7 +127,7 @@ function TextFieldForm({
 
   return (
     <EditFieldScaffold
-      title={config.title}
+      title={t(config.titleKey)}
       onSave={() => save({ [field]: value } as UpdateMePayload)}
       saving={saving}
       canSave={canSave}
@@ -131,7 +139,7 @@ function TextFieldForm({
           autoFocus
           multiline
           maxLength={config.maxLength}
-          placeholder="Conte um pouco sobre você"
+          placeholder={t('profile.fields.bio.placeholder')}
           placeholderTextColor={colors.contentSubtle}
           value={value}
           onChangeText={setValue}
@@ -161,7 +169,7 @@ function TextFieldForm({
         </Text>
       ) : (
         <Text className="text-content-subtle text-[12.5px] mt-2.5 leading-5">
-          {config.help}
+          {config.helpKey ? t(config.helpKey) : ''}
         </Text>
       )}
 

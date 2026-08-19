@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/Button'
 import { useConfirm } from '@/shared/lib/confirm'
 import type { FollowStatus } from '@/shared/types'
@@ -10,14 +11,15 @@ type Props = {
 }
 
 export function FollowButton({ status, loading, onFollow, onUnfollow }: Props) {
+  const { t } = useTranslation()
   const confirm = useConfirm()
 
   async function handlePress() {
     if (status === 'ACCEPTED') {
       const ok = await confirm({
-        title: 'Deixar de seguir',
-        message: 'Tem certeza que deseja deixar de seguir?',
-        confirmLabel: 'Deixar de seguir',
+        title: t('follows.unfollowTitle'),
+        message: t('follows.unfollowMessage'),
+        confirmLabel: t('follows.unfollowTitle'),
         destructive: true,
       })
       if (ok) onUnfollow()
@@ -25,10 +27,10 @@ export function FollowButton({ status, loading, onFollow, onUnfollow }: Props) {
     }
     if (status === 'PENDING') {
       const ok = await confirm({
-        title: 'Cancelar solicitação',
-        message: 'Deseja cancelar o pedido de seguir?',
-        confirmLabel: 'Cancelar pedido',
-        cancelLabel: 'Não',
+        title: t('follows.cancelRequestTitle'),
+        message: t('follows.cancelRequestMessage'),
+        confirmLabel: t('follows.cancelRequestConfirm'),
+        cancelLabel: t('follows.no'),
         destructive: true,
       })
       if (ok) onUnfollow()
@@ -39,10 +41,10 @@ export function FollowButton({ status, loading, onFollow, onUnfollow }: Props) {
 
   const label =
     status === 'ACCEPTED'
-      ? 'Seguindo'
+      ? t('follows.following')
       : status === 'PENDING'
-        ? 'Solicitado'
-        : 'Seguir'
+        ? t('follows.requested')
+        : t('follows.follow')
   const variant = status === null ? 'primary' : 'secondary'
 
   return (

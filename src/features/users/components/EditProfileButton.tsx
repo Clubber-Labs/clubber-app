@@ -1,4 +1,5 @@
 import { Pressable, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { PencilSimpleIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
@@ -7,6 +8,7 @@ type Props = {
 }
 
 export function EditProfileButton({ onPress }: Props) {
+  const { t } = useTranslation()
   return (
     <Pressable
       onPress={onPress}
@@ -15,7 +17,7 @@ export function EditProfileButton({ onPress }: Props) {
     >
       <PencilSimpleIcon size={18} color={colors.contentSecondary} />
       <Text className="text-content-secondary text-sm font-bold">
-        Editar perfil
+        {t('profile.editButton')}
       </Text>
     </Pressable>
   )

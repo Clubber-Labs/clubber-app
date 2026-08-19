@@ -1,4 +1,5 @@
 import { Pressable, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ChatCircleIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
@@ -10,12 +11,13 @@ type Props = {
 // Botão compacto de mensagem ao lado do FollowButton. Mesma altura/estilo do
 // Button secondary (py-3 + borda zinc-700) pra alinhar na mesma linha.
 export function MessageButton({ onPress, loading }: Props) {
+  const { t } = useTranslation()
   return (
     <Pressable
       onPress={onPress}
       disabled={loading}
       accessibilityRole="button"
-      accessibilityLabel="Enviar mensagem"
+      accessibilityLabel={t('profile.message')}
       accessibilityState={{ disabled: !!loading, busy: !!loading }}
       className="rounded-lg py-3 px-4 items-center justify-center border border-line-strong"
     >
