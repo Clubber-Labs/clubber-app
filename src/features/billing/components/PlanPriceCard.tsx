@@ -1,4 +1,5 @@
 import { View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import type { Plan } from '../types'
 import { formatInterval, formatPrice } from '@/shared/utils/formatPrice'
 import { useLocale } from '@/shared/hooks/useLocale'
@@ -14,6 +15,7 @@ type Props = {
  * não renderiza nada — a tela e o CTA seguem funcionando sem o número.
  */
 export function PlanPriceCard({ plan, isLoading }: Props) {
+  const { t } = useTranslation()
   const locale = useLocale()
   if (isLoading) {
     return (
@@ -35,7 +37,7 @@ export function PlanPriceCard({ plan, isLoading }: Props) {
       {hasTrial && (
         <View className="px-3 py-1 rounded-full bg-brand/20 border border-brand-emphasis/40 mb-3">
           <Text className="text-brand-text-strong text-xs font-bold tracking-wide">
-            {plan.trialDays} DIAS GRÁTIS
+            {t('billing.plan.trialBadge', { count: plan.trialDays })}
           </Text>
         </View>
       )}
@@ -49,8 +51,12 @@ export function PlanPriceCard({ plan, isLoading }: Props) {
 
       <Text className="text-content-muted text-sm mt-2 text-center">
         {hasTrial
-          ? `Teste grátis por ${plan.trialDays} dias. Depois ${price}/${interval}, cancele quando quiser.`
-          : 'Assinatura mensal. Cancele quando quiser.'}
+          ? t('billing.plan.trialDetail', {
+              count: plan.trialDays,
+              price,
+              interval,
+            })
+          : t('billing.plan.monthly')}
       </Text>
     </View>
   )

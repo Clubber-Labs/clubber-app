@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { View, Text, TextInput, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { RadioButtonIcon } from 'phosphor-react-native'
 import { SheetModal } from '@/shared/components/SheetModal'
-import { REASON_OPTIONS, reportSheetTitle } from '../utils/reportLabels'
+import { REASON_OPTIONS, REPORT_TITLE_KEYS } from '../utils/reportLabels'
 import type { ReportReason, ReportTarget } from '../types'
 import { colors } from '@/shared/theme'
 
@@ -17,6 +18,7 @@ type Props = {
 // (mensagem, evento, comentário, usuário). Substitui o antigo
 // ReportReasonPicker específico de chat.
 export function ReportReasonSheet({ target, onClose, onSubmit }: Props) {
+  const { t } = useTranslation()
   const visible = target !== null
   const [reason, setReason] = useState<ReportReason | null>(null)
   const [details, setDetails] = useState('')
@@ -37,7 +39,7 @@ export function ReportReasonSheet({ target, onClose, onSubmit }: Props) {
   return (
     <SheetModal visible={visible} onClose={onClose}>
       <Text className="text-content font-semibold text-base px-5 pt-1 pb-2">
-        {target ? reportSheetTitle(target.type) : 'Denunciar'}
+        {target ? t(REPORT_TITLE_KEYS[target.type]) : t('reports.title')}
       </Text>
       {REASON_OPTIONS.map(r => {
         const active = reason === r.value
@@ -47,7 +49,9 @@ export function ReportReasonSheet({ target, onClose, onSubmit }: Props) {
             onPress={() => setReason(r.value)}
             className="flex-row items-center justify-between px-5 py-3"
           >
-            <Text className="text-content-bright text-base">{r.label}</Text>
+            <Text className="text-content-bright text-base">
+              {t(r.labelKey)}
+            </Text>
             <RadioButtonIcon
               weight={active ? 'fill' : 'regular'}
               size={20}
@@ -59,7 +63,7 @@ export function ReportReasonSheet({ target, onClose, onSubmit }: Props) {
       <TextInput
         value={details}
         onChangeText={setDetails}
-        placeholder="Detalhes (opcional)"
+        placeholder={t('reports.detailsPlaceholder')}
         placeholderTextColor={colors.contentSubtle}
         maxLength={500}
         multiline
@@ -75,7 +79,7 @@ export function ReportReasonSheet({ target, onClose, onSubmit }: Props) {
           <Text
             className={`font-semibold ${reason ? 'text-content' : 'text-content-subtle'}`}
           >
-            Enviar denúncia
+            {t('reports.submit')}
           </Text>
         </Pressable>
       </View>

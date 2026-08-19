@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { FormError } from '@/shared/components/FormError'
 import { RadiusSlider } from '@/shared/components/RadiusSlider'
 import { getApiError } from '@/shared/lib/apiError'
@@ -10,6 +11,7 @@ import {
 } from '@/features/spots/hooks/useSpotPrefs'
 
 export default function SpotSettingsScreen() {
+  const { t } = useTranslation()
   const { spotRadiusKm, saveRadius } = useSpotPrefs()
   const [error, setError] = useState<string | null>(null)
 
@@ -28,24 +30,23 @@ export default function SpotSettingsScreen() {
     >
       <View className="px-4 pt-6 pb-4 border-b border-line">
         <Text className="text-xl font-bold text-content">
-          Sugestões de rolês
+          {t('settings.spots')}
         </Text>
         <Text className="text-xs text-content-subtle mt-1">
-          A IA sugere spots dentro deste raio a partir da sua localização. Dá
-          pra ajustar só para uma busca na hora de gerar.
+          {t('settings.spotsScreen.subtitle')}
         </Text>
       </View>
 
       <View className="mx-4 mt-4 bg-surface-sunken border border-line rounded-xl px-4 py-4 gap-1">
         <RadiusSlider
-          label="Raio das sugestões"
+          label={t('settings.spotsScreen.radiusLabel')}
           min={SPOT_RADIUS_MIN_KM}
           max={SPOT_RADIUS_MAX_KM}
           value={spotRadiusKm}
           onCommit={handleCommit}
         />
         <Text className="text-xs text-content-subtle">
-          Distância máxima para buscar lugares ao gerar sugestões de spots.
+          {t('settings.spotsScreen.radiusHint')}
         </Text>
         <FormError message={error} />
       </View>

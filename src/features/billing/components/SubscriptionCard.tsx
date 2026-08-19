@@ -1,25 +1,28 @@
 import { View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { CrownIcon } from 'phosphor-react-native'
 import type { Subscription, SubscriptionStatus } from '../types'
 import { formatDayOfMonthYear } from '@/shared/utils/dateFormat'
 import { useLocale } from '@/shared/hooks/useLocale'
 import { colors } from '@/shared/theme'
 
-const STATUS_LABEL: Record<SubscriptionStatus, string> = {
-  TRIALING: 'Período de teste',
-  ACTIVE: 'Ativa',
-  PAST_DUE: 'Pagamento pendente',
-  CANCELED: 'Cancelada',
-  INCOMPLETE: 'Aguardando pagamento',
-  INCOMPLETE_EXPIRED: 'Expirada',
-  UNPAID: 'Inadimplente',
-}
+// Chaves, não frases: a constante avalia no import e congelaria o idioma.
+const STATUS_LABEL_KEYS = {
+  TRIALING: 'billing.status.TRIALING',
+  ACTIVE: 'billing.status.ACTIVE',
+  PAST_DUE: 'billing.status.PAST_DUE',
+  CANCELED: 'billing.status.CANCELED',
+  INCOMPLETE: 'billing.status.INCOMPLETE',
+  INCOMPLETE_EXPIRED: 'billing.status.INCOMPLETE_EXPIRED',
+  UNPAID: 'billing.status.UNPAID',
+} as const satisfies Record<SubscriptionStatus, string>
 
 type Props = {
   subscription: Subscription
 }
 
 export function SubscriptionCard({ subscription }: Props) {
+  const { t } = useTranslation()
   const locale = useLocale()
   const isTrial = subscription.status === 'TRIALING'
   const isPastDue = subscription.status === 'PAST_DUE'
@@ -30,7 +33,7 @@ export function SubscriptionCard({ subscription }: Props) {
         <View className="flex-row items-center gap-2">
           <CrownIcon size={20} color={colors.brandText} />
           <Text className="text-content font-bold text-lg">
-            Clubber Premium
+            {t('spots.premium.name')}
           </Text>
         </View>
         <View
@@ -39,34 +42,41 @@ export function SubscriptionCard({ subscription }: Props) {
           <Text
             className={`text-xs font-semibold ${isPastDue ? 'text-danger-text' : 'text-brand-text-strong'}`}
           >
-            {STATUS_LABEL[subscription.status]}
+            {t(STATUS_LABEL_KEYS[subscription.status])}
           </Text>
         </View>
       </View>
 
       {isTrial && subscription.trialEndsAt && (
         <Text className="text-content-tertiary text-sm">
-          Teste grátis até{' '}
-          {formatDayOfMonthYear(subscription.trialEndsAt, locale)}.
+          {t('billing.card.trialUntil', {
+            date: formatDayOfMonthYear(subscription.trialEndsAt, locale),
+          })}
         </Text>
       )}
 
       {subscription.cancelAtPeriodEnd ? (
         <Text className="text-warning text-sm">
-          Cancelamento agendado: o acesso premium termina em{' '}
-          {formatDayOfMonthYear(subscription.currentPeriodEnd, locale)}.
+          {t('billing.card.cancelScheduled', {
+            date: formatDayOfMonthYear(subscription.currentPeriodEnd, locale),
+          })}
         </Text>
       ) : (
         <Text className="text-content-muted text-sm">
-          {isTrial ? 'Primeira cobrança' : 'Próxima renovação'} em{' '}
-          {formatDayOfMonthYear(subscription.currentPeriodEnd, locale)}.
+          {t(
+            isTrial
+              ? 'billing.card.firstChargeOn'
+              : 'billing.card.nextRenewalOn',
+            {
+              date: formatDayOfMonthYear(subscription.currentPeriodEnd, locale),
+            },
+          )}
         </Text>
       )}
 
       {isPastDue && (
         <Text className="text-danger-text text-sm">
-          Não conseguimos cobrar seu cartão. Atualize o pagamento para manter o
-          acesso.
+          {t('billing.card.pastDue')}
         </Text>
       )}
     </View>

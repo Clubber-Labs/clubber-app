@@ -1,4 +1,5 @@
 import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import {
   XCircleIcon,
   InfoIcon,
@@ -17,11 +18,12 @@ type Props = {
   onBack: () => void
 }
 
-const LOST_ITEMS = [
-  'Seus eventos, posts e presenças',
-  'Seus seguidores e quem você segue',
-  'Seu perfil, foto e preferências',
-]
+// Chaves, não frases: a constante avalia no import e congelaria o idioma.
+const LOST_ITEM_KEYS = [
+  'account.dataLoss.0',
+  'account.dataLoss.1',
+  'account.dataLoss.2',
+] as const
 
 export function DataLossWarning({
   onExport,
@@ -30,33 +32,34 @@ export function DataLossWarning({
   onContinue,
   onBack,
 }: Props) {
+  const { t } = useTranslation()
   return (
     <View className="gap-4">
       <View className="gap-1">
         <Text className="text-content text-xl font-bold">
-          O que acontece ao excluir
+          {t('account.deleteIntro.title')}
         </Text>
         <Text className="text-content-muted text-sm leading-5">
-          Você tem 30 dias para mudar de ideia. Dentro desse prazo, basta fazer
-          login para cancelar a exclusão e recuperar tudo.
+          {t('account.deleteIntro.body')}
         </Text>
       </View>
 
       <View className="bg-surface-sunken border border-line rounded-xl p-4 gap-3">
         <Text className="text-content-tertiary text-sm font-semibold">
-          Será removido permanentemente:
+          {t('account.dataLoss.title')}
         </Text>
-        {LOST_ITEMS.map(item => (
-          <View key={item} className="flex-row items-start gap-2">
+        {LOST_ITEM_KEYS.map(key => (
+          <View key={key} className="flex-row items-start gap-2">
             <XCircleIcon size={16} color={colors.danger} weight="fill" />
-            <Text className="text-content-tertiary text-sm flex-1">{item}</Text>
+            <Text className="text-content-tertiary text-sm flex-1">
+              {t(key)}
+            </Text>
           </View>
         ))}
         <View className="flex-row items-start gap-2 pt-1 border-t border-line mt-1">
           <InfoIcon size={16} color={colors.contentMuted} weight="fill" />
           <Text className="text-content-muted text-xs flex-1 leading-4">
-            Comentários e mensagens que você enviou em conteúdo de outras
-            pessoas permanecem, mas anonimizados como “Usuário Excluído”.
+            {t('account.dataLoss.anonymized')}
           </Text>
         </View>
       </View>
@@ -68,11 +71,10 @@ export function DataLossWarning({
       >
         <View className="flex-1 pr-3">
           <Text className="text-sm font-medium text-content">
-            Baixar histórico de consentimentos
+            {t('account.dataLoss.export')}
           </Text>
           <Text className="text-xs text-content-subtle mt-0.5 leading-4">
-            Portabilidade LGPD (Art. 18, V). Inclui só o histórico de
-            consentimento — não eventos, posts ou mensagens.
+            {t('account.dataLoss.exportHint')}
           </Text>
           {exportError && (
             <Text className="text-danger text-xs mt-1">{exportError}</Text>
@@ -90,12 +92,12 @@ export function DataLossWarning({
         className="flex-row items-center gap-2 px-1"
       >
         <ArrowSquareOutIcon size={14} color={colors.brandText} />
-        <Text className="text-brand-text text-sm">Política de Privacidade</Text>
+        <Text className="text-brand-text text-sm">{t('privacy.policy')}</Text>
       </Pressable>
 
       <View className="gap-3 mt-2">
-        <Button label="Continuar" onPress={onContinue} />
-        <Button label="Voltar" onPress={onBack} variant="secondary" />
+        <Button label={t('common.continue')} onPress={onContinue} />
+        <Button label={t('common.back')} onPress={onBack} variant="secondary" />
       </View>
     </View>
   )

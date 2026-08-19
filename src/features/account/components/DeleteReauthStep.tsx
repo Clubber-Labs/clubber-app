@@ -1,4 +1,5 @@
 import { View, Text, TextInput } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ShieldCheckIcon } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
@@ -23,29 +24,30 @@ export function DeleteReauthStep({
   onConfirm,
   onBack,
 }: Props) {
+  const { t } = useTranslation()
   const canSubmit = hasPassword ? password.trim().length > 0 : true
 
   return (
     <View className="gap-4">
       <View className="gap-1">
         <Text className="text-content text-xl font-bold">
-          Confirme que é você
+          {t('account.reauth.title')}
         </Text>
         <Text className="text-content-muted text-sm leading-5">
           {hasPassword
-            ? 'Digite sua senha para excluir a conta.'
-            : 'Sua sessão confirma sua identidade — você entrou com Google ou Facebook.'}
+            ? t('account.reauth.passwordBody')
+            : t('account.reauth.socialBody')}
         </Text>
       </View>
 
       {hasPassword ? (
         <View className="gap-1.5">
           <Text className="text-content-muted text-xs font-medium uppercase tracking-wider">
-            Senha
+            {t('account.reauth.password')}
           </Text>
           <TextInput
             className={`border ${error ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
-            placeholder="Sua senha"
+            placeholder={t('account.reauth.passwordPlaceholder')}
             placeholderTextColor={colors.contentSubtle}
             onChangeText={onPasswordChange}
             value={password}
@@ -58,7 +60,7 @@ export function DeleteReauthStep({
         <View className="flex-row items-center gap-2 bg-surface-sunken border border-line rounded-xl px-4 py-3">
           <ShieldCheckIcon size={18} color={colors.brandText} />
           <Text className="text-content-muted text-sm flex-1">
-            Nenhuma senha necessária para esta conta.
+            {t('account.reauth.noPassword')}
           </Text>
         </View>
       )}
@@ -67,13 +69,13 @@ export function DeleteReauthStep({
 
       <View className="gap-3 mt-2">
         <Button
-          label="Excluir minha conta"
+          label={t('account.deleteCta')}
           variant="destructive"
           onPress={onConfirm}
           disabled={!canSubmit || submitting}
           loading={submitting}
         />
-        <Button label="Voltar" onPress={onBack} variant="secondary" />
+        <Button label={t('common.back')} onPress={onBack} variant="secondary" />
       </View>
     </View>
   )

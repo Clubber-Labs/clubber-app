@@ -6,6 +6,7 @@ import {
   Pressable,
   RefreshControl,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { CaretLeftIcon, GearIcon } from 'phosphor-react-native'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
@@ -20,6 +21,7 @@ import { useLocale } from '@/shared/hooks/useLocale'
 import { colors } from '@/shared/theme'
 
 export default function NotificationsScreen() {
+  const { t } = useTranslation()
   const locale = useLocale()
   const router = useRouter()
   const {
@@ -47,12 +49,12 @@ export default function NotificationsScreen() {
           <Pressable
             onPress={() => router.back()}
             className="w-9 h-9 items-center justify-center"
-            accessibilityLabel="Voltar"
+            accessibilityLabel={t('common.back')}
           >
             <CaretLeftIcon size={26} color={colors.contentBright} />
           </Pressable>
           <Text className="text-content text-xl font-extrabold">
-            Notificações
+            {t('notifications.title')}
           </Text>
         </View>
         <View className="flex-row items-center gap-1 pr-2">
@@ -62,14 +64,14 @@ export default function NotificationsScreen() {
               className="px-2 py-1.5"
             >
               <Text className="text-brand-text text-[13px] font-bold">
-                Marcar lidas
+                {t('notifications.markRead')}
               </Text>
             </Pressable>
           )}
           <Pressable
             onPress={() => router.push('/settings/notifications')}
             className="w-9 h-9 items-center justify-center"
-            accessibilityLabel="Configurações de notificações"
+            accessibilityLabel={t('notifications.settings')}
           >
             <GearIcon size={20} color={colors.contentSecondary} />
           </Pressable>

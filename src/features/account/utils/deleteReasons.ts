@@ -10,16 +10,18 @@ export type DeleteReason =
   | 'TECH_ISSUES'
   | 'OTHER'
 
-export const DELETE_REASON_LABELS: Record<DeleteReason, string> = {
-  PRIVACY: 'Preocupação com privacidade',
-  TOO_MUCH_TIME: 'Passo tempo demais aqui',
-  FRESH_START: 'Quero recomeçar do zero',
-  NOT_USEFUL: 'Não acho o app útil',
-  TECH_ISSUES: 'Problemas técnicos',
-  OTHER: 'Outro',
-}
+// Chaves, não frases: o módulo avalia no import e congelaria o idioma. A
+// tradução acontece na exibição (DeleteReasonStep).
+export const DELETE_REASON_LABEL_KEYS = {
+  PRIVACY: 'account.reasons.PRIVACY',
+  TOO_MUCH_TIME: 'account.reasons.TOO_MUCH_TIME',
+  FRESH_START: 'account.reasons.FRESH_START',
+  NOT_USEFUL: 'account.reasons.NOT_USEFUL',
+  TECH_ISSUES: 'account.reasons.TECH_ISSUES',
+  OTHER: 'account.reasons.OTHER',
+} as const satisfies Record<DeleteReason, string>
 
-export const DELETE_REASON_OPTIONS: { value: DeleteReason; label: string }[] = (
+export const DELETE_REASON_OPTIONS = (
   [
     'PRIVACY',
     'TOO_MUCH_TIME',
@@ -28,7 +30,7 @@ export const DELETE_REASON_OPTIONS: { value: DeleteReason; label: string }[] = (
     'TECH_ISSUES',
     'OTHER',
   ] as const
-).map(value => ({ value, label: DELETE_REASON_LABELS[value] }))
+).map(value => ({ value, labelKey: DELETE_REASON_LABEL_KEYS[value] }))
 
 // Monta a string final enviada ao backend: o texto livre quando 'OTHER', senão o
 // próprio value (token estável). Retorna undefined quando não há motivo utilizável.

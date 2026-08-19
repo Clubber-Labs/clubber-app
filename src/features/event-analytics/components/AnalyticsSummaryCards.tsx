@@ -1,4 +1,5 @@
 import { View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import {
   EyeIcon,
   ShareNetworkIcon,
@@ -10,7 +11,8 @@ import type { EventAnalyticsTotals } from '../types'
 
 type Card = {
   key: keyof EventAnalyticsTotals
-  label: string
+  // Chave, não frase: a constante avalia no import e congelaria o idioma.
+  labelKey: `analytics.metrics.${keyof EventAnalyticsTotals}`
   icon: Icon
   color: string
 }
@@ -20,19 +22,19 @@ type Card = {
 const CARDS: Card[] = [
   {
     key: 'views',
-    label: 'Visualizações',
+    labelKey: 'analytics.metrics.views',
     icon: EyeIcon,
     color: colors.brandText,
   },
   {
     key: 'shares',
-    label: 'Compartilhamentos',
+    labelKey: 'analytics.metrics.shares',
     icon: ShareNetworkIcon,
     color: colors.info,
   },
   {
     key: 'confirmations',
-    label: 'Confirmações',
+    labelKey: 'analytics.metrics.confirmations',
     icon: CheckCircleIcon,
     color: colors.successText,
   },
@@ -43,6 +45,7 @@ type Props = {
 }
 
 export function AnalyticsSummaryCards({ totals }: Props) {
+  const { t } = useTranslation()
   return (
     <View className="flex-row gap-3">
       {CARDS.map(card => (
@@ -57,7 +60,7 @@ export function AnalyticsSummaryCards({ totals }: Props) {
             {totals[card.key]}
           </Text>
           <Text className="text-content-muted text-xs mt-0.5">
-            {card.label}
+            {t(card.labelKey)}
           </Text>
         </View>
       ))}

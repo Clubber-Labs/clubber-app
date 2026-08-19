@@ -6,6 +6,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { CheckSquareIcon, SquareIcon } from 'phosphor-react-native'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 import { useAuthStore } from '@/features/auth/store/authStore'
@@ -21,6 +22,7 @@ import { colors } from '@/shared/theme'
 type PendingAction = 'selected' | 'all' | null
 
 export default function InvitesScreen() {
+  const { t } = useTranslation()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const viewerId = useAuthStore(s => s.userId)
@@ -86,7 +88,7 @@ export default function InvitesScreen() {
     return (
       <View className="flex-1 bg-background items-center justify-center px-6">
         <Text className="text-content-muted text-center text-sm">
-          Não foi possível carregar o evento.
+          {t('events.detail.loadError')}
         </Text>
       </View>
     )
@@ -106,9 +108,7 @@ export default function InvitesScreen() {
     )
   }
 
-  const submitError = invite.error
-    ? 'Não foi possível convidar. Tente novamente.'
-    : null
+  const submitError = invite.error ? t('events.invites.error') : null
 
   return (
     <View className="flex-1 bg-background">
@@ -128,7 +128,7 @@ export default function InvitesScreen() {
         ListEmptyComponent={
           <View className="items-center justify-center pt-16 px-6">
             <Text className="text-content-subtle text-sm text-center">
-              Você ainda não tem seguidores pra convidar.
+              {t('events.invites.noFollowers')}
             </Text>
           </View>
         }
@@ -150,8 +150,8 @@ export default function InvitesScreen() {
           <Button
             label={
               selected.size > 0
-                ? `Convidar ${selected.size} ${selected.size === 1 ? 'pessoa' : 'pessoas'}`
-                : 'Selecione pessoas pra convidar'
+                ? t('events.invites.inviteCount', { count: selected.size })
+                : t('events.invites.selectPrompt')
             }
             onPress={handleInviteSelected}
             disabled={selected.size === 0 || invite.isPending}
@@ -166,7 +166,7 @@ export default function InvitesScreen() {
               <ActivityIndicator color={colors.brandText} size="small" />
             )}
             <Text className="text-brand-text text-sm font-medium">
-              Convidar todos os seguidores
+              {t('events.invites.inviteAll')}
             </Text>
           </Pressable>
         </View>

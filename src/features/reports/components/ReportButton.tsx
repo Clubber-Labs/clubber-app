@@ -1,8 +1,9 @@
 import { Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { FlagIcon } from 'phosphor-react-native'
 import { useReportFlow } from '../hooks/useReportFlow'
 import { ReportReasonSheet } from './ReportReasonSheet'
-import { TARGET_LABELS } from '../utils/reportLabels'
+import { REPORT_TITLE_KEYS } from '../utils/reportLabels'
 import type { ReportTarget } from '../types'
 import { colors } from '@/shared/theme'
 
@@ -18,6 +19,7 @@ type Props = {
 // de terceiro. Para listas (comentários) prefira erguer um único sheet e
 // passar onReport por item, evitando N modais montados.
 export function ReportButton({ target, variant = 'overlay' }: Props) {
+  const { t } = useTranslation()
   const report = useReportFlow()
   const isOverlay = variant === 'overlay'
 
@@ -27,7 +29,7 @@ export function ReportButton({ target, variant = 'overlay' }: Props) {
         onPress={() => report.requestReport(target)}
         hitSlop={8}
         accessibilityRole="button"
-        accessibilityLabel={`Denunciar ${TARGET_LABELS[target.type]}`}
+        accessibilityLabel={t(REPORT_TITLE_KEYS[target.type])}
         className={
           isOverlay
             ? 'w-10 h-10 items-center justify-center rounded-full bg-background/50'

@@ -464,7 +464,12 @@
       "today": "Hoje",
       "thisWeek": "Esta semana",
       "older": "Anteriores"
-    }
+    },
+    "title": "Notificações",
+    "markRead": "Marcar lidas",
+    "settings": "Configurações de notificações",
+    "emptyTitle": "Tudo em dia por aqui",
+    "emptyBody": "Atividades da sua rede e rolês perto de você aparecem nesta tela."
   },
   "spots": {
     "errors": {
@@ -759,6 +764,34 @@
       "remove": "Remover estabelecimento",
       "addressPlaceholder": "Rua, número, bairro",
       "mapEmptyHint": "Escolha um local no campo acima para ver no mapa"
+    },
+    "detail": {
+      "unavailable": "Evento indisponível",
+      "loadError": "Não foi possível carregar o evento.",
+      "privateNotice": "Este evento é de um perfil privado. Siga o autor para ver."
+    },
+    "create": {
+      "submit": "Criar evento",
+      "submitting": "Criando...",
+      "error": "Não foi possível criar o evento. Tente novamente."
+    },
+    "edit": {
+      "submit": "Salvar alterações",
+      "submitting": "Salvando...",
+      "error": "Não foi possível salvar as alterações. Tente novamente."
+    },
+    "invites": {
+      "error": "Não foi possível convidar. Tente novamente.",
+      "noFollowers": "Você ainda não tem seguidores pra convidar.",
+      "selectPrompt": "Selecione pessoas pra convidar",
+      "inviteCount_one": "Convidar {{count}} pessoa",
+      "inviteCount_other": "Convidar {{count}} pessoas",
+      "inviteAll": "Convidar todos os seguidores"
+    },
+    "invited": {
+      "forbidden": "Apenas o autor do evento pode ver os convidados.",
+      "loadError": "Não foi possível carregar os convidados.",
+      "empty": "Ninguém convidado ainda."
     }
   },
   "map": {
@@ -1147,5 +1180,232 @@
       "denied": "Desativado",
       "enable": "Ativar"
     }
+  },
+  "settings": {
+    "title": "Configurações",
+    "account": "Conta",
+    "accountHint": "Propriedade e controle da conta",
+    "notifications": "Notificações",
+    "notificationsHint": "Push, eventos próximos e categorias preferidas",
+    "spots": "Sugestões de rolês",
+    "spotsHint": "Raio da busca de rolês no mapa",
+    "privacy": "Privacidade",
+    "privacyHint": "Consentimentos e dados (LGPD)",
+    "about": "Sobre o app",
+    "notif": {
+      "subtitle": "Tudo é opcional e desligado por padrão. Você pode mudar quando quiser.",
+      "pushLabel": "Notificações push",
+      "pushDescription": "Convites, atividade da sua rede e eventos perto de você.",
+      "nearbyLabel": "Eventos perto de você",
+      "nearbyDescription": "Usa sua localização aproximada (~1km, calculada no aparelho) para avisar de eventos próximos. A posição exata nunca sai do seu celular.",
+      "radiusLabel": "Raio de aviso",
+      "radiusHint": "Distância máxima de um evento novo para você ser avisado.",
+      "categoriesTitle": "Categorias preferidas",
+      "categoriesHint": "Avisos de eventos próximos só chegam para categorias marcadas aqui — sem nenhuma selecionada, você não recebe avisos de proximidade.",
+      "interestsHint": "Refine os avisos por subcategoria e gênero — eventos do seu interesse perto de você te alcançam com mais precisão.",
+      "privacyRow": "Privacidade e consentimentos",
+      "privacyRowHint": "Gerenciar todos os consentimentos, exportar dados e ver a política de privacidade",
+      "retentionNote": "Sua localização aproximada expira no servidor após 90 dias sem atualização e é apagada imediatamente se você desligar o uso de localização. Notificações antigas também expiram no servidor."
+    },
+    "spotsScreen": {
+      "subtitle": "A IA sugere rolês dentro deste raio a partir da sua localização. Dá pra ajustar só para uma busca na hora de gerar.",
+      "radiusLabel": "Raio das sugestões",
+      "radiusHint": "Distância máxima para buscar lugares ao gerar sugestões de rolês."
+    }
+  },
+  "about": {
+    "version": "Versão {{version}}",
+    "mapsTitle": "Mapas",
+    "mapsBody": "Os mapas exibidos no app são fornecidos pela Mapbox e usam dados do OpenStreetMap, mantidos por uma comunidade de colaboradores ao redor do mundo.",
+    "improveMap": "Melhorar este mapa"
+  },
+  "billing": {
+    "upgrade": {
+      "cta": "Assinar Premium",
+      "stalledTitle": "A confirmação está demorando",
+      "stalledBody": "Se o pagamento foi concluído, seu acesso premium é liberado assim que a confirmação chegar. Você pode acompanhar pela tela de assinatura.",
+      "seeSubscription": "Ver minha assinatura",
+      "activatingTitle": "Confirmando pagamento...",
+      "activatingBody": "Estamos ativando seu acesso premium. Isso costuma levar poucos segundos.",
+      "tagline": "Tire seus eventos do anonimato. Mais destaque, mais alcance e os dados pra crescer de verdade.",
+      "benefitsTitle": "Tudo que você ganha",
+      "disclaimer": "Cancele quando quiser — o acesso continua até o fim do período pago. Renovação automática.",
+      "trialCta_one": "Começar {{count}} dia grátis",
+      "trialCta_other": "Começar {{count}} dias grátis"
+    },
+    "premium": "PREMIUM",
+    "manage": {
+      "title": "Assinatura",
+      "cancelTitle": "Cancelar assinatura",
+      "cancelMessage": "Seu acesso premium continua até o fim do período já pago. Depois disso, a assinatura não renova.",
+      "resume": "Retomar assinatura"
+    },
+    "status": {
+      "TRIALING": "Período de teste",
+      "ACTIVE": "Ativa",
+      "PAST_DUE": "Pagamento pendente",
+      "CANCELED": "Cancelada",
+      "INCOMPLETE": "Aguardando pagamento",
+      "INCOMPLETE_EXPIRED": "Expirada",
+      "UNPAID": "Inadimplente"
+    },
+    "card": {
+      "firstCharge": "Primeira cobrança",
+      "nextRenewal": "Próxima renovação",
+      "trialUntil": "Teste grátis até {{date}}.",
+      "cancelScheduled": "Cancelamento agendado: o acesso premium termina em {{date}}.",
+      "firstChargeOn": "Primeira cobrança em {{date}}.",
+      "nextRenewalOn": "Próxima renovação em {{date}}.",
+      "pastDue": "Não conseguimos cobrar seu cartão. Atualize o pagamento para manter o acesso."
+    },
+    "plan": {
+      "monthly": "Assinatura mensal. Cancele quando quiser.",
+      "trialBadge_one": "{{count}} DIA GRÁTIS",
+      "trialBadge_other": "{{count}} DIAS GRÁTIS",
+      "trialDetail_one": "Teste grátis por {{count}} dia. Depois {{price}}/{{interval}}, cancele quando quiser.",
+      "trialDetail_other": "Teste grátis por {{count}} dias. Depois {{price}}/{{interval}}, cancele quando quiser."
+    },
+    "benefits": {
+      "featured": {
+        "title": "Eventos em destaque",
+        "description": "Seus eventos aparecem no topo da descoberta e do mapa — mais gente vê, mais gente vai."
+      },
+      "analytics": {
+        "title": "Analytics completo",
+        "description": "Veja quem visualizou, curtiu e confirmou presença. Entenda seu público e acerte mais."
+      },
+      "reach": {
+        "title": "Mais alcance",
+        "description": "Prioridade no feed e na busca para o seu perfil e tudo que você publica."
+      },
+      "badge": {
+        "title": "Selo premium",
+        "description": "Um selo exclusivo no seu perfil que passa credibilidade à primeira vista."
+      }
+    }
+  },
+  "account": {
+    "title": "Propriedade e controle da conta",
+    "subtitle": "Desative temporariamente ou exclua sua conta de forma permanente.",
+    "deactivate": "Desativar conta",
+    "deactivateHint": "Oculta seu perfil; você volta quando quiser",
+    "delete": "Excluir conta",
+    "deleteHint": "Agenda a remoção definitiva (30 dias para cancelar)",
+    "deactivateEffects": {
+      "0": "Seu perfil, eventos e atividade somem para as outras pessoas.",
+      "1": "Nada é excluído — tudo volta ao reativar.",
+      "2": "Sem prazo: você reativa quando quiser, é só fazer login."
+    },
+    "deactivateConfirmMessage": "Seu perfil e conteúdo ficarão ocultos até você fazer login de novo. Deseja continuar?",
+    "deactivateConfirm": "Desativar",
+    "deactivateCta": "Desativar minha conta",
+    "deactivatedTitle": "Conta desativada",
+    "deactivatedMessage": "Seu perfil ficou oculto. Para voltar, é só fazer login novamente — sua conta é reativada na hora.",
+    "tooManyAttempts": "Muitas tentativas. Tente novamente em instantes.",
+    "deleteFailed": "Não foi possível excluir a conta.",
+    "deleteConfirmTitle": "Excluir minha conta",
+    "deleteConfirmMessage": "Sua conta será agendada para exclusão. Você terá 30 dias para cancelar fazendo login. Confirmar?",
+    "deleteScheduledTitle": "Exclusão agendada",
+    "deleteScheduledMessage": "Sua conta foi agendada para exclusão. Faça login dentro do prazo para cancelar.",
+    "done": "Entendi",
+    "reasons": {
+      "title": "Por que está saindo?",
+      "subtitle": "Opcional — sua resposta nos ajuda a melhorar o app.",
+      "otherPlaceholder": "Conte um pouco mais (opcional)",
+      "skip": "Pular",
+      "PRIVACY": "Preocupação com privacidade",
+      "TOO_MUCH_TIME": "Passo tempo demais aqui",
+      "FRESH_START": "Quero recomeçar do zero",
+      "NOT_USEFUL": "Não acho o app útil",
+      "TECH_ISSUES": "Problemas técnicos",
+      "OTHER": "Outro"
+    },
+    "dataLoss": {
+      "0": "Seus eventos, posts e presenças",
+      "1": "Seus seguidores e quem você segue",
+      "2": "Seu perfil, foto e preferências",
+      "keptNote": "Comentários e mensagens que você enviou em conteúdo de outras pessoas podem permanecer, sem identificação.",
+      "export": "Baixar histórico de consentimentos",
+      "title": "Será removido permanentemente:",
+      "anonymized": "Comentários e mensagens que você enviou em conteúdo de outras pessoas permanecem, mas anonimizados como “Usuário Excluído”.",
+      "exportHint": "Portabilidade LGPD (Art. 18, V). Inclui só o histórico de consentimento — não eventos, posts ou mensagens."
+    },
+    "reauth": {
+      "title": "Confirme que é você",
+      "passwordBody": "Digite sua senha para excluir a conta.",
+      "socialBody": "Sua sessão confirma sua identidade — você entrou com Google ou Facebook.",
+      "password": "Senha",
+      "passwordPlaceholder": "Sua senha",
+      "noPassword": "Nenhuma senha necessária para esta conta."
+    },
+    "deleteIntro": {
+      "title": "O que acontece ao excluir",
+      "body": "Você tem 30 dias para mudar de ideia. Dentro desse prazo, basta fazer login para cancelar a exclusão e recuperar tudo."
+    },
+    "deleteCta": "Excluir minha conta",
+    "deactivateTagline": "Como tirar uma pausa: você some do app sem perder nada.",
+    "deleteScheduledMessageWithDate": "Sua conta será excluída em {{date}}. Faça login antes dessa data para cancelar."
+  },
+  "reports": {
+    "title": "Denunciar",
+    "titleFor": {
+      "event": "Denunciar evento",
+      "post": "Denunciar publicação",
+      "comment": "Denunciar comentário",
+      "message": "Denunciar mensagem",
+      "user": "Denunciar usuário"
+    },
+    "reasons": {
+      "HATE_SPEECH": "Discurso de ódio",
+      "SPAM_OR_FRAUD": "Spam ou fraude",
+      "HARASSMENT": "Assédio",
+      "INAPPROPRIATE_CONTENT": "Conteúdo inapropriado",
+      "OTHER": "Outro"
+    },
+    "detailsPlaceholder": "Detalhes (opcional)",
+    "submit": "Enviar denúncia"
+  },
+  "featured": {
+    "sponsored": "Patrocinado",
+    "active": "Em promoção",
+    "scheduled": "Promoção agendada",
+    "from": "De",
+    "to": "Até",
+    "cancelTitle": "Cancelar promoção",
+    "cancelMessage": "Tem certeza que deseja cancelar o destaque deste evento?",
+    "readOnlyTitle": "Evento em promoção",
+    "readOnlyBody": "Este evento está em destaque no momento.",
+    "promote": "Promover evento",
+    "promoteHint": "Destaque o evento para mais pessoas no feed e no mapa.",
+    "firstDay": "Primeiro dia",
+    "lastDay": "Último dia",
+    "pickDay": "Selecione o dia",
+    "maxDays_one": "Promoção por dia — máximo de {{count}} dia por destaque.",
+    "maxDays_other": "Promoção por dia — máximo de {{count}} dias por destaque."
+  },
+  "analytics": {
+    "title": "Analytics do evento",
+    "short": "Analytics",
+    "loadEventError": "Não foi possível carregar o evento.",
+    "unavailableTitle": "Analytics indisponível",
+    "unavailableBody": "Apenas o autor do evento pode ver as estatísticas.",
+    "loadError": "Não foi possível carregar as estatísticas.",
+    "retry": "Tentar novamente",
+    "dailyActivity": "Atividade por dia",
+    "refresh": "Atualizar",
+    "entryHint": "Veja visualizações, compartilhamentos e confirmações.",
+    "entryLocked": "Recurso Premium — desbloqueie as estatísticas do evento.",
+    "gateBody": "Assine o Premium para acompanhar visualizações, compartilhamentos e confirmações dos seus eventos.",
+    "premiumCta": "Conhecer o Premium",
+    "emptyTitle": "Ainda não há dados para exibir.",
+    "emptyBody": "Os números aparecem conforme as pessoas interagem com o evento.",
+    "chartHint": "Toque no gráfico para ver os números de um dia.",
+    "metrics": {
+      "views": "Visualizações",
+      "shares": "Compartilhamentos",
+      "confirmations": "Confirmações"
+    },
+    "exportCsv": "Exportar CSV",
+    "updatedAt": "Atualizado {{relative}}"
   }
 }

@@ -464,7 +464,12 @@
       "today": "Today",
       "thisWeek": "This week",
       "older": "Earlier"
-    }
+    },
+    "title": "Notifications",
+    "markRead": "Mark as read",
+    "settings": "Notification settings",
+    "emptyTitle": "All caught up",
+    "emptyBody": "Activity from your network and hangouts near you show up on this screen."
   },
   "spots": {
     "errors": {
@@ -759,6 +764,34 @@
       "remove": "Remove venue",
       "addressPlaceholder": "Street, number, neighborhood",
       "mapEmptyHint": "Pick a location in the field above to see it on the map"
+    },
+    "detail": {
+      "unavailable": "Event unavailable",
+      "loadError": "Couldn't load the event.",
+      "privateNotice": "This event belongs to a private profile. Follow the author to see it."
+    },
+    "create": {
+      "submit": "Create event",
+      "submitting": "Creating...",
+      "error": "Couldn't create the event. Try again."
+    },
+    "edit": {
+      "submit": "Save changes",
+      "submitting": "Saving...",
+      "error": "Couldn't save the changes. Try again."
+    },
+    "invites": {
+      "error": "Couldn't send the invites. Try again.",
+      "noFollowers": "You don't have followers to invite yet.",
+      "selectPrompt": "Select people to invite",
+      "inviteCount_one": "Invite {{count}} person",
+      "inviteCount_other": "Invite {{count}} people",
+      "inviteAll": "Invite all followers"
+    },
+    "invited": {
+      "forbidden": "Only the event author can see the guest list.",
+      "loadError": "Couldn't load the guest list.",
+      "empty": "No one invited yet."
     }
   },
   "map": {
@@ -1147,5 +1180,232 @@
       "denied": "Off",
       "enable": "Turn on"
     }
+  },
+  "settings": {
+    "title": "Settings",
+    "account": "Account",
+    "accountHint": "Account ownership and control",
+    "notifications": "Notifications",
+    "notificationsHint": "Push, nearby events and preferred categories",
+    "spots": "Hangout suggestions",
+    "spotsHint": "Search radius for hangouts on the map",
+    "privacy": "Privacy",
+    "privacyHint": "Consents and data (LGPD)",
+    "about": "About the app",
+    "notif": {
+      "subtitle": "Everything is optional and off by default. You can change it anytime.",
+      "pushLabel": "Push notifications",
+      "pushDescription": "Invites, activity from your network and events near you.",
+      "nearbyLabel": "Events near you",
+      "nearbyDescription": "Uses your approximate location (~1km, computed on device) to alert you about nearby events. Your exact position never leaves your phone.",
+      "radiusLabel": "Alert radius",
+      "radiusHint": "Maximum distance of a new event for you to be alerted.",
+      "categoriesTitle": "Preferred categories",
+      "categoriesHint": "Nearby event alerts only arrive for categories selected here — with none selected, you get no proximity alerts.",
+      "interestsHint": "Refine alerts by subcategory and genre — events you care about near you reach you more precisely.",
+      "privacyRow": "Privacy and consents",
+      "privacyRowHint": "Manage all consents, export data and read the privacy policy",
+      "retentionNote": "Your approximate location expires on the server after 90 days without an update, and is erased immediately if you turn location use off. Old notifications also expire on the server."
+    },
+    "spotsScreen": {
+      "subtitle": "AI suggests hangouts within this radius from your location. You can adjust it for a single search when generating.",
+      "radiusLabel": "Suggestion radius",
+      "radiusHint": "Maximum distance to search places when generating hangout suggestions."
+    }
+  },
+  "about": {
+    "version": "Version {{version}}",
+    "mapsTitle": "Maps",
+    "mapsBody": "The maps shown in the app are provided by Mapbox and use OpenStreetMap data, maintained by a community of contributors around the world.",
+    "improveMap": "Improve this map"
+  },
+  "billing": {
+    "upgrade": {
+      "cta": "Subscribe to Premium",
+      "stalledTitle": "Confirmation is taking a while",
+      "stalledBody": "If the payment went through, your premium access is released as soon as the confirmation arrives. You can follow it on the subscription screen.",
+      "seeSubscription": "See my subscription",
+      "activatingTitle": "Confirming payment...",
+      "activatingBody": "We're activating your premium access. This usually takes a few seconds.",
+      "tagline": "Get your events out of the shadows. More spotlight, more reach and the data to really grow.",
+      "benefitsTitle": "Everything you get",
+      "disclaimer": "Cancel anytime — access continues until the end of the paid period. Renews automatically.",
+      "trialCta_one": "Start {{count}} free day",
+      "trialCta_other": "Start {{count}} free days"
+    },
+    "premium": "PREMIUM",
+    "manage": {
+      "title": "Subscription",
+      "cancelTitle": "Cancel subscription",
+      "cancelMessage": "Your premium access continues until the end of the period you've paid for. After that, the subscription won't renew.",
+      "resume": "Resume subscription"
+    },
+    "status": {
+      "TRIALING": "Trial period",
+      "ACTIVE": "Active",
+      "PAST_DUE": "Payment pending",
+      "CANCELED": "Canceled",
+      "INCOMPLETE": "Awaiting payment",
+      "INCOMPLETE_EXPIRED": "Expired",
+      "UNPAID": "Unpaid"
+    },
+    "card": {
+      "firstCharge": "First charge",
+      "nextRenewal": "Next renewal",
+      "trialUntil": "Free trial until {{date}}.",
+      "cancelScheduled": "Cancellation scheduled: premium access ends on {{date}}.",
+      "firstChargeOn": "First charge on {{date}}.",
+      "nextRenewalOn": "Next renewal on {{date}}.",
+      "pastDue": "We couldn't charge your card. Update your payment to keep access."
+    },
+    "plan": {
+      "monthly": "Monthly subscription. Cancel anytime.",
+      "trialBadge_one": "{{count}} FREE DAY",
+      "trialBadge_other": "{{count}} FREE DAYS",
+      "trialDetail_one": "Free for {{count}} day. Then {{price}}/{{interval}}, cancel anytime.",
+      "trialDetail_other": "Free for {{count}} days. Then {{price}}/{{interval}}, cancel anytime."
+    },
+    "benefits": {
+      "featured": {
+        "title": "Featured events",
+        "description": "Your events show at the top of discovery and the map — more people see them, more people come."
+      },
+      "analytics": {
+        "title": "Full analytics",
+        "description": "See who viewed, liked and confirmed. Understand your audience and get it right more often."
+      },
+      "reach": {
+        "title": "More reach",
+        "description": "Priority in the feed and in search for your profile and everything you post."
+      },
+      "badge": {
+        "title": "Premium badge",
+        "description": "An exclusive badge on your profile that signals credibility at first glance."
+      }
+    }
+  },
+  "account": {
+    "title": "Account ownership and control",
+    "subtitle": "Temporarily deactivate or permanently delete your account.",
+    "deactivate": "Deactivate account",
+    "deactivateHint": "Hides your profile; come back whenever you want",
+    "delete": "Delete account",
+    "deleteHint": "Schedules permanent removal (30 days to cancel)",
+    "deactivateEffects": {
+      "0": "Your profile, events and activity disappear for other people.",
+      "1": "Nothing is deleted — everything comes back when you reactivate.",
+      "2": "No deadline: reactivate whenever you want, just log in."
+    },
+    "deactivateConfirmMessage": "Your profile and content will be hidden until you log in again. Continue?",
+    "deactivateConfirm": "Deactivate",
+    "deactivateCta": "Deactivate my account",
+    "deactivatedTitle": "Account deactivated",
+    "deactivatedMessage": "Your profile is hidden. To come back, just log in again — your account is reactivated instantly.",
+    "tooManyAttempts": "Too many attempts. Try again shortly.",
+    "deleteFailed": "Couldn't delete the account.",
+    "deleteConfirmTitle": "Delete my account",
+    "deleteConfirmMessage": "Your account will be scheduled for deletion. You have 30 days to cancel by logging in. Confirm?",
+    "deleteScheduledTitle": "Deletion scheduled",
+    "deleteScheduledMessage": "Your account is scheduled for deletion. Log in within the deadline to cancel it.",
+    "done": "Got it",
+    "reasons": {
+      "title": "Why are you leaving?",
+      "subtitle": "Optional — your answer helps us improve the app.",
+      "otherPlaceholder": "Tell us a bit more (optional)",
+      "skip": "Skip",
+      "PRIVACY": "Privacy concerns",
+      "TOO_MUCH_TIME": "I spend too much time here",
+      "FRESH_START": "I want a fresh start",
+      "NOT_USEFUL": "I don't find the app useful",
+      "TECH_ISSUES": "Technical issues",
+      "OTHER": "Other"
+    },
+    "dataLoss": {
+      "0": "Your events, posts and RSVPs",
+      "1": "Your followers and who you follow",
+      "2": "Your profile, photo and preferences",
+      "keptNote": "Comments and messages you sent on other people’s content may remain, without identifying you.",
+      "export": "Download consent history",
+      "title": "Will be permanently removed:",
+      "anonymized": "Comments and messages you sent on other people’s content remain, but anonymized as “Deleted User”.",
+      "exportHint": "Data portability (LGPD, Art. 18, V). Includes only the consent history — not events, posts or messages."
+    },
+    "reauth": {
+      "title": "Confirm it's you",
+      "passwordBody": "Enter your password to delete the account.",
+      "socialBody": "Your session confirms your identity — you signed in with Google or Facebook.",
+      "password": "Password",
+      "passwordPlaceholder": "Your password",
+      "noPassword": "No password needed for this account."
+    },
+    "deleteIntro": {
+      "title": "What happens when you delete",
+      "body": "You have 30 days to change your mind. Within that window, just log in to cancel the deletion and get everything back."
+    },
+    "deleteCta": "Delete my account",
+    "deactivateTagline": "Like taking a break: you disappear from the app without losing anything.",
+    "deleteScheduledMessageWithDate": "Your account will be deleted on {{date}}. Log in before that date to cancel."
+  },
+  "reports": {
+    "title": "Report",
+    "titleFor": {
+      "event": "Report event",
+      "post": "Report post",
+      "comment": "Report comment",
+      "message": "Report message",
+      "user": "Report user"
+    },
+    "reasons": {
+      "HATE_SPEECH": "Hate speech",
+      "SPAM_OR_FRAUD": "Spam or fraud",
+      "HARASSMENT": "Harassment",
+      "INAPPROPRIATE_CONTENT": "Inappropriate content",
+      "OTHER": "Other"
+    },
+    "detailsPlaceholder": "Details (optional)",
+    "submit": "Submit report"
+  },
+  "featured": {
+    "sponsored": "Sponsored",
+    "active": "Promoted",
+    "scheduled": "Promotion scheduled",
+    "from": "From",
+    "to": "To",
+    "cancelTitle": "Cancel promotion",
+    "cancelMessage": "Are you sure you want to cancel this event's promotion?",
+    "readOnlyTitle": "Event promoted",
+    "readOnlyBody": "This event is currently promoted.",
+    "promote": "Promote event",
+    "promoteHint": "Highlight the event to more people in the feed and on the map.",
+    "firstDay": "First day",
+    "lastDay": "Last day",
+    "pickDay": "Pick the day",
+    "maxDays_one": "Promotion by day — up to {{count}} day per feature.",
+    "maxDays_other": "Promotion by day — up to {{count}} days per feature."
+  },
+  "analytics": {
+    "title": "Event analytics",
+    "short": "Analytics",
+    "loadEventError": "Couldn't load the event.",
+    "unavailableTitle": "Analytics unavailable",
+    "unavailableBody": "Only the event author can see the stats.",
+    "loadError": "Couldn't load the stats.",
+    "retry": "Try again",
+    "dailyActivity": "Daily activity",
+    "refresh": "Refresh",
+    "entryHint": "See views, shares and confirmations.",
+    "entryLocked": "Premium feature — unlock the event stats.",
+    "gateBody": "Subscribe to Premium to track views, shares and confirmations for your events.",
+    "premiumCta": "Explore Premium",
+    "emptyTitle": "No data to show yet.",
+    "emptyBody": "Numbers appear as people interact with the event.",
+    "chartHint": "Tap the chart to see a specific day.",
+    "metrics": {
+      "views": "Views",
+      "shares": "Shares",
+      "confirmations": "Confirmations"
+    },
+    "exportCsv": "Export CSV",
+    "updatedAt": "Updated {{relative}}"
   }
 }
