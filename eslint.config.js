@@ -52,6 +52,10 @@ module.exports = [
         'error',
         {
           mode: 'jsx-only',
+          // Sem isto o plugin ignora template literal, e copy interpolada
+          // (`Ver perfil de ${nome}`) passa batida — foi assim que 11 sites
+          // escaparam das fases 3.4/3.5.
+          'should-validate-template': true,
           'jsx-attributes': {
             include: [
               'accessibilityLabel',

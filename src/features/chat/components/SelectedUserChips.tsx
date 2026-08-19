@@ -1,4 +1,5 @@
 import { ScrollView, Pressable, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { XCircleIcon } from 'phosphor-react-native'
 import type { UserMini } from '@/shared/types'
 import { colors } from '@/shared/theme'
@@ -9,6 +10,7 @@ type Props = {
 }
 
 export function SelectedUserChips({ users, onRemove }: Props) {
+  const { t } = useTranslation()
   if (users.length === 0) return null
   return (
     <ScrollView
@@ -26,7 +28,9 @@ export function SelectedUserChips({ users, onRemove }: Props) {
           key={user.id}
           onPress={() => onRemove(user.id)}
           className="flex-row items-center gap-1.5 bg-brand-surface rounded-full pl-3 pr-2 py-1.5"
-          accessibilityLabel={`Remover ${user.name}`}
+          accessibilityLabel={t('chat.people.removeSelected', {
+            name: user.name,
+          })}
         >
           <Text className="text-brand-text-bright text-sm">{user.name}</Text>
           <XCircleIcon size={16} color={colors.brandText} />

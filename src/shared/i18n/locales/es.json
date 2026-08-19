@@ -631,6 +631,10 @@
       "dailyLimit": "Alcanzaste el límite diario de sugerencias. Inténtalo mañana.",
       "placesDown": "La búsqueda de lugares no está disponible ahora. Inténtalo en un momento.",
       "generic": "No se pudieron generar sugerencias. Inténtalo de nuevo."
+    },
+    "markers": {
+      "viewSpot": "Ver plan {{title}}",
+      "chooseSuggestion": "Elegir sugerencia {{name}}"
     }
   },
   "events": {
@@ -910,7 +914,8 @@
       "report": "Denunciar",
       "delete": "Borrar",
       "deleteTitle": "Borrar mensaje",
-      "deleteMessage": "Este mensaje se borrará para todos."
+      "deleteMessage": "Este mensaje se borrará para todos.",
+      "reactWith": "Reaccionar con {{emoji}}"
     },
     "media": {
       "gallery": "Galería",
@@ -951,7 +956,8 @@
       "createWithCount": "Crear grupo ({{count}})",
       "saving": "Guardando…",
       "newGroup": "Nuevo grupo",
-      "createNew": "Crear nuevo grupo"
+      "createNew": "Crear nuevo grupo",
+      "manageParticipant": "Gestionar a {{name}}"
     },
     "dm": {
       "viewProfile": "Ver perfil",
@@ -966,7 +972,9 @@
       "selected": "{{name}}, seleccionado",
       "you": "(tú)",
       "newConversationTitle": "Nueva conversación",
-      "cannotStart": "No puedes iniciar una conversación con este usuario"
+      "cannotStart": "No puedes iniciar una conversación con este usuario",
+      "chatWith": "Conversar con {{name}}",
+      "removeSelected": "Quitar a {{name}}"
     },
     "reactions": {
       "label": "{{emoji}} {{count}}",
@@ -1104,7 +1112,10 @@
     "reject": "Rechazar",
     "removeFollowerTitle": "Quitar seguidor",
     "removeFollowerMessage": "¿Quitar a @{{username}} de tus seguidores?",
-    "remove": "Quitar"
+    "remove": "Quitar",
+    "removeFollowerLabel": "Quitar a @{{username}} de tus seguidores",
+    "unfollowFromListLabel": "Dejar de seguir a @{{username}}",
+    "unfollowFromListMessage": "¿Dejar de seguir a @{{username}}?"
   },
   "privacy": {
     "title": "Privacidad",

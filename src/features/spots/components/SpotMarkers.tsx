@@ -1,4 +1,5 @@
 import { View, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import Mapbox from '@rnmapbox/maps'
 import type { Spot } from '../types'
 import {
@@ -19,6 +20,7 @@ type Props = {
 const DIMMED_OPACITY = 0.5
 
 export function SpotMarkers({ spots, selectedId, onPress, dimmed }: Props) {
+  const { t } = useTranslation()
   return (
     <>
       {spots.map(spot => {
@@ -36,7 +38,9 @@ export function SpotMarkers({ spots, selectedId, onPress, dimmed }: Props) {
               <Pressable
                 onPress={() => onPress(spot)}
                 accessibilityRole="button"
-                accessibilityLabel={`Ver spot ${spot.title}`}
+                accessibilityLabel={t('spots.markers.viewSpot', {
+                  title: spot.title,
+                })}
                 hitSlop={6}
               >
                 <SpotBalloon spot={spot} size={size} />
