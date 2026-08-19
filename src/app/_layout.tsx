@@ -1,7 +1,7 @@
 import '@/global.css'
 import '@/shared/lib/reactotron'
 import '@/shared/lib/mapbox'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { View } from 'react-native'
 import {
   SafeAreaProvider,
@@ -143,17 +143,28 @@ export default function RootLayout() {
   const userId = useAuthStore(s => s.userId)
   const segments = useSegments() as string[]
   const insets = useSafeAreaInsets()
-  const [fontsLoaded] = useFonts({ Sora_700Bold, Sora_800ExtraBold })
+  const [fontsLoaded, fontError] = useFonts({ Sora_700Bold, Sora_800ExtraBold })
+  const [overlayMounted, setOverlayMounted] = useState(false)
   const localeHydrated = useLocaleHydrated()
-  // Splash global SÓ no boot: fontes carregando, sessão indefinida ou idioma
-  // ainda não hidratado. Nunca em logout, navegação, resume ou loading local —
-  // e o fade de saída de 200ms dá ao wordmark (que espera a fonte) seu momento
-  // mesmo quando a fonte é a última a resolver.
-  const showSplash = !fontsLoaded || status === 'loading' || !localeHydrated
+  // Fonte que falha nunca vira `loaded` — sem contar o erro como desfecho, o
+  // wordmark seria esperado pra sempre e o app não sairia da splash.
+  const wordmarkSettled = fontsLoaded || !!fontError
+  // Splash global SÓ no boot: fonte, sessão indefinida ou idioma ainda não
+  // hidratado. Nunca em logout, navegação, resume ou loading local.
+  const showSplash = !wordmarkSettled || status === 'loading' || !localeHydrated
 
-  const hideNativeSplash = useCallback(() => {
-    ExpoSplash.hideAsync().catch(() => {})
-  }, [])
+  // A splash nativa mostra a MESMA composição do overlay (o splash-logo.png sai
+  // do mesmo desenho, via scripts/build-splash-logo.mjs), então esconder só
+  // quando o overlay está COMPLETO torna a troca invisível. Sair no primeiro
+  // layout dele, como antes, mostrava o wordmark no nativo, tirava enquanto a
+  // Sora carregava e devolvia depois.
+  const overlayReady = overlayMounted && wordmarkSettled
+
+  useEffect(() => {
+    if (overlayReady) ExpoSplash.hideAsync().catch(() => {})
+  }, [overlayReady])
+
+  const handleOverlayMounted = useCallback(() => setOverlayMounted(true), [])
 
   useEffect(() => {
     // GoogleSignin.configure() é lazy (chamado no 1º signIn). Facebook precisa
@@ -224,7 +235,7 @@ export default function RootLayout() {
                     <SplashOverlay
                       visible={showSplash}
                       showWordmark={fontsLoaded}
-                      onMounted={hideNativeSplash}
+                      onMounted={handleOverlayMounted}
                     />
                     <AuthGuard />
                     {sessionReady && <PolicyUpdateNotice />}
