@@ -1,5 +1,6 @@
 import { forwardRef } from 'react'
 import { View, TextInput, Pressable, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { MagnifyingGlassIcon, XCircleIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
@@ -11,10 +12,8 @@ type Props = {
 }
 
 export const UserSearchInput = forwardRef<TextInput, Props>(
-  function UserSearchInput(
-    { value, onChange, loading, placeholder = 'Buscar pessoas...' },
-    ref,
-  ) {
+  function UserSearchInput({ value, onChange, loading, placeholder }, ref) {
+    const { t } = useTranslation()
     const hasText = value.length > 0
 
     return (
@@ -27,7 +26,7 @@ export const UserSearchInput = forwardRef<TextInput, Props>(
             ref={ref}
             value={value}
             onChangeText={onChange}
-            placeholder={placeholder}
+            placeholder={placeholder ?? t('users.search.placeholder')}
             placeholderTextColor={colors.contentSubtle}
             autoCapitalize="none"
             autoCorrect={false}
@@ -41,7 +40,7 @@ export const UserSearchInput = forwardRef<TextInput, Props>(
               <Pressable
                 onPress={() => onChange('')}
                 hitSlop={10}
-                accessibilityLabel="Limpar busca"
+                accessibilityLabel={t('shared.search.clear')}
               >
                 <XCircleIcon size={20} color={colors.contentSubtle} />
               </Pressable>

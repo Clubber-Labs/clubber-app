@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { GlobeIcon, LockIcon, InfoIcon } from 'phosphor-react-native'
 import { EditFieldScaffold } from './EditFieldScaffold'
 import { useEditProfileField } from '../../hooks/useEditProfileField'
@@ -29,12 +30,13 @@ type FormProps = {
 }
 
 function PrivacyForm({ profile, save, saving }: FormProps) {
+  const { t } = useTranslation()
   const [isPrivate, setIsPrivate] = useState(profile.isPrivate)
   const canSave = isPrivate !== profile.isPrivate
 
   return (
     <EditFieldScaffold
-      title="Visibilidade"
+      title={t('profile.edit.visibility')}
       onSave={() => save({ isPrivate })}
       saving={saving}
       canSave={canSave}
@@ -62,7 +64,7 @@ function PrivacyForm({ profile, save, saving }: FormProps) {
                   active ? 'text-content' : 'text-content-muted'
                 }`}
               >
-                {priv ? 'Privado' : 'Público'}
+                {priv ? t('profile.edit.private') : t('profile.edit.public')}
               </Text>
             </Pressable>
           )
@@ -77,8 +79,8 @@ function PrivacyForm({ profile, save, saving }: FormProps) {
         />
         <Text className="flex-1 text-content-subtle text-xs leading-5">
           {isPrivate
-            ? 'Só seguidores aprovados veem seu perfil, rolês e eventos.'
-            : 'Qualquer pessoa pode te encontrar e ver seus rolês e eventos.'}
+            ? t('profile.visibility.privateHint')
+            : t('profile.visibility.publicHint')}
         </Text>
       </View>
     </EditFieldScaffold>

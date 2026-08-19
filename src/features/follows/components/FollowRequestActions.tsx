@@ -1,4 +1,5 @@
 import { View, Pressable, Text, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import {
   useAcceptFollowRequest,
   useRejectFollowRequest,
@@ -10,6 +11,7 @@ type Props = {
 }
 
 export function FollowRequestActions({ followerId }: Props) {
+  const { t } = useTranslation()
   const accept = useAcceptFollowRequest()
   const reject = useRejectFollowRequest()
   const pending = accept.isPending || reject.isPending
@@ -27,17 +29,19 @@ export function FollowRequestActions({ followerId }: Props) {
       <Pressable
         onPress={() => accept.mutate(followerId)}
         className="bg-brand rounded-full px-3 py-2"
-        accessibilityLabel="Aceitar"
+        accessibilityLabel={t('follows.accept')}
       >
-        <Text className="text-content text-xs font-semibold">Aceitar</Text>
+        <Text className="text-content text-xs font-semibold">
+          {t('follows.accept')}
+        </Text>
       </Pressable>
       <Pressable
         onPress={() => reject.mutate(followerId)}
         className="bg-surface-elevated rounded-full px-3 py-2 border border-line-strong"
-        accessibilityLabel="Recusar"
+        accessibilityLabel={t('follows.reject')}
       >
         <Text className="text-content-secondary text-xs font-semibold">
-          Recusar
+          {t('follows.reject')}
         </Text>
       </Pressable>
     </View>

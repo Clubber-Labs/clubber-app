@@ -1,4 +1,5 @@
 import { Pressable, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { GearSixIcon } from 'phosphor-react-native'
 import type { OsPermission } from '@/features/notifications/hooks/useOsPermissions'
 import { colors } from '@/shared/theme'
@@ -11,11 +12,12 @@ type Props = {
   isLast?: boolean
 }
 
-const STATUS_LABEL: Record<OsPermission, string> = {
-  granted: 'Ativado',
-  denied: 'Desativado',
-  undetermined: 'Ativar',
-}
+// Chaves, não frases: a constante avalia no import e congelaria o idioma.
+const STATUS_LABEL_KEYS = {
+  granted: 'privacy.permission.granted',
+  denied: 'privacy.permission.denied',
+  undetermined: 'privacy.permission.enable',
+} as const satisfies Record<OsPermission, string>
 
 /**
  * Linha de permissão do SISTEMA — deliberadamente NÃO é um switch. O app não
@@ -32,6 +34,7 @@ export function DevicePermissionRow({
   onPress,
   isLast,
 }: Props) {
+  const { t } = useTranslation()
   return (
     <Pressable
       onPress={onPress}
@@ -51,7 +54,7 @@ export function DevicePermissionRow({
             status === 'granted' ? 'text-success-text' : 'text-content-subtle'
           }`}
         >
-          {STATUS_LABEL[status]}
+          {t(STATUS_LABEL_KEYS[status])}
         </Text>
         <GearSixIcon size={16} color={colors.contentSubtle} />
       </View>

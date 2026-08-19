@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 type Props = {
   eventsCount: number
@@ -38,17 +39,18 @@ export function ProfileStats({
   onFollowersPress,
   onFollowingPress,
 }: Props) {
+  const { t } = useTranslation()
   return (
     <View className="flex-1 flex-row">
-      <StatItem value={eventsCount} label="Eventos" />
+      <StatItem value={eventsCount} label={t('profile.stats.events')} />
       <StatItem
         value={followersCount}
-        label="Seguidores"
+        label={t('profile.stats.followers')}
         onPress={onFollowersPress}
       />
       <StatItem
         value={followingCount}
-        label="Seguindo"
+        label={t('profile.stats.following')}
         onPress={onFollowingPress}
       />
     </View>

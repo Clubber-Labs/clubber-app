@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import { View, Text, FlatList, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { UserListItem } from './UserListItem'
 import { isForbiddenError } from '@/shared/lib/apiError'
 import type { FeedAuthor } from '@/shared/types'
@@ -17,6 +18,7 @@ type Props = {
 }
 
 export function UserListScreen({ query, emptyMessage, renderTrailing }: Props) {
+  const { t } = useTranslation()
   const {
     data,
     isLoading,
@@ -38,10 +40,10 @@ export function UserListScreen({ query, emptyMessage, renderTrailing }: Props) {
     return (
       <View className="flex-1 bg-background items-center justify-center px-6">
         <Text className="text-content-muted text-center text-base">
-          Este perfil é privado.
+          {t('users.list.privateTitle')}
         </Text>
         <Text className="text-content-subtle text-center text-sm mt-1">
-          Siga para ver seguidores e seguindo.
+          {t('users.list.privateMessage')}
         </Text>
       </View>
     )
