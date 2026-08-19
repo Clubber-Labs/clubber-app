@@ -4,7 +4,6 @@ import { SplashScreen } from './SplashScreen'
 
 type Props = {
   visible: boolean
-  showWordmark: boolean
   // Primeiro frame do overlay na tela — hora de esconder a splash nativa
   // (expo-splash-screen) sem flash preto entre as duas.
   onMounted: () => void
@@ -13,7 +12,7 @@ type Props = {
 // Overlay global de boot (montado uma única vez no RootLayout, acima de tudo).
 // Entra sem animação; quando visible vira false, sai num fade de 200ms e só
 // então desmonta — o conteúdo/redirect já aconteceu por baixo.
-export function SplashOverlay({ visible, showWordmark, onMounted }: Props) {
+export function SplashOverlay({ visible, onMounted }: Props) {
   const opacity = useRef(new Animated.Value(1)).current
   const [rendered, setRendered] = useState(visible)
   const notifiedMount = useRef(false)
@@ -48,7 +47,7 @@ export function SplashOverlay({ visible, showWordmark, onMounted }: Props) {
         onMounted()
       }}
     >
-      <SplashScreen showWordmark={showWordmark} />
+      <SplashScreen />
     </Animated.View>
   )
 }

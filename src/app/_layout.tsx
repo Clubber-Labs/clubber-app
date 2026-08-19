@@ -143,14 +143,18 @@ export default function RootLayout() {
   const userId = useAuthStore(s => s.userId)
   const segments = useSegments() as string[]
   const insets = useSafeAreaInsets()
-  const [fontsLoaded] = useFonts({ Sora_700Bold, Sora_800ExtraBold })
+  const [fontsLoaded, fontError] = useFonts({ Sora_700Bold, Sora_800ExtraBold })
   const localeHydrated = useLocaleHydrated()
-  // Splash global SÓ no boot: fontes carregando, sessão indefinida ou idioma
-  // ainda não hidratado. Nunca em logout, navegação, resume ou loading local —
-  // e o fade de saída de 200ms dá ao wordmark (que espera a fonte) seu momento
-  // mesmo quando a fonte é a última a resolver.
-  const showSplash = !fontsLoaded || status === 'loading' || !localeHydrated
+  // Fonte que falha nunca vira `loaded` — sem contar o erro como desfecho, o app
+  // ficaria preso na splash pra sempre.
+  const fontsSettled = fontsLoaded || !!fontError
+  // Splash global SÓ no boot: fonte, sessão indefinida ou idioma ainda não
+  // hidratado. Nunca em logout, navegação, resume ou loading local.
+  const showSplash = !fontsSettled || status === 'loading' || !localeHydrated
 
+  // O overlay desenha a MESMA imagem que o SO já tem na tela, e ela vem do
+  // bundle — não há o que esperar antes de esconder a nativa. Enquanto o overlay
+  // recompunha a arte, isto precisava aguardar a Sora, senão o wordmark piscava.
   const hideNativeSplash = useCallback(() => {
     ExpoSplash.hideAsync().catch(() => {})
   }, [])
@@ -223,7 +227,6 @@ export default function RootLayout() {
                     </View>
                     <SplashOverlay
                       visible={showSplash}
-                      showWordmark={fontsLoaded}
                       onMounted={hideNativeSplash}
                     />
                     <AuthGuard />

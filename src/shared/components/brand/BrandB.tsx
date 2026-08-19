@@ -5,6 +5,9 @@ type Props = { size?: number; color?: string }
 
 // Símbolo da marca — "b de balão". No chrome sempre reto e 1 cor
 // (regra da identidade: a vida vem do conteúdo, não da marca).
+// Estes paths estão espelhados em scripts/build-splash-logo.mjs, que rasteriza a
+// splash nativa e não consegue rodar react-native-svg: mexeu aqui, rode
+// `pnpm splash:build` — a divergência seria silenciosa.
 export function BrandB({ size = 24, color = colors.content }: Props) {
   return (
     <Svg width={size} height={size} viewBox="0 0 100 100">

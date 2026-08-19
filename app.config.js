@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import { withEntitlementsPlist } from 'expo/config-plugins'
+import { BOARD as SPLASH_BOARD } from './scripts/splash-spec.mjs'
 
 // Build local de iOS sem conta paga do Apple Developer Program: o profile
 // automático do time não cobre aps-environment (adicionado pelo plugin do
@@ -140,15 +141,15 @@ export default {
         : []),
       "expo-router",
       // Splash NATIVA (o SO desenha antes do JS subir; o SplashOverlay é o 2º
-      // estágio). Os valores não são escolha nova — saem do que o nativo
-      // commitado já dizia: 200 das constraints do storyboard e #0B0B0D do
-      // SplashScreenBackground.colorset. Sem esta entrada o prebuild gerava a
-      // splash DEFAULT: arrancava o logo do storyboard e pintava o fundo de
-      // branco, num app de tema escuro.
+      // estágio). A imagem é a MESMA composição do SplashScreen.tsx, gerada por
+      // scripts/build-splash-logo.mjs — mudar o componente sem rodar `pnpm
+      // splash:build` faz os dois estágios divergirem. O imageWidth vem do mesmo
+      // spec que dimensiona o artboard, porque o plugin força quadrado
+      // (height = imageWidth) e os dois fora de sincronia encolhem a arte.
       ["expo-splash-screen", {
         image: "./assets/splash-logo.png",
         backgroundColor: "#0B0B0D",
-        imageWidth: 200
+        imageWidth: SPLASH_BOARD
       }],
       // O plugin declara NSFaceIDUsageDescription com um texto genérico em
       // inglês; era a única permissão fora do padrão das outras. O app não pede

@@ -4,6 +4,8 @@ import { BrandB } from './BrandB'
 
 // O b como adesivo: círculo sólido + rotação fixa de -8°. Voz expressiva
 // da marca (wordmark, splash, onboarding, social) — nunca vira botão/ícone de ação.
+// A rotação e a sombra estão espelhadas em scripts/build-splash-logo.mjs (a
+// splash nativa é raster): mexeu nelas, rode `pnpm splash:build`.
 // inverted: adesivo sobre superfície CLARA (dentro do BrandStickerWordmark).
 // Além de trocar as cores de papel, sai a sombra — ela existe pra descolar do
 // fundo escuro e sobre o claro vira halo sujo.
