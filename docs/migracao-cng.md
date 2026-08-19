@@ -26,26 +26,34 @@ aparelho físico.
 | Adaptive icon Android (`mipmap-*`, `anydpi-v26`) | ✅ `android.adaptiveIcon` | Idem; safe zone ok (círculo a 62,5%) |
 | `DEVELOPMENT_TEAM` no pbxproj | ✅ `ios.appleTeamId` | Cicatriz de prebuild antigo |
 | Entitlement de push removível | ✅ plugin `withoutIosPushEntitlement` | Só p/ conta gratuita (`IOS_DISABLE_PUSH=1`) |
-| **Splash iOS** (storyboard reconstruído à mão + `SplashScreenLogo.imageset` + colorset `#0b0b0d`) | ❌ | Cobrir com plugin `expo-splash-screen` (`image`, `backgroundColor: "#0B0B0D"`, `imageWidth: 200`) — asset: `splash-logo-1024.png` do pacote de identidade |
-| **Splash Android** (`drawable-*/splashscreen_logo.png` + `splashscreen_background`) | ❌ | Mesmo plugin cobre |
+| **Splash iOS** (storyboard + `SplashScreenLogo.imageset` + colorset `#0b0b0d`) | ✅ plugin `expo-splash-screen` → `assets/splash-logo.png` | **Drift zero, verificado.** Os valores não foram escolhidos: `imageWidth: 200` saiu das constraints do storyboard e `#0B0B0D` do colorset. Artefatos adotados da saída do gerador. O plugin dimensiona pelo tamanho intrínseco (imageset 200/400/600), por isso o storyboard novo não tem constraint de width/height — é equivalente ao antigo |
+| **Splash Android** (`drawable-*/splashscreen_logo.png` + `splashscreen_background`) | ⚠️ plugin cobre, saída NÃO adotada | O commitado **funciona**, por um caminho antigo: `ic_launcher_background.xml` é um layer-list (cor + logo centralizado) usado como `windowBackground` do `Theme.App.SplashScreen`. O plugin gera o caminho moderno (`Theme.SplashScreen` do androidx + `windowSplashScreenAnimatedIcon`) e de quebra corrige `colorPrimaryDark` e `android:statusBarColor` de `#ffffff` para `#0B0B0D`. É mudança de comportamento no Android — adotar exige verificar em emulador, então ficou de fora deste PR |
 | `PrivacyInfo.xcprivacy` | ❌ (arquivo solto em `ios/`) | Conferir se o gerado pelo Expo cobre; senão `ios.privacyManifests` |
 | **`<lang>.lproj/InfoPlist.strings`** (pt-BR/en/es em `ios/Clubber/Supporting/`) + refs no pbxproj | ✅ `expo.locales` → `assets/native-locales/*.json` | **Drift zero, verificado**: o conteúdo dos `.lproj` e as entradas do pbxproj foram copiados do que o próprio prebuild emitiu numa worktree descartável, UUIDs inclusive. Rodar prebuild de novo não muda nenhuma dessas linhas. Efeito colateral esperado quando o Android entrar: 3 `values-b+<lang>/strings.xml` VAZIOS — o mod de lá consome o mesmo mapa, e as chaves estão sob `"ios"` porque no Android não há o que traduzir |
 | `NSFaceIDUsageDescription` | ✅ `expo-secure-store` → `faceIDPermission` | Era o texto genérico em inglês do plugin |
 | ~193 linhas modificadas no `project.pbxproj` | ❓ | Diff da fase 1 revela (provavelmente assinatura + refs) |
 
-### Prévia parcial da fase 1 (2026-08-19)
+### Prévia da fase 1 medida em worktree descartável (2026-08-19)
 
-Rodando `expo prebuild --platform ios --no-install` (sem `--clean`) numa worktree
-descartável, o diff contra o commitado hoje é **só isto**:
+Rodando `expo prebuild --no-install` (sem `--clean`) numa worktree, o que resta de
+diff **depois** do plugin de splash entrar:
 
-- `SplashScreen.storyboard`, `SplashScreenBackground.colorset` e o PNG do
-  `AppIcon` (re-encodado) — a dívida do splash que a tabela acima já prevê;
-- ruído de aspas no pbxproj (`PRODUCT_NAME = Clubber` → `"Clubber"`,
-  `TARGETED_DEVICE_FAMILY = 1` → `"1"`).
+**iOS — praticamente fechado.** Sobra só ruído de aspas no pbxproj
+(`PRODUCT_NAME = Clubber` → `"Clubber"`, `TARGETED_DEVICE_FAMILY = 1` → `"1"`) e o
+PNG do `AppIcon` re-encodado. Nada de assinatura, nada de Info.plist, nada de
+splash, nada de i18n.
 
-Nada de assinatura, nada de Info.plist, nada de i18n. É um sinal bom para a fase
-1: o gap real parece ser **só o plugin de splash**. Ressalva — isto não substitui
-o passo 1 abaixo, que usa `--clean` e cobre os dois plataformas.
+**Android — o gap real está aqui**, e a primeira medição (só-iOS) não o mostrava:
+
+- tema de splash antigo vs. o androidx (linha da tabela acima);
+- `colorPrimaryDark` e `android:statusBarColor` commitados em `#ffffff`;
+- ícone do launcher: o repo tem PNG em `mipmap-*`, o plugin gera **`.webp`** e
+  reescreve os `ic_launcher.xml`/`ic_launcher_round.xml` do `anydpi-v26`;
+- `values-b+{en,es,pt+BR}/strings.xml` vazios, como a linha de i18n previa.
+
+Ou seja: o custo da fase 1 é quase todo Android, e a parte que precisa de olho
+humano é a mudança de tema/status bar. A ressalva do passo 1 abaixo continua
+valendo — falta rodar com `--clean`.
 
 ## Fase 1 — paridade de config (SEM depender da conta Apple paga)
 
