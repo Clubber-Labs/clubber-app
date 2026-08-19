@@ -1380,8 +1380,8 @@
     "firstDay": "Primer día",
     "lastDay": "Último día",
     "pickDay": "Selecciona el día",
-    "maxDays_one": "Promoción por día — máximo de {{count}} día por destaque.",
-    "maxDays_other": "Promoción por día — máximo de {{count}} días por destaque."
+    "maxDays_one": "Promoción por día — máximo de {{count}} día por destacado.",
+    "maxDays_other": "Promoción por día — máximo de {{count}} días por destacado."
   },
   "analytics": {
     "title": "Analytics del evento",
