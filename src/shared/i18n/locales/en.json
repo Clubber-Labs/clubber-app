@@ -479,6 +479,153 @@
       "endsAfterStart": "End time must be after the start",
       "endsInFuture": "The hangout must end in the future",
       "windowTooLong": "The hangout can last at most 24 hours from now"
+    },
+    "form": {
+      "title": "Title",
+      "aiSuggested": "AI suggested",
+      "titlePlaceholder": "What would you call this hangout?",
+      "description": "Description",
+      "optional": "(optional)",
+      "descriptionPlaceholder": "Sort out the details with everyone...",
+      "when": "When",
+      "presetNow": "Now",
+      "presetNowSub": "for 2h",
+      "presetTonight": "Tonight",
+      "presetTonightSub": "8pm–12am",
+      "presetCustom": "Pick",
+      "presetCustomSub": "up to 24h",
+      "starts": "Starts",
+      "startsPlaceholder": "When it starts",
+      "ends": "Ends",
+      "endsPlaceholder": "When it ends",
+      "maxDuration": "A hangout can last up to 24 hours.",
+      "categories": "Categories",
+      "categoriesRange": "1 to 5",
+      "whoSees": "Who can see it",
+      "public": "Public",
+      "friends": "Friends",
+      "publicHint": "Anyone will see the place, the time and your profile photo on the map.",
+      "friendsHint": "Visible only to mutual friends (people you follow who follow you back).",
+      "createsGroupPrefix": "Publishing creates the",
+      "createsGroupHighlight": "chat group",
+      "createsGroupSuffix": "for the hangout",
+      "publishing": "Publishing...",
+      "publish": "Publish hangout",
+      "saving": "Saving...",
+      "saveChanges": "Save changes"
+    },
+    "suggestions": {
+      "intro": "AI suggests hangouts within the radius you pick, based on your preferences — or on what you describe. Choose one, publish it and bring everyone to the group.",
+      "radiusLabel": "Search radius",
+      "generating": "Generating suggestions...",
+      "generateAgain": "Generate again",
+      "generate": "Generate suggestions",
+      "remaining_one": "{{count}} generation left today",
+      "remaining_other": "{{count}} generations left today",
+      "openSettings": "Open settings",
+      "adjustPreferences": "Adjust preferences",
+      "reasonWithQuery": "Suggested for you · {{query}}",
+      "reasonFromPrefs": "Matches your kind of hangout",
+      "back": "Back to suggestions",
+      "headingPrompt": "Where to?",
+      "headingResults_one": "{{count}} hangout for today",
+      "headingResults_other": "{{count}} hangouts for today",
+      "regenerate": "Generate again",
+      "close": "Close suggestions",
+      "locationDenied": "Location permission denied. Turn it on in your device settings to generate suggestions.",
+      "locationError": "Couldn't get your location. Try again."
+    },
+    "query": {
+      "label": "What do you feel like doing?",
+      "placeholder": "bar with live music",
+      "tooShort": "Describe it with at least {{count}} characters.",
+      "help": "If you describe something, we search for that and ignore your preferences."
+    },
+    "card": {
+      "bestMatch": "Best match",
+      "openNow": "Open now",
+      "open": "Open",
+      "closed": "Closed",
+      "choose": "Choose this hangout",
+      "chooseNamed": "Choose {{name}}"
+    },
+    "consent": {
+      "title": "We need your location",
+      "description": "To suggest hangouts near you. Used only right now — no background tracking.",
+      "enable": "Turn on location",
+      "openPrivacy": "Open privacy settings"
+    },
+    "empty": {
+      "title": "Nothing good enough around here",
+      "description": "AI didn't find good places in this search. Try widening the radius or describing better what you want.",
+      "increaseRadius": "Widen radius to {{km}} km",
+      "editQuery": "Edit description"
+    },
+    "quota": {
+      "title": "You've used your {{count}} generations for today",
+      "premiumDescription": "They come back tomorrow.",
+      "freeDescription": "They come back tomorrow. Want to keep discovering now?",
+      "premiumPerks": "25 generations a day, a wider radius and more active hangouts.",
+      "seeMap": "See hangouts on the map"
+    },
+    "limit": {
+      "premiumTitle": "You've hit the limit of active hangouts",
+      "freeTitle": "You already have 5 active hangouts",
+      "premiumDescription": "End one or let it expire to publish another.",
+      "freeDescription": "That’s the limit on the free plan. End one, let it expire — or have more hangouts live at once with Premium.",
+      "premiumPerks": "More hangouts live at once, 25 generations a day and a wider radius."
+    },
+    "premium": {
+      "name": "Clubber Premium",
+      "cta": "Explore Premium"
+    },
+    "detail": {
+      "notFound": "Hangout not found.",
+      "loadError": "Couldn't load the hangout.",
+      "suggestedBy": "@{{username}} suggested this hangout",
+      "canceled": "canceled",
+      "live": "live",
+      "canceledNotice": "This hangout was canceled and left the map. The chat group still exists.",
+      "when": "When",
+      "group": "Hangout group",
+      "memberCount_one": "{{count}} person in the group",
+      "memberCount_other": "{{count}} people in the group",
+      "directions": "Directions",
+      "openGroupChat": "Open group chat",
+      "joinChat": "Join the hangout chat",
+      "cancelTitle": "Cancel hangout",
+      "cancelMessage": "The hangout leaves the map for everyone. The chat group still exists."
+    },
+    "owner": {
+      "manage": "Manage hangout",
+      "endingSoon": "Your hangout is ending. Renew it to stay on the map.",
+      "renew": "Renew for +24h",
+      "renewSub": "keeps the hangout on the map",
+      "edit": "Edit hangout",
+      "editSub": "title and description",
+      "cancel": "Cancel hangout",
+      "cancelSub": "leaves the map for everyone"
+    },
+    "created": {
+      "title": "Hangout is live!",
+      "description": "Your hangout stays on the map for 24h. Now bring everyone in.",
+      "invite": "Invite everyone",
+      "openChat": "Open the hangout chat",
+      "seeOnMap": "See on the map",
+      "shareMessage": "Come to this hangout? \"{{title}}\" — join on Clubber: {{url}}"
+    },
+    "preview": {
+      "suggestedBy": "@{{username}} suggested a hangout",
+      "memberCount_one": "{{count}} in the group",
+      "memberCount_other": "{{count}} in the group",
+      "see": "See hangout"
+    },
+    "generateErrors": {
+      "noPreferences": "Set your hangout preferences in your profile to get suggestions.",
+      "sessionExpired": "Your session expired. Sign in again to generate suggestions.",
+      "dailyLimit": "You've hit the daily limit of suggestions. Try again tomorrow.",
+      "placesDown": "Place search is unavailable right now. Try again shortly.",
+      "generic": "Couldn't generate suggestions. Try again."
     }
   },
   "events": {
@@ -673,7 +820,134 @@
   },
   "chat": {
     "inbox": {
-      "newConversation": "New conversation"
+      "newConversation": "New conversation",
+      "emptyTitle": "No conversations yet",
+      "emptyBody": "Start a conversation with someone in your network.",
+      "start": "Start a conversation",
+      "loadError": "Couldn't load conversations.",
+      "deleteTitle": "Delete conversation",
+      "deleteMessage": "This conversation will be removed from your message list.",
+      "delete": "Delete",
+      "rowLabel": "Conversation: {{title}}",
+      "rowLabelUnread_one": "Conversation: {{title}}, {{count}} unread",
+      "rowLabelUnread_other": "Conversation: {{title}}, {{count}} unread"
+    },
+    "conversation": {
+      "group": "Group",
+      "direct": "Conversation",
+      "you": "You",
+      "youPrefix": "You: {{body}}",
+      "senderPrefix": "{{name}}: {{body}}"
+    },
+    "message": {
+      "deleted": "Message deleted"
+    },
+    "attachment": {
+      "audio": "Audio",
+      "video": "Video",
+      "image": "Image",
+      "audioPreview": "🎤 Audio",
+      "videoPreview": "🎥 Video",
+      "imagePreview": "📷 Image"
+    },
+    "typing": {
+      "one": "{{name}} is typing…",
+      "two": "{{first}} and {{second}} are typing…",
+      "many": "Several people are typing…"
+    },
+    "input": {
+      "editing": "Editing message",
+      "cancelEdit": "Cancel edit",
+      "replyingTo": "Replying to {{name}}",
+      "cancelReply": "Cancel reply",
+      "attach": "Attach image",
+      "placeholder": "Message…",
+      "record": "Record audio",
+      "saveEdit": "Save edit",
+      "send": "Send message"
+    },
+    "bubble": {
+      "edited": "edited · ",
+      "retry": "Resend message",
+      "failed": "Failed · Try again"
+    },
+    "actions": {
+      "copy": "Copy",
+      "edit": "Edit",
+      "report": "Report",
+      "delete": "Delete",
+      "deleteTitle": "Delete message",
+      "deleteMessage": "This message will be deleted for everyone."
+    },
+    "media": {
+      "gallery": "Gallery",
+      "camera": "Camera",
+      "image": "Image",
+      "video": "Video",
+      "closeImage": "Close image",
+      "closeVideo": "Close video",
+      "playAudio": "Play audio",
+      "pauseAudio": "Pause audio",
+      "audioProgress": "Audio progress bar",
+      "cancelRecording": "Cancel recording",
+      "sendAudio": "Send audio"
+    },
+    "header": {
+      "online": "online",
+      "details": "See conversation details",
+      "more": "More options"
+    },
+    "group": {
+      "participantCount_one": "{{count}} participant",
+      "participantCount_other": "{{count}} participants",
+      "participants": "Participants",
+      "rename": "Rename group",
+      "addPeople": "Add people",
+      "leave": "Leave group",
+      "leaveMessage": "You'll stop receiving messages from this group.",
+      "leaveConfirm": "Leave",
+      "removeTitle": "Remove from group",
+      "removeMessage": "Remove {{name}} from the group?",
+      "removeConfirm": "Remove",
+      "makeAdmin": "Make admin",
+      "removeAdmin": "Remove admin",
+      "nameHeading": "Group name",
+      "namePlaceholder": "e.g. Concert crew",
+      "create": "Create group",
+      "creating": "Creating…",
+      "createWithCount": "Create group ({{count}})",
+      "saving": "Saving…",
+      "newGroup": "New group",
+      "createNew": "Create new group"
+    },
+    "dm": {
+      "viewProfile": "View profile",
+      "block": "Block user",
+      "unblock": "Unblock user",
+      "blockMessage": "You won't be able to exchange messages anymore. Block {{name}}?",
+      "blockConfirm": "Block"
+    },
+    "people": {
+      "searchPlaceholder": "Search people…",
+      "empty": "No one found.",
+      "selected": "{{name}}, selected",
+      "you": "(you)",
+      "newConversationTitle": "New conversation",
+      "cannotStart": "You can't start a conversation with this user"
+    },
+    "reactions": {
+      "label": "{{emoji}} {{count}}",
+      "labelMine": "{{emoji}} {{count}}, your reaction"
+    },
+    "blocked": {
+      "byMe": "You blocked this user.",
+      "byThem": "You can't send messages in this conversation anymore."
+    },
+    "banners": {
+      "rateLimited": "You're sending too fast, hold on a second",
+      "videoTooLarge": "Video too large to send.",
+      "micDenied": "Microphone permission denied.",
+      "cameraDenied": "Camera permission denied."
     }
   },
   "profile": {

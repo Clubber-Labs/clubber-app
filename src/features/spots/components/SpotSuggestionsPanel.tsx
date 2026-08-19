@@ -14,6 +14,7 @@ import {
   ArrowsClockwiseIcon,
   XIcon,
 } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 import Animated, {
@@ -45,10 +46,10 @@ import { SpotQueryInput } from './SpotQueryInput'
 import type { SpotSuggestion } from '../types'
 import { colors } from '@/shared/theme'
 
-const LOCATION_ISSUE_MESSAGES = {
-  denied:
-    'Permissão de localização negada. Ative nos ajustes do aparelho para gerar sugestões.',
-  error: 'Não foi possível obter sua localização. Tente novamente.',
+// Chave, não frase: a constante avalia no import e congelaria o idioma.
+const LOCATION_ISSUE_KEYS = {
+  denied: 'spots.suggestions.locationDenied',
+  error: 'spots.suggestions.locationError',
 } as const
 
 // data vazio reutilizável — evita criar [] a cada render quando a cota esgotada
@@ -72,6 +73,7 @@ type Props = {
 //  - resultados: folha baixa (~meia-altura) só com a lista + cabeçalho compacto.
 // "Gerar de novo" reabre os controles (com voltar) sem gastar outra geração.
 export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
+  const { t } = useTranslation()
   const router = useRouter()
   const tabBarClearance = useTabBarClearance()
   const headerClearance = useHeaderClearance()
@@ -174,16 +176,14 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
   // Faixa de motivo do melhor match (assinatura da IA): a intenção digitada
   // quando há query válida; senão, as preferências de rolê do usuário.
   const bestReason = hasValidQuery
-    ? `Sugerido pra você · ${query.trim()}`
-    : 'Combina com seus rolês'
+    ? t('spots.suggestions.reasonWithQuery', { query: query.trim() })
+    : t('spots.suggestions.reasonFromPrefs')
 
   const header = (
     <View className="gap-3 pb-0">
       {!showTakeover && (
         <Text className="text-content-muted text-sm">
-          A IA sugere rolês dentro do raio escolhido, com base nas suas
-          preferências — ou no que você descrever. Escolha um, publique e chame
-          a galera pro grupo.
+          {t('spots.suggestions.intro')}
         </Text>
       )}
 
@@ -211,7 +211,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
         <View className="gap-3">
           <View className="gap-1">
             <RadiusSlider
-              label="Raio da busca"
+              label={t('spots.suggestions.radiusLabel')}
               min={SPOT_RADIUS_MIN_KM}
               max={SPOT_RADIUS_MAX_KM}
               value={radiusKm}
@@ -227,10 +227,10 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
           <Button
             label={
               isGenerating
-                ? 'Gerando sugestões...'
+                ? t('spots.suggestions.generating')
                 : hasGenerated
-                  ? 'Gerar novamente'
-                  : 'Gerar sugestões'
+                  ? t('spots.suggestions.generateAgain')
+                  : t('spots.suggestions.generate')
             }
             onPress={submitGenerate}
             loading={isGenerating}
@@ -240,16 +240,16 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
           />
           {remaining !== undefined && remaining > 0 && (
             <Text className="text-content-subtle text-xs text-center">
-              {`${remaining} ${remaining === 1 ? 'geração restante' : 'gerações restantes'} hoje`}
+              {t('spots.suggestions.remaining', { count: remaining })}
             </Text>
           )}
           {locationIssue && (
             <>
-              <FormError message={LOCATION_ISSUE_MESSAGES[locationIssue]} />
+              <FormError message={t(LOCATION_ISSUE_KEYS[locationIssue])} />
               {locationIssue === 'denied' && (
                 <Pressable onPress={() => Linking.openSettings()}>
                   <Text className="text-brand-text text-sm font-semibold text-center">
-                    Abrir ajustes
+                    {t('spots.suggestions.openSettings')}
                   </Text>
                 </Pressable>
               )}
@@ -263,7 +263,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
               {isValidationError(generateError) && !hasValidQuery && (
                 <Pressable onPress={() => router.push('/profile/edit')}>
                   <Text className="text-brand-text text-sm font-semibold text-center">
-                    Ajustar preferências
+                    {t('spots.suggestions.adjustPreferences')}
                   </Text>
                 </Pressable>
               )}
@@ -326,7 +326,7 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
               <Pressable
                 onPress={() => setEditing(false)}
                 accessibilityRole="button"
-                accessibilityLabel="Voltar para as sugestões"
+                accessibilityLabel={t('spots.suggestions.back')}
                 hitSlop={8}
               >
                 <CaretLeftIcon size={22} color={colors.content} />
@@ -334,8 +334,8 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
             )}
             <Text className="text-content text-lg font-bold">
               {showResults
-                ? `${count} ${count === 1 ? 'rolê' : 'rolês'} pra hoje`
-                : 'Bora pra onde?'}
+                ? t('spots.suggestions.headingResults', { count })
+                : t('spots.suggestions.headingPrompt')}
             </Text>
           </View>
           <View className="flex-row items-center gap-4">
@@ -344,19 +344,19 @@ export function SpotSuggestionsPanel({ suggest, onChoose, onClose }: Props) {
                 onPress={() => setEditing(true)}
                 className="flex-row items-center gap-1.5"
                 accessibilityRole="button"
-                accessibilityLabel="Gerar de novo"
+                accessibilityLabel={t('spots.suggestions.regenerate')}
                 hitSlop={8}
               >
                 <ArrowsClockwiseIcon size={16} color={colors.brandText} />
                 <Text className="text-brand-text text-sm font-semibold">
-                  Gerar de novo
+                  {t('spots.suggestions.regenerate')}
                 </Text>
               </Pressable>
             )}
             <Pressable
               onPress={close}
               className="w-8 h-8 items-center justify-center"
-              accessibilityLabel="Fechar sugestões"
+              accessibilityLabel={t('spots.suggestions.close')}
             >
               <XIcon size={22} color={colors.contentMuted} />
             </Pressable>

@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { UsersIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { useBanner } from '@/shared/lib/banner'
@@ -11,6 +12,7 @@ import type { UserMini } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
 export default function NewConversationScreen() {
+  const { t } = useTranslation()
   const router = useRouter()
   const showBanner = useBanner()
   const create = useCreateConversation()
@@ -27,7 +29,7 @@ export default function NewConversationScreen() {
     } catch (e) {
       showBanner(
         isForbiddenError(e)
-          ? 'Você não pode iniciar conversa com este usuário'
+          ? t('chat.people.cannotStart')
           : getApiError(e).message,
       )
     }
@@ -37,7 +39,7 @@ export default function NewConversationScreen() {
     <View className="flex-1 bg-background">
       <View className="px-4 py-2.5 border-b border-line-subtle">
         <Text className="text-content font-semibold text-lg">
-          Nova conversa
+          {t('chat.people.newConversationTitle')}
         </Text>
       </View>
 
@@ -50,13 +52,13 @@ export default function NewConversationScreen() {
           <Pressable
             onPress={() => router.push('/conversations/new-group')}
             className="flex-row items-center gap-3 px-4 py-3 border-b border-line-subtle active:bg-surface"
-            accessibilityLabel="Criar novo grupo"
+            accessibilityLabel={t('chat.group.createNew')}
           >
             <View className="w-11 h-11 rounded-full bg-brand items-center justify-center">
               <UsersIcon size={22} color={colors.content} weight="fill" />
             </View>
             <Text className="text-brand-text font-semibold text-base">
-              Novo grupo
+              {t('chat.group.newGroup')}
             </Text>
           </Pressable>
         }

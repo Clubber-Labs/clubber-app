@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useVideoPlayer, VideoView } from 'expo-video'
 import { Gesture } from 'react-native-gesture-handler'
 import Animated, { useAnimatedStyle } from 'react-native-reanimated'
@@ -15,6 +16,7 @@ type Props = {
 // a ordem estável; o corpo que chama useVideoPlayer fica num filho montado só
 // quando há url.
 export function VideoPlayerModal({ url, onClose }: Props) {
+  const { t } = useTranslation()
   const { translateY, reset, applyDrag, release, bgStyle } = useSwipeToDismiss()
 
   // Reseta o transform a cada vídeo aberto.
@@ -41,7 +43,7 @@ export function VideoPlayerModal({ url, onClose }: Props) {
     <MediaViewerModal
       gesture={pan}
       bgStyle={bgStyle}
-      closeLabel="Fechar vídeo"
+      closeLabel={t('chat.media.closeVideo')}
       onClose={onClose}
     >
       <Animated.View className="flex-1" style={contentStyle}>

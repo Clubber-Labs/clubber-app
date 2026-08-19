@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import {
   CopyIcon,
   PencilSimpleIcon,
@@ -43,6 +44,7 @@ export function MessageActionsSheet({
   onReport,
   onDelete,
 }: Props) {
+  const { t } = useTranslation()
   const hasText = !!message?.content
   return (
     <SheetModal visible={visible} onClose={onClose}>
@@ -68,7 +70,7 @@ export function MessageActionsSheet({
       {hasText && (
         <SheetRow
           icon={CopyIcon}
-          label="Copiar"
+          label={t('chat.actions.copy')}
           onPress={() => {
             onClose()
             onCopy()
@@ -78,7 +80,7 @@ export function MessageActionsSheet({
       {canEdit && (
         <SheetRow
           icon={PencilSimpleIcon}
-          label="Editar"
+          label={t('chat.actions.edit')}
           onPress={() => {
             onClose()
             onEdit()
@@ -88,7 +90,7 @@ export function MessageActionsSheet({
       {canReport && (
         <SheetRow
           icon={FlagIcon}
-          label="Denunciar"
+          label={t('chat.actions.report')}
           onPress={() => {
             onClose()
             onReport()
@@ -98,7 +100,7 @@ export function MessageActionsSheet({
       {canDelete && (
         <SheetRow
           icon={TrashIcon}
-          label="Apagar"
+          label={t('chat.actions.delete')}
           destructive
           onPress={() => {
             onClose()

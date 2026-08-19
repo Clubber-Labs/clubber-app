@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import type { AggregatedReaction } from '../utils/reactions'
 
 type Props = {
@@ -11,6 +12,7 @@ type Props = {
 // Chips de reação agregados sob a bolha. A minha reação fica destacada (violeta);
 // tocar num chip faz toggle (remove a minha / troca pela nova).
 export function MessageReactions({ reactions, isMine, onToggle }: Props) {
+  const { t } = useTranslation()
   if (reactions.length === 0) return null
   return (
     <View
@@ -25,7 +27,11 @@ export function MessageReactions({ reactions, isMine, onToggle }: Props) {
               ? 'bg-brand/30 border-brand-emphasis'
               : 'bg-surface-elevated border-line-strong'
           }`}
-          accessibilityLabel={`${emoji} ${count}${mine ? ', sua reação' : ''}`}
+          accessibilityLabel={
+            mine
+              ? t('chat.reactions.labelMine', { emoji, count })
+              : t('chat.reactions.label', { emoji, count })
+          }
         >
           <Text className="text-[13px]">{emoji}</Text>
           <Text

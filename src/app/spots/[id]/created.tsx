@@ -1,5 +1,6 @@
 import { View, Text, ActivityIndicator, Pressable, Share } from 'react-native'
 import { CheckIcon, MapPinIcon } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
 import * as Linking from 'expo-linking'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 import { Button } from '@/shared/components/Button'
@@ -13,6 +14,7 @@ import { colors } from '@/shared/theme'
 // próximas ações — convidar a galera (Share com o deep link do spot, o mesmo
 // modelo de convite do app) e abrir o chat do grupo criado na publicação.
 export default function SpotCreatedScreen() {
+  const { t } = useTranslation()
   const locale = useLocale()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
@@ -29,7 +31,10 @@ export default function SpotCreatedScreen() {
   // Sem o spot (falha de rede logo após criar) cai no detalhe, que reconsulta.
   if (error || !spot) return <Redirect href={`/spots/${id}`} />
 
-  const visibilityLabel = spot.visibility === 'PUBLIC' ? 'Público' : 'Amigos'
+  const visibilityLabel =
+    spot.visibility === 'PUBLIC'
+      ? t('spots.form.public')
+      : t('spots.form.friends')
 
   // Arrow (não function declaration) pra preservar o narrowing de `spot` —
   // criada após o guard, o TS sabe que aqui ele não é undefined.
@@ -38,7 +43,10 @@ export default function SpotCreatedScreen() {
       const url = Linking.createURL(`/spots/${spot.id}`)
       await Share.share({
         title: spot.title,
-        message: `Bora nesse rolê? "${spot.title}" — entra no Clubber: ${url}`,
+        message: t('spots.created.shareMessage', {
+          title: spot.title,
+          url,
+        }),
       })
     } catch {
       // Compartilhamento cancelado/indisponível — silencioso (padrão do app).
@@ -53,10 +61,10 @@ export default function SpotCreatedScreen() {
 
       <View className="items-center gap-2">
         <Text className="text-content text-2xl font-bold text-center">
-          Rolê no ar!
+          {t('spots.created.title')}
         </Text>
         <Text className="text-content-muted text-sm text-center">
-          Seu spot fica visível no mapa por 24h. Agora chama a galera.
+          {t('spots.created.description')}
         </Text>
       </View>
 
@@ -78,14 +86,16 @@ export default function SpotCreatedScreen() {
         </View>
         <View className="flex-row items-center gap-1 rounded-md bg-success/20 border border-success/30 px-2 py-1">
           <View className="w-1.5 h-1.5 rounded-full bg-success-text" />
-          <Text className="text-success-text text-[11px] font-bold">no ar</Text>
+          <Text className="text-success-text text-[11px] font-bold">
+            {t('spots.detail.live')}
+          </Text>
         </View>
       </View>
 
       <View className="w-full gap-3">
-        <Button label="Convidar a galera" onPress={handleInvite} />
+        <Button label={t('spots.created.invite')} onPress={handleInvite} />
         <Button
-          label="Abrir o chat do rolê"
+          label={t('spots.created.openChat')}
           variant="neutral"
           onPress={() =>
             router.replace(`/conversations/${spot.conversationId}`)
@@ -106,7 +116,7 @@ export default function SpotCreatedScreen() {
           className="items-center py-2"
         >
           <Text className="text-content-muted text-sm font-semibold">
-            Ver no mapa
+            {t('spots.created.seeOnMap')}
           </Text>
         </Pressable>
         <SpotLocationMap spot={spot} height={160} />

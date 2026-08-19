@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { PauseIcon, PlayIcon } from 'phosphor-react-native'
 import { formatDuration } from '@/shared/utils/formatDuration'
 import { Waveform } from './Waveform'
@@ -26,6 +27,7 @@ const FALLBACK_WAVEFORM = Array.from(
 // Bolha de reprodução de nota de voz: play/pause, waveform com progresso (tocável
 // pra seek) e duração formatada (decorrida ao tocar, total parado).
 export function VoiceMessage({ attachment, isMine, onLongPress }: Props) {
+  const { t } = useTranslation()
   const durationMs = attachment.durationMs ?? 0
   const { playing, progress, elapsedMs, totalMs, toggle, seekToFraction } =
     useVoiceMessagePlayer(attachment.url, durationMs)
@@ -53,7 +55,9 @@ export function VoiceMessage({ attachment, isMine, onLongPress }: Props) {
         onLongPress={onLongPress}
         delayLongPress={LONG_PRESS_DELAY_MS}
         className="w-9 h-9 items-center justify-center"
-        accessibilityLabel={playing ? 'Pausar áudio' : 'Tocar áudio'}
+        accessibilityLabel={
+          playing ? t('chat.media.pauseAudio') : t('chat.media.playAudio')
+        }
       >
         {playing ? (
           <PauseIcon size={22} color={tint} weight="fill" />
@@ -72,7 +76,7 @@ export function VoiceMessage({ attachment, isMine, onLongPress }: Props) {
         }}
         onLongPress={onLongPress}
         delayLongPress={LONG_PRESS_DELAY_MS}
-        accessibilityLabel="Barra de progresso do áudio"
+        accessibilityLabel={t('chat.media.audioProgress')}
       >
         <Waveform
           values={values}

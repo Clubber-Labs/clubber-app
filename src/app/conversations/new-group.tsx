@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { useBanner } from '@/shared/lib/banner'
 import { getApiError, isForbiddenError } from '@/shared/lib/apiError'
@@ -12,6 +13,7 @@ import { GroupTitleModal } from '@/features/chat/components/GroupTitleModal'
 import type { UserMini } from '@/shared/types'
 
 export default function NewGroupScreen() {
+  const { t } = useTranslation()
   const router = useRouter()
   const showBanner = useBanner()
   const create = useCreateConversation()
@@ -42,7 +44,7 @@ export default function NewGroupScreen() {
     } catch (e) {
       showBanner(
         isForbiddenError(e)
-          ? 'Você não pode iniciar conversa com este usuário'
+          ? t('chat.people.cannotStart')
           : getApiError(e).message,
       )
     }
@@ -51,7 +53,9 @@ export default function NewGroupScreen() {
   return (
     <View className="flex-1 bg-background">
       <View className="px-4 py-2.5 border-b border-line-subtle">
-        <Text className="text-content font-semibold text-lg">Novo grupo</Text>
+        <Text className="text-content font-semibold text-lg">
+          {t('chat.group.newGroup')}
+        </Text>
       </View>
 
       <PeoplePicker
@@ -80,8 +84,8 @@ export default function NewGroupScreen() {
           >
             <Text className="text-content font-semibold text-base">
               {create.isPending
-                ? 'Criando…'
-                : `Criar grupo (${selected.length})`}
+                ? t('chat.group.creating')
+                : t('chat.group.createWithCount', { count: selected.length })}
             </Text>
           </Pressable>
         </View>

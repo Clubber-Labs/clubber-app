@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { WarningCircleIcon, ArrowUUpLeftIcon } from 'phosphor-react-native'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { SwipeableRow } from '@/shared/components/SwipeableRow'
@@ -53,6 +54,7 @@ export function MessageBubble({
   onPressReply,
   onToggleReaction,
 }: Props) {
+  const { t } = useTranslation()
   const locale = useLocale()
   const { isMine } = meta
   const topMargin = meta.startsRun ? 'mt-3' : 'mt-0.5'
@@ -64,7 +66,7 @@ export function MessageBubble({
       >
         <View className="bg-surface rounded-2xl px-3 py-2 border border-line">
           <Text className="text-content-subtle text-sm italic">
-            Mensagem removida
+            {t('chat.message.deleted')}
           </Text>
         </View>
       </View>
@@ -84,8 +86,8 @@ export function MessageBubble({
   const reply = message.replyTo
   const replyText = reply
     ? reply.deletedAt
-      ? 'Mensagem removida'
-      : (reply.content ?? attachmentReplyLabel(reply.attachments))
+      ? t('chat.message.deleted')
+      : (reply.content ?? attachmentReplyLabel(reply.attachments, locale))
     : ''
 
   const bubble = (
@@ -155,7 +157,7 @@ export function MessageBubble({
             <Text
               className={`text-[11px] ${isMine ? 'text-brand-text-bright' : 'text-content-subtle'}`}
             >
-              {edited ? 'editada · ' : ''}
+              {edited ? t('chat.bubble.edited') : ''}
               {formatMessageTime(message.createdAt, locale)}
             </Text>
             <MessageStatusIcon status={status} />
@@ -166,11 +168,11 @@ export function MessageBubble({
         <Pressable
           onPress={onRetry}
           className="flex-row items-center gap-1 self-end mt-0.5"
-          accessibilityLabel="Reenviar mensagem"
+          accessibilityLabel={t('chat.bubble.retry')}
         >
           <WarningCircleIcon size={12} color={colors.danger} weight="fill" />
           <Text className="text-[11px] text-danger">
-            Falhou · Tentar de novo
+            {t('chat.bubble.failed')}
           </Text>
         </Pressable>
       )}

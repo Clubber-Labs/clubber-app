@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ProhibitIcon, UserIcon } from 'phosphor-react-native'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useConfirm } from '@/shared/lib/confirm'
@@ -15,6 +16,7 @@ type Props = {
 }
 
 export function DMDetails({ conversation, myId, onViewProfile }: Props) {
+  const { t } = useTranslation()
   const other = conversation.participants.find(p => p.userId !== myId)?.user
   const { blocks } = useBlocks()
   const block = useBlockUser()
@@ -35,9 +37,9 @@ export function DMDetails({ conversation, myId, onViewProfile }: Props) {
       return
     }
     const ok = await confirm({
-      title: 'Bloquear usuário',
-      message: `Vocês não poderão mais trocar mensagens. Bloquear ${other.name}?`,
-      confirmLabel: 'Bloquear',
+      title: t('chat.dm.block'),
+      message: t('chat.dm.blockMessage', { name: other.name }),
+      confirmLabel: t('chat.dm.blockConfirm'),
       destructive: true,
     })
     if (ok)
@@ -61,7 +63,9 @@ export function DMDetails({ conversation, myId, onViewProfile }: Props) {
         className="flex-row items-center gap-3 py-3.5 border-t border-line-subtle"
       >
         <UserIcon size={22} color={colors.contentSecondary} />
-        <Text className="text-content-bright text-base">Ver perfil</Text>
+        <Text className="text-content-bright text-base">
+          {t('chat.dm.viewProfile')}
+        </Text>
       </Pressable>
 
       <Pressable
@@ -70,7 +74,7 @@ export function DMDetails({ conversation, myId, onViewProfile }: Props) {
       >
         <ProhibitIcon size={22} color={colors.danger} />
         <Text className="text-danger text-base">
-          {isBlocked ? 'Desbloquear usuário' : 'Bloquear usuário'}
+          {isBlocked ? t('chat.dm.unblock') : t('chat.dm.block')}
         </Text>
       </Pressable>
     </View>

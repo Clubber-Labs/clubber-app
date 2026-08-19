@@ -1,4 +1,5 @@
 import { View, Text, TextInput, ScrollView } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button } from '@/shared/components/Button'
@@ -26,6 +27,7 @@ export function EditSpotForm({
   submitting,
   submitError,
 }: Props) {
+  const { t } = useTranslation()
   const {
     control,
     handleSubmit,
@@ -48,7 +50,7 @@ export function EditSpotForm({
     >
       <View className="gap-1" {...form.anchor('title')}>
         <Text className="text-sm font-medium text-content-tertiary">
-          Título
+          {t('spots.form.title')}
         </Text>
         <Controller
           control={control}
@@ -67,8 +69,10 @@ export function EditSpotForm({
 
       <View className="gap-1" {...form.anchor('description')}>
         <Text className="text-sm font-medium text-content-tertiary">
-          Descrição{' '}
-          <Text className="text-content-subtle text-xs">(opcional)</Text>
+          {t('spots.form.description')}{' '}
+          <Text className="text-content-subtle text-xs">
+            {t('spots.form.optional')}
+          </Text>
         </Text>
         <Controller
           control={control}
@@ -77,7 +81,7 @@ export function EditSpotForm({
             <TextInput
               {...form.input('description')}
               className={`border ${errors.description ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content min-h-[96px]`}
-              placeholder="Combina os detalhes com a galera..."
+              placeholder={t('spots.form.descriptionPlaceholder')}
               placeholderTextColor={colors.contentSubtle}
               value={value ?? ''}
               onChangeText={onChange}
@@ -91,7 +95,9 @@ export function EditSpotForm({
       <FormError message={submitError} />
 
       <Button
-        label={submitting ? 'Salvando...' : 'Salvar alterações'}
+        label={
+          submitting ? t('spots.form.saving') : t('spots.form.saveChanges')
+        }
         onPress={handleSubmit(onSubmit, errors =>
           showFormErrors(messagesFromErrors(errors)),
         )}

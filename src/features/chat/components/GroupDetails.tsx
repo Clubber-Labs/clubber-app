@@ -5,6 +5,7 @@ import {
   SignOutIcon,
   UserPlusIcon,
 } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useBanner } from '@/shared/lib/banner'
 import { getApiError } from '@/shared/lib/apiError'
@@ -31,6 +32,7 @@ type Props = {
 }
 
 export function GroupDetails({ conversation, myId, onLeft }: Props) {
+  const { t } = useTranslation()
   const id = conversation.id
   const amAdmin =
     conversation.participants.find(p => p.userId === myId)?.role === 'ADMIN'
@@ -51,9 +53,9 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
 
   async function handleLeave() {
     const ok = await confirm({
-      title: 'Sair do grupo',
-      message: 'Você deixará de receber as mensagens deste grupo.',
-      confirmLabel: 'Sair',
+      title: t('chat.group.leave'),
+      message: t('chat.group.leaveMessage'),
+      confirmLabel: t('chat.group.leaveConfirm'),
       destructive: true,
     })
     if (ok) leave.mutate(undefined, { onSuccess: onLeft, onError })
@@ -61,9 +63,9 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
 
   async function handleRemove(p: Participant) {
     const ok = await confirm({
-      title: 'Remover do grupo',
-      message: `Remover ${p.user.name} do grupo?`,
-      confirmLabel: 'Remover',
+      title: t('chat.group.removeTitle'),
+      message: t('chat.group.removeMessage', { name: p.user.name }),
+      confirmLabel: t('chat.group.removeConfirm'),
       destructive: true,
     })
     if (ok) removeParticipant.mutate(p.userId, { onError })
@@ -86,12 +88,12 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
         />
         <View className="flex-row items-center gap-2 mt-2">
           <Text className="text-content font-bold text-xl">
-            {conversation.title ?? 'Grupo'}
+            {conversation.title ?? t('chat.conversation.group')}
           </Text>
           {amAdmin && (
             <Pressable
               onPress={() => setRenameOpen(true)}
-              accessibilityLabel="Renomear grupo"
+              accessibilityLabel={t('chat.group.rename')}
               className="p-1"
             >
               <PencilSimpleIcon
@@ -103,12 +105,14 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
           )}
         </View>
         <Text className="text-content-subtle">
-          {conversation.participants.length} participantes
+          {t('chat.group.participantCount', {
+            count: conversation.participants.length,
+          })}
         </Text>
       </View>
 
       <Text className="text-content-muted text-xs font-medium uppercase tracking-wider px-4 pt-3 pb-1">
-        Participantes
+        {t('chat.group.participants')}
       </Text>
       {conversation.participants.map(p => (
         <ParticipantRow
@@ -133,7 +137,7 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
             />
           </View>
           <Text className="text-brand-text text-base font-medium">
-            Adicionar pessoas
+            {t('chat.group.addPeople')}
           </Text>
         </Pressable>
       )}
@@ -143,15 +147,15 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
         className="flex-row items-center gap-3 px-4 py-3.5 mt-3 border-t border-line-subtle"
       >
         <SignOutIcon size={22} color={colors.danger} />
-        <Text className="text-danger text-base">Sair do grupo</Text>
+        <Text className="text-danger text-base">{t('chat.group.leave')}</Text>
       </Pressable>
 
       <GroupTitleModal
         visible={renameOpen}
         onClose={() => setRenameOpen(false)}
         initialValue={conversation.title ?? ''}
-        heading="Renomear grupo"
-        confirmLabel="Salvar"
+        heading={t('chat.group.rename')}
+        confirmLabel={t('common.save')}
         submitting={rename.isPending}
         onConfirm={title =>
           rename.mutate(title, {

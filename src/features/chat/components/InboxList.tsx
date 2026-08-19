@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useInbox } from '../hooks/useInbox'
 import { useDeleteConversation } from '../hooks/useDeleteConversation'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
@@ -28,6 +29,7 @@ type Props = {
 }
 
 export function InboxList({ myId, onOpen, onNew }: Props) {
+  const { t } = useTranslation()
   const tabBarClearance = useTabBarClearance()
 
   // Re-tap na aba Mensagens: volta ao topo da caixa de entrada.
@@ -50,9 +52,9 @@ export function InboxList({ myId, onOpen, onNew }: Props) {
 
   async function askDelete(item: InboxItem) {
     const ok = await confirm({
-      title: 'Apagar conversa',
-      message: 'Esta conversa será removida da sua lista de mensagens.',
-      confirmLabel: 'Apagar',
+      title: t('chat.inbox.deleteTitle'),
+      message: t('chat.inbox.deleteMessage'),
+      confirmLabel: t('chat.inbox.delete'),
       destructive: true,
     })
     if (ok) del.mutate(item.id)
@@ -64,14 +66,14 @@ export function InboxList({ myId, onOpen, onNew }: Props) {
     return (
       <View className="flex-1 items-center justify-center px-8 gap-3">
         <Text className="text-content-muted text-center">
-          Não foi possível carregar as conversas.
+          {t('chat.inbox.loadError')}
         </Text>
         <Pressable
           onPress={() => refetch()}
           className="border border-line-strong rounded-full px-5 py-2"
         >
           <Text className="text-brand-text font-medium text-sm">
-            Tentar de novo
+            {t('common.retry')}
           </Text>
         </Pressable>
       </View>
@@ -91,7 +93,7 @@ export function InboxList({ myId, onOpen, onNew }: Props) {
           rightActions={[
             {
               icon: TrashIcon,
-              label: 'Apagar',
+              label: t('chat.inbox.delete'),
               onPress: () => askDelete(item),
             },
           ]}

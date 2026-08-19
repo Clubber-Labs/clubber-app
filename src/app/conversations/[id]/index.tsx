@@ -5,6 +5,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
+import { useLocale } from '@/shared/hooks/useLocale'
 import { useLocalSearchParams, useRouter, useFocusEffect } from 'expo-router'
 import { isAxiosError } from 'axios'
 import * as ImagePicker from 'expo-image-picker'
@@ -52,6 +54,8 @@ const MAX_VIDEO_BYTES = 50 * 1024 * 1024
 const VIDEO_MAX_DURATION_S = 60
 
 export default function ConversationScreen() {
+  const { t } = useTranslation()
+  const locale = useLocale()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const myId = useAuthStore(s => s.userId) ?? ''
@@ -124,8 +128,8 @@ export default function ConversationScreen() {
         uid => conversation.participants.find(p => p.userId === uid)?.user.name,
       )
       .filter((name): name is string => !!name)
-    return typingLabel(names)
-  }, [conversation, typingUserIds, myId])
+    return typingLabel(names, locale)
+  }, [conversation, typingUserIds, myId, locale])
 
   // Marca a conversa como ativa (controla unread/read) e a marca lida ao focar.
   // Ao sair (blur/unmount) encerra qualquer "digitando" pendente. Refs evitam
@@ -147,7 +151,7 @@ export default function ConversationScreen() {
 
   function handleSendError(e: unknown) {
     if (isAxiosError(e) && e.response?.status === 429) {
-      showBanner('Você está enviando rápido demais, aguarde um instante')
+      showBanner(t('chat.banners.rateLimited'))
       setCooldown(true)
       setTimeout(() => setCooldown(false), COOLDOWN_MS)
       return
@@ -215,7 +219,7 @@ export default function ConversationScreen() {
     // fileSize é frequentemente undefined no Android — aí o 413 do backend é a
     // guarda real. Quando presente, evita subir um arquivo gigante à toa.
     if (asset.fileSize != null && asset.fileSize > MAX_VIDEO_BYTES) {
-      showBanner('Vídeo muito grande para enviar.')
+      showBanner(t('chat.banners.videoTooLarge'))
       return
     }
     hapticLight()
@@ -251,7 +255,7 @@ export default function ConversationScreen() {
   async function startRecording() {
     const granted = await ensureRecordingPermission()
     if (!granted) {
-      showBanner('Permissão de microfone negada.')
+      showBanner(t('chat.banners.micDenied'))
       return
     }
     setEditing(null)
@@ -272,7 +276,7 @@ export default function ConversationScreen() {
   async function pickFromCamera() {
     const perm = await ImagePicker.requestCameraPermissionsAsync()
     if (!perm.granted) {
-      showBanner('Permissão de câmera negada.')
+      showBanner(t('chat.banners.cameraDenied'))
       return
     }
     const res = await ImagePicker.launchCameraAsync({
@@ -368,9 +372,9 @@ export default function ConversationScreen() {
 
   async function confirmDelete(message: ChatMessage) {
     const ok = await confirm({
-      title: 'Apagar mensagem',
-      message: 'Esta mensagem será apagada para todos.',
-      confirmLabel: 'Apagar',
+      title: t('chat.actions.deleteTitle'),
+      message: t('chat.actions.deleteMessage'),
+      confirmLabel: t('chat.actions.delete'),
       destructive: true,
     })
     if (ok) deleteMessage.mutate(message.id)
@@ -438,11 +442,7 @@ export default function ConversationScreen() {
 
       {isBlocked ? (
         <BlockedBanner
-          message={
-            iBlocked
-              ? 'Você bloqueou este usuário.'
-              : 'Você não pode mais enviar mensagens nesta conversa.'
-          }
+          message={iBlocked ? t('chat.blocked.byMe') : t('chat.blocked.byThem')}
         />
       ) : recording ? (
         <AudioRecorderBar
@@ -468,12 +468,12 @@ export default function ConversationScreen() {
               ? {
                   senderName:
                     replyingTo.senderId === myId
-                      ? 'Você'
+                      ? t('chat.conversation.you')
                       : `${replyingTo.sender.name} ${replyingTo.sender.lastname}`.trim(),
                   preview: replyingTo.deletedAt
-                    ? 'Mensagem removida'
+                    ? t('chat.message.deleted')
                     : (replyingTo.content ??
-                      attachmentReplyLabel(replyingTo.attachments)),
+                      attachmentReplyLabel(replyingTo.attachments, locale)),
                 }
               : null
           }

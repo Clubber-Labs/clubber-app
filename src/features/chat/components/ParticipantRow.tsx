@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { DotsThreeVerticalIcon } from 'phosphor-react-native'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { RoleBadge } from './RoleBadge'
@@ -18,6 +19,7 @@ export function ParticipantRow({
   canManage,
   onManage,
 }: Props) {
+  const { t } = useTranslation()
   const user = participant.user
   return (
     <View className="flex-row items-center gap-3 px-4 py-3">
@@ -25,7 +27,7 @@ export function ParticipantRow({
       <View className="flex-1">
         <Text className="text-content-bright font-semibold text-base">
           {user.name} {user.lastname}
-          {isMe ? ' (você)' : ''}
+          {isMe ? ` ${t('chat.people.you')}` : ''}
         </Text>
         <Text className="text-content-subtle text-sm">@{user.username}</Text>
       </View>

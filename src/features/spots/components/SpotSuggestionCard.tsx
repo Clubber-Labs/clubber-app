@@ -5,6 +5,7 @@ import {
   MapPinIcon,
   CaretRightIcon,
 } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/Button'
 import { useFormatDistance } from '@/shared/hooks/useFormatDistance'
 import { useLocale } from '@/shared/hooks/useLocale'
@@ -32,6 +33,7 @@ export function SpotSuggestionCard({
   onChoose,
   reason,
 }: Props) {
+  const { t } = useTranslation()
   const formatDistance = useFormatDistance()
   const locale = useLocale()
   const { rating, userRatingCount, priceLevel, openNow } = suggestion
@@ -77,7 +79,7 @@ export function SpotSuggestionCard({
       </View>
       {isBest ? (
         <Text className="flex-1 text-brand-text-bright text-xs font-extrabold">
-          Melhor match
+          {t('spots.card.bestMatch')}
         </Text>
       ) : (
         <Text
@@ -92,13 +94,13 @@ export function SpotSuggestionCard({
         <View className="flex-row items-center gap-1 rounded-md bg-success/20 border border-success/30 px-2 py-1">
           <View className="w-1.5 h-1.5 rounded-full bg-success-text" />
           <Text className="text-success-text text-[11px] font-bold">
-            {isBest ? 'Aberto agora' : 'Aberto'}
+            {isBest ? t('spots.card.openNow') : t('spots.card.open')}
           </Text>
         </View>
       ) : openNow === false ? (
         <View className="rounded-md bg-surface-elevated px-2 py-1">
           <Text className="text-content-muted text-[11px] font-bold">
-            Fechado
+            {t('spots.card.closed')}
           </Text>
         </View>
       ) : null}
@@ -141,7 +143,7 @@ export function SpotSuggestionCard({
         )}
         {meta}
         <View className="px-3.5 pt-3.5 pb-3.5">
-          <Button label="Escolher esse rolê" onPress={onChoose} />
+          <Button label={t('spots.card.choose')} onPress={onChoose} />
         </View>
       </View>
     )
@@ -151,7 +153,9 @@ export function SpotSuggestionCard({
     <Pressable
       onPress={onChoose}
       accessibilityRole="button"
-      accessibilityLabel={`Escolher ${suggestion.name}`}
+      accessibilityLabel={t('spots.card.chooseNamed', {
+        name: suggestion.name,
+      })}
       className="bg-surface border border-line rounded-xl overflow-hidden"
     >
       {header}
@@ -159,7 +163,7 @@ export function SpotSuggestionCard({
       {meta}
       <View className="flex-row items-center justify-between px-3.5 py-3 mt-3 border-t border-line">
         <Text className="text-brand-text-bright text-[13px] font-bold">
-          Escolher esse rolê
+          {t('spots.card.choose')}
         </Text>
         <CaretRightIcon size={16} color={colors.brandText} />
       </View>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { View, Text, TextInput, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import {
   ArrowUUpLeftIcon,
   CheckIcon,
@@ -43,6 +44,7 @@ export function MessageInputBar({
   onTyping,
   onStopTyping,
 }: Props) {
+  const { t } = useTranslation()
   const [text, setText] = useState('')
   const trimmed = text.trim()
   const isEditing = !!editing
@@ -98,10 +100,13 @@ export function MessageInputBar({
               weight="fill"
             />
             <Text className="text-content-tertiary text-sm">
-              Editando mensagem
+              {t('chat.input.editing')}
             </Text>
           </View>
-          <Pressable onPress={cancelEdit} accessibilityLabel="Cancelar edição">
+          <Pressable
+            onPress={cancelEdit}
+            accessibilityLabel={t('chat.input.cancelEdit')}
+          >
             <XIcon size={18} color={colors.contentMuted} />
           </Pressable>
         </View>
@@ -116,7 +121,9 @@ export function MessageInputBar({
                 className="text-brand-text-strong text-[12px] font-semibold"
                 numberOfLines={1}
               >
-                Respondendo a {replyingTo.senderName}
+                {t('chat.input.replyingTo', {
+                  name: replyingTo.senderName,
+                })}
               </Text>
               <Text
                 className="text-content-muted text-[12px]"
@@ -128,7 +135,7 @@ export function MessageInputBar({
           </View>
           <Pressable
             onPress={onCancelReply}
-            accessibilityLabel="Cancelar resposta"
+            accessibilityLabel={t('chat.input.cancelReply')}
           >
             <XIcon size={18} color={colors.contentMuted} />
           </Pressable>
@@ -141,7 +148,7 @@ export function MessageInputBar({
             onPress={onAttach}
             disabled={disabled}
             className="w-10 h-10 items-center justify-center"
-            accessibilityLabel="Anexar imagem"
+            accessibilityLabel={t('chat.input.attach')}
           >
             <PlusCircleIcon
               size={26}
@@ -155,7 +162,7 @@ export function MessageInputBar({
             value={text}
             onChangeText={handleChangeText}
             editable={isEditing || !disabled}
-            placeholder="Mensagem…"
+            placeholder={t('chat.input.placeholder')}
             placeholderTextColor={colors.contentSubtle}
             multiline
             maxLength={2000}
@@ -174,7 +181,7 @@ export function MessageInputBar({
             onPress={onStartRecording}
             disabled={disabled}
             className="w-10 h-10 items-center justify-center rounded-full bg-surface-elevated"
-            accessibilityLabel="Gravar áudio"
+            accessibilityLabel={t('chat.input.record')}
           >
             <MicrophoneIcon
               size={20}
@@ -187,7 +194,9 @@ export function MessageInputBar({
             onPress={handleSend}
             disabled={!canSend}
             className={`w-10 h-10 items-center justify-center rounded-full ${canSend ? 'bg-brand' : 'bg-surface-elevated'}`}
-            accessibilityLabel={isEditing ? 'Salvar edição' : 'Enviar mensagem'}
+            accessibilityLabel={
+              isEditing ? t('chat.input.saveEdit') : t('chat.input.send')
+            }
           >
             {isEditing ? (
               <CheckIcon

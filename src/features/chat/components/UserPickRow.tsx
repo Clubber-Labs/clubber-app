@@ -1,4 +1,5 @@
 import { Pressable, View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { CheckCircleIcon, CircleIcon } from 'phosphor-react-native'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import type { UserMini } from '@/shared/types'
@@ -11,11 +12,18 @@ type Props = {
 }
 
 export function UserPickRow({ user, selected, onToggle }: Props) {
+  const { t } = useTranslation()
   return (
     <Pressable
       onPress={onToggle}
       className="flex-row items-center gap-3 px-4 py-3 active:bg-surface"
-      accessibilityLabel={`${user.name} ${user.lastname}${selected ? ', selecionado' : ''}`}
+      accessibilityLabel={
+        selected
+          ? t('chat.people.selected', {
+              name: `${user.name} ${user.lastname}`,
+            })
+          : `${user.name} ${user.lastname}`
+      }
     >
       <UserAvatar name={user.name} avatarUrl={user.avatarUrl} size={44} />
       <View className="flex-1">

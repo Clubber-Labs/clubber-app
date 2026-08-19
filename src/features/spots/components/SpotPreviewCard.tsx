@@ -5,6 +5,7 @@ import {
   ClockIcon,
   CaretRightIcon,
 } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useCategories } from '@/shared/hooks/useCategories'
 import { formatSpotWindow, isSpotLiveNow } from '../utils/spotWindow'
@@ -32,6 +33,7 @@ export function SpotPreviewCard({
   onClose,
   onSeeDetails,
 }: Props) {
+  const { t } = useTranslation()
   const formatDistance = useFormatDistance()
   const locale = useLocale()
   const tabBarClearance = useTabBarClearance()
@@ -39,8 +41,9 @@ export function SpotPreviewCard({
   const categoriesText = [...spot.categories, ...(spot.subcategories ?? [])]
     .map(labelFor)
     .join(', ')
-  const memberLabel =
-    spot.memberCount === 1 ? '1 no grupo' : `${spot.memberCount} no grupo`
+  const memberLabel = t('spots.preview.memberCount', {
+    count: spot.memberCount,
+  })
   const distance = userCoords
     ? formatDistance(distanceKm(userCoords, [spot.longitude, spot.latitude]))
     : null
@@ -59,7 +62,7 @@ export function SpotPreviewCard({
     >
       <Pressable
         onPress={onClose}
-        accessibilityLabel="Fechar"
+        accessibilityLabel={t('common.close')}
         hitSlop={8}
         className="absolute right-2.5 top-2.5 z-10 h-7 w-7 items-center justify-center rounded-lg bg-surface-elevated"
       >
@@ -85,7 +88,9 @@ export function SpotPreviewCard({
               className="flex-1 text-xs text-content-muted"
               numberOfLines={1}
             >
-              @{spot.creator.username} sugeriu um rolê
+              {t('spots.preview.suggestedBy', {
+                username: spot.creator.username,
+              })}
             </Text>
           </View>
           <Text
@@ -114,7 +119,9 @@ export function SpotPreviewCard({
         onPress={onSeeDetails}
         className="mt-3 h-11 flex-row items-center justify-center gap-1.5 rounded-lg bg-brand"
       >
-        <Text className="text-sm font-bold text-content">Ver rolê</Text>
+        <Text className="text-sm font-bold text-content">
+          {t('spots.preview.see')}
+        </Text>
         <CaretRightIcon size={16} color={colors.content} />
       </Pressable>
     </View>

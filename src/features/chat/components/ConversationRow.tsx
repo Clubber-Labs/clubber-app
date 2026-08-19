@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ConversationAvatar } from './ConversationAvatar'
 import { PresenceDot } from './PresenceDot'
 import { UnreadBadge } from '@/shared/components/UnreadBadge'
@@ -20,9 +21,10 @@ type Props = {
 }
 
 export function ConversationRow({ item, myId, onPress }: Props) {
+  const { t } = useTranslation()
   const locale = useLocale()
-  const title = conversationTitle(item, myId)
-  const preview = lastMessagePreview(item, myId)
+  const title = conversationTitle(item, myId, locale)
+  const preview = lastMessagePreview(item, myId, locale)
   const italic = isPreviewItalic(item)
   const unread = item.unreadCount > 0
   const time = item.lastMessageAt
@@ -40,7 +42,14 @@ export function ConversationRow({ item, myId, onPress }: Props) {
     <Pressable
       onPress={onPress}
       className="flex-row items-center gap-3 px-4 py-3 bg-background active:bg-surface"
-      accessibilityLabel={`Conversa: ${title}${unread ? `, ${item.unreadCount} não lidas` : ''}`}
+      accessibilityLabel={
+        unread
+          ? t('chat.inbox.rowLabelUnread', {
+              title,
+              count: item.unreadCount,
+            })
+          : t('chat.inbox.rowLabel', { title })
+      }
     >
       <View>
         <ConversationAvatar
