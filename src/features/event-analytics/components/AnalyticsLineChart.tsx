@@ -12,14 +12,28 @@ type MetricKey = 'views' | 'shares' | 'confirmations'
 
 type Series = {
   key: MetricKey
-  label: string
+  // Chave, não frase: a constante avalia no import e congelaria o idioma. As
+  // mesmas dos cards de resumo — legenda e card nomeiam a métrica igual.
+  labelKey: `analytics.metrics.${MetricKey}`
   color: string
 }
 
 const SERIES: Series[] = [
-  { key: 'views', label: 'Visualizações', color: colors.brandText },
-  { key: 'shares', label: 'Compartilhamentos', color: colors.info },
-  { key: 'confirmations', label: 'Confirmações', color: colors.successText },
+  {
+    key: 'views',
+    labelKey: 'analytics.metrics.views',
+    color: colors.brandText,
+  },
+  {
+    key: 'shares',
+    labelKey: 'analytics.metrics.shares',
+    color: colors.info,
+  },
+  {
+    key: 'confirmations',
+    labelKey: 'analytics.metrics.confirmations',
+    color: colors.successText,
+  },
 ]
 
 const CHART_HEIGHT = 160
@@ -101,7 +115,9 @@ export function AnalyticsLineChart({ timeline }: Props) {
               className="w-2.5 h-2.5 rounded-full"
               style={{ backgroundColor: s.color }}
             />
-            <Text className="text-content-tertiary text-xs">{s.label}</Text>
+            <Text className="text-content-tertiary text-xs">
+              {t(s.labelKey)}
+            </Text>
           </Pressable>
         ))}
       </View>

@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import { useRouter } from 'expo-router'
 import { useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { useBanner } from '@/shared/lib/banner'
 import { isNotFoundError, isForbiddenError } from '@/shared/lib/apiError'
 import { eventsService } from '@/features/events/services/eventsService'
@@ -18,6 +19,7 @@ import { useMarkRead } from './useMarkRead'
 // inacessível vira banner em vez de tela de erro; o fetch ainda aquece o cache
 // da tela de destino. Perfis navegam direto (a tela trata erro).
 export function useOpenNotification() {
+  const { t } = useTranslation()
   const router = useRouter()
   const queryClient = useQueryClient()
   const showBanner = useBanner()
@@ -44,7 +46,7 @@ export function useOpenNotification() {
             })
           } catch (err) {
             if (isNotFoundError(err) || isForbiddenError(err)) {
-              showBanner('Esse conteúdo não está mais disponível.')
+              showBanner(t('notifications.open.contentGone'))
               return
             }
             // Erro de rede etc.: navega mesmo assim — a tela tem estado de erro.
@@ -61,7 +63,7 @@ export function useOpenNotification() {
             })
           } catch (err) {
             if (isNotFoundError(err) || isForbiddenError(err)) {
-              showBanner('Esse rolê não está mais disponível.')
+              showBanner(t('notifications.open.spotGone'))
               return
             }
           }
@@ -83,7 +85,7 @@ export function useOpenNotification() {
             router.push(`/conversations/${spot.conversationId}`)
           } catch (err) {
             if (isNotFoundError(err) || isForbiddenError(err)) {
-              showBanner('Esse rolê não está mais disponível.')
+              showBanner(t('notifications.open.spotGone'))
               return
             }
             router.push(`/spots/${target.spotId}`)
@@ -91,7 +93,7 @@ export function useOpenNotification() {
           return
       }
     },
-    [queryClient, router, showBanner],
+    [queryClient, router, showBanner, t],
   )
 
   const openNotification = useCallback(

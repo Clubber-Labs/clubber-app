@@ -44,6 +44,9 @@ export function OpenInMapsProvider({ children }: { children: ReactNode }) {
   if (target) {
     options.push({
       key: 'google',
+      // Nome de produto de terceiro: não se traduz em idioma nenhum (o próprio
+      // 'Waze' abaixo escapa da regra só por ser uma palavra só).
+      // eslint-disable-next-line no-restricted-syntax
       label: 'Google Maps',
       icon: GoogleLogoIcon,
       onPress: () => launch(googleMapsUrl(target)),
@@ -51,6 +54,7 @@ export function OpenInMapsProvider({ children }: { children: ReactNode }) {
     if (Platform.OS === 'ios') {
       options.push({
         key: 'apple',
+        // eslint-disable-next-line no-restricted-syntax
         label: 'Apple Maps',
         icon: MapTrifoldIcon,
         onPress: () => launch(appleMapsUrl(target)),

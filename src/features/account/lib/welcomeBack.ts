@@ -1,3 +1,4 @@
+import { i18n } from '@/shared/i18n'
 import { getAccountRecovery, clearAccountRecovery } from './accountRecovery'
 
 type ShowBanner = (message: string) => void
@@ -16,9 +17,11 @@ export async function maybeShowWelcomeBack(
     await clearAccountRecovery()
     if (!rec || rec.userId !== loggedInUserId) return
     showBanner(
-      rec.status === 'PENDING_DELETION'
-        ? 'Bem-vindo de volta! Sua exclusão foi cancelada.'
-        : 'Bem-vindo de volta! Sua conta foi reativada.',
+      i18n.t(
+        rec.status === 'PENDING_DELETION'
+          ? 'account.welcomeBackCanceled'
+          : 'account.welcomeBackReactivated',
+      ),
     )
   } catch {
     // storage indisponível — segue sem banner.

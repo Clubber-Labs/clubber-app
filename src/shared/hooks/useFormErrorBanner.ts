@@ -1,10 +1,9 @@
 import { useCallback } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { FieldErrors } from 'react-hook-form'
 import { useBanner } from '@/shared/lib/banner'
 import { translateValidationMessage } from '@/shared/lib/validationKeys'
 import type { KeyboardAwareForm } from './useKeyboardAwareForm'
-
-const FALLBACK = 'Revise os campos destacados.'
 
 /**
  * Erros do RHF em { campo: mensagem }, achatando um nível de aninhamento
@@ -45,6 +44,7 @@ export function messagesFromErrors(
  * pularia pra outro.
  */
 export function useFormErrorBanner(form: KeyboardAwareForm) {
+  const { t } = useTranslation()
   const showBanner = useBanner()
 
   return useCallback(
@@ -53,9 +53,9 @@ export function useFormErrorBanner(form: KeyboardAwareForm) {
       const message =
         (focused ? messages[focused] : null) ??
         Object.values(messages)[0] ??
-        FALLBACK
+        t('shared.form.checkFields')
       showBanner(message)
     },
-    [form, showBanner],
+    [form, showBanner, t],
   )
 }

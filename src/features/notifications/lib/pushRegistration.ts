@@ -2,6 +2,7 @@ import { Platform } from 'react-native'
 import * as Device from 'expo-device'
 import * as Notifications from 'expo-notifications'
 import Constants from 'expo-constants'
+import { i18n } from '@/shared/i18n'
 import { notificationsService } from '../services/notificationsService'
 import {
   deleteRegisteredPushToken,
@@ -11,10 +12,12 @@ import {
 
 export type EnablePushResult = 'registered' | 'denied' | 'unavailable'
 
+// O nome aparece nos Ajustes do Android. Re-declarar o mesmo id renomeia o
+// canal, então trocar de idioma o atualiza no próximo sync de registro.
 async function ensureAndroidChannel() {
   if (Platform.OS !== 'android') return
   await Notifications.setNotificationChannelAsync('default', {
-    name: 'Notificações',
+    name: i18n.t('notifications.channelName'),
     importance: Notifications.AndroidImportance.HIGH,
   })
 }

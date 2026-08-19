@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Notifications from 'expo-notifications'
+import { useTranslation } from 'react-i18next'
 import { useConfirm } from '@/shared/lib/confirm'
 import { syncConsentMirror } from '@/features/privacy/lib/consentMirror'
 import { enablePush } from '../lib/pushRegistration'
@@ -16,6 +17,7 @@ const ASKED_KEY = 'clubber-push-priming-v1'
  * única vez, e gastá-lo sem contexto é uma recusa que só os Ajustes desfazem.
  */
 export function useNotificationPriming() {
+  const { t } = useTranslation()
   const confirm = useConfirm()
 
   /**
@@ -31,18 +33,17 @@ export function useNotificationPriming() {
     await AsyncStorage.setItem(ASKED_KEY, '1')
 
     const ok = await confirm({
-      title: 'Saber quando algo acontecer?',
-      message:
-        'A gente avisa sobre convites, confirmações nos seus rolês e atividade de quem você segue.',
-      confirmLabel: 'Ativar',
-      cancelLabel: 'Agora não',
+      title: t('notifications.priming.title'),
+      message: t('notifications.priming.message'),
+      confirmLabel: t('notifications.priming.confirm'),
+      cancelLabel: t('notifications.priming.cancel'),
     })
     if (!ok) return
 
     await enablePush()
     // Espelha o desfecho — concedido ou negado, é estado do dispositivo.
     void syncConsentMirror()
-  }, [confirm])
+  }, [confirm, t])
 
   return { primeAfterSocialAction }
 }

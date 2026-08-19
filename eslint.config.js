@@ -104,6 +104,34 @@ module.exports = [
           message:
             'Cor hex literal proibida: use um token do design system (classe bg-/text-/border-* ou colors.* de @/shared/theme).',
         },
+        {
+          // Ponto cego do i18next/no-literal-string: em modo jsx-only ele só vê
+          // JSX, e copy também entra como VALOR de objeto — título/mensagem do
+          // useConfirm, do Share.share, mensagem de schema. Foi assim que copy em
+          // português sobreviveu à Fase 3 inteira. Casa só o que parece frase
+          // (duas palavras), pra não pegar chave de cache nem token de config.
+          selector:
+            'Property[key.name=/^(title|message|label|description|placeholder|confirmLabel|cancelLabel)$/] > Literal[value=/[A-Za-zÀ-ÿ]{3,}[ ,][A-Za-zÀ-ÿ]{2,}/]',
+          message:
+            'Copy fora do JSX: mova para o dicionário e use t(...) — o i18next/no-literal-string não enxerga propriedade de objeto.',
+        },
+        {
+          // Mesmo ponto cego, outra forma: a copy entra como ARGUMENTO das
+          // funções que exibem texto. Lista fechada de propósito — `new Error`
+          // e `console.*` continuam livres, que é onde mora mensagem de dev.
+          selector:
+            'CallExpression[callee.name=/^(showBanner|setError|setInlineError|setFormError)$/] > Literal[value=/[A-Za-zÀ-ÿ]{3,}[ ,][A-Za-zÀ-ÿ]{2,}/]',
+          message:
+            'Copy fora do JSX: mova para o dicionário e use t(...) — o i18next/no-literal-string não enxerga argumento de chamada.',
+        },
+        {
+          // Mensagem de schema Zod é copy e vive fora do JSX. Deve guardar a
+          // CHAVE, traduzida no messagesFromErrors (ver VALIDATION_KEYS).
+          selector:
+            'CallExpression[callee.property.name=/^(min|max|length|email|url|uuid|regex|refine|superRefine|nonempty)$/] > Literal[value=/[A-Za-zÀ-ÿ]{3,}[ ,][A-Za-zÀ-ÿ]{2,}/]',
+          message:
+            'Mensagem de schema em texto: guarde a chave do dicionário (VALIDATION_KEYS a traduz no submit).',
+        },
       ],
     },
   },

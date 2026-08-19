@@ -243,7 +243,10 @@
       "hour": "Hora",
       "minute": "Min"
     },
-    "viewProfile": "Ver el perfil de {{username}}"
+    "viewProfile": "Ver el perfil de {{username}}",
+    "form": {
+      "checkFields": "Revisa los campos destacados."
+    }
   },
   "auth": {
     "login": {
@@ -469,7 +472,18 @@
     "markRead": "Marcar leídas",
     "settings": "Configuración de notificaciones",
     "emptyTitle": "Todo al día por aquí",
-    "emptyBody": "La actividad de tu red y los planes cerca de ti aparecen en esta pantalla."
+    "emptyBody": "La actividad de tu red y los planes cerca de ti aparecen en esta pantalla.",
+    "channelName": "Notificaciones",
+    "priming": {
+      "title": "¿Quieres saber cuando pase algo?",
+      "message": "Te avisamos de invitaciones, confirmaciones en tus planes y actividad de quienes sigues.",
+      "confirm": "Activar",
+      "cancel": "Ahora no"
+    },
+    "open": {
+      "contentGone": "Este contenido ya no está disponible.",
+      "spotGone": "Este plan ya no está disponible."
+    }
   },
   "spots": {
     "errors": {
@@ -1179,7 +1193,8 @@
       "granted": "Activado",
       "denied": "Desactivado",
       "enable": "Activar"
-    }
+    },
+    "exportTitle": "Mi historial de consentimientos — Clubber"
   },
   "settings": {
     "title": "Configuración",
@@ -1344,7 +1359,9 @@
     },
     "deleteCta": "Eliminar mi cuenta",
     "deactivateTagline": "Como tomarte una pausa: desapareces de la app sin perder nada.",
-    "deleteScheduledMessageWithDate": "Tu cuenta se eliminará el {{date}}. Inicia sesión antes de esa fecha para cancelarla."
+    "deleteScheduledMessageWithDate": "Tu cuenta se eliminará el {{date}}. Inicia sesión antes de esa fecha para cancelarla.",
+    "welcomeBackCanceled": "¡Bienvenido de vuelta! Se canceló la eliminación.",
+    "welcomeBackReactivated": "¡Bienvenido de vuelta! Se reactivó tu cuenta."
   },
   "reports": {
     "title": "Denunciar",
@@ -1363,7 +1380,8 @@
       "OTHER": "Otro"
     },
     "detailsPlaceholder": "Detalles (opcional)",
-    "submit": "Enviar denuncia"
+    "submit": "Enviar denuncia",
+    "sent": "Denuncia enviada. Gracias."
   },
   "featured": {
     "sponsored": "Patrocinado",
@@ -1406,6 +1424,8 @@
       "confirmations": "Confirmaciones"
     },
     "exportCsv": "Exportar CSV",
-    "updatedAt": "Actualizado {{relative}}"
+    "updatedAt": "Actualizado {{relative}}",
+    "exportTitle": "Analytics del evento — Clubber",
+    "exportError": "No se pudo exportar ahora. Inténtalo de nuevo."
   }
 }
