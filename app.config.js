@@ -64,6 +64,30 @@ function socialAuthPlugins() {
   return plugins
 }
 
+// Copy pt-BR das permissões do iOS em UM lugar só. Ela tem DOIS consumidores que
+// precisam concordar: as opções dos plugins abaixo (que escrevem o Info.plist
+// base) e o dicionário pt-BR de `locales` (que gera o .lproj). Divergir é uma
+// armadilha silenciosa — um aparelho em português lê o .lproj, então editar só a
+// opção do plugin não muda nada na tela.
+const IOS_PERMISSIONS_PT = {
+  NSCameraUsageDescription:
+    'Precisamos da câmera para fotos de perfil e eventos',
+  NSMicrophoneUsageDescription:
+    'Precisamos do microfone para gravar mensagens de voz.',
+  NSPhotoLibraryUsageDescription:
+    'Precisamos de acesso às suas fotos para alterar a foto de perfil.',
+  // expo-location força as 3 chaves no plist; só usamos foreground, mas as de
+  // "Always" levam texto específico pra App Review não receber genérico.
+  NSLocationWhenInUseUsageDescription:
+    'Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você.',
+  NSLocationAlwaysAndWhenInUseUsageDescription:
+    'Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você.',
+  NSLocationAlwaysUsageDescription:
+    'Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você.',
+  NSFaceIDUsageDescription:
+    'O Face ID protege os dados guardados neste aparelho, como a sua sessão.',
+}
+
 export default {
   expo: {
     name: "Clubber",
@@ -72,13 +96,14 @@ export default {
     scheme: "clubber",
     userInterfaceStyle: "automatic",
     // Strings NATIVAS (diálogo de permissão do iOS) por idioma — não confundir
-    // com src/shared/i18n/locales/, que é a copy do app. Quem renderiza estas é
-    // o SO, então elas não passam pelo i18next: o prebuild as vira
-    // ios/Clubber/Supporting/<lang>.lproj/InfoPlist.strings. Os arquivos nativos
-    // estão commitados à mão (prebuild não roda aqui — ver docs/migracao-cng.md);
-    // esta chave existe pra que, quando ele voltar a rodar, gere o mesmo.
+    // com src/shared/i18n/locales/, que é a copy do app: quem renderiza estas é o
+    // SO, e elas não passam pelo i18next. O prebuild as vira
+    // ios/Clubber/Supporting/<lang>.lproj/InfoPlist.strings — hoje commitados à
+    // mão (ver docs/migracao-cng.md), e esta chave é o que garante que ele gere o
+    // mesmo quando voltar a rodar. pt-BR sai do objeto acima em vez de arquivo
+    // porque é o idioma-base; en/es são tradução pura e ficam em JSON.
     locales: {
-      "pt-BR": "./assets/native-locales/pt-BR.json",
+      "pt-BR": { ios: IOS_PERMISSIONS_PT },
       en: "./assets/native-locales/en.json",
       es: "./assets/native-locales/es.json",
     },
@@ -120,35 +145,32 @@ export default {
       // Face ID protegeria, e a decisão de manter ou remover a permissão em si
       // não é desta fase.
       ["expo-secure-store", {
-        faceIDPermission: "O Face ID protege os dados guardados neste aparelho, como a sua sessão."
+        faceIDPermission: IOS_PERMISSIONS_PT.NSFaceIDUsageDescription
       }],
       ["react-native-vision-camera", {
-        cameraPermissionText: "Precisamos da câmera para fotos de perfil e eventos"
+        cameraPermissionText: IOS_PERMISSIONS_PT.NSCameraUsageDescription
       }],
       ["@rnmapbox/maps", {
         RNMAPBOX_MAPS_DOWNLOAD_TOKEN: process.env.RNMAPBOX_MAPS_DOWNLOAD_TOKEN
       }],
       "expo-notifications",
       ["expo-location", {
-        locationWhenInUsePermission: "Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você.",
-        // expo-location força as 3 keys de location no plist; só usamos
-        // foreground, mas passamos texto PT-BR específico nas de "Always"
-        // pra App Review não receber strings genéricas em inglês.
-        locationAlwaysAndWhenInUsePermission: "Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você.",
-        locationAlwaysPermission: "Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você."
+        locationWhenInUsePermission: IOS_PERMISSIONS_PT.NSLocationWhenInUseUsageDescription,
+        locationAlwaysAndWhenInUsePermission: IOS_PERMISSIONS_PT.NSLocationAlwaysAndWhenInUseUsageDescription,
+        locationAlwaysPermission: IOS_PERMISSIONS_PT.NSLocationAlwaysUsageDescription
       }],
       ["expo-image-picker", {
-        photosPermission: "Precisamos de acesso às suas fotos para alterar a foto de perfil.",
+        photosPermission: IOS_PERMISSIONS_PT.NSPhotoLibraryUsageDescription,
         // image-picker é o último plugin a tocar NSCameraUsageDescription;
         // sem isso, sobrescreveria o texto do vision-camera com placeholder
         // genérico em inglês.
-        cameraPermission: "Precisamos da câmera para fotos de perfil e eventos",
+        cameraPermission: IOS_PERMISSIONS_PT.NSCameraUsageDescription,
         // Usamos o microfone nas notas de voz do chat (via expo-audio). Texto
-        // PT-BR específico pra não cair no placeholder em inglês do plugin.
-        microphonePermission: "Precisamos do microfone para gravar mensagens de voz."
+        // específico pra não cair no placeholder em inglês do plugin.
+        microphonePermission: IOS_PERMISSIONS_PT.NSMicrophoneUsageDescription
       }],
       ["expo-audio", {
-        microphonePermission: "Precisamos do microfone para gravar mensagens de voz."
+        microphonePermission: IOS_PERMISSIONS_PT.NSMicrophoneUsageDescription
       }],
       ["expo-video", {
         supportsBackgroundPlayback: false,
