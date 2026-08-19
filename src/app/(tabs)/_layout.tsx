@@ -1,4 +1,5 @@
 import { Tabs } from 'expo-router'
+import { useTranslation } from 'react-i18next'
 import {
   HouseIcon,
   MagnifyingGlassIcon,
@@ -16,27 +17,29 @@ export const unstable_settings = { anchor: 'map/index' }
 
 type TabConfig = {
   name: string
-  title: string
+  // Chave do dicionário: frase pronta na constante congelaria o idioma no boot.
+  titleKey: `tabs.${'feed' | 'search' | 'map' | 'messages' | 'profile'}`
   icon: Icon
 }
 
 const TABS: TabConfig[] = [
-  { name: 'feed/index', title: 'Feed', icon: HouseIcon },
+  { name: 'feed/index', titleKey: 'tabs.feed', icon: HouseIcon },
   {
     name: 'search/index',
-    title: 'Buscar',
+    titleKey: 'tabs.search',
     icon: MagnifyingGlassIcon,
   },
-  { name: 'map/index', title: 'Mapa', icon: MapTrifoldIcon },
+  { name: 'map/index', titleKey: 'tabs.map', icon: MapTrifoldIcon },
   {
     name: 'messages/index',
-    title: 'Mensagens',
+    titleKey: 'tabs.messages',
     icon: ChatCircleIcon,
   },
-  { name: 'profile/index', title: 'Perfil', icon: UserIcon },
+  { name: 'profile/index', titleKey: 'tabs.profile', icon: UserIcon },
 ]
 
 export default function TabsLayout() {
+  const { t } = useTranslation()
   // Mantém o badge de não-lidas vivo enquanto a shell autenticada está montada;
   // o cache é atualizado em tempo real pelo socket (useChatRealtime).
   const { unreadTotal } = useInbox()
@@ -51,7 +54,7 @@ export default function TabsLayout() {
           key={tab.name}
           name={tab.name}
           options={{
-            title: tab.title,
+            title: t(tab.titleKey),
             tabBarIcon: ({ focused, color, size }) => (
               <tab.icon
                 size={size}

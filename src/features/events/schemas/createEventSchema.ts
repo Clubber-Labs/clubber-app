@@ -4,26 +4,28 @@ export const createEventSchema = z
   .object({
     title: z
       .string()
-      .min(3, 'Título deve ter ao menos 3 caracteres')
-      .max(100, 'Título deve ter no máximo 100 caracteres'),
+      .min(3, 'events.errors.titleMin')
+      .max(100, 'events.errors.titleMax'),
     description: z
       .string()
-      .max(2000, 'Descrição deve ter no máximo 2000 caracteres')
+      .max(2000, 'events.errors.descriptionMax')
       .optional()
       .or(z.literal('')),
-    date: z.date({ error: 'Data do evento é obrigatória' }),
+    date: z.date({ error: 'events.errors.dateRequired' }),
     endDate: z.date().optional(),
     address: z
       .string()
-      .max(255, 'Endereço deve ter no máximo 255 caracteres')
-      .min(1, 'Selecione o local no campo de busca'),
+      .max(255, 'events.errors.addressMax')
+      .min(1, 'events.errors.addressRequired'),
     latitude: z.number().min(-90).max(90),
     longitude: z.number().min(-180).max(180),
-    categories: z.array(z.string()).min(1, 'Selecione ao menos uma categoria'),
+    categories: z.array(z.string()).min(1, 'events.errors.categoriesMin'),
     // Subcategorias/gêneros (chaves de 2º nível). Coerência garantida na UI
     // (SubcategorySelect); o array é sempre enviado para o PUT substituir. O
     // form provê o default [] (como categories, é sempre presente nos values).
-    subcategories: z.array(z.string()).max(10, 'No máximo 10 interesses'),
+    subcategories: z
+      .array(z.string())
+      .max(10, 'events.errors.subcategoriesMax'),
     isPublic: z.boolean(),
     // Estabelecimento (Google Places). Presentes juntos quando o usuário
     // escolhe um lugar na busca; ausentes/null no fluxo de endereço manual.
@@ -31,7 +33,7 @@ export const createEventSchema = z
     venueName: z.string().nullish(),
   })
   .refine(data => !data.endDate || data.endDate > data.date, {
-    message: 'Horário de término deve ser depois do início',
+    message: 'events.errors.endAfterStart',
     path: ['endDate'],
   })
 

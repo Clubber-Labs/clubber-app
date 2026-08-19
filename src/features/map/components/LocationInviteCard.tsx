@@ -1,4 +1,5 @@
 import { Pressable, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { MapPinIcon } from 'phosphor-react-native'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import { colors } from '@/shared/theme'
@@ -19,6 +20,7 @@ type Props = {
  * chance única.
  */
 export function LocationInviteCard({ onEnable, onDismiss }: Props) {
+  const { t } = useTranslation()
   const tabBarClearance = useTabBarClearance()
 
   return (
@@ -32,11 +34,10 @@ export function LocationInviteCard({ onEnable, onDismiss }: Props) {
         </View>
         <View className="flex-1">
           <Text className="text-base font-bold text-content">
-            Ver o que rola perto de você
+            {t('map.locationInvite.title')}
           </Text>
           <Text className="text-sm text-content-muted mt-1 leading-5">
-            Ative a localização para encontrar rolês na sua região e aparecer no
-            mapa.
+            {t('map.locationInvite.body')}
           </Text>
         </View>
       </View>
@@ -47,14 +48,16 @@ export function LocationInviteCard({ onEnable, onDismiss }: Props) {
           className="flex-1 rounded-full border border-line-strong py-3 items-center active:opacity-70"
         >
           <Text className="text-sm font-semibold text-content-muted">
-            Agora não
+            {t('map.locationInvite.notNow')}
           </Text>
         </Pressable>
         <Pressable
           onPress={onEnable}
           className="flex-1 rounded-full bg-content py-3 items-center active:opacity-80"
         >
-          <Text className="text-sm font-bold text-background">Ativar</Text>
+          <Text className="text-sm font-bold text-background">
+            {t('map.locationInvite.enable')}
+          </Text>
         </Pressable>
       </View>
     </View>

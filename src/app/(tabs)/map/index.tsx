@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { View, Text, ActivityIndicator, Keyboard, Linking } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import Mapbox from '@rnmapbox/maps'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import type { FeedEvent } from '@/shared/types'
@@ -52,6 +53,7 @@ import type { Spot, SpotSuggestion } from '@/features/spots/types'
 import { colors } from '@/shared/theme'
 
 export default function MapScreen() {
+  const { t } = useTranslation()
   const router = useRouter()
   // Pedidos vindos de fora: foco em spot ("Ver no mapa" pós-publicação) e
   // abertura do fluxo de rolê (CreateFab das outras abas).
@@ -237,7 +239,7 @@ export default function MapScreen() {
       Linking.openSettings()
     } else if (result === 'error') {
       // Único caso sem destino: aqui o texto é o feedback que existe.
-      showBanner('Não foi possível obter sua localização.')
+      showBanner(t('map.banners.locationError'))
     }
   }
 
@@ -377,7 +379,7 @@ export default function MapScreen() {
           <MapStatusBanner
             icon={GpsSlashIcon}
             top={headerClearance + 92}
-            message="Sua posição é exibida somente para você. Habilite sua localização no mapa e descubra rolês e eventos perto de você."
+            message={t('map.banners.enableLocation')}
             onPress={() => void requestLocationAccess()}
           />
         )}
@@ -388,16 +390,13 @@ export default function MapScreen() {
           style={{ top: headerClearance + 84 }}
         >
           <Text className="text-content-tertiary text-xs">
-            Aproxime para ver mais eventos
+            {t('map.banners.zoomForMore')}
           </Text>
         </View>
       )}
 
       {error && (
-        <MapStatusBanner
-          variant="error"
-          message="Não foi possível carregar os eventos."
-        />
+        <MapStatusBanner variant="error" message={t('map.banners.loadError')} />
       )}
 
       {!selectedEvent && !selectedSpot && !suggestionsOpen && (

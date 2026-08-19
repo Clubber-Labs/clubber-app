@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { usePosts } from '../hooks/usePosts'
 import { PostItem } from './PostItem'
 import { CreatePostInput } from './CreatePostInput'
@@ -27,6 +28,7 @@ export function EventPostsFeed({
   myAttendance,
   ListHeaderComponent,
 }: Props) {
+  const { t } = useTranslation()
   const {
     data,
     isLoading,
@@ -58,7 +60,7 @@ export function EventPostsFeed({
             <CreatePostInput
               eventId={eventId}
               disabled={!canPost}
-              disabledReason="Marque interesse ou presença no evento para postar."
+              disabledReason={t('events.posts.attendToPost')}
             />
           </View>
         }
@@ -95,7 +97,7 @@ export function EventPostsFeed({
           ) : (
             <View className="py-10 items-center">
               <Text className="text-center text-content-muted text-sm">
-                Nenhum post ainda. Seja o primeiro!
+                {t('events.posts.empty')}
               </Text>
             </View>
           )

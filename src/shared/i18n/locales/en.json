@@ -242,7 +242,8 @@
       "date": "Date",
       "hour": "Hour",
       "minute": "Min"
-    }
+    },
+    "viewProfile": "View {{username}}'s profile"
   },
   "auth": {
     "login": {
@@ -473,5 +474,214 @@
       "endsInFuture": "The hangout must end in the future",
       "windowTooLong": "The hangout can last at most 24 hours from now"
     }
+  },
+  "events": {
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "Music festival at the park",
+      "description": "Description",
+      "descriptionPlaceholder": "Tell people more about the event...",
+      "dateTime": "Date and time",
+      "dateTimePlaceholder": "Pick the date and time",
+      "endTime": "End time",
+      "optional": "(optional)",
+      "endTimePlaceholder": "When it ends",
+      "categories": "Categories",
+      "location": "Location",
+      "locationOnMap": "Location on the map",
+      "locationMissing": "Pick a location in the field above",
+      "whoSees": "Who can see it",
+      "publicHint": "Anyone can see and join the event.",
+      "privateHint": "Only people you invite can see the event."
+    },
+    "visibility": {
+      "public": "Public",
+      "private": "Private"
+    },
+    "errors": {
+      "titleMin": "At least 3 characters",
+      "titleMax": "At most 100 characters",
+      "descriptionMax": "At most 2000 characters",
+      "dateRequired": "Event date is required",
+      "addressMax": "At most 255 characters",
+      "addressRequired": "Pick the location in the search field",
+      "categoriesMin": "Pick at least one category",
+      "subcategoriesMax": "At most 10 interests",
+      "endAfterStart": "End time must be after the start"
+    },
+    "actions": {
+      "deleteEvent": "Delete event",
+      "deleteMessage": "Are you sure? This removes the event and every interaction with it.",
+      "edit": "Edit",
+      "invite": "Invite",
+      "invited": "Guests"
+    },
+    "rsvp": {
+      "interested": "Interested",
+      "going": "I'm in",
+      "notGoing": "Not going",
+      "confirmed": "Going"
+    },
+    "card": {
+      "attendeeCount_one": "{{count}} person going",
+      "attendeeCount_other": "{{count}} people going",
+      "viewAllComments": "See all {{count}} comments"
+    },
+    "attendees": {
+      "oneGoing": "{{name}} is going",
+      "moreGoing": "{{name}} and {{count}} more are going"
+    },
+    "organizer": "Organizer",
+    "header": {
+      "viewLocationOnMap": "See the location on the map",
+      "openInMap": "Open in map",
+      "whoIsGoing": "Who's going",
+      "confirmedCount_one": "{{count}} confirmed",
+      "confirmedCount_other": "{{count}} confirmed"
+    },
+    "status": {
+      "soon": "Starting soon",
+      "past": "Ended",
+      "canceled": "Canceled",
+      "tomorrow": "Tomorrow",
+      "inDays": "In {{count}} days"
+    },
+    "statusFilter": {
+      "ongoing": "Happening now",
+      "soon": "Soon",
+      "upcoming": "Upcoming",
+      "past": "Past"
+    },
+    "reason": {
+      "selfCreated": "You created this event",
+      "selfInteraction": "You interacted with this event",
+      "friendCreated": "{{name}} created an event",
+      "friendGoing": "{{name}} is going to this event",
+      "friendInterested": "{{name}} is interested in this event",
+      "friendLiked": "{{name}} liked this event",
+      "friendCommented": "{{name}} commented: \"{{preview}}\"",
+      "discovery": "Recommended for you"
+    },
+    "comments": {
+      "deleteTitle": "Delete comment",
+      "deleteMessage": "Are you sure you want to delete this comment?",
+      "delete": "Delete",
+      "empty": "No comments yet. Be the first!",
+      "viewMore": "See more comments",
+      "placeholder": "Write a comment...",
+      "report": "Report comment",
+      "like": "Like",
+      "unlike": "Unlike"
+    },
+    "posts": {
+      "deleteTitle": "Delete post",
+      "deleteMessage": "Are you sure you want to delete this post?",
+      "report": "Report post",
+      "placeholder": "Share something about the event...",
+      "cannotPost": "You can't post right now.",
+      "imagesLabel": "Post photos",
+      "publish": "Post",
+      "empty": "No posts yet. Be the first!",
+      "attendToPost": "Mark yourself interested or going to post."
+    },
+    "imagePicker": {
+      "label": "Event photos",
+      "cover": "Cover",
+      "removePhoto": "Remove photo",
+      "addPhotos": "Add photos"
+    },
+    "share": {
+      "label": "Share event",
+      "message": "{{title}}\n\nCheck it out on Clubber: {{url}}"
+    },
+    "venue": {
+      "search": "Search for a venue",
+      "searchUnavailable": "Venue search is unavailable. You can enter the address manually.",
+      "detailsError": "Couldn't load this venue. Pick another one or enter the address manually.",
+      "enterManually": "Enter address manually",
+      "remove": "Remove venue",
+      "addressPlaceholder": "Street, number, neighborhood",
+      "mapEmptyHint": "Pick a location in the field above to see it on the map"
+    }
+  },
+  "map": {
+    "chips": {
+      "events": "Events",
+      "spots": "Hangouts",
+      "all": "All"
+    },
+    "filters": {
+      "title": "Filters",
+      "clear": "Clear",
+      "clearAll": "Clear filters",
+      "status": "Status",
+      "categories": "Categories",
+      "people": "People",
+      "friendsOnly": "Friends only",
+      "friendsOnlyHint": "Events from people you follow or with friends going",
+      "showEvents": "See events"
+    },
+    "search": {
+      "placeholder": "Search hangouts or events...",
+      "empty": "No events found."
+    },
+    "controls": {
+      "showHeatmap": "Show heatmap",
+      "hideHeatmap": "Hide heatmap",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "recenter": "Center on you"
+    },
+    "preview": {
+      "seeDetails": "See details"
+    },
+    "locationInvite": {
+      "title": "See what's happening near you",
+      "body": "Turn on location to find hangouts around you and show up on the map.",
+      "notNow": "Not now",
+      "enable": "Turn on"
+    },
+    "markers": {
+      "viewEvent": "View event {{title}}"
+    },
+    "banners": {
+      "locationError": "Couldn't get your location.",
+      "enableLocation": "Your position is only visible to you. Turn on location to discover hangouts and events near you.",
+      "zoomForMore": "Zoom in to see more events",
+      "loadError": "Couldn't load events."
+    }
+  },
+  "feed": {
+    "error": "Couldn't load the feed.",
+    "emptyFilteredTitle": "No events for these filters",
+    "emptyFilteredBody": "Try other filters or clear the selection.",
+    "emptyTitle": "Nothing here yet",
+    "emptyBody": "Follow people to see their events in your feed."
+  },
+  "tabs": {
+    "feed": "Feed",
+    "search": "Search",
+    "map": "Map",
+    "messages": "Messages",
+    "profile": "Profile"
+  },
+  "chat": {
+    "inbox": {
+      "newConversation": "New conversation"
+    }
+  },
+  "profile": {
+    "logout": "Log out",
+    "logoutMessage": "Are you sure you want to log out?",
+    "loadError": "Couldn't load your profile.",
+    "menu": {
+      "followRequests": "Follow requests",
+      "subscription": "Subscription",
+      "premium": "Clubber Premium",
+      "settings": "Settings",
+      "privacy": "Privacy",
+      "about": "About the app"
+    },
+    "eventsSection": "Events"
   }
 }

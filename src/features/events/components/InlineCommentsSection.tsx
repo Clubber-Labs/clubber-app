@@ -7,6 +7,7 @@ import {
   Pressable,
 } from 'react-native'
 import { PaperPlaneRightIcon } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
 import {
   useComments,
   useAddComment,
@@ -24,6 +25,7 @@ type Props = {
 }
 
 export function InlineCommentsSection({ eventId }: Props) {
+  const { t } = useTranslation()
   const [text, setText] = useState('')
   const myId = useAuthStore(s => s.userId)
   const confirm = useConfirm()
@@ -37,9 +39,9 @@ export function InlineCommentsSection({ eventId }: Props) {
 
   async function askDelete(commentId: string) {
     const ok = await confirm({
-      title: 'Apagar comentário',
-      message: 'Tem certeza que deseja apagar este comentário?',
-      confirmLabel: 'Apagar',
+      title: t('events.comments.deleteTitle'),
+      message: t('events.comments.deleteMessage'),
+      confirmLabel: t('events.comments.delete'),
       destructive: true,
     })
     if (ok) deleteComment.mutate(commentId)
@@ -65,7 +67,7 @@ export function InlineCommentsSection({ eventId }: Props) {
         <View className="px-4 py-3 gap-2">
           {comments.length === 0 ? (
             <Text className="text-center text-content-subtle text-sm py-3">
-              Nenhum comentário ainda. Seja o primeiro!
+              {t('events.comments.empty')}
             </Text>
           ) : (
             comments.map(comment => (
@@ -101,7 +103,7 @@ export function InlineCommentsSection({ eventId }: Props) {
                 <ActivityIndicator size="small" color={colors.brandEmphasis} />
               ) : (
                 <Text className="text-xs text-brand-text font-medium">
-                  Ver mais comentários
+                  {t('events.comments.viewMore')}
                 </Text>
               )}
             </Pressable>
@@ -112,7 +114,7 @@ export function InlineCommentsSection({ eventId }: Props) {
       <View className="flex-row items-end gap-2 px-3 py-2 border-t border-line bg-surface">
         <TextInput
           className="flex-1 border border-line bg-surface-elevated rounded-full px-4 py-2 text-sm text-content max-h-24"
-          placeholder="Escreva um comentário..."
+          placeholder={t('events.comments.placeholder')}
           placeholderTextColor={colors.contentSubtle}
           value={text}
           onChangeText={setText}

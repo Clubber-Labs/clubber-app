@@ -1,4 +1,5 @@
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { LockIcon } from 'phosphor-react-native'
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg'
 import { EventDateChip } from './EventDateChip'
@@ -23,11 +24,12 @@ const textShadow = {
 }
 
 function PrivatePill() {
+  const { t } = useTranslation()
   return (
     <View className="flex-row items-center gap-1 rounded-full border border-white/15 bg-black/70 px-2 py-1">
       <LockIcon size={11} color={colors.contentTertiary} />
       <Text className="text-[11px] font-semibold text-content-tertiary">
-        Privado
+        {t('events.visibility.private')}
       </Text>
     </View>
   )
@@ -53,6 +55,7 @@ function TopChips({ event, isPast }: { event: FeedEvent; isPast: boolean }) {
 }
 
 export function EventCardHero({ event, onAuthorPress }: Props) {
+  const { t } = useTranslation()
   const imageUrl = event.images[0]?.url ?? null
   const isPast = event.status === 'PAST' || event.status === 'CANCELED'
 
@@ -96,7 +99,9 @@ export function EventCardHero({ event, onAuthorPress }: Props) {
         </View>
         <Pressable
           onPress={onAuthorPress}
-          accessibilityLabel={`Ver perfil de ${event.author.username}`}
+          accessibilityLabel={t('shared.viewProfile', {
+            username: event.author.username,
+          })}
           className="absolute inset-x-3 bottom-3 flex-row items-center gap-2"
         >
           <View className="rounded-full border-2 border-white/80">
@@ -118,7 +123,7 @@ export function EventCardHero({ event, onAuthorPress }: Props) {
               className="text-[11px] text-content-tertiary"
               style={textShadow}
             >
-              Organizador
+              {t('events.organizer')}
             </Text>
           </View>
         </Pressable>

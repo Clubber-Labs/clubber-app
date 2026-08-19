@@ -11,7 +11,6 @@ export const ZOOM_STEP = 1
 export const MARKERS_ZOOM_THRESHOLD = 14
 export const CLUSTER_MAX_ZOOM = 14
 export const CLUSTER_RADIUS = 50
-export const ALL_CATEGORIES = 'Todas'
 export const VIOLET_500 = colors.brandEmphasis
 export const VIOLET_600 = colors.brand
 export const VIOLET_400 = colors.brandText

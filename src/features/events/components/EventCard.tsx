@@ -10,6 +10,7 @@ import {
   HeartIcon,
   ChatCircleIcon,
 } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
 import { useToggleLike } from '../hooks/useToggleLike'
 import { useSetAttendance, useCancelAttendance } from '../hooks/useAttendance'
 import { EventCardHero } from './EventCardHero'
@@ -58,6 +59,7 @@ function CategoryChip({ categories }: { categories: string[] }) {
 }
 
 export function EventCard({ event, onPress, showReason = true }: Props) {
+  const { t } = useTranslation()
   const locale = useLocale()
   const [expanded, setExpanded] = useState(false)
   // Medida real do card pro frame de destaque: Rect com "100%" não
@@ -128,7 +130,9 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
             <Pressable
               onPress={() => navigateToProfile(event.author.id)}
               className="flex-row items-center gap-2 self-start py-0.5"
-              accessibilityLabel={`Ver perfil de ${event.author.username}`}
+              accessibilityLabel={t('shared.viewProfile', {
+                username: event.author.username,
+              })}
             >
               <UserAvatar
                 name={event.author.name}
@@ -181,8 +185,9 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
             <View className="flex-row items-center gap-1.5 px-4 pt-3">
               <UsersIcon size={14} color={colors.contentMuted} />
               <Text className="text-xs text-content-muted">
-                {event._count.attendances}{' '}
-                {event._count.attendances === 1 ? 'pessoa vai' : 'pessoas vão'}
+                {t('events.card.attendeeCount', {
+                  count: event._count.attendances,
+                })}
               </Text>
             </View>
           )
@@ -203,7 +208,9 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
             className="flex-row items-center gap-2 rounded-full border border-white/40 px-5 py-2.5"
           >
             <CheckCircleIcon size={17} color={colors.content} weight="fill" />
-            <Text className="text-sm font-bold text-content">Confirmado</Text>
+            <Text className="text-sm font-bold text-content">
+              {t('events.rsvp.confirmed')}
+            </Text>
           </Pressable>
         ) : (
           <>
@@ -222,7 +229,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
               <Text
                 className={`text-sm font-bold ${declined ? 'text-content-muted' : 'text-background'}`}
               >
-                Vou
+                {t('events.rsvp.going')}
               </Text>
             </Pressable>
             <Pressable
@@ -242,7 +249,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
               <Text
                 className={`text-sm font-bold ${declined ? 'text-content-subtle' : 'text-content-muted'}`}
               >
-                Não vou
+                {t('events.rsvp.notGoing')}
               </Text>
             </Pressable>
           </>
@@ -303,7 +310,9 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
           {event._count.comments > 1 && (
             <Pressable onPress={() => setExpanded(true)}>
               <Text className="mt-0.5 text-xs text-content-subtle">
-                Ver todos os {event._count.comments} comentários
+                {t('events.card.viewAllComments', {
+                  count: event._count.comments,
+                })}
               </Text>
             </Pressable>
           )}

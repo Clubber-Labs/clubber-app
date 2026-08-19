@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import {
   UserPlusIcon,
@@ -33,6 +34,7 @@ import {
 } from '@/features/users/components/ProfileDrawer'
 
 export default function ProfileScreen() {
+  const { t } = useTranslation()
   const router = useRouter()
   const tabBarClearance = useTabBarClearance()
   const headerClearance = useHeaderClearance(0)
@@ -69,23 +71,22 @@ export default function ProfileScreen() {
 
   async function handleLogout() {
     const ok = await confirm({
-      title: 'Sair',
-      message: 'Tem certeza que deseja sair?',
-      confirmLabel: 'Sair',
+      title: t('profile.logout'),
+      message: t('profile.logoutMessage'),
+      confirmLabel: t('profile.logout'),
       destructive: true,
     })
     if (ok) performLogout()
   }
 
   if (profileLoading) return <ProfileLoading />
-  if (!profile)
-    return <ProfileEmpty message="Não foi possível carregar o perfil." />
+  if (!profile) return <ProfileEmpty message={t('profile.loadError')} />
 
   const drawerItems: DrawerItem[] = [
     ...(profile.isPrivate
       ? [
           {
-            label: 'Solicitações de follow',
+            label: t('profile.menu.followRequests'),
             icon: UserPlusIcon,
             badge: pendingRequestsBadge,
             onPress: () => router.push('/profile/follow-requests'),
@@ -93,28 +94,30 @@ export default function ProfileScreen() {
         ]
       : []),
     {
-      label: profile.isPremium ? 'Assinatura' : 'Clubber Premium',
+      label: profile.isPremium
+        ? t('profile.menu.subscription')
+        : t('profile.menu.premium'),
       icon: CrownIcon,
       onPress: () =>
         router.push(profile.isPremium ? '/billing/manage' : '/billing/upgrade'),
     },
     {
-      label: 'Configurações',
+      label: t('profile.menu.settings'),
       icon: GearIcon,
       onPress: () => router.push('/settings'),
     },
     {
-      label: 'Privacidade',
+      label: t('profile.menu.privacy'),
       icon: ShieldCheckIcon,
       onPress: () => router.push('/profile/privacy'),
     },
     {
-      label: 'Sobre o app',
+      label: t('profile.menu.about'),
       icon: InfoIcon,
       onPress: () => router.push('/about'),
     },
     {
-      label: 'Sair',
+      label: t('profile.logout'),
       icon: SignOutIcon,
       onPress: handleLogout,
     },
@@ -174,7 +177,7 @@ export default function ProfileScreen() {
             />
             <View className="flex-row items-center gap-2 px-4 pb-3 pt-5">
               <Text className="text-content-secondary text-sm font-extrabold uppercase tracking-wide">
-                Eventos
+                {t('profile.eventsSection')}
               </Text>
               {profile.eventsCount > 0 && (
                 <Text className="text-content-subtle text-xs font-bold">

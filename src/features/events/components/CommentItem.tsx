@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { FlagIcon, HeartIcon, TrashIcon } from 'phosphor-react-native'
 import { useToggleCommentLike } from '../hooks/useComments'
 import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
@@ -18,6 +19,7 @@ type Props = {
 }
 
 export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
+  const { t } = useTranslation()
   const locale = useLocale()
   const navigateToProfile = useNavigateToProfile()
   const toggleLike = useToggleCommentLike(eventId)
@@ -34,7 +36,9 @@ export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
       <View className="flex-row items-center justify-between mb-1">
         <Pressable
           onPress={() => navigateToProfile(comment.author.id)}
-          accessibilityLabel={`Ver perfil de ${comment.author.username}`}
+          accessibilityLabel={t('shared.viewProfile', {
+            username: comment.author.username,
+          })}
         >
           <Text className="text-sm font-semibold text-content">
             {comment.author.name} {comment.author.lastname}
@@ -49,7 +53,7 @@ export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
               onPress={onReport}
               hitSlop={8}
               accessibilityRole="button"
-              accessibilityLabel="Denunciar comentário"
+              accessibilityLabel={t('events.comments.report')}
             >
               <FlagIcon size={14} color={colors.contentSubtle} />
             </Pressable>
@@ -61,7 +65,11 @@ export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
         onPress={handleLike}
         disabled={toggleLike.isPending}
         className="flex-row items-center gap-1 mt-2 self-start"
-        accessibilityLabel={comment.userLiked ? 'Descurtir' : 'Curtir'}
+        accessibilityLabel={
+          comment.userLiked
+            ? t('events.comments.unlike')
+            : t('events.comments.like')
+        }
       >
         <HeartIcon
           size={16}
@@ -83,7 +91,13 @@ export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
 
   return (
     <SwipeableRow
-      rightActions={[{ icon: TrashIcon, label: 'Apagar', onPress: onDelete }]}
+      rightActions={[
+        {
+          icon: TrashIcon,
+          label: t('events.comments.delete'),
+          onPress: onDelete,
+        },
+      ]}
     >
       {card}
     </SwipeableRow>

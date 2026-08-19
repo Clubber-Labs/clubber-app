@@ -8,6 +8,7 @@ import {
   Keyboard,
 } from 'react-native'
 import { PaperPlaneTiltIcon } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
 import { useAddPost, useUploadPostImages } from '../hooks/usePosts'
 import { EventImagePicker } from './EventImagePicker'
 import { useMe } from '@/features/auth/hooks/useMe'
@@ -22,6 +23,7 @@ type Props = {
 }
 
 export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
+  const { t } = useTranslation()
   const [text, setText] = useState('')
   const [imageUris, setImageUris] = useState<string[]>([])
   const { data: me } = useMe()
@@ -51,7 +53,7 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
     return (
       <View className="bg-brand-surface rounded-xl px-4 py-3">
         <Text className="text-sm text-brand-text-strong">
-          {disabledReason ?? 'Você não pode postar agora.'}
+          {disabledReason ?? t('events.posts.cannotPost')}
         </Text>
       </View>
     )
@@ -67,7 +69,7 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
         </View>
         <TextInput
           className="flex-1 text-base text-content min-h-[40px] max-h-32 pt-2"
-          placeholder="Compartilhe algo sobre o evento..."
+          placeholder={t('events.posts.placeholder')}
           placeholderTextColor={colors.contentSubtle}
           value={text}
           onChangeText={setText}
@@ -81,7 +83,7 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
           uris={imageUris}
           onChange={setImageUris}
           maxCount={MAX_POST_IMAGES}
-          label="Fotos da publicação"
+          label={t('events.posts.imagesLabel')}
         />
       </View>
 
@@ -101,7 +103,9 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
               color={colors.content}
             />
           )}
-          <Text className="text-sm font-semibold text-content">Publicar</Text>
+          <Text className="text-sm font-semibold text-content">
+            {t('events.posts.publish')}
+          </Text>
         </Pressable>
       </View>
     </View>

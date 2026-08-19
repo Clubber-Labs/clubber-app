@@ -17,6 +17,7 @@ import Svg, {
   Rect,
 } from 'react-native-svg'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useTranslation } from 'react-i18next'
 import { formatDayOfMonthAtTime } from '@/shared/utils/dateFormat'
 import { useLocale } from '@/shared/hooks/useLocale'
 import { formatFullName } from '@/shared/utils/fullName'
@@ -71,6 +72,7 @@ function MetaRow({
 }
 
 export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
+  const { t } = useTranslation()
   const locale = useLocale()
   const insets = useSafeAreaInsets()
   const hasImages = event.images.length > 0
@@ -103,7 +105,7 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
         {onBack ? (
           <Pressable
             onPress={onBack}
-            accessibilityLabel="Voltar"
+            accessibilityLabel={t('common.back')}
             hitSlop={8}
             className="h-10 w-10 items-center justify-center rounded-full bg-background/50"
           >
@@ -121,7 +123,9 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
           </View>
           <Pressable
             onPress={onAuthorPress}
-            accessibilityLabel={`Ver perfil de ${event.author.username}`}
+            accessibilityLabel={t('shared.viewProfile', {
+              username: event.author.username,
+            })}
             className="flex-row items-center gap-2.5"
           >
             <View className="rounded-full border-2 border-white/70">
@@ -138,7 +142,9 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
               >
                 {formatFullName(event.author.name, event.author.lastname)}
               </Text>
-              <Text className="text-content-tertiary text-xs">Organizador</Text>
+              <Text className="text-content-tertiary text-xs">
+                {t('events.organizer')}
+              </Text>
             </View>
           </Pressable>
         </View>
@@ -195,7 +201,7 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
               <View className="flex-row items-center gap-1 rounded-full bg-surface-elevated px-2.5 py-1">
                 <LockIcon size={11} color={colors.contentTertiary} />
                 <Text className="text-content-tertiary text-xs font-semibold">
-                  Privado
+                  {t('events.visibility.private')}
                 </Text>
               </View>
             )}
@@ -215,13 +221,15 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
             <MetaRow
               icon={event.venueName ? BuildingsIcon : MapPinIcon}
               title={
-                event.venueName ?? event.address ?? 'Ver localização no mapa'
+                event.venueName ??
+                event.address ??
+                t('events.header.viewLocationOnMap')
               }
               subtitle={
                 event.venueName
-                  ? (event.address ?? 'Abrir no mapa')
+                  ? (event.address ?? t('events.header.openInMap'))
                   : event.address
-                    ? 'Abrir no mapa'
+                    ? t('events.header.openInMap')
                     : undefined
               }
               chevron
@@ -246,7 +254,7 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
         {(attendees.length > 0 || event._count.attendances > 0) && (
           <View className="gap-3 border-t border-line pt-4">
             <Text className="text-content text-base font-extrabold">
-              Quem vai
+              {t('events.header.whoIsGoing')}
             </Text>
             {attendees.length > 0 ? (
               <EventAttendeesStack
@@ -255,8 +263,9 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
               />
             ) : (
               <Text className="text-content-muted text-sm">
-                {event._count.attendances}{' '}
-                {event._count.attendances === 1 ? 'confirmado' : 'confirmados'}
+                {t('events.header.confirmedCount', {
+                  count: event._count.attendances,
+                })}
               </Text>
             )}
           </View>

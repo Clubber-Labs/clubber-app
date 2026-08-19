@@ -8,6 +8,7 @@ import {
   Pressable,
 } from 'react-native'
 import { GlobeIcon, LockIcon } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
 import { useForm, Controller, type Path } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -72,6 +73,7 @@ export function EventForm({
   errorMessage,
   imagesSection,
 }: Props) {
+  const { t } = useTranslation()
   const {
     control,
     handleSubmit,
@@ -118,7 +120,7 @@ export function EventForm({
 
         <View className="gap-1" {...form.anchor('title')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Título
+            {t('events.form.title')}
           </Text>
           <Controller
             control={control}
@@ -127,7 +129,7 @@ export function EventForm({
               <TextInput
                 {...form.input('title')}
                 className={`border ${errors.title ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
-                placeholder="Festival de música no parque"
+                placeholder={t('events.form.titlePlaceholder')}
                 placeholderTextColor={colors.contentSubtle}
                 value={value}
                 onChangeText={onChange}
@@ -138,7 +140,7 @@ export function EventForm({
 
         <View className="gap-1" {...form.anchor('description')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Descrição
+            {t('events.form.description')}
           </Text>
           <Controller
             control={control}
@@ -147,7 +149,7 @@ export function EventForm({
               <TextInput
                 {...form.input('description')}
                 className={`border ${errors.description ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content min-h-[96px]`}
-                placeholder="Conte mais sobre o evento..."
+                placeholder={t('events.form.descriptionPlaceholder')}
                 placeholderTextColor={colors.contentSubtle}
                 value={value ?? ''}
                 onChangeText={onChange}
@@ -160,7 +162,7 @@ export function EventForm({
 
         <View className="gap-1" {...form.anchor('date')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Data e hora
+            {t('events.form.dateTime')}
           </Text>
           <Controller
             control={control}
@@ -170,7 +172,7 @@ export function EventForm({
                 value={value}
                 onChange={onChange}
                 mode="datetime"
-                placeholder="Selecione a data e hora"
+                placeholder={t('events.form.dateTimePlaceholder')}
                 minimumDate={new Date()}
                 hasError={!!errors.date}
               />
@@ -180,8 +182,10 @@ export function EventForm({
 
         <View className="gap-1" {...form.anchor('endDate')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Horário de término{' '}
-            <Text className="text-content-subtle text-xs">(opcional)</Text>
+            {t('events.form.endTime')}{' '}
+            <Text className="text-content-subtle text-xs">
+              {t('events.form.optional')}
+            </Text>
           </Text>
           <Controller
             control={control}
@@ -191,7 +195,7 @@ export function EventForm({
                 value={value}
                 onChange={onChange}
                 mode="datetime"
-                placeholder="Quando termina"
+                placeholder={t('events.form.endTimePlaceholder')}
                 minimumDate={startDate ?? new Date()}
                 hasError={!!errors.endDate}
               />
@@ -201,7 +205,7 @@ export function EventForm({
 
         <View className="gap-1" {...form.anchor('categories')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Categorias
+            {t('events.form.categories')}
           </Text>
           <Controller
             control={control}
@@ -214,8 +218,10 @@ export function EventForm({
 
         <View className="gap-1" {...form.anchor('subcategories')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Interesses{' '}
-            <Text className="text-content-subtle text-xs">(opcional)</Text>
+            {t('shared.interests.title')}{' '}
+            <Text className="text-content-subtle text-xs">
+              {t('events.form.optional')}
+            </Text>
           </Text>
           <Controller
             control={control}
@@ -232,7 +238,7 @@ export function EventForm({
 
         <View className="gap-1" {...form.anchor('address')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Local
+            {t('events.form.location')}
           </Text>
           <VenuePicker
             value={{
@@ -248,7 +254,7 @@ export function EventForm({
 
         <View className="gap-1" {...form.anchor('latitude')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Local no mapa
+            {t('events.form.locationOnMap')}
           </Text>
           <LocationPreview
             value={
@@ -261,7 +267,7 @@ export function EventForm({
           />
           {(errors.latitude || errors.longitude) && (
             <Text className="text-content text-xs">
-              Escolha um local no campo acima
+              {t('events.form.locationMissing')}
             </Text>
           )}
         </View>
@@ -272,7 +278,7 @@ export function EventForm({
           render={({ field: { onChange, value } }) => (
             <View className="gap-1">
               <Text className="text-sm font-medium text-content-tertiary">
-                Quem vê
+                {t('events.form.whoSees')}
               </Text>
               <View className="flex-row gap-1 bg-surface border border-line rounded-xl p-1">
                 {([true, false] as const).map(option => {
@@ -297,7 +303,9 @@ export function EventForm({
                           active ? 'text-content' : 'text-content-muted'
                         }`}
                       >
-                        {option ? 'Público' : 'Privado'}
+                        {option
+                          ? t('events.visibility.public')
+                          : t('events.visibility.private')}
                       </Text>
                     </Pressable>
                   )
@@ -305,8 +313,8 @@ export function EventForm({
               </View>
               <Text className="text-xs text-content-muted">
                 {value
-                  ? 'Qualquer pessoa pode ver e participar do evento.'
-                  : 'Só quem você convidar pode ver o evento.'}
+                  ? t('events.form.publicHint')
+                  : t('events.form.privateHint')}
               </Text>
             </View>
           )}

@@ -6,6 +6,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { MagnifyingGlassIcon, PencilSimpleIcon } from 'phosphor-react-native'
 import { useVenueSearch } from '../hooks/useVenueSearch'
 import { VenueSuggestionItem } from './VenueSuggestionItem'
@@ -25,6 +26,7 @@ export function VenueSearchInput({
   onManual,
   hasError,
 }: Props) {
+  const { t } = useTranslation()
   const { query, setQuery, suggestions, status, selectPlace } =
     useVenueSearch(coords)
   const [selecting, setSelecting] = useState(false)
@@ -53,7 +55,7 @@ export function VenueSearchInput({
       <View className="relative">
         <TextInput
           className={`border ${hasError ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 pr-10 text-base text-content`}
-          placeholder="Buscar estabelecimento"
+          placeholder={t('events.venue.search')}
           placeholderTextColor={colors.contentSubtle}
           value={query}
           onChangeText={setQuery}
@@ -83,15 +85,13 @@ export function VenueSearchInput({
 
       {status === 'unavailable' && (
         <Text className="text-xs text-content-muted">
-          Busca de locais indisponível. Você pode inserir o endereço
-          manualmente.
+          {t('events.venue.searchUnavailable')}
         </Text>
       )}
 
       {detailsError && (
         <Text className="text-xs text-content-muted">
-          Não foi possível carregar este local. Escolha outro ou insira o
-          endereço manualmente.
+          {t('events.venue.detailsError')}
         </Text>
       )}
 
@@ -101,7 +101,7 @@ export function VenueSearchInput({
       >
         <PencilSimpleIcon size={15} color={colors.brandText} />
         <Text className="text-sm font-medium text-brand-text">
-          Inserir endereço manualmente
+          {t('events.venue.enterManually')}
         </Text>
       </Pressable>
     </View>

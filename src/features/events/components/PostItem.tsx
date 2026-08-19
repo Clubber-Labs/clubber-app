@@ -1,4 +1,5 @@
 import { View, Text, Pressable, Image, ScrollView } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import {
   TrashIcon,
   FlagIcon,
@@ -25,6 +26,7 @@ type Props = {
 }
 
 export function PostItem({ eventId, post, onReport }: Props) {
+  const { t } = useTranslation()
   const locale = useLocale()
   const userId = useAuthStore(s => s.userId)
   const deletePost = useDeletePost(eventId)
@@ -35,9 +37,9 @@ export function PostItem({ eventId, post, onReport }: Props) {
 
   async function handleDelete() {
     const ok = await confirm({
-      title: 'Excluir post',
-      message: 'Tem certeza que deseja excluir este post?',
-      confirmLabel: 'Excluir',
+      title: t('events.posts.deleteTitle'),
+      message: t('events.posts.deleteMessage'),
+      confirmLabel: t('common.delete'),
       destructive: true,
     })
     if (ok) deletePost.mutate(post.id)
@@ -49,7 +51,9 @@ export function PostItem({ eventId, post, onReport }: Props) {
         <Pressable
           onPress={() => navigateToProfile(post.author.id)}
           className="flex-row items-center gap-2 flex-1"
-          accessibilityLabel={`Ver perfil de ${post.author.username}`}
+          accessibilityLabel={t('shared.viewProfile', {
+            username: post.author.username,
+          })}
         >
           <UserAvatar
             name={post.author.name}
@@ -77,7 +81,7 @@ export function PostItem({ eventId, post, onReport }: Props) {
           <Pressable
             onPress={onReport}
             className="w-8 h-8 items-center justify-center"
-            accessibilityLabel="Denunciar publicação"
+            accessibilityLabel={t('events.posts.report')}
           >
             <FlagIcon size={16} color={colors.contentSubtle} />
           </Pressable>
