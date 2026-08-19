@@ -1,4 +1,5 @@
 import { ScrollView, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useCategories } from '@/shared/hooks/useCategories'
 import { Chip } from '@/shared/components/Chip'
 import { useMapUiStore } from '../store/mapUiStore'
@@ -10,6 +11,7 @@ import type { MapKind } from '../types'
 // estado do sheet de filtros (mapUiStore.filters). "Todas" limpa a seleção
 // de categorias (sem categoria = todas).
 export function MapCategoryChips() {
+  const { t } = useTranslation()
   const { categories } = useCategories()
   const filters = useMapUiStore(s => s.filters)
   const setFilters = useMapUiStore(s => s.setFilters)
@@ -34,12 +36,12 @@ export function MapCategoryChips() {
       contentContainerStyle={{ paddingHorizontal: 12, gap: 8 }}
     >
       <Chip
-        label="Eventos"
+        label={t('map.chips.events')}
         active={filters.kind === 'events'}
         onPress={() => toggleKind('events')}
       />
       <Chip
-        label="Rolês"
+        label={t('map.chips.spots')}
         active={filters.kind === 'spots'}
         onPress={() => toggleKind('spots')}
       />
@@ -47,7 +49,7 @@ export function MapCategoryChips() {
         <>
           <View className="w-px self-stretch my-1 bg-white/20" />
           <Chip
-            label="Todas"
+            label={t('map.chips.all')}
             active={selected.length === 0}
             onPress={() => setFilters({ ...filters, categories: [] })}
           />

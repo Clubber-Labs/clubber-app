@@ -1,4 +1,5 @@
 import { View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import type { FriendAttendance } from '@/shared/types'
 
@@ -11,14 +12,18 @@ type Props = {
 const MAX_VISIBLE = 4
 
 export function EventAttendeesStack({ attendees, totalAttendances }: Props) {
+  const { t } = useTranslation()
   if (attendees.length === 0) return null
 
   const visible = attendees.slice(0, MAX_VISIBLE)
   const first = visible[0].user.name
   const summary =
     totalAttendances <= 1
-      ? `${first} vai`
-      : `${first} e mais ${totalAttendances - 1} vão`
+      ? t('events.attendees.oneGoing', { name: first })
+      : t('events.attendees.moreGoing', {
+          name: first,
+          count: totalAttendances - 1,
+        })
 
   return (
     <View className="flex-row items-center gap-2">

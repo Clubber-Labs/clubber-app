@@ -1,4 +1,5 @@
 import { View, Text, Pressable, Image, StyleSheet } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { XIcon, MapPinIcon, CaretRightIcon } from 'phosphor-react-native'
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg'
 import type { FeedEvent } from '@/shared/types'
@@ -29,6 +30,7 @@ export function EventPreviewCard({
   onClose,
   onSeeDetails,
 }: Props) {
+  const { t } = useTranslation()
   const formatDistance = useFormatDistance()
   const tabBarClearance = useTabBarClearance()
   const cover = event.images[0]?.url
@@ -48,7 +50,7 @@ export function EventPreviewCard({
     >
       <Pressable
         onPress={onClose}
-        accessibilityLabel="Fechar"
+        accessibilityLabel={t('common.close')}
         hitSlop={8}
         className="absolute right-2.5 top-2.5 z-10 h-7 w-7 items-center justify-center rounded-lg bg-surface-elevated"
       >
@@ -124,7 +126,9 @@ export function EventPreviewCard({
         onPress={onSeeDetails}
         className="mt-3 h-11 flex-row items-center justify-center gap-1.5 rounded-lg bg-brand"
       >
-        <Text className="text-sm font-bold text-content">Ver detalhes</Text>
+        <Text className="text-sm font-bold text-content">
+          {t('map.preview.seeDetails')}
+        </Text>
         <CaretRightIcon size={16} color={colors.content} />
       </Pressable>
     </View>

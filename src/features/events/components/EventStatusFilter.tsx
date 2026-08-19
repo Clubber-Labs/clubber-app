@@ -1,18 +1,20 @@
 import { ScrollView, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Chip } from '@/shared/components/Chip'
 import type { EventStatus } from '@/shared/types'
 
 type Option = {
   value: EventStatus
-  label: string
+  // Chave do dicionário: frase pronta na constante congelaria o idioma no boot.
+  labelKey: `events.statusFilter.${'ongoing' | 'soon' | 'upcoming' | 'past'}`
 }
 
 // Ordem do mais "atual" pro mais antigo — facilita scan visual.
 const OPTIONS: Option[] = [
-  { value: 'ONGOING', label: 'Acontecendo' },
-  { value: 'SOON', label: 'Em breve' },
-  { value: 'UPCOMING', label: 'Futuros' },
-  { value: 'PAST', label: 'Encerrados' },
+  { value: 'ONGOING', labelKey: 'events.statusFilter.ongoing' },
+  { value: 'SOON', labelKey: 'events.statusFilter.soon' },
+  { value: 'UPCOMING', labelKey: 'events.statusFilter.upcoming' },
+  { value: 'PAST', labelKey: 'events.statusFilter.past' },
 ]
 
 type Props = {
@@ -24,6 +26,7 @@ type Props = {
 }
 
 export function EventStatusFilter({ value, onChange, wrap }: Props) {
+  const { t } = useTranslation()
   function toggle(status: EventStatus) {
     const next = value.includes(status)
       ? value.filter(s => s !== status)
@@ -36,7 +39,7 @@ export function EventStatusFilter({ value, onChange, wrap }: Props) {
   const chips = OPTIONS.map(option => (
     <Chip
       key={option.value}
-      label={option.label}
+      label={t(option.labelKey)}
       active={value.includes(option.value)}
       onPress={() => toggle(option.value)}
     />

@@ -1,4 +1,5 @@
 import { Modal, View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 export type EventAction = {
   label: string
@@ -13,6 +14,7 @@ type Props = {
 }
 
 export function EventActionsMenu({ visible, actions, onClose }: Props) {
+  const { t } = useTranslation()
   return (
     <Modal
       visible={visible}
@@ -54,7 +56,7 @@ export function EventActionsMenu({ visible, actions, onClose }: Props) {
             className="mx-4 mt-2 py-3 rounded-xl bg-surface-elevated items-center"
           >
             <Text className="text-content-secondary font-semibold text-base">
-              Cancelar
+              {t('common.cancel')}
             </Text>
           </Pressable>
         </Pressable>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Pressable } from 'react-native'
 import { DotsThreeIcon } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useDeleteEvent } from '../hooks/useDeleteEvent'
@@ -13,6 +14,7 @@ type Props = {
 }
 
 export function EventActionsButton({ eventId, isPublic }: Props) {
+  const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const router = useRouter()
   const confirm = useConfirm()
@@ -20,10 +22,9 @@ export function EventActionsButton({ eventId, isPublic }: Props) {
 
   async function handleDelete() {
     const ok = await confirm({
-      title: 'Excluir evento',
-      message:
-        'Tem certeza? Esta ação remove o evento e todas as interações associadas.',
-      confirmLabel: 'Excluir',
+      title: t('events.actions.deleteEvent'),
+      message: t('events.actions.deleteMessage'),
+      confirmLabel: t('common.delete'),
       destructive: true,
     })
     if (!ok) return
@@ -34,23 +35,23 @@ export function EventActionsButton({ eventId, isPublic }: Props) {
 
   const actions: EventAction[] = [
     {
-      label: 'Editar',
+      label: t('events.actions.edit'),
       onPress: () => router.push(`/events/${eventId}/edit`),
     },
     ...(!isPublic
       ? [
           {
-            label: 'Convidar',
+            label: t('events.actions.invite'),
             onPress: () => router.push(`/events/${eventId}/invites`),
           },
           {
-            label: 'Convidados',
+            label: t('events.actions.invited'),
             onPress: () => router.push(`/events/${eventId}/invited`),
           },
         ]
       : []),
     {
-      label: 'Excluir evento',
+      label: t('events.actions.deleteEvent'),
       onPress: handleDelete,
       destructive: true,
     },

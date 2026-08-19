@@ -242,7 +242,8 @@
       "date": "Fecha",
       "hour": "Hora",
       "minute": "Min"
-    }
+    },
+    "viewProfile": "Ver el perfil de {{username}}"
   },
   "auth": {
     "login": {
@@ -473,5 +474,214 @@
       "endsInFuture": "El plan debe terminar en el futuro",
       "windowTooLong": "El plan puede durar como máximo 24 horas desde ahora"
     }
+  },
+  "events": {
+    "form": {
+      "title": "Título",
+      "titlePlaceholder": "Festival de música en el parque",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Cuenta más sobre el evento...",
+      "dateTime": "Fecha y hora",
+      "dateTimePlaceholder": "Selecciona la fecha y hora",
+      "endTime": "Hora de término",
+      "optional": "(opcional)",
+      "endTimePlaceholder": "Cuándo termina",
+      "categories": "Categorías",
+      "location": "Lugar",
+      "locationOnMap": "Lugar en el mapa",
+      "locationMissing": "Elige un lugar en el campo de arriba",
+      "whoSees": "Quién lo ve",
+      "publicHint": "Cualquiera puede ver y participar del evento.",
+      "privateHint": "Solo quienes invites pueden ver el evento."
+    },
+    "visibility": {
+      "public": "Público",
+      "private": "Privado"
+    },
+    "errors": {
+      "titleMin": "Mínimo 3 caracteres",
+      "titleMax": "Máximo 100 caracteres",
+      "descriptionMax": "Máximo 2000 caracteres",
+      "dateRequired": "La fecha del evento es obligatoria",
+      "addressMax": "Máximo 255 caracteres",
+      "addressRequired": "Selecciona el lugar en el campo de búsqueda",
+      "categoriesMin": "Selecciona al menos una categoría",
+      "subcategoriesMax": "Máximo 10 intereses",
+      "endAfterStart": "La hora de término debe ser posterior al inicio"
+    },
+    "actions": {
+      "deleteEvent": "Eliminar evento",
+      "deleteMessage": "¿Estás seguro? Esto elimina el evento y todas las interacciones asociadas.",
+      "edit": "Editar",
+      "invite": "Invitar",
+      "invited": "Invitados"
+    },
+    "rsvp": {
+      "interested": "Interesado",
+      "going": "Voy",
+      "notGoing": "No voy",
+      "confirmed": "Confirmado"
+    },
+    "card": {
+      "attendeeCount_one": "{{count}} persona va",
+      "attendeeCount_other": "{{count}} personas van",
+      "viewAllComments": "Ver los {{count}} comentarios"
+    },
+    "attendees": {
+      "oneGoing": "{{name}} va",
+      "moreGoing": "{{name}} y {{count}} más van"
+    },
+    "organizer": "Organizador",
+    "header": {
+      "viewLocationOnMap": "Ver la ubicación en el mapa",
+      "openInMap": "Abrir en el mapa",
+      "whoIsGoing": "Quién va",
+      "confirmedCount_one": "{{count}} confirmado",
+      "confirmedCount_other": "{{count}} confirmados"
+    },
+    "status": {
+      "soon": "Empieza pronto",
+      "past": "Finalizado",
+      "canceled": "Cancelado",
+      "tomorrow": "Mañana",
+      "inDays": "En {{count}} días"
+    },
+    "statusFilter": {
+      "ongoing": "En curso",
+      "soon": "Pronto",
+      "upcoming": "Próximos",
+      "past": "Finalizados"
+    },
+    "reason": {
+      "selfCreated": "Creaste este evento",
+      "selfInteraction": "Interactuaste con este evento",
+      "friendCreated": "{{name}} creó un evento",
+      "friendGoing": "{{name}} va a este evento",
+      "friendInterested": "{{name}} tiene interés en este evento",
+      "friendLiked": "A {{name}} le gustó este evento",
+      "friendCommented": "{{name}} comentó: \"{{preview}}\"",
+      "discovery": "Recomendado para ti"
+    },
+    "comments": {
+      "deleteTitle": "Borrar comentario",
+      "deleteMessage": "¿Seguro que quieres borrar este comentario?",
+      "delete": "Borrar",
+      "empty": "Aún no hay comentarios. ¡Sé el primero!",
+      "viewMore": "Ver más comentarios",
+      "placeholder": "Escribe un comentario...",
+      "report": "Denunciar comentario",
+      "like": "Me gusta",
+      "unlike": "Quitar me gusta"
+    },
+    "posts": {
+      "deleteTitle": "Eliminar post",
+      "deleteMessage": "¿Seguro que quieres eliminar este post?",
+      "report": "Denunciar publicación",
+      "placeholder": "Comparte algo sobre el evento...",
+      "cannotPost": "No puedes publicar ahora.",
+      "imagesLabel": "Fotos de la publicación",
+      "publish": "Publicar",
+      "empty": "Aún no hay posts. ¡Sé el primero!",
+      "attendToPost": "Marca interés o asistencia en el evento para publicar."
+    },
+    "imagePicker": {
+      "label": "Fotos del evento",
+      "cover": "Portada",
+      "removePhoto": "Quitar foto",
+      "addPhotos": "Agregar fotos"
+    },
+    "share": {
+      "label": "Compartir evento",
+      "message": "{{title}}\n\nMíralo en Clubber: {{url}}"
+    },
+    "venue": {
+      "search": "Buscar establecimiento",
+      "searchUnavailable": "La búsqueda de lugares no está disponible. Puedes ingresar la dirección manualmente.",
+      "detailsError": "No se pudo cargar este lugar. Elige otro o ingresa la dirección manualmente.",
+      "enterManually": "Ingresar dirección manualmente",
+      "remove": "Quitar establecimiento",
+      "addressPlaceholder": "Calle, número, barrio",
+      "mapEmptyHint": "Elige un lugar en el campo de arriba para verlo en el mapa"
+    }
+  },
+  "map": {
+    "chips": {
+      "events": "Eventos",
+      "spots": "Planes",
+      "all": "Todas"
+    },
+    "filters": {
+      "title": "Filtros",
+      "clear": "Limpiar",
+      "clearAll": "Limpiar filtros",
+      "status": "Estado",
+      "categories": "Categorías",
+      "people": "Personas",
+      "friendsOnly": "Solo amigos",
+      "friendsOnlyHint": "Eventos de quienes sigues o con amigos que van",
+      "showEvents": "Ver eventos"
+    },
+    "search": {
+      "placeholder": "Buscar planes o eventos...",
+      "empty": "No se encontraron eventos."
+    },
+    "controls": {
+      "showHeatmap": "Mostrar mapa de calor",
+      "hideHeatmap": "Ocultar mapa de calor",
+      "zoomIn": "Acercar",
+      "zoomOut": "Alejar",
+      "recenter": "Centrar en ti"
+    },
+    "preview": {
+      "seeDetails": "Ver detalles"
+    },
+    "locationInvite": {
+      "title": "Mira qué hay cerca de ti",
+      "body": "Activa la ubicación para encontrar planes en tu zona y aparecer en el mapa.",
+      "notNow": "Ahora no",
+      "enable": "Activar"
+    },
+    "markers": {
+      "viewEvent": "Ver evento {{title}}"
+    },
+    "banners": {
+      "locationError": "No se pudo obtener tu ubicación.",
+      "enableLocation": "Tu posición solo la ves tú. Activa tu ubicación en el mapa y descubre planes y eventos cerca de ti.",
+      "zoomForMore": "Acerca para ver más eventos",
+      "loadError": "No se pudieron cargar los eventos."
+    }
+  },
+  "feed": {
+    "error": "Error al cargar el feed.",
+    "emptyFilteredTitle": "No hay eventos con esos filtros",
+    "emptyFilteredBody": "Prueba otros filtros o limpia la selección.",
+    "emptyTitle": "Nada por aquí todavía",
+    "emptyBody": "Sigue a personas para ver sus eventos en tu feed."
+  },
+  "tabs": {
+    "feed": "Feed",
+    "search": "Buscar",
+    "map": "Mapa",
+    "messages": "Mensajes",
+    "profile": "Perfil"
+  },
+  "chat": {
+    "inbox": {
+      "newConversation": "Nueva conversación"
+    }
+  },
+  "profile": {
+    "logout": "Cerrar sesión",
+    "logoutMessage": "¿Seguro que quieres cerrar sesión?",
+    "loadError": "No se pudo cargar el perfil.",
+    "menu": {
+      "followRequests": "Solicitudes de seguimiento",
+      "subscription": "Suscripción",
+      "premium": "Clubber Premium",
+      "settings": "Configuración",
+      "privacy": "Privacidad",
+      "about": "Acerca de la app"
+    },
+    "eventsSection": "Eventos"
   }
 }

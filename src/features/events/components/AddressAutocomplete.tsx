@@ -6,6 +6,7 @@ import {
   Pressable,
   ActivityIndicator,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import {
   MagnifyingGlassIcon,
   BuildingsIcon,
@@ -28,6 +29,7 @@ export function AddressAutocomplete({
   onSelect,
   hasError,
 }: Props) {
+  const { t } = useTranslation()
   const [focused, setFocused] = useState(false)
   const [justSelected, setJustSelected] = useState(false)
 
@@ -52,7 +54,7 @@ export function AddressAutocomplete({
       <View className="relative">
         <TextInput
           className={`border ${hasError ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 pr-10 text-base text-content`}
-          placeholder="Rua, número, bairro"
+          placeholder={t('events.venue.addressPlaceholder')}
           placeholderTextColor={colors.contentSubtle}
           value={value}
           onChangeText={handleChange}

@@ -1,4 +1,5 @@
 import { View, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import {
   FireIcon,
   PlusIcon,
@@ -32,6 +33,7 @@ export function MapZoomControls({
   densityActive,
   onToggleDensity,
 }: Props) {
+  const { t } = useTranslation()
   const tabBarClearance = useTabBarClearance()
 
   return (
@@ -54,7 +56,9 @@ export function MapZoomControls({
           accessibilityRole="button"
           accessibilityState={{ selected: densityActive }}
           accessibilityLabel={
-            densityActive ? 'Ocultar mapa de calor' : 'Mostrar mapa de calor'
+            densityActive
+              ? t('map.controls.hideHeatmap')
+              : t('map.controls.showHeatmap')
           }
           className={`h-14 items-center justify-center ${densityActive ? 'bg-brand' : ''}`}
         >
@@ -66,7 +70,7 @@ export function MapZoomControls({
         </Pressable>
         <Pressable
           onPress={onZoomIn}
-          accessibilityLabel="Aproximar"
+          accessibilityLabel={t('map.controls.zoomIn')}
           className="h-14 items-center justify-center border-t"
           style={GLASS_DIVIDER}
         >
@@ -74,7 +78,7 @@ export function MapZoomControls({
         </Pressable>
         <Pressable
           onPress={onZoomOut}
-          accessibilityLabel="Afastar"
+          accessibilityLabel={t('map.controls.zoomOut')}
           className="h-14 items-center justify-center border-t"
           style={GLASS_DIVIDER}
         >
@@ -83,7 +87,7 @@ export function MapZoomControls({
         {showRecenter && (
           <Pressable
             onPress={onRecenter}
-            accessibilityLabel="Centralizar em você"
+            accessibilityLabel={t('map.controls.recenter')}
             className="h-14 items-center justify-center border-t"
             style={GLASS_DIVIDER}
           >

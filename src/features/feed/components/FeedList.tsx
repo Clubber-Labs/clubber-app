@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { useFeed } from '../hooks/useFeed'
 import { EventCard } from '@/features/events/components/EventCard'
@@ -20,6 +21,7 @@ import type { EventStatus, FeedEvent } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
 export function FeedList() {
+  const { t } = useTranslation()
   const router = useRouter()
   const tabBarClearance = useTabBarClearance()
   const headerClearance = useHeaderClearance()
@@ -92,20 +94,16 @@ export function FeedList() {
         ) : isError ? (
           <View className="flex-1 items-center justify-center px-6">
             <Text className="text-content-muted text-center">
-              Erro ao carregar o feed.
+              {t('feed.error')}
             </Text>
           </View>
         ) : (
           <View className="flex-1 items-center justify-center px-6">
             <Text className="text-content font-semibold text-base mb-1">
-              {filtering
-                ? 'Nenhum evento para esses filtros'
-                : 'Nada por aqui ainda'}
+              {filtering ? t('feed.emptyFilteredTitle') : t('feed.emptyTitle')}
             </Text>
             <Text className="text-content-muted text-center text-sm">
-              {filtering
-                ? 'Tente outros filtros ou limpe a seleção.'
-                : 'Siga pessoas para ver os eventos delas no seu feed.'}
+              {filtering ? t('feed.emptyFilteredBody') : t('feed.emptyBody')}
             </Text>
           </View>
         )

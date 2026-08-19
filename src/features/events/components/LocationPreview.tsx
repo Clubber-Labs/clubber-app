@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import Mapbox from '@rnmapbox/maps'
 import { InfoIcon } from 'phosphor-react-native'
 import { colors, MAP_STYLE_URL } from '@/shared/theme'
@@ -31,6 +32,7 @@ export function LocationPreview({
   hasError,
   categories,
 }: Props) {
+  const { t } = useTranslation()
   const [center, setCenter] = useState<[number, number]>(
     value ? [value.longitude, value.latitude] : initialCenter,
   )
@@ -83,7 +85,7 @@ export function LocationPreview({
         <Text className="text-xs text-content-muted">
           {value
             ? `${value.latitude.toFixed(5)}, ${value.longitude.toFixed(5)}`
-            : 'Escolha um local no campo acima para ver no mapa'}
+            : t('events.venue.mapEmptyHint')}
         </Text>
       </View>
     </View>

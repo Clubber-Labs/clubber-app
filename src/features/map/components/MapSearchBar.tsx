@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Keyboard,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { MapPinIcon } from 'phosphor-react-native'
 import { SearchInput } from '@/shared/components/SearchInput'
 import { UserAvatar } from '@/shared/components/UserAvatar'
@@ -22,6 +23,7 @@ type Props = {
 // Busca de eventos sobreposta no topo do mapa. Ao escolher um resultado, a tela
 // voa até o evento (mesmo fora do viewport atual).
 export function MapSearchBar({ onSelect }: Props) {
+  const { t } = useTranslation()
   const [query, setQuery] = useState('')
   const { events, trimmed, isLoading } = useSearchEvents(query)
   const { labelsFor } = useCategories()
@@ -39,7 +41,7 @@ export function MapSearchBar({ onSelect }: Props) {
         value={query}
         onChange={setQuery}
         loading={open && isLoading}
-        placeholder="Buscar rolês ou eventos..."
+        placeholder={t('map.search.placeholder')}
         variant="overlay"
       />
 
@@ -49,7 +51,7 @@ export function MapSearchBar({ onSelect }: Props) {
             <ActivityIndicator className="py-5" color={colors.brandEmphasis} />
           ) : events.length === 0 ? (
             <Text className="text-content-subtle text-sm text-center py-5">
-              Nenhum evento encontrado.
+              {t('map.search.empty')}
             </Text>
           ) : (
             <ScrollView keyboardShouldPersistTaps="handled">

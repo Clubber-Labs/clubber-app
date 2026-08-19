@@ -1,15 +1,24 @@
 import { View, Text, Pressable } from 'react-native'
 import { StarIcon, CheckCircleIcon, XCircleIcon } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
 import type { Icon } from 'phosphor-react-native'
 import { useSetAttendance, useCancelAttendance } from '../hooks/useAttendance'
 import type { AttendanceType } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
-const OPTIONS: { type: AttendanceType; label: string; icon: Icon }[] = [
-  { type: 'INTERESTED', label: 'Interessado', icon: StarIcon },
-  { type: 'CONFIRMED', label: 'Vou', icon: CheckCircleIcon },
-  { type: 'NOT_INTERESTED', label: 'Não vou', icon: XCircleIcon },
-]
+// Constante de módulo guarda a CHAVE (frase pronta congelaria o idioma no boot).
+type RsvpLabelKey = `events.rsvp.${'interested' | 'going' | 'notGoing'}`
+
+const OPTIONS: { type: AttendanceType; labelKey: RsvpLabelKey; icon: Icon }[] =
+  [
+    { type: 'INTERESTED', labelKey: 'events.rsvp.interested', icon: StarIcon },
+    { type: 'CONFIRMED', labelKey: 'events.rsvp.going', icon: CheckCircleIcon },
+    {
+      type: 'NOT_INTERESTED',
+      labelKey: 'events.rsvp.notGoing',
+      icon: XCircleIcon,
+    },
+  ]
 
 type Props = {
   eventId: string
@@ -17,6 +26,7 @@ type Props = {
 }
 
 export function EventAttendanceButton({ eventId, current }: Props) {
+  const { t } = useTranslation()
   const setAttendance = useSetAttendance(eventId)
   const cancelAttendance = useCancelAttendance(eventId)
 
@@ -30,7 +40,7 @@ export function EventAttendanceButton({ eventId, current }: Props) {
 
   return (
     <View className="flex-row gap-2">
-      {OPTIONS.map(({ type, label, icon: OptionIcon }) => {
+      {OPTIONS.map(({ type, labelKey, icon: OptionIcon }) => {
         const active = current === type
         return (
           <Pressable
@@ -51,7 +61,7 @@ export function EventAttendanceButton({ eventId, current }: Props) {
             <Text
               className={`text-xs font-bold ${active ? 'text-background' : 'text-content-secondary'}`}
             >
-              {label}
+              {t(labelKey)}
             </Text>
           </Pressable>
         )

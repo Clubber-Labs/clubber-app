@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { MagnifyingGlassIcon } from 'phosphor-react-native'
 import { VenueSearchInput } from './VenueSearchInput'
 import { SelectedVenueCard } from './SelectedVenueCard'
@@ -34,6 +35,7 @@ function initialMode(value: VenueValue): Mode {
 }
 
 export function VenuePicker({ value, onChange, coords, hasError }: Props) {
+  const { t } = useTranslation()
   const [mode, setMode] = useState<Mode>(() => initialMode(value))
 
   if (mode === 'selected' && value.venueName) {
@@ -70,7 +72,7 @@ export function VenuePicker({ value, onChange, coords, hasError }: Props) {
         >
           <MagnifyingGlassIcon size={15} color={colors.brandText} />
           <Text className="text-sm font-medium text-brand-text">
-            Buscar estabelecimento
+            {t('events.venue.search')}
           </Text>
         </Pressable>
       </View>

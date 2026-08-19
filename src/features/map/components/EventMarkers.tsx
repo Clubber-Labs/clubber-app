@@ -1,4 +1,5 @@
 import { View, Pressable, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import Mapbox from '@rnmapbox/maps'
 import type { FeedEvent, FriendAttendance } from '@/shared/types'
 import { UserAvatar } from '@/shared/components/UserAvatar'
@@ -100,6 +101,7 @@ function SingleMarker({
   dimmed?: boolean
   detailsOpen?: boolean
 }) {
+  const { t } = useTranslation()
   const size = selected ? EVENT_PIN_SIZE_SELECTED : EVENT_PIN_SIZE
   const opacity = dimmed ? DIMMED_OPACITY : 1
   const items = socialItems(event, !!detailsOpen)
@@ -108,7 +110,7 @@ function SingleMarker({
     <Pressable
       onPress={() => onPress(event)}
       accessibilityRole="button"
-      accessibilityLabel={`Ver evento ${event.title}`}
+      accessibilityLabel={t('map.markers.viewEvent', { title: event.title })}
       hitSlop={6}
     >
       <EventPin {...eventPinLook(event)} size={size} selected={selected} />
@@ -212,6 +214,7 @@ function CoincidentMarker({
   onPress: (event: FeedEvent) => void
   dimmed?: boolean
 }) {
+  const { t } = useTranslation()
   const anchor = group[0]
   const radius = fanoutRadius(group.length, EVENT_PIN_SIZE_SELECTED, FANOUT_GAP)
   const frame = EVENT_PIN_SIZE_SELECTED + radius * 2
@@ -243,7 +246,9 @@ function CoincidentMarker({
               key={event.id}
               onPress={() => onPress(event)}
               accessibilityRole="button"
-              accessibilityLabel={`Ver evento ${event.title}`}
+              accessibilityLabel={t('map.markers.viewEvent', {
+                title: event.title,
+              })}
               hitSlop={6}
               style={{
                 position: 'absolute',

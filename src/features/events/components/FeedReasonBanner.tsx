@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import {
   PencilSimpleIcon,
   ArrowsClockwiseIcon,
@@ -29,6 +30,7 @@ const SOCIAL_KINDS = new Set([
 ])
 
 export function FeedReasonBanner({ reason, categories }: Props) {
+  const { t } = useTranslation()
   const content = render(reason)
   // useId é estável por instância e evita colisão de id de gradiente entre os
   // vários banners da lista (os dois-pontos do useId não valem em url(#id)).
@@ -62,47 +64,59 @@ export function FeedReasonBanner({ reason, categories }: Props) {
           color={hue ? hue.chipText : colors.brandText}
         />
         <Text className="flex-1 text-xs text-content-muted" numberOfLines={1}>
-          {content.text}
+          {t(content.key, content.params)}
         </Text>
       </View>
     </View>
   )
 }
 
-function render(reason: FeedReason): { icon: Icon; text: string } | null {
+// Decide a CHAVE do banner (função pura de módulo); a tradução acontece no
+// render do componente, com o t() assinado pra re-renderizar na troca de idioma.
+type ReasonContent = {
+  icon: Icon
+  key:
+    | `events.reason.${'selfCreated' | 'selfInteraction' | 'discovery'}`
+    | `events.reason.${'friendCreated' | 'friendGoing' | 'friendInterested' | 'friendLiked'}`
+    | 'events.reason.friendCommented'
+  params?: { name: string; preview?: string }
+}
+
+function render(reason: FeedReason): ReasonContent | null {
   switch (reason.kind) {
     case 'self_created':
-      return { icon: PencilSimpleIcon, text: 'Você criou este evento' }
+      return { icon: PencilSimpleIcon, key: 'events.reason.selfCreated' }
     case 'self_interaction':
-      return {
-        icon: ArrowsClockwiseIcon,
-        text: 'Você interagiu com este evento',
-      }
+      return { icon: ArrowsClockwiseIcon, key: 'events.reason.selfInteraction' }
     case 'friend_created':
       return {
         icon: SparkleIcon,
-        text: `${reason.user.name} criou um evento`,
+        key: 'events.reason.friendCreated',
+        params: { name: reason.user.name },
       }
     case 'friend_attending':
       return {
         icon: StarIcon,
-        text:
+        key:
           reason.type === 'CONFIRMED'
-            ? `${reason.user.name} vai a este evento`
-            : `${reason.user.name} tem interesse neste evento`,
+            ? 'events.reason.friendGoing'
+            : 'events.reason.friendInterested',
+        params: { name: reason.user.name },
       }
     case 'friend_reacted':
       return {
         icon: HeartIcon,
-        text: `${reason.user.name} curtiu este evento`,
+        key: 'events.reason.friendLiked',
+        params: { name: reason.user.name },
       }
     case 'friend_commented':
       return {
         icon: ChatCircleIcon,
-        text: `${reason.user.name} comentou: "${reason.preview}"`,
+        key: 'events.reason.friendCommented',
+        params: { name: reason.user.name, preview: reason.preview },
       }
     case 'discovery':
-      return { icon: CompassIcon, text: 'Recomendado para você' }
+      return { icon: CompassIcon, key: 'events.reason.discovery' }
     default:
       return null
   }
