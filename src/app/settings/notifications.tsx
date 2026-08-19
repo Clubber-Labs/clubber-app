@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ScrollView, Text, View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { ShieldCheckIcon } from 'phosphor-react-native'
 import { DevicePermissionRow } from '@/features/privacy/components/DevicePermissionRow'
@@ -19,6 +20,7 @@ import { InterestsMultiSelect } from '@/shared/components/InterestsMultiSelect'
 import { SettingsRow } from '@/shared/components/SettingsRow'
 
 export default function NotificationSettingsScreen() {
+  const { t } = useTranslation()
   const router = useRouter()
   const { osPush, osLocation, enableNotifications, enableLocation } =
     useNotificationConsent()
@@ -67,9 +69,11 @@ export default function NotificationSettingsScreen() {
       showsVerticalScrollIndicator={false}
     >
       <View className="px-4 pt-6 pb-4 border-b border-line">
-        <Text className="text-xl font-bold text-content">Notificações</Text>
+        <Text className="text-xl font-bold text-content">
+          {t('settings.notifications')}
+        </Text>
         <Text className="text-xs text-content-subtle mt-1">
-          Tudo é opcional e desligado por padrão. Você pode mudar quando quiser.
+          {t('settings.notif.subtitle')}
         </Text>
       </View>
 
@@ -77,14 +81,14 @@ export default function NotificationSettingsScreen() {
         {/* Permissão do SISTEMA, não toggle do app: mostra o estado real e
             leva ao lugar onde ele muda de verdade. */}
         <DevicePermissionRow
-          label="Notificações push"
-          description="Convites, atividade da sua rede e eventos perto de você."
+          label={t('settings.notif.pushLabel')}
+          description={t('settings.notif.pushDescription')}
           status={osPush}
           onPress={() => void enableNotifications()}
         />
         <DevicePermissionRow
-          label="Eventos perto de você"
-          description="Usa sua localização aproximada (~1km, calculada no aparelho) para avisar de eventos próximos. A posição exata nunca sai do seu celular."
+          label={t('settings.notif.nearbyLabel')}
+          description={t('settings.notif.nearbyDescription')}
           status={osLocation}
           onPress={() => void enableLocation()}
           isLast
@@ -93,7 +97,7 @@ export default function NotificationSettingsScreen() {
 
       <View className="mx-4 mt-4 bg-surface-sunken border border-line rounded-xl px-4 py-4">
         <RadiusSlider
-          label="Raio de aviso"
+          label={t('settings.notif.radiusLabel')}
           min={NOTIFY_RADIUS_MIN_KM}
           max={NOTIFY_RADIUS_MAX_KM}
           value={notifyRadiusKm}
@@ -101,17 +105,16 @@ export default function NotificationSettingsScreen() {
           disabled={osLocation !== 'granted'}
         />
         <Text className="text-xs text-content-subtle mt-1">
-          Distância máxima de um evento novo para você ser avisado.
+          {t('settings.notif.radiusHint')}
         </Text>
       </View>
 
       <View className="mx-4 mt-4 bg-surface-sunken border border-line rounded-xl px-4 py-4 gap-2">
         <Text className="text-sm font-semibold text-content">
-          Categorias preferidas
+          {t('settings.notif.categoriesTitle')}
         </Text>
         <Text className="text-xs text-content-subtle">
-          Avisos de eventos próximos só chegam para categorias marcadas aqui —
-          sem nenhuma selecionada, você não recebe avisos de proximidade.
+          {t('settings.notif.categoriesHint')}
         </Text>
         <CategoryMultiSelect
           value={categories}
@@ -120,10 +123,11 @@ export default function NotificationSettingsScreen() {
       </View>
 
       <View className="mx-4 mt-4 bg-surface-sunken border border-line rounded-xl px-4 py-4 gap-2">
-        <Text className="text-sm font-semibold text-content">Interesses</Text>
+        <Text className="text-sm font-semibold text-content">
+          {t('shared.interests.title')}
+        </Text>
         <Text className="text-xs text-content-subtle">
-          Refine os avisos por subcategoria e gênero — eventos do seu interesse
-          perto de você te alcançam com mais precisão.
+          {t('settings.notif.interestsHint')}
         </Text>
         <InterestsMultiSelect
           value={subcategories}
@@ -133,16 +137,14 @@ export default function NotificationSettingsScreen() {
 
       <View className="mt-6">
         <SettingsRow
-          label="Privacidade e consentimentos"
-          description="Gerenciar todos os consentimentos, exportar dados e ver a política de privacidade"
+          label={t('settings.notif.privacyRow')}
+          description={t('settings.notif.privacyRowHint')}
           icon={ShieldCheckIcon}
           onPress={() => router.push('/profile/privacy')}
         />
       </View>
       <Text className="px-4 mt-3 text-xs text-content-faint leading-4">
-        Sua localização aproximada expira no servidor após 90 dias sem
-        atualização e é apagada imediatamente se você desligar o uso de
-        localização. Notificações antigas também expiram no servidor.
+        {t('settings.notif.retentionNote')}
       </Text>
     </ScrollView>
   )

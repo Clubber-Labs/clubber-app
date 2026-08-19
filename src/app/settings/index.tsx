@@ -1,4 +1,5 @@
 import { ScrollView, View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import {
   UserCircleIcon,
@@ -10,6 +11,7 @@ import {
 import { SettingsRow } from '@/shared/components/SettingsRow'
 
 export default function SettingsScreen() {
+  const { t } = useTranslation()
   const router = useRouter()
 
   return (
@@ -19,36 +21,38 @@ export default function SettingsScreen() {
       showsVerticalScrollIndicator={false}
     >
       <View className="px-4 pt-6 pb-4 border-b border-line">
-        <Text className="text-xl font-bold text-content">Configurações</Text>
+        <Text className="text-xl font-bold text-content">
+          {t('settings.title')}
+        </Text>
       </View>
 
       <View className="mt-2">
         <SettingsRow
-          label="Conta"
-          description="Propriedade e controle da conta"
+          label={t('settings.account')}
+          description={t('settings.accountHint')}
           icon={UserCircleIcon}
           onPress={() => router.push('/settings/account')}
         />
         <SettingsRow
-          label="Notificações"
-          description="Push, eventos próximos e categorias preferidas"
+          label={t('settings.notifications')}
+          description={t('settings.notificationsHint')}
           icon={BellIcon}
           onPress={() => router.push('/settings/notifications')}
         />
         <SettingsRow
-          label="Sugestões de rolês"
-          description="Raio da busca de spots no mapa"
+          label={t('settings.spots')}
+          description={t('settings.spotsHint')}
           icon={SparkleIcon}
           onPress={() => router.push('/settings/spots')}
         />
         <SettingsRow
-          label="Privacidade"
-          description="Consentimentos e dados (LGPD)"
+          label={t('settings.privacy')}
+          description={t('settings.privacyHint')}
           icon={ShieldCheckIcon}
           onPress={() => router.push('/profile/privacy')}
         />
         <SettingsRow
-          label="Sobre o app"
+          label={t('settings.about')}
           icon={InfoIcon}
           onPress={() => router.push('/about')}
         />

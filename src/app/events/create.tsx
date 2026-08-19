@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { View } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { EventForm } from '@/features/events/components/EventForm'
 import { EventImagePicker } from '@/features/events/components/EventImagePicker'
@@ -8,6 +9,7 @@ import { useUploadEventImages } from '@/features/events/hooks/useUploadEventImag
 import type { CreateEventInput } from '@/features/events/schemas/createEventSchema'
 
 export default function CreateEventScreen() {
+  const { t } = useTranslation()
   const router = useRouter()
   const create = useCreateEvent()
   const uploadImages = useUploadEventImages()
@@ -32,9 +34,9 @@ export default function CreateEventScreen() {
         onSubmit={handleSubmit}
         submitting={create.isPending}
         submitError={!!create.error}
-        submitLabel="Criar evento"
-        submittingLabel="Criando..."
-        errorMessage="Não foi possível criar o evento. Tente novamente."
+        submitLabel={t('events.create.submit')}
+        submittingLabel={t('events.create.submitting')}
+        errorMessage={t('events.create.error')}
         imagesSection={
           <EventImagePicker uris={imageUris} onChange={setImageUris} />
         }

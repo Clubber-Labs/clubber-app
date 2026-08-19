@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ChartBarIcon, CaretRightIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { colors } from '@/shared/theme'
@@ -11,6 +12,7 @@ type Props = {
 // Entrada do dashboard no detalhe do evento. Renderizada só para o autor (a
 // tela decide). Premium abre o dashboard; não-premium vai para o upgrade.
 export function EventAnalyticsEntryCard({ eventId, isPremium }: Props) {
+  const { t } = useTranslation()
   const router = useRouter()
 
   function handlePress() {
@@ -29,7 +31,7 @@ export function EventAnalyticsEntryCard({ eventId, isPremium }: Props) {
       <View className="flex-1">
         <View className="flex-row items-center gap-2">
           <Text className="text-content font-semibold text-base">
-            Analytics
+            {t('analytics.short')}
           </Text>
           {!isPremium && (
             <View className="px-1.5 py-0.5 rounded-md bg-brand/20 border border-brand-emphasis/40">
@@ -40,9 +42,7 @@ export function EventAnalyticsEntryCard({ eventId, isPremium }: Props) {
           )}
         </View>
         <Text className="text-content-muted text-sm mt-0.5">
-          {isPremium
-            ? 'Veja visualizações, compartilhamentos e confirmações.'
-            : 'Recurso Premium — desbloqueie as estatísticas do evento.'}
+          {isPremium ? t('analytics.entryHint') : t('analytics.entryLocked')}
         </Text>
       </View>
       <CaretRightIcon size={18} color={colors.contentSubtle} />

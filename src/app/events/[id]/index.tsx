@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import type { EventDetail } from '@/shared/types'
 import { useEvent } from '@/features/events/hooks/useEvents'
@@ -92,6 +93,7 @@ function DetailHeader({ event, isAuthor, isPremium, onShared }: HeaderProps) {
 }
 
 export default function EventDetailScreen() {
+  const { t } = useTranslation()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const userId = useAuthStore(state => state.userId)
@@ -124,13 +126,15 @@ export default function EventDetailScreen() {
     return (
       <View className="flex-1 bg-background items-center justify-center px-6 gap-3">
         <Text className="text-content font-semibold text-base text-center">
-          Evento indisponível
+          {t('events.detail.unavailable')}
         </Text>
         <Text className="text-content-muted text-center text-sm">
-          Este evento é de um perfil privado. Siga o autor para ver.
+          {t('events.detail.privateNotice')}
         </Text>
         <Pressable onPress={() => router.back()}>
-          <Text className="text-brand-text font-semibold mt-2">Voltar</Text>
+          <Text className="text-brand-text font-semibold mt-2">
+            {t('common.back')}
+          </Text>
         </Pressable>
       </View>
     )
@@ -140,10 +144,12 @@ export default function EventDetailScreen() {
     return (
       <View className="flex-1 bg-background items-center justify-center px-6 gap-3">
         <Text className="text-content-secondary text-center">
-          Não foi possível carregar o evento.
+          {t('events.detail.loadError')}
         </Text>
         <Pressable onPress={() => router.back()}>
-          <Text className="text-brand-text font-semibold">Voltar</Text>
+          <Text className="text-brand-text font-semibold">
+            {t('common.back')}
+          </Text>
         </Pressable>
       </View>
     )

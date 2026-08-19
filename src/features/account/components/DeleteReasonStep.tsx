@@ -1,4 +1,5 @@
 import { View, Text, TextInput, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { RadioButtonIcon } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import {
@@ -24,13 +25,14 @@ export function DeleteReasonStep({
   onContinue,
   onSkip,
 }: Props) {
+  const { t } = useTranslation()
   return (
     <View className="gap-1">
       <Text className="text-content text-xl font-bold mb-1">
-        Por que está saindo?
+        {t('account.reasons.title')}
       </Text>
       <Text className="text-content-muted text-sm mb-3">
-        Opcional — sua resposta nos ajuda a melhorar o app.
+        {t('account.reasons.subtitle')}
       </Text>
 
       {DELETE_REASON_OPTIONS.map(o => {
@@ -41,7 +43,9 @@ export function DeleteReasonStep({
             onPress={() => onReasonChange(o.value)}
             className="flex-row items-center justify-between py-3"
           >
-            <Text className="text-content-bright text-base">{o.label}</Text>
+            <Text className="text-content-bright text-base">
+              {t(o.labelKey)}
+            </Text>
             <RadioButtonIcon
               size={20}
               color={active ? colors.brandEmphasis : colors.contentFaint}
@@ -55,7 +59,7 @@ export function DeleteReasonStep({
         <TextInput
           value={otherText}
           onChangeText={onOtherTextChange}
-          placeholder="Conte um pouco mais (opcional)"
+          placeholder={t('account.reasons.otherPlaceholder')}
           placeholderTextColor={colors.contentSubtle}
           maxLength={500}
           multiline
@@ -65,8 +69,12 @@ export function DeleteReasonStep({
       )}
 
       <View className="gap-3 mt-5">
-        <Button label="Continuar" onPress={onContinue} />
-        <Button label="Pular" onPress={onSkip} variant="secondary" />
+        <Button label={t('common.continue')} onPress={onContinue} />
+        <Button
+          label={t('account.reasons.skip')}
+          onPress={onSkip}
+          variant="secondary"
+        />
       </View>
     </View>
   )

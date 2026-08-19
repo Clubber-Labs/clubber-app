@@ -1,4 +1,5 @@
 import { View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import {
   RocketIcon,
   ChartBarIcon,
@@ -8,53 +9,53 @@ import {
 import type { Icon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
+// Chaves, não frases: a constante avalia no import e congelaria o idioma.
+type BenefitKind = 'featured' | 'analytics' | 'reach' | 'badge'
+
 type Benefit = {
   icon: Icon
-  title: string
-  description: string
+  titleKey: `billing.benefits.${BenefitKind}.title`
+  descriptionKey: `billing.benefits.${BenefitKind}.description`
 }
 
 const BENEFITS: Benefit[] = [
   {
     icon: RocketIcon,
-    title: 'Eventos em destaque',
-    description:
-      'Seus eventos aparecem no topo da descoberta e do mapa — mais gente vê, mais gente vai.',
+    titleKey: 'billing.benefits.featured.title',
+    descriptionKey: 'billing.benefits.featured.description',
   },
   {
     icon: ChartBarIcon,
-    title: 'Analytics completo',
-    description:
-      'Veja quem visualizou, curtiu e confirmou presença. Entenda seu público e acerte mais.',
+    titleKey: 'billing.benefits.analytics.title',
+    descriptionKey: 'billing.benefits.analytics.description',
   },
   {
     icon: TrendUpIcon,
-    title: 'Mais alcance',
-    description:
-      'Prioridade no feed e na busca para o seu perfil e tudo que você publica.',
+    titleKey: 'billing.benefits.reach.title',
+    descriptionKey: 'billing.benefits.reach.description',
   },
   {
     icon: SparkleIcon,
-    title: 'Selo premium',
-    description:
-      'Um selo exclusivo no seu perfil que passa credibilidade à primeira vista.',
+    titleKey: 'billing.benefits.badge.title',
+    descriptionKey: 'billing.benefits.badge.description',
   },
 ]
 
 export function PremiumBenefits() {
+  const { t } = useTranslation()
   return (
     <View className="gap-4">
       {BENEFITS.map(benefit => (
-        <View key={benefit.title} className="flex-row items-start gap-3.5">
+        <View key={benefit.titleKey} className="flex-row items-start gap-3.5">
           <View className="w-10 h-10 rounded-full bg-brand/20 items-center justify-center">
             <benefit.icon size={20} color={colors.brandText} />
           </View>
           <View className="flex-1">
             <Text className="text-content font-semibold text-base">
-              {benefit.title}
+              {t(benefit.titleKey)}
             </Text>
             <Text className="text-content-muted text-sm mt-0.5 leading-5">
-              {benefit.description}
+              {t(benefit.descriptionKey)}
             </Text>
           </View>
         </View>

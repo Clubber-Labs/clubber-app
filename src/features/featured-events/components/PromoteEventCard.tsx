@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { StarIcon, CaretRightIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { DatePicker } from '@/shared/components/DatePicker'
@@ -34,6 +35,7 @@ export function PromoteEventCard({
   isPremium,
   isFeatured,
 }: Props) {
+  const { t } = useTranslation()
   const locale = useLocale()
   const router = useRouter()
   const confirm = useConfirm()
@@ -84,9 +86,9 @@ export function PromoteEventCard({
   async function handleCancel() {
     if (featuredEvent.kind === 'none') return
     const ok = await confirm({
-      title: 'Cancelar promoção',
-      message: 'Tem certeza que deseja cancelar o destaque deste evento?',
-      confirmLabel: 'Cancelar promoção',
+      title: t('featured.cancelTitle'),
+      message: t('featured.cancelMessage'),
+      confirmLabel: t('featured.cancelTitle'),
       destructive: true,
     })
     if (ok) cancel.mutate(featuredEvent.feature.id)
@@ -106,28 +108,28 @@ export function PromoteEventCard({
             <StarIcon size={18} color={colors.brandText} weight="fill" />
             <Text className="text-content font-semibold text-base">
               {featuredEvent.kind === 'active'
-                ? 'Em promoção'
-                : 'Promoção agendada'}
+                ? t('featured.active')
+                : t('featured.scheduled')}
             </Text>
           </View>
           <SponsoredBadge />
         </View>
         <View className="gap-0.5">
           <Text className="text-content-muted text-sm">
-            De{' '}
+            {t('featured.from')}{' '}
             <Text className="text-content">
               {formatShortDate(feature.startsAt, locale)}
             </Text>
           </Text>
           <Text className="text-content-muted text-sm">
-            Até{' '}
+            {t('featured.to')}{' '}
             <Text className="text-content">
               {formatShortDate(feature.endsAt, locale)}
             </Text>
           </Text>
         </View>
         <Button
-          label="Cancelar promoção"
+          label={t('featured.cancelTitle')}
           variant="destructive"
           onPress={handleCancel}
           loading={cancel.isPending}
@@ -147,12 +149,12 @@ export function PromoteEventCard({
         <View className="flex-row items-center gap-2">
           <StarIcon size={18} color={colors.brandText} weight="fill" />
           <Text className="text-content font-semibold text-base">
-            Evento em promoção
+            {t('featured.readOnlyTitle')}
           </Text>
           <SponsoredBadge />
         </View>
         <Text className="text-content-muted text-sm">
-          Este evento está em destaque no momento.
+          {t('featured.readOnlyBody')}
         </Text>
       </View>
     )
@@ -174,16 +176,16 @@ export function PromoteEventCard({
         <View className="flex-1">
           <View className="flex-row items-center gap-2">
             <Text className="text-content font-semibold text-base">
-              Promover evento
+              {t('featured.promote')}
             </Text>
             <View className="px-1.5 py-0.5 rounded-md bg-brand/20 border border-brand-emphasis/40">
               <Text className="text-brand-text-strong text-xs font-bold tracking-wide">
-                PREMIUM
+                {t('billing.premium')}
               </Text>
             </View>
           </View>
           <Text className="text-content-muted text-sm mt-0.5">
-            Destaque o evento para mais pessoas no feed e no mapa.
+            {t('featured.promoteHint')}
           </Text>
         </View>
         <CaretRightIcon size={18} color={colors.contentSubtle} />
@@ -211,22 +213,22 @@ export function PromoteEventCard({
         <View className="flex-row items-center gap-2">
           <StarIcon size={18} color={colors.brandText} />
           <Text className="text-content font-semibold text-base">
-            Promover evento
+            {t('featured.promote')}
           </Text>
         </View>
         <Text className="text-content-muted text-sm">
-          Destaque o evento para mais pessoas no feed e no mapa.
+          {t('featured.promoteHint')}
         </Text>
       </View>
 
       <View className="gap-1">
         <Text className="text-sm font-medium text-content-tertiary">
-          Primeiro dia
+          {t('featured.firstDay')}
         </Text>
         <DatePicker
           value={startDay}
           onChange={handleStartDayChange}
-          placeholder="Selecione o dia"
+          placeholder={t('featured.pickDay')}
           minimumDate={now}
           maximumDate={maxDate}
           mode="date"
@@ -235,18 +237,18 @@ export function PromoteEventCard({
 
       <View className="gap-1">
         <Text className="text-sm font-medium text-content-tertiary">
-          Último dia
+          {t('featured.lastDay')}
         </Text>
         <DatePicker
           value={endDay}
           onChange={setEndDay}
-          placeholder="Selecione o dia"
+          placeholder={t('featured.pickDay')}
           minimumDate={startDay ?? now}
           maximumDate={endMaxDate}
           mode="date"
         />
         <Text className="text-content-subtle text-xs">
-          Promoção por dia — máximo de {MAX_PROMOTION_DAYS} dias por destaque.
+          {t('featured.maxDays', { count: MAX_PROMOTION_DAYS })}
         </Text>
       </View>
 
@@ -255,7 +257,7 @@ export function PromoteEventCard({
       )}
 
       <Button
-        label="Promover evento"
+        label={t('featured.promote')}
         onPress={handlePromote}
         loading={promote.isPending}
         disabled={!startDay || !endDay || endDay < startDay}

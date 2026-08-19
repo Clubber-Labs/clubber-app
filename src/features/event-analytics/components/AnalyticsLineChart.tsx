@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import type { LayoutChangeEvent } from 'react-native'
 import Svg, { Line, Polyline, Circle } from 'react-native-svg'
 import { formatDayMonthYear } from '@/shared/utils/dateFormat'
@@ -33,6 +34,7 @@ type Props = {
 // Gráfico interativo: toque numa faixa do dia pra ver os valores e toque na
 // legenda pra ligar/desligar cada série.
 export function AnalyticsLineChart({ timeline }: Props) {
+  const { t } = useTranslation()
   const locale = useLocale()
   const [width, setWidth] = useState(0)
   const [hidden, setHidden] = useState<Record<MetricKey, boolean>>({
@@ -46,10 +48,10 @@ export function AnalyticsLineChart({ timeline }: Props) {
     return (
       <View className="bg-surface-sunken border border-line rounded-xl p-6 items-center">
         <Text className="text-content-muted text-sm text-center">
-          Ainda não há dados para exibir.
+          {t('analytics.emptyTitle')}
         </Text>
         <Text className="text-content-subtle text-xs text-center mt-1">
-          Os números aparecem conforme as pessoas interagem com o evento.
+          {t('analytics.emptyBody')}
         </Text>
       </View>
     )
@@ -126,7 +128,7 @@ export function AnalyticsLineChart({ timeline }: Props) {
         </View>
       ) : (
         <Text className="text-content-subtle text-xs mb-2">
-          Toque no gráfico para ver os números de um dia.
+          {t('analytics.chartHint')}
         </Text>
       )}
 

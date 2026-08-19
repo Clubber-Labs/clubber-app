@@ -1,4 +1,5 @@
 import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { DownloadSimpleIcon } from 'phosphor-react-native'
 import { useExportEventAnalytics } from '../hooks/useExportEventAnalytics'
 import { colors } from '@/shared/theme'
@@ -10,6 +11,7 @@ type Props = {
 // Ação de submit deliberada: loading e erro inline vêm do hook (tela → hook →
 // service). O botão fica desabilitado durante o export, evitando duplo disparo.
 export function AnalyticsExportButton({ eventId }: Props) {
+  const { t } = useTranslation()
   const { exportCsv, exporting, error } = useExportEventAnalytics(eventId)
 
   return (
@@ -26,7 +28,7 @@ export function AnalyticsExportButton({ eventId }: Props) {
           <DownloadSimpleIcon size={18} color={colors.contentSecondary} />
         )}
         <Text className="text-content-secondary font-semibold text-base">
-          Exportar CSV
+          {t('analytics.exportCsv')}
         </Text>
       </Pressable>
       {error && (

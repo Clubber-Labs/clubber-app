@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Stack, useRouter } from 'expo-router'
 import { CircleIcon } from 'phosphor-react-native'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
@@ -13,13 +14,15 @@ import { FormError } from '@/shared/components/FormError'
 import { AccountExitSuccess } from '@/features/account/components/AccountExitSuccess'
 import { colors } from '@/shared/theme'
 
-const POINTS = [
-  'Seu perfil, eventos e atividade somem para as outras pessoas.',
-  'Nada é excluído — tudo volta ao reativar.',
-  'Sem prazo: você reativa quando quiser, é só fazer login.',
-]
+// Chaves, não frases: a constante avalia no import e congelaria o idioma.
+const POINT_KEYS = [
+  'account.deactivateEffects.0',
+  'account.deactivateEffects.1',
+  'account.deactivateEffects.2',
+] as const
 
 export default function DeactivateAccountScreen() {
+  const { t } = useTranslation()
   const router = useRouter()
   const { data: profile, isLoading } = useMyProfile()
   const deactivate = useDeactivateAccount()
@@ -37,10 +40,9 @@ export default function DeactivateAccountScreen() {
   async function onDeactivate() {
     if (!profile) return
     const ok = await confirm({
-      title: 'Desativar conta',
-      message:
-        'Seu perfil e conteúdo ficarão ocultos até você fazer login de novo. Deseja continuar?',
-      confirmLabel: 'Desativar',
+      title: t('account.deactivate'),
+      message: t('account.deactivateConfirmMessage'),
+      confirmLabel: t('account.deactivateConfirm'),
       destructive: true,
     })
     if (!ok) return
@@ -59,7 +61,7 @@ export default function DeactivateAccountScreen() {
       onError: e =>
         setInlineError(
           isTooManyRequestsError(e)
-            ? 'Muitas tentativas. Tente novamente em instantes.'
+            ? t('account.tooManyAttempts')
             : getApiError(e).message,
         ),
     })
@@ -70,8 +72,8 @@ export default function DeactivateAccountScreen() {
       <>
         <Stack.Screen options={{ gestureEnabled: false }} />
         <AccountExitSuccess
-          title="Conta desativada"
-          message="Seu perfil ficou oculto. Para voltar, é só fazer login novamente — sua conta é reativada na hora."
+          title={t('account.deactivatedTitle')}
+          message={t('account.deactivatedMessage')}
           loading={exiting}
           onDone={onExit}
         />
@@ -93,15 +95,17 @@ export default function DeactivateAccountScreen() {
       contentContainerStyle={{ padding: 20, gap: 20 }}
     >
       <View className="gap-2">
-        <Text className="text-content text-2xl font-bold">Desativar conta</Text>
+        <Text className="text-content text-2xl font-bold">
+          {t('account.deactivate')}
+        </Text>
         <Text className="text-content-muted text-base leading-6">
-          Como tirar uma pausa: você some do app sem perder nada.
+          {t('account.deactivateTagline')}
         </Text>
       </View>
 
       <View className="bg-surface-sunken border border-line rounded-xl p-4 gap-3">
-        {POINTS.map(point => (
-          <View key={point} className="flex-row items-start gap-2">
+        {POINT_KEYS.map(key => (
+          <View key={key} className="flex-row items-start gap-2">
             <CircleIcon
               weight="fill"
               size={6}
@@ -109,7 +113,7 @@ export default function DeactivateAccountScreen() {
               style={{ marginTop: 7 }}
             />
             <Text className="text-content-tertiary text-sm flex-1 leading-5">
-              {point}
+              {t(key)}
             </Text>
           </View>
         ))}
@@ -119,14 +123,14 @@ export default function DeactivateAccountScreen() {
 
       <View className="gap-3">
         <Button
-          label="Desativar minha conta"
+          label={t('account.deactivateCta')}
           variant="destructive"
           onPress={onDeactivate}
           loading={deactivate.isPending}
           disabled={deactivate.isPending}
         />
         <Button
-          label="Cancelar"
+          label={t('common.cancel')}
           variant="secondary"
           onPress={() => router.back()}
         />

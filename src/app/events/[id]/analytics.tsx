@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { CaretLeftIcon, LockIcon } from 'phosphor-react-native'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useEvent } from '@/features/events/hooks/useEvents'
@@ -21,19 +22,21 @@ import { useLocale } from '@/shared/hooks/useLocale'
 import { colors } from '@/shared/theme'
 
 function Header({ onBack }: { onBack: () => void }) {
+  const { t } = useTranslation()
   return (
     <View className="flex-row items-center gap-3 px-4 pt-4 pb-3 border-b border-line">
       <Pressable onPress={onBack} hitSlop={12}>
         <CaretLeftIcon size={24} color={colors.content} />
       </Pressable>
       <Text className="text-content font-bold text-xl">
-        Analytics do evento
+        {t('analytics.title')}
       </Text>
     </View>
   )
 }
 
 export default function EventAnalyticsScreen() {
+  const { t } = useTranslation()
   const locale = useLocale()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
@@ -77,7 +80,7 @@ export default function EventAnalyticsScreen() {
         <Header onBack={back} />
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-content-muted text-center text-sm">
-            Não foi possível carregar o evento.
+            {t('analytics.loadEventError')}
           </Text>
         </View>
       </View>
@@ -92,10 +95,10 @@ export default function EventAnalyticsScreen() {
         <View className="flex-1 items-center justify-center px-8 gap-2">
           <LockIcon size={32} color={colors.contentSubtle} />
           <Text className="text-content-secondary font-semibold text-base text-center">
-            Analytics indisponível
+            {t('analytics.unavailableTitle')}
           </Text>
           <Text className="text-content-muted text-sm text-center">
-            Apenas o autor do evento pode ver as estatísticas.
+            {t('analytics.unavailableBody')}
           </Text>
         </View>
       </View>
@@ -122,10 +125,10 @@ export default function EventAnalyticsScreen() {
       ) : isError && !stats ? (
         <View className="flex-1 items-center justify-center px-8 gap-3">
           <Text className="text-content-muted text-center text-sm">
-            Não foi possível carregar as estatísticas.
+            {t('analytics.loadError')}
           </Text>
           <Button
-            label="Tentar novamente"
+            label={t('analytics.retry')}
             variant="secondary"
             onPress={() => refresh()}
             loading={isRefreshing}
@@ -138,19 +141,21 @@ export default function EventAnalyticsScreen() {
           showsVerticalScrollIndicator={false}
         >
           <Text className="text-content-subtle text-xs mb-3">
-            Atualizado {formatRelative(stats.updatedAt, locale)}
+            {t('analytics.updatedAt', {
+              relative: formatRelative(stats.updatedAt, locale),
+            })}
           </Text>
 
           <AnalyticsSummaryCards totals={stats.totals} />
 
           <Text className="text-content-secondary font-semibold text-base mt-6 mb-3">
-            Atividade por dia
+            {t('analytics.dailyActivity')}
           </Text>
           <AnalyticsLineChart timeline={stats.timeline} />
 
           <View className="mt-6 gap-3">
             <Button
-              label="Atualizar"
+              label={t('analytics.refresh')}
               variant="secondary"
               onPress={() => refresh()}
               loading={isRefreshing}

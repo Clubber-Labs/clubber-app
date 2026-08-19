@@ -1,4 +1,5 @@
 import { View, Text, ActivityIndicator, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 import { EventForm } from '@/features/events/components/EventForm'
 import { useEvent } from '@/features/events/hooks/useEvents'
@@ -26,6 +27,7 @@ function toDefaults(event: EventDetail): Partial<CreateEventInput> {
 }
 
 export default function EditEventScreen() {
+  const { t } = useTranslation()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const userId = useAuthStore(state => state.userId)
@@ -56,10 +58,12 @@ export default function EditEventScreen() {
     return (
       <View className="flex-1 bg-background items-center justify-center px-6 gap-3">
         <Text className="text-content-secondary text-center">
-          Não foi possível carregar o evento.
+          {t('events.detail.loadError')}
         </Text>
         <Pressable onPress={() => router.back()}>
-          <Text className="text-brand-text font-semibold">Voltar</Text>
+          <Text className="text-brand-text font-semibold">
+            {t('common.back')}
+          </Text>
         </Pressable>
       </View>
     )
@@ -72,9 +76,9 @@ export default function EditEventScreen() {
         onSubmit={handleSubmit}
         submitting={isPending}
         submitError={!!error}
-        submitLabel="Salvar alterações"
-        submittingLabel="Salvando..."
-        errorMessage="Não foi possível salvar as alterações. Tente novamente."
+        submitLabel={t('events.edit.submit')}
+        submittingLabel={t('events.edit.submitting')}
+        errorMessage={t('events.edit.error')}
       />
     </View>
   )

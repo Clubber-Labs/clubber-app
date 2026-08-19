@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ArrowLeftIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { useSubscription } from '@/features/billing/hooks/useSubscription'
@@ -17,6 +18,7 @@ import { useConfirm } from '@/shared/lib/confirm'
 import { colors } from '@/shared/theme'
 
 export default function ManageSubscriptionScreen() {
+  const { t } = useTranslation()
   const router = useRouter()
   const confirm = useConfirm()
   const { data: subscription, isLoading } = useSubscription()
@@ -30,10 +32,9 @@ export default function ManageSubscriptionScreen() {
 
   async function handleCancel() {
     const ok = await confirm({
-      title: 'Cancelar assinatura',
-      message:
-        'Seu acesso premium continua até o fim do período já pago. Depois disso, a assinatura não renova.',
-      confirmLabel: 'Cancelar assinatura',
+      title: t('billing.manage.cancelTitle'),
+      message: t('billing.manage.cancelMessage'),
+      confirmLabel: t('billing.manage.cancelTitle'),
       destructive: true,
     })
     if (ok) cancel.mutate()
@@ -56,7 +57,9 @@ export default function ManageSubscriptionScreen() {
         <Pressable onPress={() => router.back()} hitSlop={12}>
           <ArrowLeftIcon size={24} color={colors.content} />
         </Pressable>
-        <Text className="text-content font-bold text-xl">Assinatura</Text>
+        <Text className="text-content font-bold text-xl">
+          {t('billing.manage.title')}
+        </Text>
       </View>
 
       <SubscriptionCard subscription={subscription} />
@@ -64,13 +67,13 @@ export default function ManageSubscriptionScreen() {
       <View className="mt-6 gap-3">
         {subscription.cancelAtPeriodEnd ? (
           <Button
-            label="Retomar assinatura"
+            label={t('billing.manage.resume')}
             onPress={() => resume.mutate()}
             loading={resume.isPending}
           />
         ) : (
           <Button
-            label="Cancelar assinatura"
+            label={t('billing.manage.cancelTitle')}
             variant="secondary"
             onPress={handleCancel}
             loading={cancel.isPending}

@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Stack, useRouter, useFocusEffect } from 'expo-router'
 import { isAxiosError } from 'axios'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
@@ -32,6 +33,7 @@ type Step = 'reason' | 'warning' | 'reauth'
 type ExitInfo = { scheduledDeletionAt: string | null }
 
 export default function DeleteAccountScreen() {
+  const { t } = useTranslation()
   const locale = useLocale()
   const router = useRouter()
   const { data: profile, isLoading } = useMyProfile()
@@ -53,7 +55,7 @@ export default function DeleteAccountScreen() {
 
   function handleDeleteError(e: unknown) {
     if (isTooManyRequestsError(e)) {
-      setInlineError('Muitas tentativas. Tente novamente em instantes.')
+      setInlineError(t('account.tooManyAttempts'))
       return
     }
     if (isAxiosError(e)) {
@@ -66,7 +68,7 @@ export default function DeleteAccountScreen() {
         return
       }
       if (status === 403) {
-        setInlineError('Não foi possível excluir a conta.')
+        setInlineError(t('account.deleteFailed'))
         return
       }
     }
@@ -76,10 +78,9 @@ export default function DeleteAccountScreen() {
   async function onConfirmDelete() {
     if (!profile) return
     const ok = await confirm({
-      title: 'Excluir minha conta',
-      message:
-        'Sua conta será agendada para exclusão. Você terá 30 dias para cancelar fazendo login. Confirmar?',
-      confirmLabel: 'Excluir minha conta',
+      title: t('account.deleteConfirmTitle'),
+      message: t('account.deleteConfirmMessage'),
+      confirmLabel: t('account.deleteConfirmTitle'),
       destructive: true,
     })
     if (!ok) return
@@ -127,11 +128,11 @@ export default function DeleteAccountScreen() {
       <>
         <Stack.Screen options={{ gestureEnabled: false }} />
         <AccountExitSuccess
-          title="Exclusão agendada"
+          title={t('account.deleteScheduledTitle')}
           message={
             dateLabel
               ? `Sua conta será excluída em ${dateLabel}. Faça login antes dessa data para cancelar.`
-              : 'Sua conta foi agendada para exclusão. Faça login dentro do prazo para cancelar.'
+              : t('account.deleteScheduledMessage')
           }
           loading={exiting}
           onDone={onExit}

@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Pressable,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ClockIcon, CrownIcon, XIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { useActivationFlow } from '@/features/billing/hooks/useActivationFlow'
@@ -16,14 +17,15 @@ import { getApiError } from '@/shared/lib/apiError'
 import { colors } from '@/shared/theme'
 
 export default function UpgradeScreen() {
+  const { t } = useTranslation()
   const router = useRouter()
   const { data: plan, isLoading: planLoading } = usePlan()
   const { phase, start, isStarting, error } = useActivationFlow()
 
   const ctaLabel =
     plan?.trialEligible && plan.trialDays > 0
-      ? `Começar ${plan.trialDays} dias grátis`
-      : 'Assinar Premium'
+      ? t('billing.upgrade.trialCta', { count: plan.trialDays })
+      : t('billing.upgrade.cta')
 
   // Ativação demorou ou terminou em estado não-ativo: dá saída ao usuário.
   if (phase === 'stalled') {
@@ -31,20 +33,19 @@ export default function UpgradeScreen() {
       <View className="flex-1 bg-background items-center justify-center gap-5 px-8">
         <ClockIcon size={44} color={colors.brandText} />
         <Text className="text-content font-semibold text-lg text-center">
-          A confirmação está demorando
+          {t('billing.upgrade.stalledTitle')}
         </Text>
         <Text className="text-content-muted text-sm text-center">
-          Se o pagamento foi concluído, seu acesso premium é liberado assim que
-          a confirmação chegar. Você pode acompanhar pela tela de assinatura.
+          {t('billing.upgrade.stalledBody')}
         </Text>
         <View className="w-full gap-3 mt-1">
           <Button
-            label="Ver minha assinatura"
+            label={t('billing.upgrade.seeSubscription')}
             onPress={() => router.replace('/billing/manage')}
           />
           <Pressable onPress={() => router.back()} hitSlop={8} className="py-2">
             <Text className="text-content-muted text-sm text-center">
-              Voltar
+              {t('common.back')}
             </Text>
           </Pressable>
         </View>
@@ -57,11 +58,10 @@ export default function UpgradeScreen() {
       <View className="flex-1 bg-background items-center justify-center gap-4 px-8">
         <ActivityIndicator size="large" color={colors.brand} />
         <Text className="text-content font-semibold text-lg">
-          Confirmando pagamento...
+          {t('billing.upgrade.activatingTitle')}
         </Text>
         <Text className="text-content-muted text-sm text-center">
-          Estamos ativando seu acesso premium. Isso costuma levar poucos
-          segundos.
+          {t('billing.upgrade.activatingBody')}
         </Text>
       </View>
     )
@@ -92,13 +92,12 @@ export default function UpgradeScreen() {
           <Text className="text-content font-bold text-2xl">Clubber</Text>
           <View className="px-2 py-0.5 rounded-md bg-brand/20 border border-brand-emphasis/40">
             <Text className="text-brand-text-strong text-xs font-bold tracking-wide">
-              PREMIUM
+              {t('billing.premium')}
             </Text>
           </View>
         </View>
         <Text className="text-content-secondary text-base mt-3 text-center leading-6 px-2">
-          Tire seus eventos do anonimato. Mais destaque, mais alcance e os dados
-          pra crescer de verdade.
+          {t('billing.upgrade.tagline')}
         </Text>
       </View>
 
@@ -106,7 +105,7 @@ export default function UpgradeScreen() {
 
       <View className="mt-8">
         <Text className="text-content-tertiary text-xs font-semibold uppercase tracking-wide mb-4">
-          Tudo que você ganha
+          {t('billing.upgrade.benefitsTitle')}
         </Text>
         <PremiumBenefits />
       </View>
@@ -114,8 +113,7 @@ export default function UpgradeScreen() {
       <View className="mt-9 gap-3">
         <Button label={ctaLabel} onPress={start} loading={isStarting} />
         <Text className="text-content-subtle text-xs text-center leading-5">
-          Cancele quando quiser — o acesso continua até o fim do período pago.
-          Renovação automática.
+          {t('billing.upgrade.disclaimer')}
         </Text>
         {error && (
           <Text className="text-danger text-sm text-center">

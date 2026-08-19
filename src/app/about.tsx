@@ -1,4 +1,5 @@
 import { ScrollView, View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ArrowSquareOutIcon } from 'phosphor-react-native'
 import * as Linking from 'expo-linking'
 import Constants from 'expo-constants'
@@ -27,6 +28,7 @@ function LinkRow({ label, url, showBorder }: LinkRowProps) {
 }
 
 export default function AboutScreen() {
+  const { t } = useTranslation()
   return (
     <ScrollView
       className="flex-1 bg-background"
@@ -34,17 +36,17 @@ export default function AboutScreen() {
     >
       <View className="gap-1">
         <Text className="text-2xl font-bold text-content">Clubber</Text>
-        <Text className="text-sm text-content-muted">Versão {VERSION}</Text>
+        <Text className="text-sm text-content-muted">
+          {t('about.version', { version: VERSION })}
+        </Text>
       </View>
 
       <View className="gap-2">
         <Text className="text-xs uppercase tracking-wider text-content-subtle font-semibold">
-          Mapas
+          {t('about.mapsTitle')}
         </Text>
         <Text className="text-sm text-content-tertiary leading-5">
-          Os mapas exibidos no app são fornecidos pela Mapbox e usam dados do
-          OpenStreetMap, mantidos por uma comunidade de colaboradores ao redor
-          do mundo.
+          {t('about.mapsBody')}
         </Text>
         <View className="bg-surface border border-line rounded-xl px-4">
           <LinkRow label="© Mapbox" url="https://www.mapbox.com/about/maps/" />
@@ -54,7 +56,7 @@ export default function AboutScreen() {
             showBorder
           />
           <LinkRow
-            label="Melhorar este mapa"
+            label={t('about.improveMap')}
             url="https://apps.mapbox.com/feedback/"
             showBorder
           />

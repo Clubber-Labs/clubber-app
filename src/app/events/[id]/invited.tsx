@@ -1,4 +1,5 @@
 import { View, Text, FlatList, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { useLocalSearchParams } from 'expo-router'
 import { useEventInvites } from '@/features/events/hooks/useInvites'
 import { UserListItem } from '@/features/users/components/UserListItem'
@@ -6,6 +7,7 @@ import { isForbiddenError } from '@/shared/lib/apiError'
 import { colors } from '@/shared/theme'
 
 export default function InvitedScreen() {
+  const { t } = useTranslation()
   const { id } = useLocalSearchParams<{ id: string }>()
   const { data: invited, isLoading, error } = useEventInvites(id)
 
@@ -21,7 +23,7 @@ export default function InvitedScreen() {
     return (
       <View className="flex-1 bg-background items-center justify-center px-6">
         <Text className="text-content-muted text-center text-sm">
-          Apenas o autor do evento pode ver os convidados.
+          {t('events.invited.forbidden')}
         </Text>
       </View>
     )
@@ -31,7 +33,7 @@ export default function InvitedScreen() {
     return (
       <View className="flex-1 bg-background items-center justify-center px-6">
         <Text className="text-content-muted text-center text-sm">
-          Não foi possível carregar os convidados.
+          {t('events.invited.loadError')}
         </Text>
       </View>
     )
@@ -47,7 +49,7 @@ export default function InvitedScreen() {
       ListEmptyComponent={
         <View className="items-center justify-center pt-16 px-6">
           <Text className="text-content-subtle text-sm text-center">
-            Ninguém convidado ainda.
+            {t('events.invited.empty')}
           </Text>
         </View>
       }

@@ -47,9 +47,9 @@ module.exports = [
       'no-console': 'warn',
 
       // i18n: copy em JSX/props de copy vem do dicionário, não de literal.
-      // `warn` enquanto a Fase 3 extrai o legado; promover a `error` ao fechar.
+      // `error` desde o fim da Fase 3 — copy nova em português não passa no CI.
       'i18next/no-literal-string': [
-        'warn',
+        'error',
         {
           mode: 'jsx-only',
           'jsx-attributes': {
@@ -78,6 +78,10 @@ module.exports = [
               '\\s*km\\s*',
               '★',
               '[\\s·]+',
+              // Marca e atribuição de terceiros: nome do app e os créditos que
+              // a licença do Mapbox/OSM exige exibir literalmente.
+              'Clubber',
+              '©.*',
             ],
           },
         },
