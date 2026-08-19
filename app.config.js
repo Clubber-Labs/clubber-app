@@ -139,6 +139,17 @@ export default {
         ? [withoutIosPushEntitlement]
         : []),
       "expo-router",
+      // Splash NATIVA (o SO desenha antes do JS subir; o SplashOverlay é o 2º
+      // estágio). Os valores não são escolha nova — saem do que o nativo
+      // commitado já dizia: 200 das constraints do storyboard e #0B0B0D do
+      // SplashScreenBackground.colorset. Sem esta entrada o prebuild gerava a
+      // splash DEFAULT: arrancava o logo do storyboard e pintava o fundo de
+      // branco, num app de tema escuro.
+      ["expo-splash-screen", {
+        image: "./assets/splash-logo.png",
+        backgroundColor: "#0B0B0D",
+        imageWidth: 200
+      }],
       // O plugin declara NSFaceIDUsageDescription com um texto genérico em
       // inglês; era a única permissão fora do padrão das outras. O app não pede
       // biometria hoje (nenhum requireAuthentication) — o texto descreve o que o
