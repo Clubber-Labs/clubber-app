@@ -1,4 +1,5 @@
 import { View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { SpotBalloonPreview } from '../SpotBalloonPreview'
 import { Enter } from '../Enter'
 import { MapBackdrop } from '../MapBackdrop'
@@ -19,6 +20,7 @@ const CURVE = (w: number, h: number) =>
 // Slide 3 — Rolê é o que você inventar: balão da criadora dá pop sobre o
 // mapa; a legenda sobe logo depois.
 export function ArtSpot({ active }: ArtProps) {
+  const { t } = useTranslation()
   return (
     <MapBackdrop streets={STREETS} curve={CURVE} fadeId="onb-map-fade-3">
       <View
@@ -41,7 +43,7 @@ export function ArtSpot({ active }: ArtProps) {
         <Enter active={active} variant="rise" delay={240}>
           <View className="rounded-lg bg-background/70 px-2.5 py-1">
             <Text className="text-[18px] text-content-muted">
-              @luiza_santos sugeriu um rolê
+              {t('onboarding.art.spotSuggested')}
             </Text>
           </View>
         </Enter>
