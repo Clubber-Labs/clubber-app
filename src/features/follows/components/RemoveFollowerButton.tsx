@@ -36,7 +36,9 @@ export function RemoveFollowerButton({
       onPress={handlePress}
       disabled={remove.isPending}
       className="px-3 py-1.5 rounded-lg border border-line-strong"
-      accessibilityLabel={`Remover @${followerUsername} dos seguidores`}
+      accessibilityLabel={t('follows.removeFollowerLabel', {
+        username: followerUsername,
+      })}
     >
       {remove.isPending ? (
         <ActivityIndicator size="small" color={colors.contentMuted} />

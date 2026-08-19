@@ -60,7 +60,7 @@ export function MessageActionsSheet({
               className={`w-11 h-11 items-center justify-center rounded-full ${
                 emoji === myEmoji ? 'bg-brand/30' : ''
               }`}
-              accessibilityLabel={`Reagir com ${emoji}`}
+              accessibilityLabel={t('chat.actions.reactWith', { emoji })}
             >
               <Text className="text-2xl">{emoji}</Text>
             </Pressable>

@@ -36,7 +36,9 @@ export function ParticipantRow({
         <Pressable
           onPress={onManage}
           className="w-9 h-9 items-center justify-center"
-          accessibilityLabel={`Gerenciar ${user.name}`}
+          accessibilityLabel={t('chat.group.manageParticipant', {
+            name: user.name,
+          })}
         >
           <DotsThreeVerticalIcon
             size={18}

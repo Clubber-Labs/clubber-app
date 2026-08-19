@@ -32,7 +32,9 @@ export function UserSearchCard({ user }: Props) {
       <Pressable
         onPress={() => navigateToProfile(user.id)}
         className="flex-row items-center gap-3 flex-1"
-        accessibilityLabel={`Ver perfil de ${user.username}`}
+        accessibilityLabel={t('shared.viewProfile', {
+          username: user.username,
+        })}
       >
         <UserAvatar name={fullName} avatarUrl={user.avatarUrl} size={48} />
         <View className="flex-1">

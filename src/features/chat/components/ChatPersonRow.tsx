@@ -1,4 +1,5 @@
 import { Pressable, View, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import type { UserMini } from '@/shared/types'
 
@@ -8,11 +9,14 @@ type Props = {
 }
 
 export function ChatPersonRow({ user, onPress }: Props) {
+  const { t } = useTranslation()
   return (
     <Pressable
       onPress={onPress}
       className="flex-row items-center gap-3 px-4 py-3 active:bg-surface"
-      accessibilityLabel={`Conversar com ${user.name} ${user.lastname}`}
+      accessibilityLabel={t('chat.people.chatWith', {
+        name: `${user.name} ${user.lastname}`.trim(),
+      })}
     >
       <UserAvatar name={user.name} avatarUrl={user.avatarUrl} size={44} />
       <View className="flex-1">

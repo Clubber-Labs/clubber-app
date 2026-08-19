@@ -626,6 +626,10 @@
       "dailyLimit": "You've hit the daily limit of suggestions. Try again tomorrow.",
       "placesDown": "Place search is unavailable right now. Try again shortly.",
       "generic": "Couldn't generate suggestions. Try again."
+    },
+    "markers": {
+      "viewSpot": "View hangout {{title}}",
+      "chooseSuggestion": "Choose suggestion {{name}}"
     }
   },
   "events": {
@@ -877,7 +881,8 @@
       "report": "Report",
       "delete": "Delete",
       "deleteTitle": "Delete message",
-      "deleteMessage": "This message will be deleted for everyone."
+      "deleteMessage": "This message will be deleted for everyone.",
+      "reactWith": "React with {{emoji}}"
     },
     "media": {
       "gallery": "Gallery",
@@ -918,7 +923,8 @@
       "createWithCount": "Create group ({{count}})",
       "saving": "Saving…",
       "newGroup": "New group",
-      "createNew": "Create new group"
+      "createNew": "Create new group",
+      "manageParticipant": "Manage {{name}}"
     },
     "dm": {
       "viewProfile": "View profile",
@@ -933,7 +939,9 @@
       "selected": "{{name}}, selected",
       "you": "(you)",
       "newConversationTitle": "New conversation",
-      "cannotStart": "You can't start a conversation with this user"
+      "cannotStart": "You can't start a conversation with this user",
+      "chatWith": "Chat with {{name}}",
+      "removeSelected": "Remove {{name}}"
     },
     "reactions": {
       "label": "{{emoji}} {{count}}",
@@ -1071,7 +1079,10 @@
     "reject": "Decline",
     "removeFollowerTitle": "Remove follower",
     "removeFollowerMessage": "Remove @{{username}} from your followers?",
-    "remove": "Remove"
+    "remove": "Remove",
+    "removeFollowerLabel": "Remove @{{username}} from followers",
+    "unfollowFromListLabel": "Unfollow @{{username}}",
+    "unfollowFromListMessage": "Unfollow @{{username}}?"
   },
   "privacy": {
     "title": "Privacy",

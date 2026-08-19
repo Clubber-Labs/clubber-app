@@ -22,7 +22,9 @@ export function UnfollowListButton({
   async function handlePress() {
     const ok = await confirm({
       title: t('follows.unfollowTitle'),
-      message: `Deseja deixar de seguir @${targetUsername}?`,
+      message: t('follows.unfollowFromListMessage', {
+        username: targetUsername,
+      }),
       confirmLabel: t('follows.unfollowTitle'),
       destructive: true,
     })
@@ -34,7 +36,9 @@ export function UnfollowListButton({
       onPress={handlePress}
       disabled={unfollow.isPending}
       className="px-3 py-1.5 rounded-lg border border-line-strong"
-      accessibilityLabel={`Deixar de seguir @${targetUsername}`}
+      accessibilityLabel={t('follows.unfollowFromListLabel', {
+        username: targetUsername,
+      })}
     >
       {unfollow.isPending ? (
         <ActivityIndicator size="small" color={colors.contentMuted} />
