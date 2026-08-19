@@ -2,9 +2,10 @@ import { View, Text } from 'react-native'
 import { colors } from '@/shared/theme'
 import { BrandSticker } from './BrandSticker'
 
-// Wordmark "clu[b]ber" — Sora Bold com o primeiro b como sticker.
-// height = tamanho da fonte; o sticker escala junto (1.2x).
-// Requer Sora_700Bold carregada no _layout raiz (useFonts + gate do splash).
+// Wordmark "clu[b]ber" — Sora ExtraBold com o primeiro b como sticker.
+// height = tamanho da fonte; o sticker escala junto (1.6x — espelhado em
+// scripts/build-splash-logo.mjs, que rasteriza isto pra splash nativa).
+// Requer Sora_800ExtraBold carregada no _layout raiz (useFonts + gate do splash).
 export function BrandWordmark({
   height = 16,
   inverted = false,
