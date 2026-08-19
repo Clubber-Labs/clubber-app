@@ -1,23 +1,11 @@
 import { useEffect, useMemo } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { isAxiosError } from 'axios'
 import { usersService } from '../services/usersService'
 import { userKeys } from './cacheKeys'
 import { useDebounce } from '@/shared/hooks/useDebounce'
 import { useBanner } from '@/shared/lib/banner'
+import { getApiError } from '@/shared/lib/apiError'
 import type { SearchUserItem } from '../schemas/searchUserSchema'
-
-function mapSearchError(error: unknown): string {
-  if (isAxiosError(error)) {
-    if (error.response?.status === 429) {
-      return 'Muitas buscas, aguarde um momento.'
-    }
-    if (!error.response) {
-      return 'Sem conexão. Verifique sua internet e tente de novo.'
-    }
-  }
-  return 'Não foi possível buscar agora. Tente novamente.'
-}
 
 export function useSearchUsers(query: string) {
   const debounced = useDebounce(query, 300)
@@ -34,7 +22,7 @@ export function useSearchUsers(query: string) {
   })
 
   useEffect(() => {
-    if (result.error) showBanner(mapSearchError(result.error))
+    if (result.error) showBanner(getApiError(result.error).message)
   }, [result.error, showBanner])
 
   const users: SearchUserItem[] = useMemo(

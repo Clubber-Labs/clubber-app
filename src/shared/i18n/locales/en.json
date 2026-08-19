@@ -243,7 +243,10 @@
       "hour": "Hour",
       "minute": "Min"
     },
-    "viewProfile": "View {{username}}'s profile"
+    "viewProfile": "View {{username}}'s profile",
+    "form": {
+      "checkFields": "Check the highlighted fields."
+    }
   },
   "auth": {
     "login": {
@@ -469,7 +472,18 @@
     "markRead": "Mark as read",
     "settings": "Notification settings",
     "emptyTitle": "All caught up",
-    "emptyBody": "Activity from your network and hangouts near you show up on this screen."
+    "emptyBody": "Activity from your network and hangouts near you show up on this screen.",
+    "channelName": "Notifications",
+    "priming": {
+      "title": "Want to know when something happens?",
+      "message": "We'll tell you about invites, RSVPs to your hangouts and activity from people you follow.",
+      "confirm": "Turn on",
+      "cancel": "Not now"
+    },
+    "open": {
+      "contentGone": "This content is no longer available.",
+      "spotGone": "This hangout is no longer available."
+    }
   },
   "spots": {
     "errors": {
@@ -1179,7 +1193,8 @@
       "granted": "On",
       "denied": "Off",
       "enable": "Turn on"
-    }
+    },
+    "exportTitle": "My consent history — Clubber"
   },
   "settings": {
     "title": "Settings",
@@ -1344,7 +1359,9 @@
     },
     "deleteCta": "Delete my account",
     "deactivateTagline": "Like taking a break: you disappear from the app without losing anything.",
-    "deleteScheduledMessageWithDate": "Your account will be deleted on {{date}}. Log in before that date to cancel."
+    "deleteScheduledMessageWithDate": "Your account will be deleted on {{date}}. Log in before that date to cancel.",
+    "welcomeBackCanceled": "Welcome back! Your deletion was canceled.",
+    "welcomeBackReactivated": "Welcome back! Your account was reactivated."
   },
   "reports": {
     "title": "Report",
@@ -1363,7 +1380,8 @@
       "OTHER": "Other"
     },
     "detailsPlaceholder": "Details (optional)",
-    "submit": "Submit report"
+    "submit": "Submit report",
+    "sent": "Report sent. Thank you."
   },
   "featured": {
     "sponsored": "Sponsored",
@@ -1406,6 +1424,8 @@
       "confirmations": "Confirmations"
     },
     "exportCsv": "Export CSV",
-    "updatedAt": "Updated {{relative}}"
+    "updatedAt": "Updated {{relative}}",
+    "exportTitle": "Event analytics — Clubber",
+    "exportError": "Couldn't export right now. Try again."
   }
 }
