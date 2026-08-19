@@ -1,0 +1,11 @@
+{
+  "ios": {
+    "NSCameraUsageDescription": "Precisamos da câmera para fotos de perfil e eventos",
+    "NSMicrophoneUsageDescription": "Precisamos do microfone para gravar mensagens de voz.",
+    "NSPhotoLibraryUsageDescription": "Precisamos de acesso às suas fotos para alterar a foto de perfil.",
+    "NSLocationWhenInUseUsageDescription": "Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você.",
+    "NSLocationAlwaysAndWhenInUseUsageDescription": "Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você.",
+    "NSLocationAlwaysUsageDescription": "Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você.",
+    "NSFaceIDUsageDescription": "O Face ID protege os dados guardados neste aparelho, como a sua sessão."
+  }
+}

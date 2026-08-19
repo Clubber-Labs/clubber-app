@@ -1,6 +1,6 @@
 # Migração para CNG (Continuous Native Generation)
 
-> Status: **planejado** — fase 1 pendente. Última atualização: 2026-08-11.
+> Status: **planejado** — fase 1 pendente. Última atualização: 2026-08-19.
 
 ## Contexto — por que este documento existe
 
@@ -29,7 +29,23 @@ aparelho físico.
 | **Splash iOS** (storyboard reconstruído à mão + `SplashScreenLogo.imageset` + colorset `#0b0b0d`) | ❌ | Cobrir com plugin `expo-splash-screen` (`image`, `backgroundColor: "#0B0B0D"`, `imageWidth: 200`) — asset: `splash-logo-1024.png` do pacote de identidade |
 | **Splash Android** (`drawable-*/splashscreen_logo.png` + `splashscreen_background`) | ❌ | Mesmo plugin cobre |
 | `PrivacyInfo.xcprivacy` | ❌ (arquivo solto em `ios/`) | Conferir se o gerado pelo Expo cobre; senão `ios.privacyManifests` |
+| **`<lang>.lproj/InfoPlist.strings`** (pt-BR/en/es em `ios/Clubber/Supporting/`) + refs no pbxproj | ✅ `expo.locales` → `assets/native-locales/*.json` | **Drift zero, verificado**: o conteúdo dos `.lproj` e as entradas do pbxproj foram copiados do que o próprio prebuild emitiu numa worktree descartável, UUIDs inclusive. Rodar prebuild de novo não muda nenhuma dessas linhas. Efeito colateral esperado quando o Android entrar: 3 `values-b+<lang>/strings.xml` VAZIOS — o mod de lá consome o mesmo mapa, e as chaves estão sob `"ios"` porque no Android não há o que traduzir |
+| `NSFaceIDUsageDescription` | ✅ `expo-secure-store` → `faceIDPermission` | Era o texto genérico em inglês do plugin |
 | ~193 linhas modificadas no `project.pbxproj` | ❓ | Diff da fase 1 revela (provavelmente assinatura + refs) |
+
+### Prévia parcial da fase 1 (2026-08-19)
+
+Rodando `expo prebuild --platform ios --no-install` (sem `--clean`) numa worktree
+descartável, o diff contra o commitado hoje é **só isto**:
+
+- `SplashScreen.storyboard`, `SplashScreenBackground.colorset` e o PNG do
+  `AppIcon` (re-encodado) — a dívida do splash que a tabela acima já prevê;
+- ruído de aspas no pbxproj (`PRODUCT_NAME = Clubber` → `"Clubber"`,
+  `TARGETED_DEVICE_FAMILY = 1` → `"1"`).
+
+Nada de assinatura, nada de Info.plist, nada de i18n. É um sinal bom para a fase
+1: o gap real parece ser **só o plugin de splash**. Ressalva — isto não substitui
+o passo 1 abaixo, que usa `--clean` e cobre os dois plataformas.
 
 ## Fase 1 — paridade de config (SEM depender da conta Apple paga)
 

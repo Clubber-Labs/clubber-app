@@ -71,6 +71,17 @@ export default {
     version: "1.0.0",
     scheme: "clubber",
     userInterfaceStyle: "automatic",
+    // Strings NATIVAS (diálogo de permissão do iOS) por idioma — não confundir
+    // com src/shared/i18n/locales/, que é a copy do app. Quem renderiza estas é
+    // o SO, então elas não passam pelo i18next: o prebuild as vira
+    // ios/Clubber/Supporting/<lang>.lproj/InfoPlist.strings. Os arquivos nativos
+    // estão commitados à mão (prebuild não roda aqui — ver docs/migracao-cng.md);
+    // esta chave existe pra que, quando ele voltar a rodar, gere o mesmo.
+    locales: {
+      "pt-BR": "./assets/native-locales/pt-BR.json",
+      en: "./assets/native-locales/en.json",
+      es: "./assets/native-locales/es.json",
+    },
     // Ícone = sticker inclinado (rotação de -8° JÁ embutida no PNG — nunca
     // aplicar transform por fora). No chrome do app o BrandB fica reto; o
     // inclinado em UI é só o BrandSticker. icon-viva.png = alternativo de
@@ -103,7 +114,14 @@ export default {
         ? [withoutIosPushEntitlement]
         : []),
       "expo-router",
-      "expo-secure-store",
+      // O plugin declara NSFaceIDUsageDescription com um texto genérico em
+      // inglês; era a única permissão fora do padrão das outras. O app não pede
+      // biometria hoje (nenhum requireAuthentication) — o texto descreve o que o
+      // Face ID protegeria, e a decisão de manter ou remover a permissão em si
+      // não é desta fase.
+      ["expo-secure-store", {
+        faceIDPermission: "O Face ID protege os dados guardados neste aparelho, como a sua sessão."
+      }],
       ["react-native-vision-camera", {
         cameraPermissionText: "Precisamos da câmera para fotos de perfil e eventos"
       }],

@@ -79,7 +79,7 @@
     <key>NSCameraUsageDescription</key>
     <string>Precisamos da câmera para fotos de perfil e eventos</string>
     <key>NSFaceIDUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your Face ID biometric data.</string>
+    <string>O Face ID protege os dados guardados neste aparelho, como a sua sessão.</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
     <string>Usamos sua localização para mostrar eventos próximos no mapa e, se você ativar, avisar de eventos perto de você.</string>
     <key>NSLocationAlwaysUsageDescription</key>

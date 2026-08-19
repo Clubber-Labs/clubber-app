@@ -14,6 +14,9 @@
 		B240799E17896368F12B8998 /* libPods-Clubber.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D5886194520B6D60432680E2 /* libPods-Clubber.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
+		DEB10C9D60734B7FB2410923 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = EA052B3C42534B7A998D823D /* InfoPlist.strings */; };
+		DD2353FEB9EF42BCA6ECDFA2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BF3E026EAB4D454EAEF92A32 /* InfoPlist.strings */; };
+		E2B5828AD8D04708AA6E6F35 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 744EFA05C5754D9EA33D975E /* InfoPlist.strings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +33,9 @@
 		EDDA75565E212682A3F8770F /* Pods-Clubber.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Clubber.debug.xcconfig"; path = "Target Support Files/Pods-Clubber/Pods-Clubber.debug.xcconfig"; sourceTree = "<group>"; };
 		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Clubber/AppDelegate.swift; sourceTree = "<group>"; };
 		F11748442D0722820044C1D9 /* Clubber-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Clubber-Bridging-Header.h"; path = "Clubber/Clubber-Bridging-Header.h"; sourceTree = "<group>"; };
+		EA052B3C42534B7A998D823D /* InfoPlist.strings */ = {isa = PBXFileReference; name = "InfoPlist.strings"; path = "pt-BR.lproj/InfoPlist.strings"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.strings; explicitFileType = undefined; includeInIndex = 0; };
+		BF3E026EAB4D454EAEF92A32 /* InfoPlist.strings */ = {isa = PBXFileReference; name = "InfoPlist.strings"; path = "en.lproj/InfoPlist.strings"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.strings; explicitFileType = undefined; includeInIndex = 0; };
+		744EFA05C5754D9EA33D975E /* InfoPlist.strings */ = {isa = PBXFileReference; name = "InfoPlist.strings"; path = "es.lproj/InfoPlist.strings"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.strings; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,10 +132,40 @@
 			isa = PBXGroup;
 			children = (
 				BB2F792C24A3F905000567C9 /* Expo.plist */,
+				0D4D9C67915048CBB2FE72E2 /* pt-BR.lproj */,
+				CF70512AB36C4B7596F73A77 /* en.lproj */,
+				C544E389299E446B96C7A962 /* es.lproj */,
 			);
 			name = Supporting;
 			path = Clubber/Supporting;
 			sourceTree = "<group>";
+		};
+		0D4D9C67915048CBB2FE72E2 /* pt-BR.lproj */ = {
+			isa = "PBXGroup";
+			children = (
+				EA052B3C42534B7A998D823D /* InfoPlist.strings */,
+			);
+			name = pt-BR.lproj;
+			sourceTree = "<group>";
+			path = "";
+		};
+		CF70512AB36C4B7596F73A77 /* en.lproj */ = {
+			isa = "PBXGroup";
+			children = (
+				BF3E026EAB4D454EAEF92A32 /* InfoPlist.strings */,
+			);
+			name = en.lproj;
+			sourceTree = "<group>";
+			path = "";
+		};
+		C544E389299E446B96C7A962 /* es.lproj */ = {
+			isa = "PBXGroup";
+			children = (
+				744EFA05C5754D9EA33D975E /* InfoPlist.strings */,
+			);
+			name = es.lproj;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -196,6 +232,9 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				A3C57756CCEF4C4B08543EE2 /* PrivacyInfo.xcprivacy in Resources */,
+				DEB10C9D60734B7FB2410923 /* InfoPlist.strings in Resources */,
+				DD2353FEB9EF42BCA6ECDFA2 /* InfoPlist.strings in Resources */,
+				E2B5828AD8D04708AA6E6F35 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
