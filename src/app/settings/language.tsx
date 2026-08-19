@@ -4,18 +4,13 @@ import { useTranslation } from 'react-i18next'
 import { RadioButtonIcon } from 'phosphor-react-native'
 import { FormError } from '@/shared/components/FormError'
 import { getApiError } from '@/shared/lib/apiError'
-import { SUPPORTED_LOCALES, type Locale } from '@/shared/i18n'
+import {
+  LANGUAGE_ENDONYMS,
+  SUPPORTED_LOCALES,
+  type Locale,
+} from '@/shared/i18n'
 import { useLocalePreference } from '@/features/users/hooks/useLocalePreference'
 import { colors } from '@/shared/theme'
-
-// Endônimo: o nome do idioma na própria língua. Não entra no dicionário porque
-// não varia com o idioma da interface — é assim que alguém acha o próprio idioma
-// numa tela que ainda não sabe ler.
-const LANGUAGE_NAMES: Record<Locale, string> = {
-  pt: 'Português',
-  en: 'English',
-  es: 'Español',
-}
 
 export default function LanguageSettingsScreen() {
   const { t } = useTranslation()
@@ -53,7 +48,10 @@ export default function LanguageSettingsScreen() {
               onPress={() => handleSelect(locale)}
               disabled={!ready || saving}
               accessibilityRole="button"
-              accessibilityState={{ selected: active, disabled: !ready }}
+              accessibilityState={{
+                selected: active,
+                disabled: !ready || saving,
+              }}
               // Só o perfil ausente apaga a lista: durante o PUT o toque é
               // bloqueado sem mudar de cor, senão a troca (que é instantânea na
               // interface) piscaria a cada escolha.
@@ -62,7 +60,7 @@ export default function LanguageSettingsScreen() {
               } ${ready ? '' : 'opacity-50'}`}
             >
               <Text className="text-content-bright text-base">
-                {LANGUAGE_NAMES[locale]}
+                {LANGUAGE_ENDONYMS[locale]}
               </Text>
               <RadioButtonIcon
                 size={20}

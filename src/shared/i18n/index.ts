@@ -38,6 +38,16 @@ export function toBackendLocale(locale: Locale): BackendLocale {
   return BACKEND_LOCALE[locale]
 }
 
+// Endônimo: o nome do idioma na própria língua. Fica fora do dicionário porque
+// não varia com o idioma da interface — é assim que alguém acha o próprio idioma
+// numa tela que ainda não sabe ler. Mora aqui, ao lado das outras tabelas por
+// Locale, pra adicionar um idioma continuar sendo uma edição só neste arquivo.
+export const LANGUAGE_ENDONYMS: Record<Locale, string> = {
+  pt: 'Português',
+  en: 'English',
+  es: 'Español',
+}
+
 // `Record` (e não um objeto solto) é o que faz `pnpm typecheck` acusar chave
 // faltando em en/es: os três dicionários têm que ter o formato do canônico.
 const resources: Record<Locale, { translation: typeof pt }> = {
