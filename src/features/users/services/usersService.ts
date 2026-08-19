@@ -1,5 +1,6 @@
 import { api } from '@/shared/lib/api'
 import { buildImageFile } from '@/shared/utils/imageUpload'
+import type { BackendLocale } from '@/shared/i18n'
 import type {
   CursorPaginatedResponse,
   UserProfile,
@@ -26,6 +27,9 @@ export type UpdateMePayload = {
   socialFeed?: boolean
   socialVisibility?: boolean
   analytics?: boolean
+  // Idioma explícito da interface (null volta a seguir o aparelho). O enum do
+  // backend é regional: 'pt' dá 400 — use toBackendLocale.
+  localePreference?: BackendLocale | null
 }
 
 export const usersService = {

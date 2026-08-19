@@ -1,4 +1,5 @@
 import Constants from 'expo-constants'
+import { i18n } from '@/shared/i18n'
 
 export type GeocodingResult = {
   id: string
@@ -36,9 +37,11 @@ export const geocodingService = {
     if (trimmed.length < 3) return []
 
     const types = 'poi,address,place,locality,neighborhood'
+    // `language` acompanha a escolha do usuário (o Mapbox aceita a língua-base);
+    // `country` continua fixo em br — é o recorte de lançamento, não idioma.
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
       trimmed,
-    )}.json?access_token=${accessToken}&autocomplete=true&language=pt&country=br&limit=7&types=${types}`
+    )}.json?access_token=${accessToken}&autocomplete=true&language=${i18n.language}&country=br&limit=7&types=${types}`
 
     const res = await fetch(url)
     if (!res.ok) throw new Error('Falha ao buscar endereços')

@@ -3,7 +3,7 @@
 import 'intl-pluralrules'
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import { getLocales } from 'expo-localization'
+import { getCalendars, getLocales } from 'expo-localization'
 import {
   getLocalePreference,
   saveLocalePreference,
@@ -22,6 +22,21 @@ export type Locale = (typeof SUPPORTED_LOCALES)[number]
 export const FALLBACK_LOCALE: Locale = 'en'
 
 export type MeasurementSystem = 'metric' | 'us' | 'uk'
+
+// Forma que o backend valida no corpo do localePreference. No header
+// Accept-Language 'pt' está certo (ele casa por língua-base), mas no corpo o
+// enum é fechado: mandar 'pt' volta 400. A tradução acontece só nesta fronteira.
+const BACKEND_LOCALE = {
+  pt: 'pt-BR',
+  en: 'en',
+  es: 'es',
+} as const
+
+export type BackendLocale = (typeof BACKEND_LOCALE)[Locale]
+
+export function toBackendLocale(locale: Locale): BackendLocale {
+  return BACKEND_LOCALE[locale]
+}
 
 // `Record` (e não um objeto solto) é o que faz `pnpm typecheck` acusar chave
 // faltando em en/es: os três dicionários têm que ter o formato do canônico.
@@ -52,6 +67,15 @@ export function getMeasurementSystem(): MeasurementSystem {
   return getLocales()[0]?.measurementSystem ?? 'metric'
 }
 
+// IANA do aparelho, enviado no cadastro, no login e no registro de push — os
+// três pontos em que o backend aceita, e sem os quais todo usuário fica no
+// default America/Sao_Paulo (e recebe o resumo diário no horário errado). Vem do
+// expo-localization, e não de Intl.DateTimeFormat().resolvedOptions(), porque o
+// Hermes só devolve o fuso real quando compilado com ICU completo. null no web.
+export function getDeviceTimeZone(): string | undefined {
+  return getCalendars()[0]?.timeZone ?? undefined
+}
+
 i18n.use(initReactI18next).init({
   resources,
   lng: getDeviceLocale(),
@@ -71,9 +95,9 @@ export async function hydratePersistedLocale(): Promise<void> {
   }
 }
 
-// Ainda falta propagar a escolha para o backend (`PUT /users/{id}` com
-// `localePreference`): push e e-mail são renderizados no servidor pela
-// preferência salva, não pelo Accept-Language.
+// Só o lado do aparelho — quem também persiste no backend (obrigatório: push e
+// e-mail são renderizados lá pela preferência salva, não pelo Accept-Language) é
+// o useLocalePreference, que shared/ não pode importar.
 export async function changeLocale(locale: Locale): Promise<void> {
   await saveLocalePreference(locale)
   await i18n.changeLanguage(locale)

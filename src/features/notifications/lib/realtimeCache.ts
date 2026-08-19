@@ -12,7 +12,7 @@ export function applyIncomingNotification(
   queryClient: QueryClient,
   notification: AppNotification,
 ) {
-  const cache = queryClient.getQueryData<ListCache>(notificationKeys.list)
+  const cache = queryClient.getQueryData<ListCache>(notificationKeys.list())
 
   if (cache) {
     const exists = cache.pages.some(page =>
@@ -22,7 +22,7 @@ export function applyIncomingNotification(
 
     const [first, ...rest] = cache.pages
     if (first) {
-      queryClient.setQueryData<ListCache>(notificationKeys.list, {
+      queryClient.setQueryData<ListCache>(notificationKeys.list(), {
         ...cache,
         pages: [{ ...first, data: [notification, ...first.data] }, ...rest],
       })
@@ -45,6 +45,6 @@ export function applyIncomingNotification(
 // Reconexão não tem replay — rebusca lista e badge via REST. Cobre também o
 // retorno background→foreground (o socket trata o open pós-stop como reconexão).
 export function resyncNotifications(queryClient: QueryClient) {
-  queryClient.invalidateQueries({ queryKey: notificationKeys.list })
+  queryClient.invalidateQueries({ queryKey: notificationKeys.lists })
   queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount })
 }

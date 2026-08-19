@@ -1,4 +1,5 @@
 import { api } from '@/shared/lib/api'
+import { getDeviceTimeZone } from '@/shared/i18n'
 import type { CursorPaginatedResponse } from '@/shared/types'
 import type { AppNotification } from '../schemas/notificationSchema'
 
@@ -22,8 +23,13 @@ export const notificationsService = {
   markAllRead: (): Promise<{ updated: number }> =>
     api.post('/notifications/read-all').then(r => r.data),
 
+  // Manda o fuso junto: é o único dos três pontos que se repete depois do
+  // cadastro, então cobre quem entrou por login social (POST /auth/social não
+  // aceita timezone) e quem viajou de fuso desde a última vez.
   registerDevice: (token: string, platform: 'ios' | 'android'): Promise<void> =>
-    api.post('/devices', { token, platform }).then(() => undefined),
+    api
+      .post('/devices', { token, platform, timezone: getDeviceTimeZone() })
+      .then(() => undefined),
 
   // Idempotente no backend (204 mesmo se o token já não existe).
   // skipAuthHandler: roda dentro do endSession com sessão expirada — um 401

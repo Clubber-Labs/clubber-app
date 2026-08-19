@@ -1,4 +1,5 @@
 import { api } from '@/shared/lib/api'
+import { getDeviceTimeZone } from '@/shared/i18n'
 import type { LoginInput, LoginSessionResponse } from '../schemas/loginSchema'
 import type { RegisterPayload } from '../schemas/registerSchema'
 import type {
@@ -7,13 +8,24 @@ import type {
 } from '../schemas/socialLoginSchema'
 
 export const authService = {
+  // O fuso é fato do aparelho, não do formulário: entra aqui na fronteira, e não
+  // no payload que a tela monta. Sem ele o usuário fica no default
+  // America/Sao_Paulo e o horário de push/e-mail sai errado.
   register: (data: RegisterPayload) =>
-    api.post('/users', data).then(r => r.data),
+    api
+      .post('/users', { ...data, timezone: getDeviceTimeZone() })
+      .then(r => r.data),
   // skipAuthHandler: login é pré-sessão — um 401 aqui é "credenciais inválidas"
   // (tratado inline no LoginForm), nunca "sessão expirou". Sem isso, o 401 dispara
   // o handler global de sessão expirada (endSession) e mostra o banner indevido.
   login: (data: LoginInput): Promise<LoginSessionResponse> =>
-    api.post('/auth/login', data, { skipAuthHandler: true }).then(r => r.data),
+    api
+      .post(
+        '/auth/login',
+        { ...data, timezone: getDeviceTimeZone() },
+        { skipAuthHandler: true },
+      )
+      .then(r => r.data),
   me: () => api.get('/users/me').then(r => r.data),
   socialLogin: (data: SocialLoginPayload): Promise<SocialLoginResponse> =>
     api.post('/auth/social', data).then(r => r.data),

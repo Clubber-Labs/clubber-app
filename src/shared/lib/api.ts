@@ -1,5 +1,6 @@
 import axios, { type AxiosError } from 'axios'
 import Constants from 'expo-constants'
+import { i18n } from '@/shared/i18n'
 import { isUnauthorizedError } from './apiError'
 import {
   getRefreshToken,
@@ -39,6 +40,12 @@ export function setUnauthorizedHandler(handler: (() => void) | null) {
 }
 
 api.interceptors.request.use(async config => {
+  // Idioma do conteúdo que o servidor renderiza (categoria, notificação, erro).
+  // É a ESCOLHA do usuário (i18n.language), nunca o idioma do aparelho: o
+  // backend negocia só por este header, então mandar getLocales() aqui faria a
+  // troca de idioma não sair da interface. 'pt' basta — lá ele casa por
+  // língua-base; a forma 'pt-BR' só é exigida no corpo do localePreference.
+  config.headers['Accept-Language'] = i18n.language
   if (config.skipAuthHeader) return config
   const token = await getToken()
   if (token) config.headers.Authorization = `Bearer ${token}`

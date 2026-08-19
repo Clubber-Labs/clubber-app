@@ -1,20 +1,21 @@
 import { useCallback, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import {
-  categoriesService,
-  CATEGORIES_LOCALE,
-} from '@/shared/services/categoriesService'
+import { categoriesService } from '@/shared/services/categoriesService'
+import { useLocale } from '@/shared/hooks/useLocale'
 import type { Category, Genre, Subcategory } from '@/shared/types'
 
 /**
  * Fonte única da taxonomia. Consome GET /categories e expõe lookups de rótulo e
  * de estrutura (categorias → subcategorias, gêneros e seus `appliesTo`). A lista
- * é canônica e estável, então cacheia "para sempre" (revalidar só ao trocar de
- * idioma, hoje fixo em pt-BR).
+ * é canônica e estável, então cacheia "para sempre" — por IDIOMA: o rótulo vem
+ * traduzido do servidor, então o locale é segmento da chave, e voltar ao idioma
+ * anterior reusa o cache em vez de rebuscar.
  */
 export function useCategories() {
+  const locale = useLocale()
+
   const query = useQuery({
-    queryKey: ['categories', CATEGORIES_LOCALE],
+    queryKey: ['categories', locale],
     queryFn: () => categoriesService.list(),
     staleTime: Infinity,
     gcTime: Infinity,
