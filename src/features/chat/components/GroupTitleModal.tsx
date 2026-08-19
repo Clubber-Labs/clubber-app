@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { View, Text, TextInput, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { SheetModal } from './SheetModal'
 import { colors } from '@/shared/theme'
 
@@ -19,9 +20,10 @@ export function GroupTitleModal({
   onConfirm,
   submitting,
   initialValue,
-  heading = 'Nome do grupo',
-  confirmLabel = 'Criar grupo',
+  heading,
+  confirmLabel,
 }: Props) {
+  const { t } = useTranslation()
   const [title, setTitle] = useState(initialValue ?? '')
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export function GroupTitleModal({
       <TextInput
         value={title}
         onChangeText={setTitle}
-        placeholder="Ex: Squad do show"
+        placeholder={t('chat.group.namePlaceholder')}
         placeholderTextColor={colors.contentSubtle}
         maxLength={80}
         className="bg-surface rounded-xl px-4 py-3 text-content mx-5"
@@ -52,7 +54,9 @@ export function GroupTitleModal({
           <Text
             className={`font-semibold ${canConfirm ? 'text-content' : 'text-content-subtle'}`}
           >
-            {submitting ? 'Salvando…' : confirmLabel}
+            {submitting
+              ? t('chat.group.saving')
+              : (confirmLabel ?? t('chat.group.create'))}
           </Text>
         </Pressable>
       </View>

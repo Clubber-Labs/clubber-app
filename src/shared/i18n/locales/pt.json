@@ -479,6 +479,153 @@
       "endsAfterStart": "Horário de término deve ser depois do início",
       "endsInFuture": "O rolê precisa terminar no futuro",
       "windowTooLong": "O rolê pode durar no máximo 24 horas a partir de agora"
+    },
+    "form": {
+      "title": "Título",
+      "aiSuggested": "sugerido pela IA",
+      "titlePlaceholder": "Como você chamaria esse rolê?",
+      "description": "Descrição",
+      "optional": "(opcional)",
+      "descriptionPlaceholder": "Combina os detalhes com a galera...",
+      "when": "Quando",
+      "presetNow": "Agora",
+      "presetNowSub": "por 2h",
+      "presetTonight": "Hoje à noite",
+      "presetTonightSub": "20h–24h",
+      "presetCustom": "Escolher",
+      "presetCustomSub": "até 24h",
+      "starts": "Começa",
+      "startsPlaceholder": "Quando começa",
+      "ends": "Termina",
+      "endsPlaceholder": "Quando termina",
+      "maxDuration": "O rolê pode durar no máximo 24 horas.",
+      "categories": "Categorias",
+      "categoriesRange": "1 a 5",
+      "whoSees": "Quem vê",
+      "public": "Público",
+      "friends": "Amigos",
+      "publicHint": "Qualquer pessoa verá o lugar, o horário e sua foto de perfil no mapa.",
+      "friendsHint": "Visível só para amigos mútuos (quem você segue e te segue de volta).",
+      "createsGroupPrefix": "Publicar cria o",
+      "createsGroupHighlight": "grupo de chat",
+      "createsGroupSuffix": "do rolê",
+      "publishing": "Publicando...",
+      "publish": "Publicar rolê",
+      "saving": "Salvando...",
+      "saveChanges": "Salvar alterações"
+    },
+    "suggestions": {
+      "intro": "A IA sugere rolês dentro do raio escolhido, com base nas suas preferências — ou no que você descrever. Escolha um, publique e chame a galera pro grupo.",
+      "radiusLabel": "Raio da busca",
+      "generating": "Gerando sugestões...",
+      "generateAgain": "Gerar novamente",
+      "generate": "Gerar sugestões",
+      "remaining_one": "{{count}} geração restante hoje",
+      "remaining_other": "{{count}} gerações restantes hoje",
+      "openSettings": "Abrir ajustes",
+      "adjustPreferences": "Ajustar preferências",
+      "reasonWithQuery": "Sugerido pra você · {{query}}",
+      "reasonFromPrefs": "Combina com seus rolês",
+      "back": "Voltar para as sugestões",
+      "headingPrompt": "Bora pra onde?",
+      "headingResults_one": "{{count}} rolê pra hoje",
+      "headingResults_other": "{{count}} rolês pra hoje",
+      "regenerate": "Gerar de novo",
+      "close": "Fechar sugestões",
+      "locationDenied": "Permissão de localização negada. Ative nos ajustes do aparelho para gerar sugestões.",
+      "locationError": "Não foi possível obter sua localização. Tente novamente."
+    },
+    "query": {
+      "label": "O que você quer fazer?",
+      "placeholder": "bar com música ao vivo",
+      "tooShort": "Descreva com pelo menos {{count}} caracteres.",
+      "help": "Se você descrever algo, buscamos por isso e ignoramos suas preferências."
+    },
+    "card": {
+      "bestMatch": "Melhor match",
+      "openNow": "Aberto agora",
+      "open": "Aberto",
+      "closed": "Fechado",
+      "choose": "Escolher esse rolê",
+      "chooseNamed": "Escolher {{name}}"
+    },
+    "consent": {
+      "title": "Precisamos da sua localização",
+      "description": "Pra sugerir rolês perto de você. Usada só agora — nada de rastreamento em segundo plano.",
+      "enable": "Ativar localização",
+      "openPrivacy": "Abrir ajustes de privacidade"
+    },
+    "empty": {
+      "title": "Nada à altura por aqui",
+      "description": "A IA não achou bons lugares nessa busca. Tente aumentar o raio ou descrever melhor o que você quer.",
+      "increaseRadius": "Aumentar raio pra {{km}} km",
+      "editQuery": "Editar descrição"
+    },
+    "quota": {
+      "title": "Você usou suas {{count}} gerações de hoje",
+      "premiumDescription": "Elas voltam amanhã.",
+      "freeDescription": "Elas voltam amanhã. Quer continuar descobrindo agora?",
+      "premiumPerks": "25 gerações por dia, raio maior e mais rolês ativos.",
+      "seeMap": "Ver rolês no mapa"
+    },
+    "limit": {
+      "premiumTitle": "Você atingiu o limite de rolês ativos",
+      "freeTitle": "Você já tem 5 rolês ativos",
+      "premiumDescription": "Encerre ou deixe um expirar para publicar outro.",
+      "freeDescription": "Esse é o limite no plano free. Encerre um, deixe expirar — ou tenha mais rolês no ar ao mesmo tempo com o Premium.",
+      "premiumPerks": "Mais rolês ativos ao mesmo tempo, 25 gerações por dia e raio maior."
+    },
+    "premium": {
+      "name": "Clubber Premium",
+      "cta": "Conhecer o Premium"
+    },
+    "detail": {
+      "notFound": "Rolê não encontrado.",
+      "loadError": "Não foi possível carregar o rolê.",
+      "suggestedBy": "@{{username}} sugeriu esse rolê",
+      "canceled": "cancelado",
+      "live": "no ar",
+      "canceledNotice": "Esse rolê foi cancelado e saiu do mapa. O grupo de chat continua existindo.",
+      "when": "Quando",
+      "group": "Grupo do rolê",
+      "memberCount_one": "{{count}} pessoa no grupo",
+      "memberCount_other": "{{count}} pessoas no grupo",
+      "directions": "Como chegar",
+      "openGroupChat": "Abrir chat do grupo",
+      "joinChat": "Entrar no chat do rolê",
+      "cancelTitle": "Cancelar rolê",
+      "cancelMessage": "O rolê sai do mapa pra todo mundo. O grupo de chat continua existindo."
+    },
+    "owner": {
+      "manage": "Gerenciar rolê",
+      "endingSoon": "Seu rolê está acabando. Renove pra continuar no mapa.",
+      "renew": "Renovar por +24h",
+      "renewSub": "mantém o rolê no mapa",
+      "edit": "Editar rolê",
+      "editSub": "título e descrição",
+      "cancel": "Cancelar rolê",
+      "cancelSub": "sai do mapa pra todos"
+    },
+    "created": {
+      "title": "Rolê no ar!",
+      "description": "Seu rolê fica visível no mapa por 24h. Agora chama a galera.",
+      "invite": "Convidar a galera",
+      "openChat": "Abrir o chat do rolê",
+      "seeOnMap": "Ver no mapa",
+      "shareMessage": "Bora nesse rolê? \"{{title}}\" — entra no Clubber: {{url}}"
+    },
+    "preview": {
+      "suggestedBy": "@{{username}} sugeriu um rolê",
+      "memberCount_one": "{{count}} no grupo",
+      "memberCount_other": "{{count}} no grupo",
+      "see": "Ver rolê"
+    },
+    "generateErrors": {
+      "noPreferences": "Configure suas preferências de rolê no perfil para receber sugestões.",
+      "sessionExpired": "Sua sessão expirou. Entre novamente para gerar sugestões.",
+      "dailyLimit": "Você atingiu o limite diário de sugestões. Tente de novo amanhã.",
+      "placesDown": "A busca de lugares está indisponível agora. Tente em instantes.",
+      "generic": "Não foi possível gerar sugestões. Tente novamente."
     }
   },
   "events": {
@@ -673,7 +820,134 @@
   },
   "chat": {
     "inbox": {
-      "newConversation": "Nova conversa"
+      "newConversation": "Nova conversa",
+      "emptyTitle": "Nenhuma conversa ainda",
+      "emptyBody": "Comece uma conversa com alguém da sua rede.",
+      "start": "Iniciar conversa",
+      "loadError": "Não foi possível carregar as conversas.",
+      "deleteTitle": "Apagar conversa",
+      "deleteMessage": "Esta conversa será removida da sua lista de mensagens.",
+      "delete": "Apagar",
+      "rowLabel": "Conversa: {{title}}",
+      "rowLabelUnread_one": "Conversa: {{title}}, {{count}} não lida",
+      "rowLabelUnread_other": "Conversa: {{title}}, {{count}} não lidas"
+    },
+    "conversation": {
+      "group": "Grupo",
+      "direct": "Conversa",
+      "you": "Você",
+      "youPrefix": "Você: {{body}}",
+      "senderPrefix": "{{name}}: {{body}}"
+    },
+    "message": {
+      "deleted": "Mensagem removida"
+    },
+    "attachment": {
+      "audio": "Áudio",
+      "video": "Vídeo",
+      "image": "Imagem",
+      "audioPreview": "🎤 Áudio",
+      "videoPreview": "🎥 Vídeo",
+      "imagePreview": "📷 Imagem"
+    },
+    "typing": {
+      "one": "{{name}} está digitando…",
+      "two": "{{first}} e {{second}} estão digitando…",
+      "many": "Várias pessoas estão digitando…"
+    },
+    "input": {
+      "editing": "Editando mensagem",
+      "cancelEdit": "Cancelar edição",
+      "replyingTo": "Respondendo a {{name}}",
+      "cancelReply": "Cancelar resposta",
+      "attach": "Anexar imagem",
+      "placeholder": "Mensagem…",
+      "record": "Gravar áudio",
+      "saveEdit": "Salvar edição",
+      "send": "Enviar mensagem"
+    },
+    "bubble": {
+      "edited": "editada · ",
+      "retry": "Reenviar mensagem",
+      "failed": "Falhou · Tentar de novo"
+    },
+    "actions": {
+      "copy": "Copiar",
+      "edit": "Editar",
+      "report": "Denunciar",
+      "delete": "Apagar",
+      "deleteTitle": "Apagar mensagem",
+      "deleteMessage": "Esta mensagem será apagada para todos."
+    },
+    "media": {
+      "gallery": "Galeria",
+      "camera": "Câmera",
+      "image": "Imagem",
+      "video": "Vídeo",
+      "closeImage": "Fechar imagem",
+      "closeVideo": "Fechar vídeo",
+      "playAudio": "Tocar áudio",
+      "pauseAudio": "Pausar áudio",
+      "audioProgress": "Barra de progresso do áudio",
+      "cancelRecording": "Cancelar gravação",
+      "sendAudio": "Enviar áudio"
+    },
+    "header": {
+      "online": "online",
+      "details": "Ver detalhes da conversa",
+      "more": "Mais opções"
+    },
+    "group": {
+      "participantCount_one": "{{count}} participante",
+      "participantCount_other": "{{count}} participantes",
+      "participants": "Participantes",
+      "rename": "Renomear grupo",
+      "addPeople": "Adicionar pessoas",
+      "leave": "Sair do grupo",
+      "leaveMessage": "Você deixará de receber as mensagens deste grupo.",
+      "leaveConfirm": "Sair",
+      "removeTitle": "Remover do grupo",
+      "removeMessage": "Remover {{name}} do grupo?",
+      "removeConfirm": "Remover",
+      "makeAdmin": "Tornar admin",
+      "removeAdmin": "Remover admin",
+      "nameHeading": "Nome do grupo",
+      "namePlaceholder": "Ex: Squad do show",
+      "create": "Criar grupo",
+      "creating": "Criando…",
+      "createWithCount": "Criar grupo ({{count}})",
+      "saving": "Salvando…",
+      "newGroup": "Novo grupo",
+      "createNew": "Criar novo grupo"
+    },
+    "dm": {
+      "viewProfile": "Ver perfil",
+      "block": "Bloquear usuário",
+      "unblock": "Desbloquear usuário",
+      "blockMessage": "Vocês não poderão mais trocar mensagens. Bloquear {{name}}?",
+      "blockConfirm": "Bloquear"
+    },
+    "people": {
+      "searchPlaceholder": "Buscar pessoas…",
+      "empty": "Ninguém encontrado.",
+      "selected": "{{name}}, selecionado",
+      "you": "(você)",
+      "newConversationTitle": "Nova conversa",
+      "cannotStart": "Você não pode iniciar conversa com este usuário"
+    },
+    "reactions": {
+      "label": "{{emoji}} {{count}}",
+      "labelMine": "{{emoji}} {{count}}, sua reação"
+    },
+    "blocked": {
+      "byMe": "Você bloqueou este usuário.",
+      "byThem": "Você não pode mais enviar mensagens nesta conversa."
+    },
+    "banners": {
+      "rateLimited": "Você está enviando rápido demais, aguarde um instante",
+      "videoTooLarge": "Vídeo muito grande para enviar.",
+      "micDenied": "Permissão de microfone negada.",
+      "cameraDenied": "Permissão de câmera negada."
     }
   },
   "profile": {

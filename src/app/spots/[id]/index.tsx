@@ -14,6 +14,7 @@ import {
   NavigationArrowIcon,
   ChatCircleDotsIcon,
 } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useConfirm } from '@/shared/lib/confirm'
@@ -43,6 +44,7 @@ import { SpotQuotaExhausted } from '@/features/spots/components/SpotQuotaExhaust
 import { colors } from '@/shared/theme'
 
 export default function SpotDetailScreen() {
+  const { t } = useTranslation()
   const locale = useLocale()
   // renew=1 chega pelo deep-link da notificação SPOT_RENEWAL ("seu rolê está
   // acabando") — destaca o CTA de renovar.
@@ -83,11 +85,13 @@ export default function SpotDetailScreen() {
         <Text className="text-content-secondary text-center">
           {/* 404 também cobre privado/bloqueio — não revelar existência. */}
           {isNotFoundError(error)
-            ? 'Spot não encontrado.'
-            : 'Não foi possível carregar o spot.'}
+            ? t('spots.detail.notFound')
+            : t('spots.detail.loadError')}
         </Text>
         <Pressable onPress={() => router.back()}>
-          <Text className="text-brand-text font-semibold">Voltar</Text>
+          <Text className="text-brand-text font-semibold">
+            {t('common.back')}
+          </Text>
         </Pressable>
       </View>
     )
@@ -95,10 +99,9 @@ export default function SpotDetailScreen() {
 
   const isCreator = !!myId && spot.creator.id === myId
   const isCanceled = !!spot.canceledAt
-  const memberLabel =
-    spot.memberCount === 1
-      ? '1 pessoa no grupo'
-      : `${spot.memberCount} pessoas no grupo`
+  const memberLabel = t('spots.detail.memberCount', {
+    count: spot.memberCount,
+  })
 
   function handleJoin() {
     // Criador já é membro desde a publicação — vai direto pro grupo, sem
@@ -132,10 +135,9 @@ export default function SpotDetailScreen() {
 
   async function handleCancel() {
     const ok = await confirm({
-      title: 'Cancelar rolê',
-      message:
-        'O rolê sai do mapa pra todo mundo. O grupo de chat continua existindo.',
-      confirmLabel: 'Cancelar rolê',
+      title: t('spots.detail.cancelTitle'),
+      message: t('spots.detail.cancelMessage'),
+      confirmLabel: t('spots.detail.cancelTitle'),
       destructive: true,
     })
     if (!ok) return
@@ -162,7 +164,9 @@ export default function SpotDetailScreen() {
               {spot.creator.name} {spot.creator.lastname}
             </Text>
             <Text className="text-content-subtle text-xs">
-              @{spot.creator.username} sugeriu esse rolê
+              {t('spots.detail.suggestedBy', {
+                username: spot.creator.username,
+              })}
             </Text>
           </View>
           <CaretRightIcon size={16} color={colors.contentFaint} />
@@ -181,22 +185,21 @@ export default function SpotDetailScreen() {
                   color={colors.dangerText}
                 />
                 <Text className="text-danger-text text-[11px] font-bold">
-                  cancelado
+                  {t('spots.detail.canceled')}
                 </Text>
               </View>
             ) : (
               <View className="flex-row items-center gap-1.5 rounded-md bg-success/20 border border-success/30 px-2.5 py-1">
                 <View className="w-1.5 h-1.5 rounded-full bg-success-text" />
                 <Text className="text-success-text text-[11px] font-bold">
-                  no ar
+                  {t('spots.detail.live')}
                 </Text>
               </View>
             )}
           </View>
           {isCanceled && (
             <Text className="text-content-muted text-sm">
-              Esse rolê foi cancelado e saiu do mapa. O grupo de chat continua
-              existindo.
+              {t('spots.detail.canceledNotice')}
             </Text>
           )}
           {spot.description && (
@@ -222,7 +225,7 @@ export default function SpotDetailScreen() {
             </View>
             <View className="flex-1">
               <Text className="text-content-subtle text-[11px] font-semibold">
-                Quando
+                {t('spots.detail.when')}
               </Text>
               <Text className="text-content-secondary text-sm font-semibold mt-0.5">
                 {formatSpotWindow(spot.startsAt, spot.endsAt, locale)}
@@ -236,7 +239,7 @@ export default function SpotDetailScreen() {
             </View>
             <View className="flex-1">
               <Text className="text-content-subtle text-[11px] font-semibold">
-                Grupo do rolê
+                {t('spots.detail.group')}
               </Text>
               <Text className="text-content-secondary text-sm font-semibold mt-0.5">
                 {memberLabel}
@@ -256,7 +259,7 @@ export default function SpotDetailScreen() {
           >
             <NavigationArrowIcon size={14} color={colors.contentSecondary} />
             <Text className="text-content-secondary text-xs font-bold">
-              Como chegar
+              {t('spots.detail.directions')}
             </Text>
           </Pressable>
         </View>
@@ -265,7 +268,9 @@ export default function SpotDetailScreen() {
           <View className="gap-2">
             <Button
               label={
-                isCreator ? 'Abrir chat do grupo' : 'Entrar no chat do rolê'
+                isCreator
+                  ? t('spots.detail.openGroupChat')
+                  : t('spots.detail.joinChat')
               }
               icon={ChatCircleDotsIcon}
               onPress={handleJoin}

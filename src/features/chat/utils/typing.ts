@@ -1,3 +1,5 @@
+import { i18n } from '@/shared/i18n'
+
 // Estado de "digitando" de uma conversa: userId → timestamp (ms) em que o
 // indicador expira. O servidor não garante o `isTyping:false`, então cada
 // `true` renova um TTL e o indicador some sozinho quando ninguém renova.
@@ -45,9 +47,15 @@ export function typingMapsEqual(a: TypingMap, b: TypingMap): boolean {
 
 // "Fulano está digitando…" / "Fulano e Beltrano…" / "Várias pessoas…".
 // Pura — recebe os nomes já resolvidos. Vazio → string vazia (caller não mostra).
-export function typingLabel(names: string[]): string {
+export function typingLabel(names: string[], locale: string): string {
   if (names.length === 0) return ''
-  if (names.length === 1) return `${names[0]} está digitando…`
-  if (names.length === 2) return `${names[0]} e ${names[1]} estão digitando…`
-  return 'Várias pessoas estão digitando…'
+  if (names.length === 1)
+    return i18n.t('chat.typing.one', { lng: locale, name: names[0] })
+  if (names.length === 2)
+    return i18n.t('chat.typing.two', {
+      lng: locale,
+      first: names[0],
+      second: names[1],
+    })
+  return i18n.t('chat.typing.many', { lng: locale })
 }

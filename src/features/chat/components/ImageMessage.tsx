@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Pressable, Image, View, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { mediaBoxSize } from '../utils/mediaBox'
 import { LONG_PRESS_DELAY_MS } from '../utils/longPress'
 import type { Attachment } from '../types'
@@ -20,6 +21,7 @@ export function ImageMessage({
   onLongPress,
   sending,
 }: Props) {
+  const { t } = useTranslation()
   const [loaded, setLoaded] = useState(false)
   // Caixa pelo aspect-ratio real (quando o backend manda width/height) reservada
   // antes da imagem carregar — evita o "pulo" de layout. Fallback 220×220 quando
@@ -35,7 +37,7 @@ export function ImageMessage({
       onLongPress={onLongPress}
       delayLongPress={LONG_PRESS_DELAY_MS}
       className="rounded-xl overflow-hidden"
-      accessibilityLabel="Imagem"
+      accessibilityLabel={t('chat.media.image')}
     >
       <Image
         source={{ uri: attachment.url }}

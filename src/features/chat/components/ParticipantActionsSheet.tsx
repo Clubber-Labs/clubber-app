@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import {
   MinusCircleIcon,
   ShieldCheckIcon,
@@ -22,12 +23,15 @@ export function ParticipantActionsSheet({
   onToggleAdmin,
   onRemove,
 }: Props) {
+  const { t } = useTranslation()
   const isAdmin = participant?.role === 'ADMIN'
   return (
     <SheetModal visible={visible} onClose={onClose}>
       <SheetRow
         icon={isAdmin ? MinusCircleIcon : ShieldCheckIcon}
-        label={isAdmin ? 'Remover admin' : 'Tornar admin'}
+        label={
+          isAdmin ? t('chat.group.removeAdmin') : t('chat.group.makeAdmin')
+        }
         onPress={() => {
           onClose()
           onToggleAdmin()
@@ -35,7 +39,7 @@ export function ParticipantActionsSheet({
       />
       <SheetRow
         icon={UserMinusIcon}
-        label="Remover do grupo"
+        label={t('chat.group.removeTitle')}
         destructive
         onPress={() => {
           onClose()

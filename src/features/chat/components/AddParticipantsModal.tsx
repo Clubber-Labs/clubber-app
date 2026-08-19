@@ -8,6 +8,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { MagnifyingGlassIcon, XIcon } from 'phosphor-react-native'
 import { useChatUserSearch } from '../hooks/useChatUserSearch'
 import { UserPickRow } from './UserPickRow'
@@ -27,6 +28,7 @@ export function AddParticipantsModal({
   onClose,
   onAdd,
 }: Props) {
+  const { t } = useTranslation()
   const [query, setQuery] = useState('')
   const {
     users,
@@ -46,12 +48,12 @@ export function AddParticipantsModal({
           <Pressable
             onPress={onClose}
             className="w-9 h-9 items-center justify-center"
-            accessibilityLabel="Fechar"
+            accessibilityLabel={t('common.close')}
           >
             <XIcon size={24} color={colors.contentSecondary} />
           </Pressable>
           <Text className="text-content font-semibold text-lg">
-            Adicionar pessoas
+            {t('chat.group.addPeople')}
           </Text>
         </View>
 
@@ -61,7 +63,7 @@ export function AddParticipantsModal({
             <TextInput
               value={query}
               onChangeText={setQuery}
-              placeholder="Buscar pessoas…"
+              placeholder={t('chat.people.searchPlaceholder')}
               placeholderTextColor={colors.contentSubtle}
               autoCapitalize="none"
               textAlignVertical="center"
@@ -91,7 +93,7 @@ export function AddParticipantsModal({
             ListEmptyComponent={
               trimmed.length >= 2 ? (
                 <Text className="text-content-subtle text-center mt-6">
-                  Ninguém encontrado.
+                  {t('chat.people.empty')}
                 </Text>
               ) : null
             }

@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { StackIcon, SparkleIcon } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { colors } from '@/shared/theme'
@@ -14,6 +15,7 @@ type Props = {
 // mesmo tempo. Pro free, o limite vira oportunidade — Premium dá mais slots
 // simultâneos; pro premium (teto maior já atingido), só orienta a encerrar um.
 export function SpotLimitReached({ isPremium, onUpgrade, onBack }: Props) {
+  const { t } = useTranslation()
   return (
     <View className="flex-1 items-center justify-center px-6 gap-3">
       <View className="w-16 h-16 rounded-2xl bg-warning/15 border border-warning/30 items-center justify-center">
@@ -21,14 +23,12 @@ export function SpotLimitReached({ isPremium, onUpgrade, onBack }: Props) {
       </View>
 
       <Text className="text-content text-lg font-bold text-center">
-        {isPremium
-          ? 'Você atingiu o limite de rolês ativos'
-          : 'Você já tem 5 rolês ativos'}
+        {isPremium ? t('spots.limit.premiumTitle') : t('spots.limit.freeTitle')}
       </Text>
       <Text className="text-content-muted text-sm text-center">
         {isPremium
-          ? 'Encerre ou deixe um expirar para publicar outro.'
-          : 'Esse é o limite no plano free. Encerre um, deixe expirar — ou tenha mais rolês no ar ao mesmo tempo com o Premium.'}
+          ? t('spots.limit.premiumDescription')
+          : t('spots.limit.freeDescription')}
       </Text>
 
       {!isPremium && (
@@ -36,18 +36,20 @@ export function SpotLimitReached({ isPremium, onUpgrade, onBack }: Props) {
           <View className="flex-row items-center gap-2">
             <SparkleIcon size={16} color={colors.brandText} />
             <Text className="text-brand-text-bright text-sm font-bold">
-              Clubber Premium
+              {t('spots.premium.name')}
             </Text>
           </View>
           <Text className="text-content-tertiary text-xs">
-            Mais rolês ativos ao mesmo tempo, 25 gerações por dia e raio maior.
+            {t('spots.limit.premiumPerks')}
           </Text>
-          <Button label="Conhecer o Premium" onPress={onUpgrade} />
+          <Button label={t('spots.premium.cta')} onPress={onUpgrade} />
         </View>
       )}
 
       <Pressable onPress={onBack} className="py-2" accessibilityRole="button">
-        <Text className="text-content-muted text-sm font-semibold">Voltar</Text>
+        <Text className="text-content-muted text-sm font-semibold">
+          {t('common.back')}
+        </Text>
       </Pressable>
     </View>
   )

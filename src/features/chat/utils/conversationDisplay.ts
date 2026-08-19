@@ -1,3 +1,4 @@
+import { i18n } from '@/shared/i18n'
 import type { UserMini } from '@/shared/types'
 import type { Conversation, InboxItem, Participant } from '../types'
 import { firstAttachmentKind } from './attachmentPreview'
@@ -19,10 +20,14 @@ function firstName(user: UserMini): string {
 export function conversationTitle(
   conv: Pick<Conversation | InboxItem, 'type' | 'title'> & WithParticipants,
   myId: string,
+  locale: string,
 ): string {
-  if (conv.type === 'GROUP') return conv.title?.trim() || 'Grupo'
+  if (conv.type === 'GROUP')
+    return (
+      conv.title?.trim() || i18n.t('chat.conversation.group', { lng: locale })
+    )
   const other = others(conv.participants, myId)[0]
-  if (!other) return 'Conversa'
+  if (!other) return i18n.t('chat.conversation.direct', { lng: locale })
   return `${other.user.name} ${other.user.lastname}`.trim()
 }
 
@@ -37,25 +42,35 @@ export function conversationAvatarUsers(
 
 // Texto de preview do lastMessage na inbox. "Mensagem removida" deve ser
 // renderizada em itálico — ver isPreviewItalic.
-export function lastMessagePreview(item: InboxItem, myId: string): string {
+export function lastMessagePreview(
+  item: InboxItem,
+  myId: string,
+  locale: string,
+): string {
   const msg = item.lastMessage
-  if (!msg) return 'Iniciar conversa'
-  if (msg.deletedAt) return 'Mensagem removida'
+  if (!msg) return i18n.t('chat.inbox.start', { lng: locale })
+  if (msg.deletedAt) return i18n.t('chat.message.deleted', { lng: locale })
 
   const kind = firstAttachmentKind(msg.attachments)
   const body =
     msg.content && msg.content.length > 0
       ? msg.content
       : kind === 'AUDIO'
-        ? '🎤 Áudio'
+        ? i18n.t('chat.attachment.audioPreview', { lng: locale })
         : kind === 'VIDEO'
-          ? '🎥 Vídeo'
+          ? i18n.t('chat.attachment.videoPreview', { lng: locale })
           : kind === 'IMAGE'
-            ? '📷 Imagem'
+            ? i18n.t('chat.attachment.imagePreview', { lng: locale })
             : ''
 
-  if (msg.senderId === myId) return `Você: ${body}`
-  if (item.type === 'GROUP') return `${firstName(msg.sender)}: ${body}`
+  if (msg.senderId === myId)
+    return i18n.t('chat.conversation.youPrefix', { lng: locale, body })
+  if (item.type === 'GROUP')
+    return i18n.t('chat.conversation.senderPrefix', {
+      lng: locale,
+      name: firstName(msg.sender),
+      body,
+    })
   return body
 }
 

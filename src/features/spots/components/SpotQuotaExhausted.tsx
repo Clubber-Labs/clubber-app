@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { ClockIcon, SparkleIcon } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { SpotSheetState } from './SpotSheetState'
@@ -14,17 +15,18 @@ type Props = {
 // Caminho infeliz: a quota diária de gerações acabou. Pro free, o limite vira
 // oportunidade (upsell do Premium); pro premium, só informa que volta amanhã.
 export function SpotQuotaExhausted({ isPremium, onUpgrade, onSeeMap }: Props) {
+  const { t } = useTranslation()
   const limit = isPremium ? 25 : 5
 
   return (
     <SpotSheetState
       icon={ClockIcon}
       tone="warning"
-      title={`Você usou suas ${limit} gerações de hoje`}
+      title={t('spots.quota.title', { count: limit })}
       description={
         isPremium
-          ? 'Elas voltam amanhã.'
-          : 'Elas voltam amanhã. Quer continuar descobrindo agora?'
+          ? t('spots.quota.premiumDescription')
+          : t('spots.quota.freeDescription')
       }
     >
       {!isPremium && (
@@ -32,19 +34,19 @@ export function SpotQuotaExhausted({ isPremium, onUpgrade, onSeeMap }: Props) {
           <View className="flex-row items-center gap-2">
             <SparkleIcon size={16} color={colors.brandText} />
             <Text className="text-brand-text-bright text-sm font-bold">
-              Clubber Premium
+              {t('spots.premium.name')}
             </Text>
           </View>
           <Text className="text-content-tertiary text-xs">
-            25 gerações por dia, raio maior e mais spots ativos.
+            {t('spots.quota.premiumPerks')}
           </Text>
-          <Button label="Conhecer o Premium" onPress={onUpgrade} />
+          <Button label={t('spots.premium.cta')} onPress={onUpgrade} />
         </View>
       )}
 
       <Pressable onPress={onSeeMap} className="py-2" accessibilityRole="button">
         <Text className="text-content-muted text-sm font-semibold">
-          Ver rolês no mapa
+          {t('spots.quota.seeMap')}
         </Text>
       </Pressable>
     </SpotSheetState>

@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { SparkleIcon } from 'phosphor-react-native'
 import { Button } from '@/shared/components/Button'
 import { SpotSheetState } from './SpotSheetState'
@@ -20,19 +21,20 @@ export function SpotEmptyResults({
   onIncreaseRadius,
   onEditQuery,
 }: Props) {
+  const { t } = useTranslation()
   const nextRadius = radiusKm < 15 ? 15 : maxRadiusKm
   const canIncrease = radiusKm < maxRadiusKm
 
   return (
     <SpotSheetState
       icon={SparkleIcon}
-      title="Nada à altura por aqui"
-      description="A IA não achou bons lugares nessa busca. Tente aumentar o raio ou descrever melhor o que você quer."
+      title={t('spots.empty.title')}
+      description={t('spots.empty.description')}
     >
       <View className="w-full gap-2 mt-1">
         {canIncrease && (
           <Button
-            label={`Aumentar raio pra ${nextRadius} km`}
+            label={t('spots.empty.increaseRadius', { km: nextRadius })}
             variant="neutral"
             onPress={() => onIncreaseRadius(nextRadius)}
           />
@@ -43,7 +45,7 @@ export function SpotEmptyResults({
           accessibilityRole="button"
         >
           <Text className="text-content-muted text-sm font-semibold">
-            Editar descrição
+            {t('spots.empty.editQuery')}
           </Text>
         </Pressable>
       </View>

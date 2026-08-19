@@ -479,6 +479,153 @@
       "endsAfterStart": "La hora de término debe ser después del inicio",
       "endsInFuture": "El plan debe terminar en el futuro",
       "windowTooLong": "El plan puede durar como máximo 24 horas desde ahora"
+    },
+    "form": {
+      "title": "Título",
+      "aiSuggested": "sugerido por la IA",
+      "titlePlaceholder": "¿Cómo llamarías este plan?",
+      "description": "Descripción",
+      "optional": "(opcional)",
+      "descriptionPlaceholder": "Acuerda los detalles con la gente...",
+      "when": "Cuándo",
+      "presetNow": "Ahora",
+      "presetNowSub": "por 2h",
+      "presetTonight": "Esta noche",
+      "presetTonightSub": "20h–24h",
+      "presetCustom": "Elegir",
+      "presetCustomSub": "hasta 24h",
+      "starts": "Empieza",
+      "startsPlaceholder": "Cuándo empieza",
+      "ends": "Termina",
+      "endsPlaceholder": "Cuándo termina",
+      "maxDuration": "Un plan puede durar como máximo 24 horas.",
+      "categories": "Categorías",
+      "categoriesRange": "1 a 5",
+      "whoSees": "Quién lo ve",
+      "public": "Público",
+      "friends": "Amigos",
+      "publicHint": "Cualquiera verá el lugar, el horario y tu foto de perfil en el mapa.",
+      "friendsHint": "Visible solo para amigos mutuos (a quienes sigues y te siguen).",
+      "createsGroupPrefix": "Publicar crea el",
+      "createsGroupHighlight": "grupo de chat",
+      "createsGroupSuffix": "del plan",
+      "publishing": "Publicando...",
+      "publish": "Publicar plan",
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios"
+    },
+    "suggestions": {
+      "intro": "La IA sugiere planes dentro del radio que elijas, según tus preferencias — o lo que describas. Elige uno, publícalo y suma a la gente al grupo.",
+      "radiusLabel": "Radio de búsqueda",
+      "generating": "Generando sugerencias...",
+      "generateAgain": "Generar de nuevo",
+      "generate": "Generar sugerencias",
+      "remaining_one": "Queda {{count}} generación hoy",
+      "remaining_other": "Quedan {{count}} generaciones hoy",
+      "openSettings": "Abrir ajustes",
+      "adjustPreferences": "Ajustar preferencias",
+      "reasonWithQuery": "Sugerido para ti · {{query}}",
+      "reasonFromPrefs": "Va con tus planes",
+      "back": "Volver a las sugerencias",
+      "headingPrompt": "¿Adónde vamos?",
+      "headingResults_one": "{{count}} plan para hoy",
+      "headingResults_other": "{{count}} planes para hoy",
+      "regenerate": "Generar de nuevo",
+      "close": "Cerrar sugerencias",
+      "locationDenied": "Permiso de ubicación denegado. Actívalo en los ajustes del dispositivo para generar sugerencias.",
+      "locationError": "No se pudo obtener tu ubicación. Inténtalo de nuevo."
+    },
+    "query": {
+      "label": "¿Qué quieres hacer?",
+      "placeholder": "bar con música en vivo",
+      "tooShort": "Descríbelo con al menos {{count}} caracteres.",
+      "help": "Si describes algo, buscamos eso e ignoramos tus preferencias."
+    },
+    "card": {
+      "bestMatch": "Mejor opción",
+      "openNow": "Abierto ahora",
+      "open": "Abierto",
+      "closed": "Cerrado",
+      "choose": "Elegir este plan",
+      "chooseNamed": "Elegir {{name}}"
+    },
+    "consent": {
+      "title": "Necesitamos tu ubicación",
+      "description": "Para sugerir planes cerca de ti. Se usa solo ahora — sin rastreo en segundo plano.",
+      "enable": "Activar ubicación",
+      "openPrivacy": "Abrir ajustes de privacidad"
+    },
+    "empty": {
+      "title": "Nada a la altura por aquí",
+      "description": "La IA no encontró buenos lugares en esta búsqueda. Prueba ampliar el radio o describir mejor lo que quieres.",
+      "increaseRadius": "Ampliar radio a {{km}} km",
+      "editQuery": "Editar descripción"
+    },
+    "quota": {
+      "title": "Usaste tus {{count}} generaciones de hoy",
+      "premiumDescription": "Vuelven mañana.",
+      "freeDescription": "Vuelven mañana. ¿Quieres seguir descubriendo ahora?",
+      "premiumPerks": "25 generaciones por día, radio mayor y más planes activos.",
+      "seeMap": "Ver planes en el mapa"
+    },
+    "limit": {
+      "premiumTitle": "Alcanzaste el límite de planes activos",
+      "freeTitle": "Ya tienes 5 planes activos",
+      "premiumDescription": "Termina uno o deja que expire para publicar otro.",
+      "freeDescription": "Ese es el límite del plan gratis. Termina uno, deja que expire — o ten más planes activos a la vez con Premium.",
+      "premiumPerks": "Más planes activos a la vez, 25 generaciones por día y radio mayor."
+    },
+    "premium": {
+      "name": "Clubber Premium",
+      "cta": "Conocer Premium"
+    },
+    "detail": {
+      "notFound": "Plan no encontrado.",
+      "loadError": "No se pudo cargar el plan.",
+      "suggestedBy": "@{{username}} sugirió este plan",
+      "canceled": "cancelado",
+      "live": "activo",
+      "canceledNotice": "Este plan fue cancelado y salió del mapa. El grupo de chat sigue existiendo.",
+      "when": "Cuándo",
+      "group": "Grupo del plan",
+      "memberCount_one": "{{count}} persona en el grupo",
+      "memberCount_other": "{{count}} personas en el grupo",
+      "directions": "Cómo llegar",
+      "openGroupChat": "Abrir chat del grupo",
+      "joinChat": "Entrar al chat del plan",
+      "cancelTitle": "Cancelar plan",
+      "cancelMessage": "El plan sale del mapa para todos. El grupo de chat sigue existiendo."
+    },
+    "owner": {
+      "manage": "Gestionar plan",
+      "endingSoon": "Tu plan está por terminar. Renuévalo para seguir en el mapa.",
+      "renew": "Renovar por +24h",
+      "renewSub": "mantiene el plan en el mapa",
+      "edit": "Editar plan",
+      "editSub": "título y descripción",
+      "cancel": "Cancelar plan",
+      "cancelSub": "sale del mapa para todos"
+    },
+    "created": {
+      "title": "¡Plan activo!",
+      "description": "Tu plan queda visible en el mapa por 24h. Ahora suma a la gente.",
+      "invite": "Invitar a la gente",
+      "openChat": "Abrir el chat del plan",
+      "seeOnMap": "Ver en el mapa",
+      "shareMessage": "¿Te sumas a este plan? \"{{title}}\" — entra en Clubber: {{url}}"
+    },
+    "preview": {
+      "suggestedBy": "@{{username}} sugirió un plan",
+      "memberCount_one": "{{count}} en el grupo",
+      "memberCount_other": "{{count}} en el grupo",
+      "see": "Ver plan"
+    },
+    "generateErrors": {
+      "noPreferences": "Configura tus preferencias de planes en el perfil para recibir sugerencias.",
+      "sessionExpired": "Tu sesión expiró. Inicia sesión de nuevo para generar sugerencias.",
+      "dailyLimit": "Alcanzaste el límite diario de sugerencias. Inténtalo mañana.",
+      "placesDown": "La búsqueda de lugares no está disponible ahora. Inténtalo en un momento.",
+      "generic": "No se pudieron generar sugerencias. Inténtalo de nuevo."
     }
   },
   "events": {
@@ -673,7 +820,134 @@
   },
   "chat": {
     "inbox": {
-      "newConversation": "Nueva conversación"
+      "newConversation": "Nueva conversación",
+      "emptyTitle": "Aún no hay conversaciones",
+      "emptyBody": "Empieza una conversación con alguien de tu red.",
+      "start": "Iniciar conversación",
+      "loadError": "No se pudieron cargar las conversaciones.",
+      "deleteTitle": "Borrar conversación",
+      "deleteMessage": "Esta conversación se quitará de tu lista de mensajes.",
+      "delete": "Borrar",
+      "rowLabel": "Conversación: {{title}}",
+      "rowLabelUnread_one": "Conversación: {{title}}, {{count}} sin leer",
+      "rowLabelUnread_other": "Conversación: {{title}}, {{count}} sin leer"
+    },
+    "conversation": {
+      "group": "Grupo",
+      "direct": "Conversación",
+      "you": "Tú",
+      "youPrefix": "Tú: {{body}}",
+      "senderPrefix": "{{name}}: {{body}}"
+    },
+    "message": {
+      "deleted": "Mensaje eliminado"
+    },
+    "attachment": {
+      "audio": "Audio",
+      "video": "Video",
+      "image": "Imagen",
+      "audioPreview": "🎤 Audio",
+      "videoPreview": "🎥 Video",
+      "imagePreview": "📷 Imagen"
+    },
+    "typing": {
+      "one": "{{name}} está escribiendo…",
+      "two": "{{first}} y {{second}} están escribiendo…",
+      "many": "Varias personas están escribiendo…"
+    },
+    "input": {
+      "editing": "Editando mensaje",
+      "cancelEdit": "Cancelar edición",
+      "replyingTo": "Respondiendo a {{name}}",
+      "cancelReply": "Cancelar respuesta",
+      "attach": "Adjuntar imagen",
+      "placeholder": "Mensaje…",
+      "record": "Grabar audio",
+      "saveEdit": "Guardar edición",
+      "send": "Enviar mensaje"
+    },
+    "bubble": {
+      "edited": "editado · ",
+      "retry": "Reenviar mensaje",
+      "failed": "Falló · Reintentar"
+    },
+    "actions": {
+      "copy": "Copiar",
+      "edit": "Editar",
+      "report": "Denunciar",
+      "delete": "Borrar",
+      "deleteTitle": "Borrar mensaje",
+      "deleteMessage": "Este mensaje se borrará para todos."
+    },
+    "media": {
+      "gallery": "Galería",
+      "camera": "Cámara",
+      "image": "Imagen",
+      "video": "Video",
+      "closeImage": "Cerrar imagen",
+      "closeVideo": "Cerrar video",
+      "playAudio": "Reproducir audio",
+      "pauseAudio": "Pausar audio",
+      "audioProgress": "Barra de progreso del audio",
+      "cancelRecording": "Cancelar grabación",
+      "sendAudio": "Enviar audio"
+    },
+    "header": {
+      "online": "en línea",
+      "details": "Ver detalles de la conversación",
+      "more": "Más opciones"
+    },
+    "group": {
+      "participantCount_one": "{{count}} participante",
+      "participantCount_other": "{{count}} participantes",
+      "participants": "Participantes",
+      "rename": "Renombrar grupo",
+      "addPeople": "Agregar personas",
+      "leave": "Salir del grupo",
+      "leaveMessage": "Dejarás de recibir los mensajes de este grupo.",
+      "leaveConfirm": "Salir",
+      "removeTitle": "Quitar del grupo",
+      "removeMessage": "¿Quitar a {{name}} del grupo?",
+      "removeConfirm": "Quitar",
+      "makeAdmin": "Hacer admin",
+      "removeAdmin": "Quitar admin",
+      "nameHeading": "Nombre del grupo",
+      "namePlaceholder": "Ej.: Crew del concierto",
+      "create": "Crear grupo",
+      "creating": "Creando…",
+      "createWithCount": "Crear grupo ({{count}})",
+      "saving": "Guardando…",
+      "newGroup": "Nuevo grupo",
+      "createNew": "Crear nuevo grupo"
+    },
+    "dm": {
+      "viewProfile": "Ver perfil",
+      "block": "Bloquear usuario",
+      "unblock": "Desbloquear usuario",
+      "blockMessage": "Ya no podrán intercambiar mensajes. ¿Bloquear a {{name}}?",
+      "blockConfirm": "Bloquear"
+    },
+    "people": {
+      "searchPlaceholder": "Buscar personas…",
+      "empty": "No se encontró a nadie.",
+      "selected": "{{name}}, seleccionado",
+      "you": "(tú)",
+      "newConversationTitle": "Nueva conversación",
+      "cannotStart": "No puedes iniciar una conversación con este usuario"
+    },
+    "reactions": {
+      "label": "{{emoji}} {{count}}",
+      "labelMine": "{{emoji}} {{count}}, tu reacción"
+    },
+    "blocked": {
+      "byMe": "Bloqueaste a este usuario.",
+      "byThem": "Ya no puedes enviar mensajes en esta conversación."
+    },
+    "banners": {
+      "rateLimited": "Estás enviando demasiado rápido, espera un momento",
+      "videoTooLarge": "El video es demasiado grande para enviar.",
+      "micDenied": "Permiso de micrófono denegado.",
+      "cameraDenied": "Permiso de cámara denegado."
     }
   },
   "profile": {

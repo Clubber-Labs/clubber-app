@@ -14,6 +14,7 @@ import {
   UsersIcon,
   ChatCircleIcon,
 } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
 import { useForm, Controller, type Path } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { ReactNode } from 'react'
@@ -49,9 +50,21 @@ const MAX_CATEGORIES = 5
 // Atalhos de horário: 'custom' revela os date-pickers; os demais preenchem
 // início/fim num toque (a janela é calculada em spotPresetWindow).
 const TIME_PRESETS = [
-  { key: 'now2h', label: 'Agora', sub: 'por 2h' },
-  { key: 'tonight', label: 'Hoje à noite', sub: '20h–24h' },
-  { key: 'custom', label: 'Escolher', sub: 'até 24h' },
+  {
+    key: 'now2h',
+    labelKey: 'spots.form.presetNow',
+    subKey: 'spots.form.presetNowSub',
+  },
+  {
+    key: 'tonight',
+    labelKey: 'spots.form.presetTonight',
+    subKey: 'spots.form.presetTonightSub',
+  },
+  {
+    key: 'custom',
+    labelKey: 'spots.form.presetCustom',
+    subKey: 'spots.form.presetCustomSub',
+  },
 ] as const
 
 type Props = {
@@ -64,12 +77,11 @@ type Props = {
 }
 
 // Transparência (LGPD): o usuário precisa saber o que expõe ANTES de publicar.
-const VISIBILITY_HINTS: Record<'PUBLIC' | 'FRIENDS', string> = {
-  PUBLIC:
-    'Qualquer pessoa verá o lugar, o horário e sua foto de perfil no mapa.',
-  FRIENDS:
-    'Visível só para amigos mútuos (quem você segue e te segue de volta).',
-}
+// A constante guarda a CHAVE — frase pronta congelaria o idioma no boot.
+const VISIBILITY_HINT_KEYS = {
+  PUBLIC: 'spots.form.publicHint',
+  FRIENDS: 'spots.form.friendsHint',
+} as const
 
 export function SpotForm({
   defaultValues,
@@ -78,6 +90,7 @@ export function SpotForm({
   submitError,
   headerSection,
 }: Props) {
+  const { t } = useTranslation()
   // Teto fixado na montagem; o schema revalida contra o relógio no submit.
   const [maxEndsAt] = useState(() => new Date(Date.now() + SPOT_MAX_WINDOW_MS))
 
@@ -124,12 +137,12 @@ export function SpotForm({
         <View className="gap-1" {...form.anchor('title')}>
           <View className="flex-row items-center justify-between">
             <Text className="text-sm font-medium text-content-tertiary">
-              Título
+              {t('spots.form.title')}
             </Text>
             <View className="flex-row items-center gap-1 rounded-full bg-brand-surface border border-brand-surface-strong px-2 py-0.5">
               <SparkleIcon size={10} color={colors.brandText} />
               <Text className="text-brand-text text-[10px] font-bold">
-                sugerido pela IA
+                {t('spots.form.aiSuggested')}
               </Text>
             </View>
           </View>
@@ -140,7 +153,7 @@ export function SpotForm({
               <TextInput
                 {...form.input('title')}
                 className={`border ${errors.title ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
-                placeholder="Como você chamaria esse rolê?"
+                placeholder={t('spots.form.titlePlaceholder')}
                 placeholderTextColor={colors.contentSubtle}
                 value={value}
                 onChangeText={onChange}
@@ -151,8 +164,10 @@ export function SpotForm({
 
         <View className="gap-1" {...form.anchor('description')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Descrição{' '}
-            <Text className="text-content-subtle text-xs">(opcional)</Text>
+            {t('spots.form.description')}{' '}
+            <Text className="text-content-subtle text-xs">
+              {t('spots.form.optional')}
+            </Text>
           </Text>
           <Controller
             control={control}
@@ -161,7 +176,7 @@ export function SpotForm({
               <TextInput
                 {...form.input('description')}
                 className={`border ${errors.description ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content min-h-[96px]`}
-                placeholder="Combina os detalhes com a galera..."
+                placeholder={t('spots.form.descriptionPlaceholder')}
                 placeholderTextColor={colors.contentSubtle}
                 value={value ?? ''}
                 onChangeText={onChange}
@@ -174,7 +189,7 @@ export function SpotForm({
 
         <View className="gap-1" {...form.anchor('startsAt')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Quando
+            {t('spots.form.when')}
           </Text>
           <View className="flex-row gap-2">
             {TIME_PRESETS.map(option => {
@@ -194,14 +209,14 @@ export function SpotForm({
                       active ? 'text-content' : 'text-content-muted'
                     }`}
                   >
-                    {option.label}
+                    {t(option.labelKey)}
                   </Text>
                   <Text
                     className={`text-[10px] ${
                       active ? 'text-brand-text-bright' : 'text-content-subtle'
                     }`}
                   >
-                    {option.sub}
+                    {t(option.subKey)}
                   </Text>
                 </Pressable>
               )
@@ -212,7 +227,7 @@ export function SpotForm({
             <View className="gap-3 pt-1">
               <View className="gap-1">
                 <Text className="text-sm font-medium text-content-tertiary">
-                  Começa
+                  {t('spots.form.starts')}
                 </Text>
                 <Controller
                   control={control}
@@ -222,7 +237,7 @@ export function SpotForm({
                       value={value}
                       onChange={onChange}
                       mode="datetime"
-                      placeholder="Quando começa"
+                      placeholder={t('spots.form.startsPlaceholder')}
                       minimumDate={new Date()}
                       maximumDate={maxEndsAt}
                       hasError={!!errors.startsAt}
@@ -232,7 +247,7 @@ export function SpotForm({
               </View>
               <View className="gap-1" {...form.anchor('endsAt')}>
                 <Text className="text-sm font-medium text-content-tertiary">
-                  Termina
+                  {t('spots.form.ends')}
                 </Text>
                 <Controller
                   control={control}
@@ -242,7 +257,7 @@ export function SpotForm({
                       value={value}
                       onChange={onChange}
                       mode="datetime"
-                      placeholder="Quando termina"
+                      placeholder={t('spots.form.endsPlaceholder')}
                       minimumDate={startsAt ?? new Date()}
                       // Curta duração: no máximo 24h a partir de agora.
                       maximumDate={maxEndsAt}
@@ -255,16 +270,18 @@ export function SpotForm({
           )}
 
           <Text className="text-content-subtle text-xs">
-            O rolê pode durar no máximo 24 horas.
+            {t('spots.form.maxDuration')}
           </Text>
         </View>
 
         <View className="gap-1" {...form.anchor('categories')}>
           <View className="flex-row items-center justify-between">
             <Text className="text-sm font-medium text-content-tertiary">
-              Categorias
+              {t('spots.form.categories')}
             </Text>
-            <Text className="text-content-subtle text-xs">1 a 5</Text>
+            <Text className="text-content-subtle text-xs">
+              {t('spots.form.categoriesRange')}
+            </Text>
           </View>
           <Controller
             control={control}
@@ -281,8 +298,10 @@ export function SpotForm({
 
         <View className="gap-1" {...form.anchor('subcategories')}>
           <Text className="text-sm font-medium text-content-tertiary">
-            Interesses{' '}
-            <Text className="text-content-subtle text-xs">(opcional)</Text>
+            {t('shared.interests.title')}{' '}
+            <Text className="text-content-subtle text-xs">
+              {t('spots.form.optional')}
+            </Text>
           </Text>
           <Controller
             control={control}
@@ -303,7 +322,7 @@ export function SpotForm({
           render={({ field: { onChange, value } }) => (
             <View className="gap-1">
               <Text className="text-sm font-medium text-content-tertiary">
-                Quem vê
+                {t('spots.form.whoSees')}
               </Text>
               <View className="flex-row gap-1 bg-surface border border-line rounded-xl p-1">
                 {(['PUBLIC', 'FRIENDS'] as const).map(option => {
@@ -329,14 +348,16 @@ export function SpotForm({
                           active ? 'text-content' : 'text-content-muted'
                         }`}
                       >
-                        {isPublic ? 'Público' : 'Amigos'}
+                        {isPublic
+                          ? t('spots.form.public')
+                          : t('spots.form.friends')}
                       </Text>
                     </Pressable>
                   )
                 })}
               </View>
               <Text className="text-xs text-content-muted">
-                {VISIBILITY_HINTS[value]}
+                {t(VISIBILITY_HINT_KEYS[value])}
               </Text>
             </View>
           )}
@@ -348,17 +369,19 @@ export function SpotForm({
         <View className="flex-row items-center justify-center gap-2">
           <ChatCircleIcon size={14} color={colors.contentMuted} />
           <Text className="text-content-muted text-xs">
-            Publicar cria o{' '}
+            {t('spots.form.createsGroupPrefix')}{' '}
             <Text className="text-content-secondary font-semibold">
-              grupo de chat
+              {t('spots.form.createsGroupHighlight')}
             </Text>{' '}
-            do rolê
+            {t('spots.form.createsGroupSuffix')}
           </Text>
         </View>
         <FormSubmitButton
           control={control}
           required={REQUIRED_FIELDS}
-          label={submitting ? 'Publicando...' : 'Publicar rolê'}
+          label={
+            submitting ? t('spots.form.publishing') : t('spots.form.publish')
+          }
           icon={SparkleIcon}
           onPress={handleSubmit(onSubmit, errors =>
             showFormErrors(messagesFromErrors(errors)),

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react'
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { PaperPlaneTiltIcon, TrashIcon } from 'phosphor-react-native'
 import { meterToAmplitude } from '@/shared/utils/waveform'
 import { formatDuration } from '@/shared/utils/formatDuration'
@@ -19,6 +20,7 @@ const LIVE_BARS = 40
 // Barra que substitui o input enquanto grava: timer ao vivo, preview da waveform,
 // lixeira (descarta) e enviar. Inicia a gravação ao montar e para ao desmontar.
 export function AudioRecorderBar({ onSend, onCancel }: Props) {
+  const { t } = useTranslation()
   const { isRecording, durationMs, samples, start, finish, cancel } =
     useVoiceRecorder()
   const startedRef = useRef(false)
@@ -73,7 +75,7 @@ export function AudioRecorderBar({ onSend, onCancel }: Props) {
         <Pressable
           onPress={handleCancel}
           className="w-10 h-10 items-center justify-center"
-          accessibilityLabel="Cancelar gravação"
+          accessibilityLabel={t('chat.media.cancelRecording')}
         >
           <TrashIcon size={22} color={colors.danger} />
         </Pressable>
@@ -96,7 +98,7 @@ export function AudioRecorderBar({ onSend, onCancel }: Props) {
           onPress={handleSend}
           disabled={!isRecording}
           className="w-10 h-10 items-center justify-center rounded-full bg-brand"
-          accessibilityLabel="Enviar áudio"
+          accessibilityLabel={t('chat.media.sendAudio')}
         >
           <PaperPlaneTiltIcon size={18} color={colors.content} weight="fill" />
         </Pressable>

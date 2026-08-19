@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { View, Text, ActivityIndicator, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { getApiError } from '@/shared/lib/apiError'
@@ -10,6 +11,7 @@ import type { EditSpotInput } from '@/features/spots/schemas/editSpotSchema'
 import { colors } from '@/shared/theme'
 
 export default function EditSpotScreen() {
+  const { t } = useTranslation()
   const { id } = useLocalSearchParams<{ id: string }>()
   const router = useRouter()
   const myId = useAuthStore(s => s.userId)
@@ -35,10 +37,12 @@ export default function EditSpotScreen() {
     return (
       <View className="flex-1 bg-background items-center justify-center px-6 gap-3">
         <Text className="text-content-secondary text-center">
-          Não foi possível carregar o spot.
+          {t('spots.detail.loadError')}
         </Text>
         <Pressable onPress={() => router.back()}>
-          <Text className="text-brand-text font-semibold">Voltar</Text>
+          <Text className="text-brand-text font-semibold">
+            {t('common.back')}
+          </Text>
         </Pressable>
       </View>
     )

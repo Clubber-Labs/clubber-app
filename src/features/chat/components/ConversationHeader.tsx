@@ -1,4 +1,5 @@
 import { View, Text, Pressable } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { DotsThreeVerticalIcon } from 'phosphor-react-native'
 import { ConversationAvatar } from './ConversationAvatar'
 import { PresenceDot } from './PresenceDot'
@@ -25,9 +26,10 @@ export function ConversationHeader({
   myId,
   onPressDetails,
 }: Props) {
+  const { t } = useTranslation()
   const locale = useLocale()
   const isDirect = conversation.type === 'DIRECT'
-  const title = conversationTitle(conversation, myId)
+  const title = conversationTitle(conversation, myId, locale)
   const other = conversation.participants.find(p => p.userId !== myId)?.user
   const presence = usePresence(isDirect ? other?.id : undefined)
 
@@ -35,9 +37,11 @@ export function ConversationHeader({
   // por último), senão cai pro @username.
   const subtitle =
     conversation.type === 'GROUP'
-      ? `${conversation.participants.length} participantes`
+      ? t('chat.group.participantCount', {
+          count: conversation.participants.length,
+        })
       : presence?.online
-        ? 'online'
+        ? t('chat.header.online')
         : presence?.lastSeenAt
           ? lastSeenLabel(presence.lastSeenAt, locale)
           : other
@@ -51,7 +55,7 @@ export function ConversationHeader({
       <Pressable
         onPress={onPressDetails}
         className="flex-row items-center gap-2 flex-1"
-        accessibilityLabel="Ver detalhes da conversa"
+        accessibilityLabel={t('chat.header.details')}
       >
         <View>
           <ConversationAvatar
@@ -85,7 +89,7 @@ export function ConversationHeader({
       <Pressable
         onPress={onPressDetails}
         className="w-9 h-9 items-center justify-center"
-        accessibilityLabel="Mais opções"
+        accessibilityLabel={t('chat.header.more')}
       >
         <DotsThreeVerticalIcon
           size={20}

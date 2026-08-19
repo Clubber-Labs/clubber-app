@@ -5,6 +5,7 @@ import {
   PencilSimpleIcon,
   TrashIcon,
 } from 'phosphor-react-native'
+import { useTranslation } from 'react-i18next'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { SpotActionRow } from './SpotActionRow'
@@ -33,10 +34,11 @@ export function SpotOwnerActions({
   canceling,
   renewError,
 }: Props) {
+  const { t } = useTranslation()
   return (
     <View className="border-t border-line pt-4 gap-3">
       <Text className="text-content-subtle text-[11px] font-bold uppercase tracking-wider">
-        Gerenciar rolê
+        {t('spots.owner.manage')}
       </Text>
 
       {highlightRenew && (
@@ -48,11 +50,11 @@ export function SpotOwnerActions({
               style={{ marginTop: 1 }}
             />
             <Text className="text-brand-text-strong text-xs flex-1 leading-5">
-              Seu rolê está acabando. Renove pra continuar no mapa.
+              {t('spots.owner.endingSoon')}
             </Text>
           </View>
           <Button
-            label="Renovar por +24h"
+            label={t('spots.owner.renew')}
             icon={ArrowsClockwiseIcon}
             onPress={onRenew}
             loading={renewing}
@@ -66,8 +68,8 @@ export function SpotOwnerActions({
           <>
             <SpotActionRow
               icon={ArrowsClockwiseIcon}
-              label="Renovar por +24h"
-              sublabel="mantém o rolê no mapa"
+              label={t('spots.owner.renew')}
+              sublabel={t('spots.owner.renewSub')}
               onPress={onRenew}
               loading={renewing}
             />
@@ -76,15 +78,15 @@ export function SpotOwnerActions({
         )}
         <SpotActionRow
           icon={PencilSimpleIcon}
-          label="Editar rolê"
-          sublabel="título e descrição"
+          label={t('spots.owner.edit')}
+          sublabel={t('spots.owner.editSub')}
           onPress={onEdit}
         />
         <View className="h-px bg-line mx-4" />
         <SpotActionRow
           icon={TrashIcon}
-          label="Cancelar rolê"
-          sublabel="sai do mapa pra todos"
+          label={t('spots.owner.cancel')}
+          sublabel={t('spots.owner.cancelSub')}
           onPress={onCancel}
           loading={canceling}
           destructive

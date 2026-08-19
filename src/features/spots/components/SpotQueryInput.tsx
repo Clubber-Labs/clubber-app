@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { View, Text, TextInput } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { colors } from '@/shared/theme'
 import { MIN_QUERY_LENGTH } from '../hooks/useSuggestSpots'
 
@@ -15,6 +16,7 @@ type Props = {
 // Texto livre da intenção. Quando preenchido, o backend ignora as preferências
 // de rolê e busca por isto — o help abaixo deixa explícito.
 export function SpotQueryInput({ value, onChange, editable = true }: Props) {
+  const { t } = useTranslation()
   // Foco realça a borda na cor da marca (sem glow) — sinaliza o campo ativo.
   const [focused, setFocused] = useState(false)
   // Só avisa o mínimo quando o usuário começou a digitar algo curto demais —
@@ -25,14 +27,16 @@ export function SpotQueryInput({ value, onChange, editable = true }: Props) {
   return (
     <View className="gap-1.5">
       <Text className="text-content-tertiary text-sm font-medium">
-        O que você quer fazer?{' '}
-        <Text className="text-content-subtle text-xs">(opcional)</Text>
+        {t('spots.query.label')}{' '}
+        <Text className="text-content-subtle text-xs">
+          {t('spots.form.optional')}
+        </Text>
       </Text>
       <TextInput
         className={`border bg-surface rounded-xl px-4 py-3.5 text-base text-content ${
           focused ? 'border-brand' : 'border-line'
         }`}
-        placeholder="bar com música ao vivo"
+        placeholder={t('spots.query.placeholder')}
         placeholderTextColor={colors.contentSubtle}
         value={value}
         onChangeText={onChange}
@@ -44,12 +48,11 @@ export function SpotQueryInput({ value, onChange, editable = true }: Props) {
       />
       {tooShort ? (
         <Text className="text-content-subtle text-xs">
-          Descreva com pelo menos {MIN_QUERY_LENGTH} caracteres.
+          {t('spots.query.tooShort', { count: MIN_QUERY_LENGTH })}
         </Text>
       ) : (
         <Text className="text-content-subtle text-xs">
-          Se você descrever algo, buscamos por isso e ignoramos suas
-          preferências.
+          {t('spots.query.help')}
         </Text>
       )}
     </View>

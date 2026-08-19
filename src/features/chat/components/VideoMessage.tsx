@@ -1,4 +1,5 @@
 import { Pressable, Image, View, Text, ActivityIndicator } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { PlayIcon } from 'phosphor-react-native'
 import { formatDuration } from '@/shared/utils/formatDuration'
 import { mediaBoxSize } from '../utils/mediaBox'
@@ -24,6 +25,7 @@ export function VideoMessage({
   onLongPress,
   sending,
 }: Props) {
+  const { t } = useTranslation()
   const { width, height } = mediaBoxSize(attachment.width, attachment.height, {
     maxWidth: 240,
     maxHeight: 320,
@@ -39,7 +41,7 @@ export function VideoMessage({
       onLongPress={onLongPress}
       delayLongPress={LONG_PRESS_DELAY_MS}
       className="rounded-xl overflow-hidden"
-      accessibilityLabel="Vídeo"
+      accessibilityLabel={t('chat.media.video')}
     >
       {showPoster ? (
         <Image

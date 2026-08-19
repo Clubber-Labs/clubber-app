@@ -7,6 +7,7 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { MagnifyingGlassIcon } from 'phosphor-react-native'
 import { useChatUserSearch } from '../hooks/useChatUserSearch'
 import { useChatSuggestions } from '../hooks/useChatSuggestions'
@@ -23,6 +24,7 @@ type Props = {
 // Busca de pessoas com sugestões (seguindo + seguidores) enquanto não há query.
 // A linha é definida pelo consumidor — DM abre direto, grupo seleciona.
 export function PeoplePicker({ myId, renderItem, belowSearch }: Props) {
+  const { t } = useTranslation()
   const [query, setQuery] = useState('')
 
   const {
@@ -48,7 +50,7 @@ export function PeoplePicker({ myId, renderItem, belowSearch }: Props) {
           <TextInput
             value={query}
             onChangeText={setQuery}
-            placeholder="Buscar pessoas…"
+            placeholder={t('chat.people.searchPlaceholder')}
             placeholderTextColor={colors.contentSubtle}
             autoCapitalize="none"
             textAlignVertical="center"

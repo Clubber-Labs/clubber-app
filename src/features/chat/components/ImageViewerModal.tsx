@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { Dimensions } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import { Gesture } from 'react-native-gesture-handler'
 import Animated, {
   useAnimatedStyle,
@@ -17,6 +18,7 @@ type Props = {
 const { width, height } = Dimensions.get('window')
 
 export function ImageViewerModal({ url, onClose }: Props) {
+  const { t } = useTranslation()
   // translateY/bgOpacity e o dismiss vertical vêm do hook compartilhado; o resto
   // (pinch/zoom + pan dentro do enquadramento) é específico da imagem.
   const {
@@ -102,7 +104,7 @@ export function ImageViewerModal({ url, onClose }: Props) {
     <MediaViewerModal
       gesture={composed}
       bgStyle={bgStyle}
-      closeLabel="Fechar imagem"
+      closeLabel={t('chat.media.closeImage')}
       onClose={onClose}
     >
       <Animated.View className="flex-1 items-center justify-center">
