@@ -2,6 +2,7 @@ const tsParser = require('@typescript-eslint/parser')
 const tsPlugin = require('@typescript-eslint/eslint-plugin')
 const reactPlugin = require('eslint-plugin-react')
 const reactHooksPlugin = require('eslint-plugin-react-hooks')
+const i18nextPlugin = require('eslint-plugin-i18next')
 const prettierConfig = require('eslint-config-prettier')
 
 /** @type {import('eslint').Linter.Config[]} */
@@ -22,6 +23,7 @@ module.exports = [
       '@typescript-eslint': tsPlugin,
       react: reactPlugin,
       'react-hooks': reactHooksPlugin,
+      i18next: i18nextPlugin,
     },
     settings: {
       react: { version: 'detect' },
@@ -44,6 +46,43 @@ module.exports = [
       // Geral
       'no-console': 'warn',
 
+      // i18n: copy em JSX/props de copy vem do dicionário, não de literal.
+      // `warn` enquanto a Fase 3 extrai o legado; promover a `error` ao fechar.
+      'i18next/no-literal-string': [
+        'warn',
+        {
+          mode: 'jsx-only',
+          'jsx-attributes': {
+            include: [
+              'accessibilityLabel',
+              'accessibilityHint',
+              'placeholder',
+              'label',
+              'title',
+            ],
+          },
+          // exclude substitui os defaults do plugin — os dois primeiros itens de
+          // cada lista são eles (t/i18n; números, pontuação e CONSTANT_CASE).
+          // O resto: âncora/registro de campo (nome de campo, não copy) e
+          // valores de estilo/cor RN dentro de JSX.
+          callees: {
+            exclude: ['i18n(ext)?', 't', 'form.anchor', 'form.input'],
+          },
+          words: {
+            exclude: [
+              '[0-9!-/:-@[-`{-~]+',
+              '[A-Z_-]+',
+              'absolute',
+              'hidden',
+              'rgba\\(.*\\)',
+              '\\s*km\\s*',
+              '★',
+              '[\\s·]+',
+            ],
+          },
+        },
+      ],
+
       // Design system: proíbe cor hex crua — use token do tema
       // (className bg-/text-/border-* ou colors.* de @/shared/theme).
       // Cores de marca de terceiros (FB, iOS) podem usar eslint-disable com justificativa.
@@ -63,6 +102,13 @@ module.exports = [
     files: ['src/shared/theme/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-syntax': 'off',
+    },
+  },
+  {
+    // wordmark "clu/ber" é marca, não copy — nunca se traduz
+    files: ['src/shared/components/brand/**/*.{ts,tsx}'],
+    rules: {
+      'i18next/no-literal-string': 'off',
     },
   },
   prettierConfig,

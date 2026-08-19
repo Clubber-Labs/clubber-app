@@ -419,6 +419,9 @@
       "passwordMax": "Máximo 72 caracteres",
       "newPasswordConfirm": "Confirma la nueva contraseña",
       "passwordWeak": "Usa 8+ caracteres con letras y números, evitando contraseñas obvias."
+    },
+    "progress": {
+      "step": "{{current}} de {{total}}"
     }
   },
   "onboarding": {
@@ -451,6 +454,9 @@
       "attendees": "Théo y 4 más van",
       "msg1": "¿Dónde es el after? 🌤️",
       "msg2": "¡Buenaa! Lo veo en Clubber."
+    },
+    "art": {
+      "spotSuggested": "@luiza_santos sugirió un plan"
     }
   },
   "notifications": {

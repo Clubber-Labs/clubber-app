@@ -419,6 +419,9 @@
       "passwordMax": "At most 72 characters",
       "newPasswordConfirm": "Confirm the new password",
       "passwordWeak": "Use 8+ characters with letters and numbers, avoiding obvious passwords."
+    },
+    "progress": {
+      "step": "{{current}} of {{total}}"
     }
   },
   "onboarding": {
@@ -451,6 +454,9 @@
       "attendees": "Théo and 4 more are in",
       "msg1": "Where’s the after? 🌤️",
       "msg2": "Nicee. I’ll check Clubber!"
+    },
+    "art": {
+      "spotSuggested": "@luiza_santos suggested a hangout"
     }
   },
   "notifications": {
