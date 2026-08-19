@@ -83,7 +83,9 @@ module.exports = [
               '★',
               '[\\s·]+',
               // Marca e atribuição de terceiros: nome do app e os créditos que
-              // a licença do Mapbox/OSM exige exibir literalmente.
+              // a licença do Mapbox/OSM exige exibir literalmente. O plugin casa
+              // o padrão com a string INTEIRA, então isto não abre brecha:
+              // "Bem-vindo ao Clubber" continua sendo barrado.
               'Clubber',
               '©.*',
             ],

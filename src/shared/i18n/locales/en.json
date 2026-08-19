@@ -1221,7 +1221,6 @@
   },
   "billing": {
     "upgrade": {
-      "trialCta": "Start {{count}} free days",
       "cta": "Subscribe to Premium",
       "stalledTitle": "Confirmation is taking a while",
       "stalledBody": "If the payment went through, your premium access is released as soon as the confirmation arrives. You can follow it on the subscription screen.",
@@ -1230,7 +1229,9 @@
       "activatingBody": "We're activating your premium access. This usually takes a few seconds.",
       "tagline": "Get your events out of the shadows. More spotlight, more reach and the data to really grow.",
       "benefitsTitle": "Everything you get",
-      "disclaimer": "Cancel anytime — access continues until the end of the paid period. Renews automatically."
+      "disclaimer": "Cancel anytime — access continues until the end of the paid period. Renews automatically.",
+      "trialCta_one": "Start {{count}} free day",
+      "trialCta_other": "Start {{count}} free days"
     },
     "premium": "PREMIUM",
     "manage": {
@@ -1259,8 +1260,10 @@
     },
     "plan": {
       "monthly": "Monthly subscription. Cancel anytime.",
-      "trialBadge": "{{count}} FREE DAYS",
-      "trialDetail": "Free for {{count}} days. Then {{price}}/{{interval}}, cancel anytime."
+      "trialBadge_one": "{{count}} FREE DAY",
+      "trialBadge_other": "{{count}} FREE DAYS",
+      "trialDetail_one": "Free for {{count}} day. Then {{price}}/{{interval}}, cancel anytime.",
+      "trialDetail_other": "Free for {{count}} days. Then {{price}}/{{interval}}, cancel anytime."
     },
     "benefits": {
       "featured": {
@@ -1340,7 +1343,8 @@
       "body": "You have 30 days to change your mind. Within that window, just log in to cancel the deletion and get everything back."
     },
     "deleteCta": "Delete my account",
-    "deactivateTagline": "Like taking a break: you disappear from the app without losing anything."
+    "deactivateTagline": "Like taking a break: you disappear from the app without losing anything.",
+    "deleteScheduledMessageWithDate": "Your account will be deleted on {{date}}. Log in before that date to cancel."
   },
   "reports": {
     "title": "Report",
@@ -1376,7 +1380,8 @@
     "firstDay": "First day",
     "lastDay": "Last day",
     "pickDay": "Pick the day",
-    "maxDays": "Promotion by day — up to {{count}} days per feature."
+    "maxDays_one": "Promotion by day — up to {{count}} day per feature.",
+    "maxDays_other": "Promotion by day — up to {{count}} days per feature."
   },
   "analytics": {
     "title": "Event analytics",

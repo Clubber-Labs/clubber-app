@@ -131,7 +131,9 @@ export default function DeleteAccountScreen() {
           title={t('account.deleteScheduledTitle')}
           message={
             dateLabel
-              ? `Sua conta será excluída em ${dateLabel}. Faça login antes dessa data para cancelar.`
+              ? t('account.deleteScheduledMessageWithDate', {
+                  date: dateLabel,
+                })
               : t('account.deleteScheduledMessage')
           }
           loading={exiting}

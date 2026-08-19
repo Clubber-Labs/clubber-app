@@ -1221,7 +1221,6 @@
   },
   "billing": {
     "upgrade": {
-      "trialCta": "Começar {{count}} dias grátis",
       "cta": "Assinar Premium",
       "stalledTitle": "A confirmação está demorando",
       "stalledBody": "Se o pagamento foi concluído, seu acesso premium é liberado assim que a confirmação chegar. Você pode acompanhar pela tela de assinatura.",
@@ -1230,7 +1229,9 @@
       "activatingBody": "Estamos ativando seu acesso premium. Isso costuma levar poucos segundos.",
       "tagline": "Tire seus eventos do anonimato. Mais destaque, mais alcance e os dados pra crescer de verdade.",
       "benefitsTitle": "Tudo que você ganha",
-      "disclaimer": "Cancele quando quiser — o acesso continua até o fim do período pago. Renovação automática."
+      "disclaimer": "Cancele quando quiser — o acesso continua até o fim do período pago. Renovação automática.",
+      "trialCta_one": "Começar {{count}} dia grátis",
+      "trialCta_other": "Começar {{count}} dias grátis"
     },
     "premium": "PREMIUM",
     "manage": {
@@ -1259,8 +1260,10 @@
     },
     "plan": {
       "monthly": "Assinatura mensal. Cancele quando quiser.",
-      "trialBadge": "{{count}} DIAS GRÁTIS",
-      "trialDetail": "Teste grátis por {{count}} dias. Depois {{price}}/{{interval}}, cancele quando quiser."
+      "trialBadge_one": "{{count}} DIA GRÁTIS",
+      "trialBadge_other": "{{count}} DIAS GRÁTIS",
+      "trialDetail_one": "Teste grátis por {{count}} dia. Depois {{price}}/{{interval}}, cancele quando quiser.",
+      "trialDetail_other": "Teste grátis por {{count}} dias. Depois {{price}}/{{interval}}, cancele quando quiser."
     },
     "benefits": {
       "featured": {
@@ -1340,7 +1343,8 @@
       "body": "Você tem 30 dias para mudar de ideia. Dentro desse prazo, basta fazer login para cancelar a exclusão e recuperar tudo."
     },
     "deleteCta": "Excluir minha conta",
-    "deactivateTagline": "Como tirar uma pausa: você some do app sem perder nada."
+    "deactivateTagline": "Como tirar uma pausa: você some do app sem perder nada.",
+    "deleteScheduledMessageWithDate": "Sua conta será excluída em {{date}}. Faça login antes dessa data para cancelar."
   },
   "reports": {
     "title": "Denunciar",
@@ -1376,7 +1380,8 @@
     "firstDay": "Primeiro dia",
     "lastDay": "Último dia",
     "pickDay": "Selecione o dia",
-    "maxDays": "Promoção por dia — máximo de {{count}} dias por destaque."
+    "maxDays_one": "Promoção por dia — máximo de {{count}} dia por destaque.",
+    "maxDays_other": "Promoção por dia — máximo de {{count}} dias por destaque."
   },
   "analytics": {
     "title": "Analytics do evento",
