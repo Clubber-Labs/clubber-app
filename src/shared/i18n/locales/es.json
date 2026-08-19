@@ -1204,6 +1204,8 @@
     "notificationsHint": "Push, eventos cercanos y categorías preferidas",
     "spots": "Sugerencias de planes",
     "spotsHint": "Radio de búsqueda de planes en el mapa",
+    "language": "Idioma",
+    "languageHint": "Idioma de la app, las notificaciones y los correos",
     "privacy": "Privacidad",
     "privacyHint": "Consentimientos y datos (LGPD)",
     "about": "Acerca de la app",
@@ -1226,6 +1228,9 @@
       "subtitle": "La IA sugiere planes dentro de este radio desde tu ubicación. Puedes ajustarlo solo para una búsqueda al generar.",
       "radiusLabel": "Radio de sugerencias",
       "radiusHint": "Distancia máxima para buscar lugares al generar sugerencias de planes."
+    },
+    "languageScreen": {
+      "subtitle": "También vale para las notificaciones y los correos que enviamos."
     }
   },
   "about": {

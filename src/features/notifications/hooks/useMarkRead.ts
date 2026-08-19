@@ -26,11 +26,11 @@ function setReadAt(
 
 async function snapshotCaches(queryClient: QueryClient) {
   await Promise.all([
-    queryClient.cancelQueries({ queryKey: notificationKeys.list }),
+    queryClient.cancelQueries({ queryKey: notificationKeys.lists }),
     queryClient.cancelQueries({ queryKey: notificationKeys.unreadCount }),
   ])
   return {
-    prevList: queryClient.getQueryData<ListCache>(notificationKeys.list),
+    prevList: queryClient.getQueryData<ListCache>(notificationKeys.list()),
     prevCount: queryClient.getQueryData<CountCache>(
       notificationKeys.unreadCount,
     ),
@@ -41,7 +41,7 @@ type Snapshot = Awaited<ReturnType<typeof snapshotCaches>>
 
 function restoreCaches(queryClient: QueryClient, ctx: Snapshot | undefined) {
   if (ctx?.prevList) {
-    queryClient.setQueryData(notificationKeys.list, ctx.prevList)
+    queryClient.setQueryData(notificationKeys.list(), ctx.prevList)
   }
   if (ctx?.prevCount) {
     queryClient.setQueryData(notificationKeys.unreadCount, ctx.prevCount)
@@ -49,7 +49,7 @@ function restoreCaches(queryClient: QueryClient, ctx: Snapshot | undefined) {
 }
 
 function invalidateCaches(queryClient: QueryClient) {
-  queryClient.invalidateQueries({ queryKey: notificationKeys.list })
+  queryClient.invalidateQueries({ queryKey: notificationKeys.lists })
   queryClient.invalidateQueries({ queryKey: notificationKeys.unreadCount })
 }
 
@@ -68,7 +68,7 @@ export function useMarkRead() {
         ) ?? false
       if (ctx.prevList) {
         queryClient.setQueryData(
-          notificationKeys.list,
+          notificationKeys.list(),
           setReadAt(ctx.prevList, n => n.id === id),
         )
       }
@@ -93,7 +93,7 @@ export function useMarkAllRead() {
       const ctx = await snapshotCaches(queryClient)
       if (ctx.prevList) {
         queryClient.setQueryData(
-          notificationKeys.list,
+          notificationKeys.list(),
           setReadAt(ctx.prevList, () => true),
         )
       }

@@ -1204,6 +1204,8 @@
     "notificationsHint": "Push, eventos próximos e categorias preferidas",
     "spots": "Sugestões de rolês",
     "spotsHint": "Raio da busca de rolês no mapa",
+    "language": "Idioma",
+    "languageHint": "Idioma do app, das notificações e dos e-mails",
     "privacy": "Privacidade",
     "privacyHint": "Consentimentos e dados (LGPD)",
     "about": "Sobre o app",
@@ -1226,6 +1228,9 @@
       "subtitle": "A IA sugere rolês dentro deste raio a partir da sua localização. Dá pra ajustar só para uma busca na hora de gerar.",
       "radiusLabel": "Raio das sugestões",
       "radiusHint": "Distância máxima para buscar lugares ao gerar sugestões de rolês."
+    },
+    "languageScreen": {
+      "subtitle": "Vale também para as notificações e os e-mails que a gente envia."
     }
   },
   "about": {

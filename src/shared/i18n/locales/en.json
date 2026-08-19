@@ -1204,6 +1204,8 @@
     "notificationsHint": "Push, nearby events and preferred categories",
     "spots": "Hangout suggestions",
     "spotsHint": "Search radius for hangouts on the map",
+    "language": "Language",
+    "languageHint": "Language of the app, notifications and emails",
     "privacy": "Privacy",
     "privacyHint": "Consents and data (LGPD)",
     "about": "About the app",
@@ -1226,6 +1228,9 @@
       "subtitle": "AI suggests hangouts within this radius from your location. You can adjust it for a single search when generating.",
       "radiusLabel": "Suggestion radius",
       "radiusHint": "Maximum distance to search places when generating hangout suggestions."
+    },
+    "languageScreen": {
+      "subtitle": "It also applies to the notifications and emails we send you."
     }
   },
   "about": {

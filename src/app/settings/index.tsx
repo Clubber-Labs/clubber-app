@@ -5,6 +5,7 @@ import {
   UserCircleIcon,
   BellIcon,
   SparkleIcon,
+  TranslateIcon,
   ShieldCheckIcon,
   InfoIcon,
 } from 'phosphor-react-native'
@@ -44,6 +45,12 @@ export default function SettingsScreen() {
           description={t('settings.spotsHint')}
           icon={SparkleIcon}
           onPress={() => router.push('/settings/spots')}
+        />
+        <SettingsRow
+          label={t('settings.language')}
+          description={t('settings.languageHint')}
+          icon={TranslateIcon}
+          onPress={() => router.push('/settings/language')}
         />
         <SettingsRow
           label={t('settings.privacy')}
