@@ -121,6 +121,32 @@ export default {
       // chave não estiver no config — quebrava code sign local no Xcode.
       // Override via APPLE_TEAM_ID pra CI/ambientes alternativos.
       appleTeamId: process.env.APPLE_TEAM_ID || 'K238P4B9K4',
+      // O prebuild NÃO gera PrivacyInfo.xcprivacy sozinho — sem esta chave o
+      // --clean apaga o manifesto e a referência dele no pbxproj. Conteúdo
+      // espelha o arquivo que era commitado à mão (required-reason APIs do RN/
+      // Expo: file timestamp, UserDefaults, boot time, disk space).
+      privacyManifests: {
+        NSPrivacyAccessedAPITypes: [
+          {
+            NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryFileTimestamp',
+            NSPrivacyAccessedAPITypeReasons: ['C617.1', '0A2A.1', '3B52.1'],
+          },
+          {
+            NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',
+            NSPrivacyAccessedAPITypeReasons: ['CA92.1', 'C56D.1'],
+          },
+          {
+            NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategorySystemBootTime',
+            NSPrivacyAccessedAPITypeReasons: ['35F9.1'],
+          },
+          {
+            NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryDiskSpace',
+            NSPrivacyAccessedAPITypeReasons: ['E174.1', '85F4.1'],
+          },
+        ],
+        NSPrivacyCollectedDataTypes: [],
+        NSPrivacyTracking: false,
+      },
     },
     android: {
       package: 'com.netobonato.clubber',
@@ -149,7 +175,16 @@ export default {
       ["expo-splash-screen", {
         image: "./assets/splash-logo.png",
         backgroundColor: "#0B0B0D",
-        imageWidth: SPLASH_BOARD
+        imageWidth: SPLASH_BOARD,
+        // Android 12+ desenha a splash ele mesmo e SEMPRE recorta o ícone num
+        // círculo — a composição adesivo+wordmark sai mutilada (verificado em
+        // emulador API 35). Só o balão sobrevive à máscara; a composição
+        // completa continua no 2º estágio (SplashOverlay JS). iOS não tem
+        // máscara e segue com a arte inteira acima.
+        android: {
+          image: "./assets/icon.png",
+          imageWidth: 288
+        }
       }],
       // O plugin declara NSFaceIDUsageDescription com um texto genérico em
       // inglês; era a única permissão fora do padrão das outras. O app não pede
