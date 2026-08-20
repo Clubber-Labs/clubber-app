@@ -1,8 +1,0 @@
-<resources>
-  <string name="app_name">Clubber</string>
-  <string name="facebook_app_id">832129719518621</string>
-  <string name="facebook_client_token">694b4c4dc27b712b8659cc7263cfe4c8</string>
-  <string name="fb_login_protocol_scheme">fb832129719518621</string>
-  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
-  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
-</resources>

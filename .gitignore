@@ -9,14 +9,17 @@ dist/
 web-build/
 expo-env.d.ts
 
-# Native
+# Native — CNG: ios/ e android/ são artefato gerado pelo prebuild a partir do
+# app.config.js + plugins (como node_modules/). Nunca editar à mão; regenerar
+# com `pnpm exec expo prebuild --clean`. Ver docs/migracao-cng.md.
+ios/
+android/
 *.orig.*
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
-ios/Config/Local.xcconfig
 
 # Metro
 .metro-health-check*

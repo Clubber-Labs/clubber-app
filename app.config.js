@@ -1,23 +1,5 @@
 import 'dotenv/config'
-import { withEntitlementsPlist } from 'expo/config-plugins'
 import { BOARD as SPLASH_BOARD } from './scripts/splash-spec.mjs'
-
-// Build local de iOS sem conta paga do Apple Developer Program: o profile
-// automático do time não cobre aps-environment (adicionado pelo plugin do
-// expo-notifications) e o xcodebuild falha. IOS_DISABLE_PUSH=1 no .env.local
-// remove o entitlement no prebuild — push iOS fica fora DESTE build e o app
-// degrada gracioso (getExpoPushTokenAsync falha dentro de try/catch). Nunca
-// setar em build EAS/produção; não commitar o ios/ gerado com o flag ativo.
-// ATENÇÃO à posição na lista de plugins: mods executam na ORDEM INVERSA —
-// este plugin precisa ser o PRIMEIRO da lista pra rodar por último e vencer
-// o withEntitlementsPlist do expo-notifications (que re-adiciona a chave se
-// não existir).
-function withoutIosPushEntitlement(config) {
-  return withEntitlementsPlist(config, c => {
-    delete c.modResults['aps-environment']
-    return c
-  })
-}
 
 // Reverse-DNS do iOS Client ID = URL scheme que o Google Sign-In registra no
 // Info.plist. Ex: 1234-abc.apps.googleusercontent.com → com.googleusercontent.apps.1234-abc
@@ -162,9 +144,6 @@ export default {
         : {}),
     },
     plugins: [
-      ...(process.env.IOS_DISABLE_PUSH === '1'
-        ? [withoutIosPushEntitlement]
-        : []),
       "expo-router",
       // Splash NATIVA (o SO desenha antes do JS subir; o SplashOverlay é o 2º
       // estágio). A imagem é a MESMA composição do SplashScreen.tsx, gerada por

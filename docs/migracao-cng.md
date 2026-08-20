@@ -96,16 +96,22 @@ A validação é por diff de arquivos gerados, sem build de aparelho.
 
 Fazer junto da preparação de loja (Apple US$ 99/ano, Google US$ 25 único):
 
-1. Remover `ios/` e `android/` do git + adicionar ao `.gitignore`.
-2. Aposentar o hack `IOS_DISABLE_PUSH` (push passa a funcionar de verdade).
-3. `eas credentials` — assinatura/provisioning gerenciados pelo EAS.
-4. Primeiro build de loja via **EAS Build** (prebuild roda no servidor — a
+1. ✅ Remover `ios/` e `android/` do git + adicionar ao `.gitignore`
+   (2026-08-20). O `debug.keystore` foi junto: é o do template do prebuild,
+   regenera byte-idêntico — verificado na medição da fase 1.
+2. ✅ Aposentar o hack `IOS_DISABLE_PUSH` (plugin `withoutIosPushEntitlement`
+   removido do config e flag removido do `.env.local`). Push iOS volta a
+   entrar no entitlement em qualquer prebuild.
+3. ⏳ `eas credentials` — assinatura/provisioning gerenciados pelo EAS + APNs
+   key. Mexe na conta Apple; aguardando autorização do owner.
+4. ⏳ Primeiro build de loja via **EAS Build** (prebuild roda no servidor — a
    paridade da fase 1 é o que garante que ele sai certo).
 5. Pendências do rename ConnectAI→Clubber que dependem das contas:
    re-provisionar push/Firebase (bundle id `com.netobonato.clubber`), Stripe,
-   domínio clubber.social.
-6. Atualizar CLAUDE.md (fluxo de build muda) e apagar a seção de proibição do
-   `prebuild --clean` — ele vira o caminho normal.
+   domínio, e OAuth client Android do Google (login Google no Android falha
+   com DEVELOPER_ERROR sem ele — verificado em emulador).
+6. ✅ Atualizar CLAUDE.md (fluxo de build muda) e apagar a seção de proibição
+   do `prebuild --clean` — ele vira o caminho normal.
 
 ## Riscos conhecidos
 
