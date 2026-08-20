@@ -159,9 +159,6 @@ export default {
       ["expo-secure-store", {
         faceIDPermission: IOS_PERMISSIONS_PT.NSFaceIDUsageDescription
       }],
-      ["react-native-vision-camera", {
-        cameraPermissionText: IOS_PERMISSIONS_PT.NSCameraUsageDescription
-      }],
       ["@rnmapbox/maps", {
         RNMAPBOX_MAPS_DOWNLOAD_TOKEN: process.env.RNMAPBOX_MAPS_DOWNLOAD_TOKEN
       }],
@@ -173,9 +170,8 @@ export default {
       }],
       ["expo-image-picker", {
         photosPermission: IOS_PERMISSIONS_PT.NSPhotoLibraryUsageDescription,
-        // image-picker é o último plugin a tocar NSCameraUsageDescription;
-        // sem isso, sobrescreveria o texto do vision-camera com placeholder
-        // genérico em inglês.
+        // Sem esta opção o plugin escreve NSCameraUsageDescription com
+        // placeholder genérico em inglês.
         cameraPermission: IOS_PERMISSIONS_PT.NSCameraUsageDescription,
         // Usamos o microfone nas notas de voz do chat (via expo-audio). Texto
         // específico pra não cair no placeholder em inglês do plugin.
