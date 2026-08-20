@@ -103,6 +103,11 @@ export default {
       // chave não estiver no config — quebrava code sign local no Xcode.
       // Override via APPLE_TEAM_ID pra CI/ambientes alternativos.
       appleTeamId: process.env.APPLE_TEAM_ID || 'K238P4B9K4',
+      // O app só usa cripto isenta (HTTPS/ATS). Sem esta chave, TODA subida ao
+      // TestFlight pergunta sobre exportação de criptografia na mão.
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+      },
       // O prebuild NÃO gera PrivacyInfo.xcprivacy sozinho — sem esta chave o
       // --clean apaga o manifesto e a referência dele no pbxproj. Conteúdo
       // espelha o arquivo que era commitado à mão (required-reason APIs do RN/
