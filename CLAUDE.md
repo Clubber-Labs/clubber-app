@@ -2,7 +2,7 @@
 
 ## Stack
 
-- **Framework:** React Native com Expo (bare workflow)
+- **Framework:** React Native com Expo (CNG — `ios/`/`android/` gerados por prebuild, fora do git)
 - **Linguagem:** TypeScript
 - **Navegação:** Expo Router (file-based routing)
 - **Dados remotos:** TanStack Query (cache, loading, invalidação)
