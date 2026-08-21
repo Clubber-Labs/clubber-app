@@ -378,6 +378,7 @@
     "social": {
       "connecting": "Connecting…",
       "continueGoogle": "Continue with Google",
+      "continueApple": "Continue with Apple",
       "fallback": "We couldn't sign you in with {{provider}}. Try again or use email/password."
     },
     "divider": {

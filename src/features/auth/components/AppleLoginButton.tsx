@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react'
-import { Platform } from 'react-native'
+import { ActivityIndicator, Platform, Pressable, Text } from 'react-native'
+import { useTranslation } from 'react-i18next'
 import * as AppleAuthentication from 'expo-apple-authentication'
+import { AppleLogoIcon } from 'phosphor-react-native'
 import { useSocialLogin } from '../hooks/useSocialLogin'
+import { colors } from '@/shared/theme'
 
-// Botão OFICIAL da Apple (compliance de marca garantida na App Review; HIG
-// aceita custom, mas o nativo elimina a discussão). Ele desenha o próprio
-// label, já localizado pelo sistema — por isso não há chave de i18n aqui.
+// Pressable custom no lugar do AppleAuthenticationButton oficial: o nativo
+// desenha o próprio label (SF, escala do sistema) e destoava do par com o
+// Google — caminho previsto no plano e aceito pela HIG, desde que leve o
+// glifo  e o título oficial da Apple verbatim nos 3 locales.
 export function AppleLoginButton() {
+  const { t } = useTranslation()
   const [available, setAvailable] = useState(false)
   const { mutate, isPending } = useSocialLogin('apple')
 
@@ -20,15 +25,21 @@ export function AppleLoginButton() {
   if (!available) return null
 
   return (
-    <AppleAuthentication.AppleAuthenticationButton
-      buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
-      buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
-      cornerRadius={24}
-      // Mesma altura dos irmãos (py-3 + text-base ≈ 48) pra pílula casar.
-      style={{ height: 48 }}
-      onPress={() => {
-        if (!isPending) mutate()
-      }}
-    />
+    <Pressable
+      onPress={() => mutate()}
+      disabled={isPending}
+      className="rounded-full py-3 px-6 bg-content flex-row gap-2 items-center justify-center"
+    >
+      {isPending ? (
+        <ActivityIndicator size="small" color={colors.surface} />
+      ) : (
+        <AppleLogoIcon size={20} color={colors.background} weight="fill" />
+      )}
+      <Text className="font-semibold text-base text-background">
+        {isPending
+          ? t('auth.social.connecting')
+          : t('auth.social.continueApple')}
+      </Text>
+    </Pressable>
   )
 }

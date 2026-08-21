@@ -3,9 +3,11 @@
 > Status: **implementado em 2026-08-21** (backend primeiro, mobile em seguida —
 > PR desta branch). Escrito em 2026-08-20 após investigação dos dois repos.
 > Contraparte do backend: `docs/plano-login-apple.md` no repo do backend.
-> Desvio consciente: não existe chave `auth.social.continueApple` — o botão
-> oficial `AppleAuthenticationButton` desenha o próprio label, localizado pelo
-> sistema.
+> Decisão de botão (prevista abaixo, batida com screenshot no PR): o
+> `AppleAuthenticationButton` oficial desenha o próprio label em SF na escala
+> do sistema e destoou do par com o Google → ficou o Pressable custom com o
+> glifo  e o título oficial da Apple verbatim (`auth.social.continueApple`
+> nos 3 locales), como a HIG permite.
 
 ## Por quê
 
@@ -89,9 +91,9 @@ pnpm remove react-native-fbsdk-next
 
 ### 4. i18n (3 locales, convenções do épico)
 
-- Sai `continueFacebook`. **Não** entra `continueApple`: o botão oficial
-  `AppleAuthenticationButton` desenha o próprio label, localizado pelo
-  sistema — chave nossa seria código morto.
+- Sai `continueFacebook`; entra `continueApple` com o título oficial da
+  Apple verbatim por locale ("Continuar com a Apple" / "Continue with
+  Apple" / "Continuar con Apple") — requisito da HIG pra botão custom.
 - Varrer os 3 arquivos por menções ao Facebook em copy — já localizado:
   `sessions.socialBody` ("…você entrou com Google ou Facebook") vira
   "…Google ou Apple". Rodar `grep -rn -i facebook src/shared/i18n/`.
