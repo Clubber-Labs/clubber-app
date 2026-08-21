@@ -2,9 +2,13 @@ import { useEffect, useState } from 'react'
 import { ActivityIndicator, Platform, Pressable, Text } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import * as AppleAuthentication from 'expo-apple-authentication'
-import { AppleLogoIcon } from 'phosphor-react-native'
 import { useSocialLogin } from '../hooks/useSocialLogin'
 import { colors } from '@/shared/theme'
+
+// Glifo REAL da Apple (U+F8FF, private-use resolvido pela SF do sistema) —
+// o AppleLogo da phosphor é mais alongado que o oficial e parecia esticado.
+// Seguro aqui: o botão é iOS-only.
+const APPLE_GLYPH = '\uF8FF'
 
 // Pressable custom no lugar do AppleAuthenticationButton oficial: o nativo
 // desenha o próprio label (SF, escala do sistema) e destoava do par com o
@@ -33,7 +37,9 @@ export function AppleLoginButton() {
       {isPending ? (
         <ActivityIndicator size="small" color={colors.surface} />
       ) : (
-        <AppleLogoIcon size={20} color={colors.background} weight="fill" />
+        <Text style={{ fontSize: 20, color: colors.background }}>
+          {APPLE_GLYPH}
+        </Text>
       )}
       <Text className="font-semibold text-base text-background">
         {isPending
