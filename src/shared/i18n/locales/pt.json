@@ -378,8 +378,7 @@
     "social": {
       "connecting": "Conectando…",
       "continueGoogle": "Continuar com Google",
-      "fallback": "Não conseguimos entrar com {{provider}}. Tente novamente ou use e-mail/senha.",
-      "missingEmail": "Sua conta {{provider}} precisa permitir o acesso ao e-mail para entrar."
+      "fallback": "Não conseguimos entrar com {{provider}}. Tente novamente ou use e-mail/senha."
     },
     "divider": {
       "or": "Ou"

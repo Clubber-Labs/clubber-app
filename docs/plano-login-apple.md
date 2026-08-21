@@ -89,7 +89,9 @@ pnpm remove react-native-fbsdk-next
 
 ### 4. i18n (3 locales, convenções do épico)
 
-- Entra `auth.social.continueApple`; sai `continueFacebook`.
+- Sai `continueFacebook`. **Não** entra `continueApple`: o botão oficial
+  `AppleAuthenticationButton` desenha o próprio label, localizado pelo
+  sistema — chave nossa seria código morto.
 - Varrer os 3 arquivos por menções ao Facebook em copy — já localizado:
   `sessions.socialBody` ("…você entrou com Google ou Facebook") vira
   "…Google ou Apple". Rodar `grep -rn -i facebook src/shared/i18n/`.

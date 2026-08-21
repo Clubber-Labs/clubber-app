@@ -378,8 +378,7 @@
     "social": {
       "connecting": "Connecting…",
       "continueGoogle": "Continue with Google",
-      "fallback": "We couldn't sign you in with {{provider}}. Try again or use email/password.",
-      "missingEmail": "Your {{provider}} account must allow email access to sign in."
+      "fallback": "We couldn't sign you in with {{provider}}. Try again or use email/password."
     },
     "divider": {
       "or": "Or"

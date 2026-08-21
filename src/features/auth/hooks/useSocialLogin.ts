@@ -43,14 +43,11 @@ function mapSocialError(error: unknown, provider: SocialProvider): string {
   })
 }
 
-// `missing_email` é exclusivo do Google (conta sem email verificado); o
-// identityToken da Apple sempre traz email — real ou private relay.
 async function getProviderToken(
   provider: SocialProvider,
 ): Promise<
   | { kind: 'token'; token: string; fullName?: SocialFullName }
   | { kind: 'cancelled' }
-  | { kind: 'missing_email' }
 > {
   if (provider === 'google') {
     const result = await signInWithGoogle()
@@ -77,10 +74,6 @@ export function useSocialLogin(provider: SocialProvider) {
       const tokenResult = await getProviderToken(provider)
       if (tokenResult.kind === 'cancelled') {
         return { kind: 'cancelled' }
-      }
-      if (tokenResult.kind === 'missing_email') {
-        // Tratado igual a um erro 400 de email não verificado.
-        throw new Error('missing_email')
       }
 
       const response = await authService.socialLogin({
@@ -127,14 +120,6 @@ export function useSocialLogin(provider: SocialProvider) {
     },
     onError: async error => {
       await clearAuthSession()
-      if (error instanceof Error && error.message === 'missing_email') {
-        showBanner(
-          i18n.t('auth.social.missingEmail', {
-            provider: PROVIDER_LABELS[provider],
-          }),
-        )
-        return
-      }
       showBanner(mapSocialError(error, provider))
     },
   })
