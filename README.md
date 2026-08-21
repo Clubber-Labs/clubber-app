@@ -6,7 +6,7 @@ Aplicativo mobile do Clubber — plataforma para descoberta e criação de event
 
 | Camada | Tecnologia |
 |---|---|
-| Framework | React Native + Expo SDK 54 (bare workflow) |
+| Framework | React Native + Expo SDK 54 (CNG — `ios/`/`android/` gerados por prebuild, fora do git) |
 | Linguagem | TypeScript (strict) |
 | Navegação | Expo Router v6 (file-based) |
 | Dados remotos | TanStack Query v5 |
@@ -15,7 +15,7 @@ Aplicativo mobile do Clubber — plataforma para descoberta e criação de event
 | Formulários | React Hook Form + Zod v4 |
 | Estilização | NativeWind v4 (Tailwind para RN) |
 | Autenticação | JWT via Expo SecureStore |
-| Câmera | react-native-vision-camera v3 |
+| Câmera/galeria | expo-image-picker (câmera do sistema via intent — não há câmera custom in-app) |
 | Mapas | @rnmapbox/maps |
 | Push notifications | expo-notifications |
 | Build / CI | EAS (Expo Application Services) |
@@ -129,18 +129,20 @@ adb --version
 
 ```bash
 # Clonar o repositório
-git clone https://github.com/netobonato/connectai-mobile.git
-cd connectai-mobile
+git clone https://github.com/Clubber-Labs/clubber-app.git
+cd clubber-app
 
 # Instalar dependências JS
 pnpm install
 
-# Instalar pods do iOS (bare workflow)
-cd ios && pod install && cd ..
-
 # Configurar variáveis de ambiente
 cp .env.example .env.local
 ```
+
+> Não existe pasta `ios/`/`android/` no clone — o projeto é CNG: o nativo é
+> gerado pelo prebuild no primeiro `pnpm ios`/`pnpm android` (que também
+> instala os pods sozinho). Nunca edite o nativo à mão; mudou config/plugin,
+> regenere com `pnpm expo prebuild --clean`.
 
 Depois edite o arquivo `.env.local` com os valores reais.
 
@@ -234,7 +236,7 @@ pnpm start
 - Erro de pods no iOS:
   - Rode `cd ios && pod install && cd ..`.
 - Alterou dependência nativa e quebrou build:
-  - Rode `pnpm expo prebuild --clean` e depois `cd ios && pod install && cd ..`.
+  - Rode `pnpm expo prebuild --clean` e depois `pnpm ios` / `pnpm android` (o run reinstala os pods sozinho).
 - App abre mas não conecta na API:
   - Verifique se `API_URL` aponta para a API correta e se o backend está online.
 
