@@ -108,6 +108,13 @@ export default {
       // TestFlight pergunta sobre exportação de criptografia na mão.
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
+        // Sem CFBundleLocalizations o iOS não cruza os idiomas do usuário com
+        // os do app, e o expo-localization devolve o idioma de desenvolvimento
+        // (en) em build de release — iPhone em português abria o app em inglês
+        // (visto no TestFlight build 3). Os .lproj existirem não basta; a
+        // declaração é o que liga o language matching.
+        CFBundleAllowMixedLocalizations: true,
+        CFBundleLocalizations: ['pt-BR', 'en', 'es'],
       },
       // O prebuild NÃO gera PrivacyInfo.xcprivacy sozinho — sem esta chave o
       // --clean apaga o manifesto e a referência dele no pbxproj. Conteúdo
