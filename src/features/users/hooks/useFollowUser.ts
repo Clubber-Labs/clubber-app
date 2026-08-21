@@ -2,6 +2,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { InfiniteData } from '@tanstack/react-query'
 import { followsService } from '@/features/follows/services/followsService'
+import { followListKeys } from '@/features/follows/hooks/useFollowList'
+import { useAuthStore } from '@/features/auth/store/authStore'
+import { useNotificationPriming } from '@/features/notifications/hooks/useNotificationPriming'
 import type {
   CursorPaginatedResponse,
   FollowStatus,
@@ -24,6 +27,8 @@ const SEARCH_PREFIX = ['users', 'search'] as const
 
 export function useFollowUser(userId: string) {
   const queryClient = useQueryClient()
+  const myId = useAuthStore(s => s.userId)
+  const { primeAfterSocialAction } = useNotificationPriming()
   const queryKey = userKeys.profile(userId)
 
   function applyStatus(status: FollowStatus, deltaFollowers: number) {
@@ -77,6 +82,14 @@ export function useFollowUser(userId: string) {
   function invalidateAll() {
     queryClient.invalidateQueries({ queryKey })
     queryClient.invalidateQueries({ queryKey: SEARCH_PREFIX })
+    // O contador do MEU perfil e a MINHA lista de "seguindo" vivem sob o meu
+    // id — o prefixo do alvo não os alcança e ficavam velhos até reabrir o app.
+    queryClient.invalidateQueries({ queryKey: userKeys.me })
+    if (myId) {
+      queryClient.invalidateQueries({
+        queryKey: followListKeys.following(myId),
+      })
+    }
   }
 
   const follow = useMutation({
@@ -89,6 +102,7 @@ export function useFollowUser(userId: string) {
       applyStatus(isPrivate ? 'PENDING' : 'ACCEPTED', isPrivate ? 0 : 1)
       return prev
     },
+    onSuccess: () => void primeAfterSocialAction(),
     onError: (_err, _vars, ctx) => ctx && restore(ctx),
     onSettled: invalidateAll,
   })

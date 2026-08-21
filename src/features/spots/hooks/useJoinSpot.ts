@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNotificationPriming } from '@/features/notifications/hooks/useNotificationPriming'
 import { spotsService } from '../services/spotsService'
 import { spotKeys } from './cacheKeys'
 
@@ -6,6 +7,7 @@ import { spotKeys } from './cacheKeys'
 // o caller navega pro chat com o conversationId devolvido.
 export function useJoinSpot(id: string) {
   const queryClient = useQueryClient()
+  const { primeAfterSocialAction } = useNotificationPriming()
 
   return useMutation({
     mutationFn: () => spotsService.join(id),
@@ -13,6 +15,7 @@ export function useJoinSpot(id: string) {
       // memberCount mudou — sincroniza detail e balões do mapa.
       queryClient.invalidateQueries({ queryKey: spotKeys.detail(id) })
       queryClient.invalidateQueries({ queryKey: spotKeys.viewportAll })
+      void primeAfterSocialAction()
     },
   })
 }
