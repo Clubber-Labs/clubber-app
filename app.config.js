@@ -1,23 +1,5 @@
 import 'dotenv/config'
-import { withEntitlementsPlist } from 'expo/config-plugins'
 import { BOARD as SPLASH_BOARD } from './scripts/splash-spec.mjs'
-
-// Build local de iOS sem conta paga do Apple Developer Program: o profile
-// automático do time não cobre aps-environment (adicionado pelo plugin do
-// expo-notifications) e o xcodebuild falha. IOS_DISABLE_PUSH=1 no .env.local
-// remove o entitlement no prebuild — push iOS fica fora DESTE build e o app
-// degrada gracioso (getExpoPushTokenAsync falha dentro de try/catch). Nunca
-// setar em build EAS/produção; não commitar o ios/ gerado com o flag ativo.
-// ATENÇÃO à posição na lista de plugins: mods executam na ORDEM INVERSA —
-// este plugin precisa ser o PRIMEIRO da lista pra rodar por último e vencer
-// o withEntitlementsPlist do expo-notifications (que re-adiciona a chave se
-// não existir).
-function withoutIosPushEntitlement(config) {
-  return withEntitlementsPlist(config, c => {
-    delete c.modResults['aps-environment']
-    return c
-  })
-}
 
 // Reverse-DNS do iOS Client ID = URL scheme que o Google Sign-In registra no
 // Info.plist. Ex: 1234-abc.apps.googleusercontent.com → com.googleusercontent.apps.1234-abc
@@ -121,6 +103,37 @@ export default {
       // chave não estiver no config — quebrava code sign local no Xcode.
       // Override via APPLE_TEAM_ID pra CI/ambientes alternativos.
       appleTeamId: process.env.APPLE_TEAM_ID || 'K238P4B9K4',
+      // O app só usa cripto isenta (HTTPS/ATS). Sem esta chave, TODA subida ao
+      // TestFlight pergunta sobre exportação de criptografia na mão.
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+      },
+      // O prebuild NÃO gera PrivacyInfo.xcprivacy sozinho — sem esta chave o
+      // --clean apaga o manifesto e a referência dele no pbxproj. Conteúdo
+      // espelha o arquivo que era commitado à mão (required-reason APIs do RN/
+      // Expo: file timestamp, UserDefaults, boot time, disk space).
+      privacyManifests: {
+        NSPrivacyAccessedAPITypes: [
+          {
+            NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryFileTimestamp',
+            NSPrivacyAccessedAPITypeReasons: ['C617.1', '0A2A.1', '3B52.1'],
+          },
+          {
+            NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryUserDefaults',
+            NSPrivacyAccessedAPITypeReasons: ['CA92.1', 'C56D.1'],
+          },
+          {
+            NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategorySystemBootTime',
+            NSPrivacyAccessedAPITypeReasons: ['35F9.1'],
+          },
+          {
+            NSPrivacyAccessedAPIType: 'NSPrivacyAccessedAPICategoryDiskSpace',
+            NSPrivacyAccessedAPITypeReasons: ['E174.1', '85F4.1'],
+          },
+        ],
+        NSPrivacyCollectedDataTypes: [],
+        NSPrivacyTracking: false,
+      },
     },
     android: {
       package: 'com.netobonato.clubber',
@@ -136,9 +149,6 @@ export default {
         : {}),
     },
     plugins: [
-      ...(process.env.IOS_DISABLE_PUSH === '1'
-        ? [withoutIosPushEntitlement]
-        : []),
       "expo-router",
       // Splash NATIVA (o SO desenha antes do JS subir; o SplashOverlay é o 2º
       // estágio). A imagem é a MESMA composição do SplashScreen.tsx, gerada por
@@ -149,7 +159,16 @@ export default {
       ["expo-splash-screen", {
         image: "./assets/splash-logo.png",
         backgroundColor: "#0B0B0D",
-        imageWidth: SPLASH_BOARD
+        imageWidth: SPLASH_BOARD,
+        // Android 12+ desenha a splash ele mesmo e SEMPRE recorta o ícone num
+        // círculo — a composição adesivo+wordmark sai mutilada (verificado em
+        // emulador API 35). Só o balão sobrevive à máscara; a composição
+        // completa continua no 2º estágio (SplashOverlay JS). iOS não tem
+        // máscara e segue com a arte inteira acima.
+        android: {
+          image: "./assets/icon.png",
+          imageWidth: 288
+        }
       }],
       // O plugin declara NSFaceIDUsageDescription com um texto genérico em
       // inglês; era a única permissão fora do padrão das outras. O app não pede
@@ -158,9 +177,6 @@ export default {
       // não é desta fase.
       ["expo-secure-store", {
         faceIDPermission: IOS_PERMISSIONS_PT.NSFaceIDUsageDescription
-      }],
-      ["react-native-vision-camera", {
-        cameraPermissionText: IOS_PERMISSIONS_PT.NSCameraUsageDescription
       }],
       ["@rnmapbox/maps", {
         RNMAPBOX_MAPS_DOWNLOAD_TOKEN: process.env.RNMAPBOX_MAPS_DOWNLOAD_TOKEN
@@ -173,9 +189,8 @@ export default {
       }],
       ["expo-image-picker", {
         photosPermission: IOS_PERMISSIONS_PT.NSPhotoLibraryUsageDescription,
-        // image-picker é o último plugin a tocar NSCameraUsageDescription;
-        // sem isso, sobrescreveria o texto do vision-camera com placeholder
-        // genérico em inglês.
+        // Sem esta opção o plugin escreve NSCameraUsageDescription com
+        // placeholder genérico em inglês.
         cameraPermission: IOS_PERMISSIONS_PT.NSCameraUsageDescription,
         // Usamos o microfone nas notas de voz do chat (via expo-audio). Texto
         // específico pra não cair no placeholder em inglês do plugin.

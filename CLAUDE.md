@@ -2,7 +2,7 @@
 
 ## Stack
 
-- **Framework:** React Native com Expo (bare workflow)
+- **Framework:** React Native com Expo (CNG — `ios/`/`android/` gerados por prebuild, fora do git)
 - **Linguagem:** TypeScript
 - **Navegação:** Expo Router (file-based routing)
 - **Dados remotos:** TanStack Query (cache, loading, invalidação)
@@ -11,7 +11,7 @@
 - **Formulários:** React Hook Form + Zod
 - **Estilização:** NativeWind (Tailwind para React Native)
 - **Autenticação:** JWT armazenado com Expo SecureStore
-- **Câmera:** react-native-vision-camera v3
+- **Câmera/galeria:** expo-image-picker (câmera do sistema via intent — não há câmera custom in-app)
 - **Mapas:** @rnmapbox/maps
 - **Push notifications:** expo-notifications
 - **Build / CI:** EAS (Expo Application Services)
@@ -28,11 +28,11 @@ pnpm exec expo run:ios        # compila e roda no simulador iOS
 pnpm exec expo run:android    # compila e roda no emulador Android
 
 # Build
-# ⚠️ NUNCA rodar `expo prebuild --clean`: o nativo commitado tem edições manuais
-# (splash, ícones, assinatura) que o config ainda não descreve por completo.
-# Plano de migração pra CNG (quando o prebuild volta a ser seguro):
-# docs/migracao-cng.md
-pnpm exec expo prebuild       # gera as pastas ios/ e android/ (necessário após mudar plugins)
+# CNG: ios/ e android/ NÃO são versionados — são artefato gerado a partir do
+# app.config.js + plugins (histórico da migração: docs/migracao-cng.md).
+# Nunca editar o nativo à mão; precisa de algo que o config não cobre? Escreva
+# um config plugin. Regenerar o nativo é sempre seguro:
+pnpm exec expo prebuild --clean   # regenera ios/ e android/ do zero (após mudar config/plugins)
 eas build --profile development   # build de desenvolvimento via EAS
 eas build --profile preview       # build de preview (TestFlight / APK interno)
 eas build --profile production    # build de produção (App Store / Play Store)

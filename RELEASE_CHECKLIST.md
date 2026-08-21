@@ -20,24 +20,27 @@ Pendências e configurações que precisam ser revisadas antes do primeiro build
 
 **Apontado por:** code review do PR feat/explore-screen.
 
-### Push Notifications — iOS bloqueado por falta do Apple Developer Program (pago)
+### Push Notifications — iOS (desbloqueado em 2026-08-20)
 
-**Estado atual (branch feat/notificacoes):** `expo-notifications` foi reintegrado e a feature está completa em `src/features/notifications/` (registro de token gated por consentimento, WS foreground, central in-app, deep-link de tap). O que falta pra push funcionar no iOS é só infraestrutura Apple — exige o Apple Developer Program **pago** (push não existe em personal team).
+A feature está completa em `src/features/notifications/` (registro de token
+gated por consentimento, WS foreground, central in-app, deep-link de tap). O
+Apple Developer Program foi pago e o workaround `IOS_DISABLE_PUSH` (plugin
+condicional que removia o entitlement pra conta gratuita) foi **aposentado no
+flip da migração CNG** — o entitlement `aps-environment` entra em todo build.
+Se você encontrar referência ao flag em doc/branch antiga, é obsoleta.
 
-**Workaround pra desenvolvimento local em device iOS (sem conta paga):**
+**O que ainda falta pra push chegar num iPhone:**
 
-1. No `.env.local`: `IOS_DISABLE_PUSH=1`
-2. `pnpm exec expo prebuild --no-install` — remove o entitlement `aps-environment` (plugin condicional em `app.config.js`)
-3. `pnpm run ios --device` builda normal; tudo funciona menos push (o app degrada gracioso — `getExpoPushTokenAsync` falha dentro de try/catch e o registro vira no-op)
-
-⚠️ **Não commitar** o `ios/` gerado com o flag ativo (`git checkout ios/` antes de commitar) e **nunca** setar `IOS_DISABLE_PUSH` em build EAS/produção — sairia release sem push.
-
-**Quando assinar o Apple Developer Program:**
-
-1. Remover `IOS_DISABLE_PUSH` do `.env.local` e rodar `pnpm exec expo prebuild`
-2. Registrar a capability: Xcode → target → Signing & Capabilities → **+ Capability → Push Notifications** (ou portal: Identifiers → `com.netobonato.clubber` → Push Notifications; ou um `eas build`, que sincroniza capabilities sozinho)
-3. Subir a APNs key pro serviço de push do Expo: `eas credentials -p ios`
-4. **Resolver o item acima** (`aps-environment` Debug vs Release) ANTES do primeiro build de produção, senão push falha em release
+1. Capability Push Notifications no App ID `com.netobonato.clubber` — o
+   `eas build`/Xcode (auto-signing, conta paga) sincronizam sozinhos a partir
+   do entitlement gerado; conferir no portal na primeira vez
+2. Subir a APNs key pro serviço de push do Expo: `eas credentials -p ios`
+3. **Resolver o item acima** (`aps-environment` Debug vs Release) ANTES do
+   primeiro build de produção — atenção: com CNG o entitlements é regenerado
+   pelo prebuild, então as opções 1 e 2 daquele item (edições no projeto
+   Xcode) só valem via config plugin; a opção 3 (EAS resolver sozinho no
+   re-sign do profile de App Store) é a aposta a validar no primeiro build de
+   TestFlight com um push de teste
 
 ## Android
 
@@ -125,27 +128,35 @@ Cenários a testar (mesmos do iOS):
 3. Adicionar o **key hash de release** ao Facebook (mesmo lugar do debug — também aceita múltiplos).
 4. Submeter o app Facebook pra **App Review** (sair do Development mode) — sem isso, só usuários listados em "App roles" conseguem logar.
 
-### `CODE_SIGN_IDENTITY = "Apple Development"` na config Release (cuidado pós-prebuild)
+### `CODE_SIGN_IDENTITY` na config Release (histórico — re-medido em 2026-08-20)
 
-**Problema:** com `appleTeamId` setado em `app.config.js`, o `expo prebuild --clean` aplica `CODE_SIGN_IDENTITY = "Apple Development"` **em ambas** as configs (Debug e Release) do target principal no `project.pbxproj`. Isso pode quebrar archive/IPA local de produção via Xcode — Release deveria usar Automatic Signing (vazio) ou `"Apple Distribution"`.
+**Estado atual:** o sintoma que esta seção alertava (prebuild forçando
+`CODE_SIGN_IDENTITY = "Apple Development"` nas duas configs do target) **não
+aparece mais na saída do prebuild** do SDK 54 — o pbxproj gerado só traz o
+default de template a nível de projeto (`"iPhone Developer"`), que o Automatic
+Signing sobrepõe. Nada a fazer no fluxo normal.
 
-**Fix manual após cada `prebuild --clean`:** remover a linha `CODE_SIGN_IDENTITY = "Apple Development";` apenas do bloco `13B07F95... /* Release */` no `ios/Clubber.xcodeproj/project.pbxproj` (manter no Debug). Manter `DEVELOPMENT_TEAM` e `CODE_SIGN_STYLE = Automatic` — o Xcode escolhe a identity correta.
+**Se um archive local via Xcode estranhar assinatura:** sob CNG o `ios/` é
+descartável e não-versionado — dá pra ajustar o projeto no Xcode à vontade pro
+archive do momento (nada pra commitar; o próximo `prebuild --clean` regenera).
+Se archive local virar rotina, a solução permanente é um config plugin — nunca
+edição manual persistida. **EAS Build segue não afetado** (assinatura própria
+no servidor).
 
-**Quando isso importa:** apenas pra archive local via Xcode (TestFlight manual). **EAS Build não é afetado** — ele tem seu próprio fluxo de assinatura com credenciais armazenadas no servidor; o pbxproj local é sobrescrito.
+## Sobre o `Info.plist` (não é mais versionado — CNG)
 
-**Solução permanente (TODO):** mover `CODE_SIGN_IDENTITY` pra `ios/Config/Local.xcconfig` (já gitignored) ou criar um post-prebuild script. Por enquanto, ajustar manualmente é mais simples e o EAS dispensa pra prod.
+Depois do flip da migração CNG não existe `Info.plist` no git: ele é **saída
+do prebuild**, regenerado a cada `expo prebuild` a partir do `app.config.js` +
+`.env.local` (local) ou das envs do EAS (build de produção, que roda o próprio
+prebuild no servidor). URL schemes e chaves de credencial social
+(`fb<APP_ID>`, `com.googleusercontent.apps.<IOS_CLIENT_ID>`,
+`FacebookAppID`/`FacebookClientToken`) são materializados aí.
 
-## Sobre o `ios/Info.plist` versionado
-
-**Contexto:** `ios/` é commitado (bare workflow), incluindo `Info.plist` com URL schemes (`fb<APP_ID>`, `com.googleusercontent.apps.<IOS_CLIENT_ID>`) e chaves `FacebookAppID`/`FacebookClientToken`. Esses valores vêm do `.env.local` no momento em que `expo prebuild --clean` foi rodado.
-
-**Importante:**
-- A **fonte de verdade** é o `app.config.js` + `.env.local`. O `Info.plist` é só o output do último prebuild local.
-- Pra mudar credenciais (trocar de app Facebook, rotacionar Client ID), edita o `.env.local` e roda `pnpm exec expo prebuild --platform ios --clean` — o `Info.plist` é regenerado.
-- `FACEBOOK_CLIENT_TOKEN` **não é secret** ([doc oficial do Facebook](https://developers.facebook.com/docs/facebook-login/security#client_token)): vai no app binário publicado. App ID e Client IDs do Google também são "públicos" por design.
-- Em produção via EAS Build, o prebuild roda com `eas secret:create` no servidor — o `Info.plist` do repo não vai pra build de produção.
-
-**Quando o `Info.plist` do repo deve ser commitado de novo:** sempre que algum plugin nativo for adicionado/removido OU credenciais sociais forem trocadas E você quer que o próximo dev consiga buildar sem rodar prebuild local. Caso contrário, deixa o último estado vencer.
+- Pra rotacionar credencial: edita `.env.local` (e a env equivalente no EAS) e
+  roda `pnpm exec expo prebuild --platform ios --clean`. Nada pra commitar.
+- `FACEBOOK_CLIENT_TOKEN` **não é secret** ([doc oficial](https://developers.facebook.com/docs/facebook-login/security#client_token)):
+  vai no binário publicado. App ID e Client IDs do Google também são públicos
+  por design.
 
 ## Antes de cada release
 
@@ -156,7 +167,6 @@ Cenários a testar (mesmos do iOS):
 - [ ] Smoke test no simulador iOS e device físico Android
 - [ ] Atribuição da Mapbox/OpenStreetMap acessível na tela "Sobre" (perfil → Sobre)
 - [ ] Login social validado em Android (ver seção "Android" acima) — se ainda não foi feito
-- [ ] `IOS_DISABLE_PUSH` **ausente** do ambiente de build (é só workaround local — release com ele sai sem push iOS)
 - [ ] Push iOS: Apple Developer Program ativo + capability registrada + APNs key no Expo (`eas credentials -p ios`)
 - [ ] Push Android: FCM V1 key no Expo (`eas credentials -p android`) + `GOOGLE_SERVICES_JSON` configurado no EAS
 - [ ] Backend de produção com `NOTIFICATIONS_ENABLED=true` + Redis (sem isso a fila de push/fanout é no-op)

@@ -1,7 +1,0 @@
-NSCameraUsageDescription = "Necesitamos la cámara para las fotos de perfil y de eventos";
-NSMicrophoneUsageDescription = "Necesitamos el micrófono para grabar mensajes de voz.";
-NSPhotoLibraryUsageDescription = "Necesitamos acceso a tus fotos para cambiar tu foto de perfil.";
-NSLocationWhenInUseUsageDescription = "Usamos tu ubicación para mostrar eventos cercanos en el mapa y, si lo activas, avisarte de eventos cerca de ti.";
-NSLocationAlwaysAndWhenInUseUsageDescription = "Usamos tu ubicación para mostrar eventos cercanos en el mapa y, si lo activas, avisarte de eventos cerca de ti.";
-NSLocationAlwaysUsageDescription = "Usamos tu ubicación para mostrar eventos cercanos en el mapa y, si lo activas, avisarte de eventos cerca de ti.";
-NSFaceIDUsageDescription = "Face ID protege los datos guardados en este dispositivo, como tu sesión.";
