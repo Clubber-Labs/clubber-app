@@ -378,7 +378,6 @@
     "social": {
       "connecting": "Conectando…",
       "continueGoogle": "Continuar con Google",
-      "continueFacebook": "Continuar con Facebook",
       "fallback": "No pudimos iniciar sesión con {{provider}}. Inténtalo de nuevo o usa correo/contraseña.",
       "missingEmail": "Tu cuenta de {{provider}} debe permitir el acceso al correo para entrar."
     },
@@ -1353,7 +1352,7 @@
     "reauth": {
       "title": "Confirma que eres tú",
       "passwordBody": "Escribe tu contraseña para eliminar la cuenta.",
-      "socialBody": "Tu sesión confirma tu identidad — iniciaste sesión con Google o Facebook.",
+      "socialBody": "Tu sesión confirma tu identidad — iniciaste sesión con Google o Apple.",
       "password": "Contraseña",
       "passwordPlaceholder": "Tu contraseña",
       "noPassword": "No se necesita contraseña para esta cuenta."

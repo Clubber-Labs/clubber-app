@@ -3,7 +3,7 @@ import { isAxiosError } from 'axios'
 import { authService } from '../services/authService'
 import { useAuthStore } from '../store/authStore'
 import { signInWithGoogle } from '../lib/googleSignIn'
-import { signInWithFacebook } from '../lib/facebookLogin'
+import { signInWithApple } from '../lib/appleSignIn'
 import {
   saveToken,
   saveRefreshToken,
@@ -17,11 +17,19 @@ import { i18n } from '@/shared/i18n'
 import { needsRolePreferences } from '@/shared/utils/rolePreferences'
 import { maybeShowWelcomeBack } from '@/features/account/lib/welcomeBack'
 import { userKeys } from '@/features/users/hooks/cacheKeys'
-import type { SocialProvider } from '../schemas/socialLoginSchema'
+import type {
+  SocialFullName,
+  SocialProvider,
+} from '../schemas/socialLoginSchema'
 
 type SocialMutationResult =
   | { kind: 'authenticated'; profileIncomplete: boolean }
   | { kind: 'cancelled' }
+
+const PROVIDER_LABELS: Record<SocialProvider, string> = {
+  google: 'Google',
+  apple: 'Apple',
+}
 
 // Erro vindo da API passa pelo contrato de código (getApiError já traduz e já
 // interpola o provider nos códigos que o trazem em `params`). Só o que nasce no
@@ -31,14 +39,16 @@ function mapSocialError(error: unknown, provider: SocialProvider): string {
   if (isAxiosError(error)) return getApiError(error).message
 
   return i18n.t('auth.social.fallback', {
-    provider: provider === 'google' ? 'Google' : 'Facebook',
+    provider: PROVIDER_LABELS[provider],
   })
 }
 
+// `missing_email` é exclusivo do Google (conta sem email verificado); o
+// identityToken da Apple sempre traz email — real ou private relay.
 async function getProviderToken(
   provider: SocialProvider,
 ): Promise<
-  | { kind: 'token'; token: string }
+  | { kind: 'token'; token: string; fullName?: SocialFullName }
   | { kind: 'cancelled' }
   | { kind: 'missing_email' }
 > {
@@ -47,10 +57,13 @@ async function getProviderToken(
     if (result.kind === 'cancelled') return { kind: 'cancelled' }
     return { kind: 'token', token: result.idToken }
   }
-  const result = await signInWithFacebook()
+  const result = await signInWithApple()
   if (result.kind === 'cancelled') return { kind: 'cancelled' }
-  if (result.kind === 'missing_email') return { kind: 'missing_email' }
-  return { kind: 'token', token: result.accessToken }
+  return {
+    kind: 'token',
+    token: result.identityToken,
+    ...(result.fullName ? { fullName: result.fullName } : {}),
+  }
 }
 
 export function useSocialLogin(provider: SocialProvider) {
@@ -73,6 +86,7 @@ export function useSocialLogin(provider: SocialProvider) {
       const response = await authService.socialLogin({
         provider,
         token: tokenResult.token,
+        ...(tokenResult.fullName ? { fullName: tokenResult.fullName } : {}),
       })
 
       // Login social cria a conta sem passar pelo cadastro, então pode nascer
@@ -116,7 +130,7 @@ export function useSocialLogin(provider: SocialProvider) {
       if (error instanceof Error && error.message === 'missing_email') {
         showBanner(
           i18n.t('auth.social.missingEmail', {
-            provider: provider === 'google' ? 'Google' : 'Facebook',
+            provider: PROVIDER_LABELS[provider],
           }),
         )
         return

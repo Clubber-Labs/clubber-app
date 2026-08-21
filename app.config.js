@@ -23,27 +23,6 @@ function socialAuthPlugins() {
     )
   }
 
-  const fbAppId = process.env.FACEBOOK_APP_ID
-  const fbToken = process.env.FACEBOOK_CLIENT_TOKEN
-  if (fbAppId && /^\d{10,}$/.test(fbAppId) && fbToken && fbToken.length >= 20) {
-    plugins.push([
-      'react-native-fbsdk-next',
-      {
-        appID: fbAppId,
-        clientToken: fbToken,
-        displayName: 'Clubber',
-        scheme: `fb${fbAppId}`,
-        advertiserIDCollectionEnabled: false,
-        autoLogAppEventsEnabled: false,
-        isAutoInitEnabled: true,
-      },
-    ])
-  } else {
-    console.warn(
-      '[app.config] FACEBOOK_APP_ID/CLIENT_TOKEN ausentes ou inválidos — Facebook Login desabilitado neste build.',
-    )
-  }
-
   return plugins
 }
 
@@ -224,6 +203,9 @@ export default {
         supportsBackgroundPlayback: false,
         supportsPictureInPicture: false
       }],
+      // Gera o entitlement com.apple.developer.applesignin no prebuild.
+      // Android não é afetado (o botão nem renderiza lá).
+      "expo-apple-authentication",
       ...socialAuthPlugins()
     ],
     extra: {
@@ -231,7 +213,6 @@ export default {
       mapboxAccessToken: process.env.MAPBOX_ACCESS_TOKEN,
       googleWebClientId: process.env.GOOGLE_WEB_CLIENT_ID,
       googleIosClientId: process.env.GOOGLE_IOS_CLIENT_ID,
-      facebookAppId: process.env.FACEBOOK_APP_ID,
       // Chave PÚBLICA do Stripe (pk_test_/pk_live_) — PaymentSheet nativa.
       // A secret key NUNCA entra no app; tudo sensível passa pelo backend.
       stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
