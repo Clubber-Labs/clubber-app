@@ -113,6 +113,18 @@ Fazer junto da preparação de loja (Apple US$ 99/ano, Google US$ 25 único):
 6. ✅ Atualizar CLAUDE.md (fluxo de build muda) e apagar a seção de proibição
    do `prebuild --clean` — ele vira o caminho normal.
 
+## Fase 3 — nota sobre `expo.install.exclude` (2026-08-20)
+
+Os quatro pacotes excluídos do check de versão do `expo install`/`expo-doctor`
+são **bumps deliberados** acima do que o SDK 54 espera — o JSON não aceita
+comentário, então o porquê fica aqui: `@react-native-community/datetimepicker`
+9.x e `react-native-worklets` 0.8.1 foram subidos por commits próprios (suporte
+a fuso do date-fns / exigência do reanimated 4), e `react-native-svg` +
+`@react-navigation/bottom-tabs` acompanham minors estáveis usados pelo chrome
+custom. Efeito colateral: num bump de SDK esses quatro NÃO são sinalizados
+automaticamente — revisar a lista a cada upgrade de SDK antes de confiar no
+doctor.
+
 ## Riscos conhecidos
 
 - **Assinatura com conta gratuita** num pbxproj recém-gerado é o maior atrito —

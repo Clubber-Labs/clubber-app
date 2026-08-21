@@ -20,24 +20,27 @@ Pendências e configurações que precisam ser revisadas antes do primeiro build
 
 **Apontado por:** code review do PR feat/explore-screen.
 
-### Push Notifications — iOS bloqueado por falta do Apple Developer Program (pago)
+### Push Notifications — iOS (desbloqueado em 2026-08-20)
 
-**Estado atual (branch feat/notificacoes):** `expo-notifications` foi reintegrado e a feature está completa em `src/features/notifications/` (registro de token gated por consentimento, WS foreground, central in-app, deep-link de tap). O que falta pra push funcionar no iOS é só infraestrutura Apple — exige o Apple Developer Program **pago** (push não existe em personal team).
+A feature está completa em `src/features/notifications/` (registro de token
+gated por consentimento, WS foreground, central in-app, deep-link de tap). O
+Apple Developer Program foi pago e o workaround `IOS_DISABLE_PUSH` (plugin
+condicional que removia o entitlement pra conta gratuita) foi **aposentado no
+flip da migração CNG** — o entitlement `aps-environment` entra em todo build.
+Se você encontrar referência ao flag em doc/branch antiga, é obsoleta.
 
-**Workaround pra desenvolvimento local em device iOS (sem conta paga):**
+**O que ainda falta pra push chegar num iPhone:**
 
-1. No `.env.local`: `IOS_DISABLE_PUSH=1`
-2. `pnpm exec expo prebuild --no-install` — remove o entitlement `aps-environment` (plugin condicional em `app.config.js`)
-3. `pnpm run ios --device` builda normal; tudo funciona menos push (o app degrada gracioso — `getExpoPushTokenAsync` falha dentro de try/catch e o registro vira no-op)
-
-⚠️ **Não commitar** o `ios/` gerado com o flag ativo (`git checkout ios/` antes de commitar) e **nunca** setar `IOS_DISABLE_PUSH` em build EAS/produção — sairia release sem push.
-
-**Quando assinar o Apple Developer Program:**
-
-1. Remover `IOS_DISABLE_PUSH` do `.env.local` e rodar `pnpm exec expo prebuild`
-2. Registrar a capability: Xcode → target → Signing & Capabilities → **+ Capability → Push Notifications** (ou portal: Identifiers → `com.netobonato.clubber` → Push Notifications; ou um `eas build`, que sincroniza capabilities sozinho)
-3. Subir a APNs key pro serviço de push do Expo: `eas credentials -p ios`
-4. **Resolver o item acima** (`aps-environment` Debug vs Release) ANTES do primeiro build de produção, senão push falha em release
+1. Capability Push Notifications no App ID `com.netobonato.clubber` — o
+   `eas build`/Xcode (auto-signing, conta paga) sincronizam sozinhos a partir
+   do entitlement gerado; conferir no portal na primeira vez
+2. Subir a APNs key pro serviço de push do Expo: `eas credentials -p ios`
+3. **Resolver o item acima** (`aps-environment` Debug vs Release) ANTES do
+   primeiro build de produção — atenção: com CNG o entitlements é regenerado
+   pelo prebuild, então as opções 1 e 2 daquele item (edições no projeto
+   Xcode) só valem via config plugin; a opção 3 (EAS resolver sozinho no
+   re-sign do profile de App Store) é a aposta a validar no primeiro build de
+   TestFlight com um push de teste
 
 ## Android
 
@@ -156,7 +159,6 @@ Cenários a testar (mesmos do iOS):
 - [ ] Smoke test no simulador iOS e device físico Android
 - [ ] Atribuição da Mapbox/OpenStreetMap acessível na tela "Sobre" (perfil → Sobre)
 - [ ] Login social validado em Android (ver seção "Android" acima) — se ainda não foi feito
-- [ ] `IOS_DISABLE_PUSH` **ausente** do ambiente de build (é só workaround local — release com ele sai sem push iOS)
 - [ ] Push iOS: Apple Developer Program ativo + capability registrada + APNs key no Expo (`eas credentials -p ios`)
 - [ ] Push Android: FCM V1 key no Expo (`eas credentials -p android`) + `GOOGLE_SERVICES_JSON` configurado no EAS
 - [ ] Backend de produção com `NOTIFICATIONS_ENABLED=true` + Redis (sem isso a fila de push/fanout é no-op)
