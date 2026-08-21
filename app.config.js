@@ -151,6 +151,19 @@ export default {
     },
     plugins: [
       "expo-router",
+      // AppCheckCore 11.3+ (transitiva do GoogleSignIn) depende de
+      // GoogleUtilities e RecaptchaInterop, que não definem módulos — o pod
+      // install quebra em lib estática ("cannot yet be integrated as static
+      // libraries", visto no EAS em 2026-08-21). modular_headers é o fix que
+      // o próprio CocoaPods recomenda; version fica livre de propósito.
+      ["expo-build-properties", {
+        ios: {
+          extraPods: [
+            { name: "GoogleUtilities", modular_headers: true },
+            { name: "RecaptchaInterop", modular_headers: true },
+          ],
+        },
+      }],
       // Splash NATIVA (o SO desenha antes do JS subir; o SplashOverlay é o 2º
       // estágio). A imagem é a MESMA composição do SplashScreen.tsx, gerada por
       // scripts/build-splash-logo.mjs — mudar o componente sem rodar `pnpm
