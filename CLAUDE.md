@@ -749,7 +749,7 @@ abra um PR com as minhas alterações
 ## Configuração EAS
 
 - **Conta Expo:** netobonato
-- **Project ID:** `89ff5c01-195a-42ea-a8d0-94425a85a89d`
+- **Project ID:** `046e5dc6-83ed-4602-bb1d-c30fe364fafe` (projeto `@netobonato/clubber` — recriado em 2026-08-20 porque o antigo `connectai-mobile` não permitia rename de slug)
 - Configurado no `app.config.js` em `extra.eas.projectId`
 
 ### Perfis de build (`eas.json`)

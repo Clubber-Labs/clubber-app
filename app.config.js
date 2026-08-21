@@ -75,6 +75,7 @@ export default {
   expo: {
     name: "Clubber",
     slug: "clubber",
+    owner: "netobonato",
     version: "1.0.0",
     scheme: "clubber",
     userInterfaceStyle: "automatic",
@@ -215,7 +216,7 @@ export default {
       // A secret key NUNCA entra no app; tudo sensível passa pelo backend.
       stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
       eas: {
-        projectId: "89ff5c01-195a-42ea-a8d0-94425a85a89d"
+        projectId: "046e5dc6-83ed-4602-bb1d-c30fe364fafe"
       }
     }
   }
