@@ -378,9 +378,8 @@
     "social": {
       "connecting": "Conectando…",
       "continueGoogle": "Continuar com Google",
-      "continueFacebook": "Continuar com Facebook",
-      "fallback": "Não conseguimos entrar com {{provider}}. Tente novamente ou use e-mail/senha.",
-      "missingEmail": "Sua conta {{provider}} precisa permitir o acesso ao e-mail para entrar."
+      "continueApple": "Continuar com a Apple",
+      "fallback": "Não conseguimos entrar com {{provider}}. Tente novamente ou use e-mail/senha."
     },
     "divider": {
       "or": "Ou"
@@ -1353,7 +1352,7 @@
     "reauth": {
       "title": "Confirme que é você",
       "passwordBody": "Digite sua senha para excluir a conta.",
-      "socialBody": "Sua sessão confirma sua identidade — você entrou com Google ou Facebook.",
+      "socialBody": "Sua sessão confirma sua identidade — você entrou com Google ou Apple.",
       "password": "Senha",
       "passwordPlaceholder": "Sua senha",
       "noPassword": "Nenhuma senha necessária para esta conta."

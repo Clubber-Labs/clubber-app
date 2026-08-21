@@ -31,7 +31,6 @@ import { useRestoreSession } from '@/features/auth/hooks/useRestoreSession'
 import { useConsentMirror } from '@/features/privacy/hooks/useConsentMirror'
 import { PolicyUpdateNotice } from '@/features/privacy/components/PolicyUpdateNotice'
 import { endSession } from '@/features/auth/lib/session'
-import { initFacebookSDK } from '@/features/auth/lib/facebookLogin'
 import { SessionUnavailable } from '@/features/auth/components/SessionUnavailable'
 import { ChatRealtimeMount } from '@/features/chat/components/ChatRealtimeMount'
 import { NotificationsMount } from '@/features/notifications/components/NotificationsMount'
@@ -157,12 +156,6 @@ export default function RootLayout() {
   // recompunha a arte, isto precisava aguardar a Sora, senão o wordmark piscava.
   const hideNativeSplash = useCallback(() => {
     ExpoSplash.hideAsync().catch(() => {})
-  }, [])
-
-  useEffect(() => {
-    // GoogleSignin.configure() é lazy (chamado no 1º signIn). Facebook precisa
-    // de inicialização explícita pra registrar handlers nativos antes do 1º tap.
-    initFacebookSDK()
   }, [])
 
   // 4401 em qualquer socket (chat/notificações) = token inválido e sem rota

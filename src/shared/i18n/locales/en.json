@@ -378,9 +378,8 @@
     "social": {
       "connecting": "Connecting…",
       "continueGoogle": "Continue with Google",
-      "continueFacebook": "Continue with Facebook",
-      "fallback": "We couldn't sign you in with {{provider}}. Try again or use email/password.",
-      "missingEmail": "Your {{provider}} account must allow email access to sign in."
+      "continueApple": "Continue with Apple",
+      "fallback": "We couldn't sign you in with {{provider}}. Try again or use email/password."
     },
     "divider": {
       "or": "Or"
@@ -1353,7 +1352,7 @@
     "reauth": {
       "title": "Confirm it's you",
       "passwordBody": "Enter your password to delete the account.",
-      "socialBody": "Your session confirms your identity — you signed in with Google or Facebook.",
+      "socialBody": "Your session confirms your identity — you signed in with Google or Apple.",
       "password": "Password",
       "passwordPlaceholder": "Your password",
       "noPassword": "No password needed for this account."
