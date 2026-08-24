@@ -6,6 +6,85 @@ passar pela App Store / Play Store. Configurado em `app.config.js` (`updates` +
 
 ---
 
+## ⚠️ Pendências conhecidas
+
+Decisões conscientemente adiadas em 23/08/2026, quando o OTA foi montado. Não
+são bugs: são coisas que sabemos que faltam, com o motivo de terem esperado.
+
+### 1. Updates não são assinadas (segurança)
+
+**Estado:** o app aceita qualquer update publicada no projeto EAS.
+
+O binário guarda a URL do servidor e, no cold start, baixa e **executa** o que
+vier de lá para o seu canal e runtime version. O TLS impede adulteração no meio
+do caminho, mas não há verificação de **quem publicou**.
+
+Como um bundle JS é o app inteiro, quem conseguir publicar pode ler o JWT do
+SecureStore, redirecionar as chamadas de API ou desenhar uma tela de login
+falsa — sem review da Apple no caminho. E "quem consegue publicar" inclui:
+quem tiver a sessão/senha do Expo, **um token de CI vazado**, qualquer
+colaborador adicionado ao projeto, ou a infra da Expo se comprometida.
+
+**A correção** é o code signing do `expo-updates`: a chave pública vai no
+binário, a privada fica com você, e o app recusa update que não bata com ela.
+
+```bash
+npx expo-updates codesigning:generate
+npx expo-updates codesigning:configure
+```
+
+**Por que esperou:** a chave pública entra no binário, então isso **muda o
+fingerprint e exige um build novo**. Em 23/08 o app era pré-lançamento com um
+único usuário, e o custo (mais um ciclo de build + submit) não se justificava.
+
+**Quando fazer:** no build que preceder a abertura para usuários reais. Junto
+com um build que você já ia fazer, custa quase nada; isolado, custa um ciclo.
+
+**Antes de fazer, decida a custódia da chave privada.** Perdê-la significa não
+conseguir mais publicar update para os binários existentes — só sairia build
+novo pela loja. Ela não pode ficar no repositório, e não deve ficar na mesma
+conta que publica (senão o comprometimento dessa conta leva as duas coisas).
+
+### 2. Rotacionar o token do Mapbox desliga o OTA de todo mundo
+
+**Estado:** `RNMAPBOX_MAPS_DOWNLOAD_TOKEN` é passado como opção do plugin
+`@rnmapbox/maps` no `app.config.js`, então entra no `expoConfig` — e o
+`expoConfig` é fonte do fingerprint.
+
+Consequência contraintuitiva: trocar esse token, que é **puramente de build** e
+não afeta nada em runtime, muda a runtime version e **os binários instalados
+param de receber update**. Só uma atualização pela loja religa.
+
+O `@expo/fingerprint` não permite excluir uma opção de plugin cirurgicamente
+(os `sourceSkips` são por categoria, e o único que cobriria — `ExpoConfigAll` —
+desligaria a proteção inteira). A saída estrutural seria tirar o token do
+config e entregá-lo via `.netrc` num hook `eas-build-pre-install`, ao custo de
+mais partes móveis.
+
+**Enquanto não for feito:** o token precisa ser **idêntico** no `.env.local` e
+no EAS. Divergir faz o build falhar com `Runtime version calculated on local
+machine not equal to runtime version calculated during build` — aconteceu em
+23/08. E rotacione-o junto com um build que já vá acontecer, nunca isolado.
+
+### 3. `preview` e `development` no EAS estão sem as variáveis do Mapbox
+
+Só o ambiente `production` tem `MAPBOX_ACCESS_TOKEN` e
+`RNMAPBOX_MAPS_DOWNLOAD_TOKEN` cadastrados. Um `eas build --profile preview` na
+nuvem falharia no `pod install`, sem conseguir baixar o SDK.
+
+```bash
+pnpm exec eas env:list --environment preview
+```
+
+### 4. `pnpm web` é um script morto
+
+`package.json` tem `"web": "expo start --web"`, mas o projeto não instala
+`react-native-web` — e agora o `app.config.js` declara
+`platforms: ["ios", "android"]`, o que torna o script contraditório além de
+quebrado. Remover quando alguém passar por perto.
+
+---
+
 ## O que vai por OTA e o que não vai
 
 | Vai (está no bundle JS) | Não vai (é nativo) |
@@ -68,7 +147,12 @@ Os dois passam por `scripts/publish-update.mjs`, que **recusa** publicar se:
    `origin/main`. Update de produção não passa por review da Apple — o PR é a
    única revisão que existe nesse caminho.
 3. **`typecheck` ou `lint` falham.**
-4. **(Só `production`)** Você não digitou `production` pra confirmar. Sem TTY,
+4. **Falta alguma variável que vira `extra`.** A lista sai de
+   `scripts/extra-env.mjs`, o mesmo módulo que o `app.config.js` usa pra montar
+   o objeto. Sem elas o export não reclama — publica um manifesto incompleto, e
+   quem baixar fica sem backend. Em canal protegido, também recusa `API_URL`
+   apontando para rede local.
+5. **(Só `production`)** Você não digitou `production` pra confirmar. Sem TTY,
    ele recusa por desenho: nada automatizado deve alcançar a base inteira
    sozinho.
 
@@ -146,7 +230,7 @@ atrasaria a splash de quem está em rede ruim.
 
 ---
 
-## Duas armadilhas do pnpm + Expo (já resolvidas)
+## Três armadilhas do pnpm + Expo (já resolvidas)
 
 Ficam registradas porque o sintoma não aponta para a causa, e qualquer uma
 volta se o código for mexido.
