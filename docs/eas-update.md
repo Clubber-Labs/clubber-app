@@ -151,15 +151,30 @@ atrasaria a splash de quem está em rede ruim.
 Ficam registradas porque o sintoma não aponta para a causa, e qualquer uma
 volta se o código for mexido.
 
-**1. `Cannot find module 'babel-preset-expo'` ao publicar.** O `eas update`
-chama o CLI do Expo pelo caminho real dentro de `node_modules/.pnpm`, pulando o
-shim que o pnpm gera em `node_modules/.bin/expo` — e é o shim que exporta o
-`NODE_PATH` apontando para o store isolado. Sem ele, o Babel do Metro não acha o
-preset, que no layout do pnpm mora sob o diretório do `expo`, não na raiz. O
-`publish-update.mjs` reproduz esse `NODE_PATH` e o passa para o processo filho.
+**1. `Cannot find module 'babel-preset-expo'`.** O `babel.config.js` referencia
+o preset por nome nu, e o Babel resolve presets a partir da **raiz** do projeto.
+`babel-preset-expo` não é dependência declarada — vem transitivamente do `expo`
+— e no layout isolado do pnpm ele não fica na raiz. Funcionava por acidente de
+layout, até um `pnpm install` mudar a resolução.
+
+O `.npmrc` resolve na raiz, com `public-hoist-pattern` para `*babel*` e
+`@babel/*`. **Ao mexer nele, preserve os defaults do pnpm** (`*eslint*`,
+`*prettier*`): declarar a chave substitui a lista inteira, não soma.
+
+Atinge **build e publicação**, não só OTA: quebra o `expo export` do
+`eas update`, a build phase `Generate updates resources` do `expo-updates` e o
+bundle do build do EAS. O `publish-update.mjs` também monta o `NODE_PATH` do
+shim do pnpm — redundante com o hoist, mantido como defesa em profundidade para
+quem instalar sem o `.npmrc`.
 
 Não caia na armadilha do diagnóstico: com o cache de transform do Metro quente,
-o Babel nem chega a rodar e tudo parece funcionar. Só reproduz com `--clear`.
+o Babel nem chega a rodar e tudo parece funcionar — inclusive builds locais.
+Só reproduz com cache frio:
+
+```bash
+node node_modules/.pnpm/expo@*/node_modules/expo/bin/cli export \
+  --platform=ios --output-dir /tmp/t --clear
+```
 
 **2. `platforms` precisa estar declarado no config.** O `eas update` exporta com
 `--platform=all`, e sem `platforms` o Expo assume `['ios','android','web']`.
