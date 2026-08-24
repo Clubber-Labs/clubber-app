@@ -146,6 +146,28 @@ atrasaria a splash de quem está em rede ruim.
 
 ---
 
+## Duas armadilhas do pnpm + Expo (já resolvidas)
+
+Ficam registradas porque o sintoma não aponta para a causa, e qualquer uma
+volta se o código for mexido.
+
+**1. `Cannot find module 'babel-preset-expo'` ao publicar.** O `eas update`
+chama o CLI do Expo pelo caminho real dentro de `node_modules/.pnpm`, pulando o
+shim que o pnpm gera em `node_modules/.bin/expo` — e é o shim que exporta o
+`NODE_PATH` apontando para o store isolado. Sem ele, o Babel do Metro não acha o
+preset, que no layout do pnpm mora sob o diretório do `expo`, não na raiz. O
+`publish-update.mjs` reproduz esse `NODE_PATH` e o passa para o processo filho.
+
+Não caia na armadilha do diagnóstico: com o cache de transform do Metro quente,
+o Babel nem chega a rodar e tudo parece funcionar. Só reproduz com `--clear`.
+
+**2. `platforms` precisa estar declarado no config.** O `eas update` exporta com
+`--platform=all`, e sem `platforms` o Expo assume `['ios','android','web']`.
+Este projeto não tem `react-native-web`, então o export quebra. O
+`app.config.js` declara `['ios','android']`.
+
+---
+
 ## Testar OTA num build local
 
 Um build feito por `expo run:ios` **não passa pelo EAS Build**, que é quem

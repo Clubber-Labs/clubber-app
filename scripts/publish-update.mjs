@@ -8,7 +8,33 @@
 // entre você e todo mundo. Os portões abaixo são o que substitui isso.
 import { execFileSync } from 'node:child_process'
 import { createInterface } from 'node:readline/promises'
+import { createRequire } from 'node:module'
+import path from 'node:path'
 import { stdin, stdout } from 'node:process'
+
+/**
+ * Reproduz o NODE_PATH que o shim do pnpm (node_modules/.bin/expo) exporta.
+ *
+ * O `eas update` chama o CLI do Expo pelo caminho real dentro de
+ * node_modules/.pnpm, pulando o shim — e é o shim que monta esse NODE_PATH. Sem
+ * ele, o Babel do Metro não resolve `babel-preset-expo` (que no layout isolado
+ * do pnpm mora sob o diretório do expo, não na raiz) e o export morre com
+ * "Cannot find module 'babel-preset-expo'". Derivado em runtime porque o
+ * diretório do store carrega um hash das peer deps: hardcodar quebra no
+ * próximo `pnpm install`.
+ */
+function pnpmNodePath() {
+  const require = createRequire(import.meta.url)
+  const expoDir = path.dirname(require.resolve('expo/package.json'))
+  return [
+    path.join(expoDir, 'node_modules'),
+    path.dirname(expoDir),
+    path.join(process.cwd(), 'node_modules', '.pnpm', 'node_modules'),
+    process.env.NODE_PATH,
+  ]
+    .filter(Boolean)
+    .join(path.delimiter)
+}
 
 const CHANNELS = ['preview', 'production']
 /** Canais cujo alcance justifica exigir código revisado e confirmação na mão. */
@@ -179,5 +205,5 @@ execFileSync(
     `${sha} ${subject}`,
     ...passthrough,
   ],
-  { stdio: 'inherit' },
+  { stdio: 'inherit', env: { ...process.env, NODE_PATH: pnpmNodePath() } },
 )

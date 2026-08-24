@@ -62,6 +62,12 @@ export default {
     version: "1.0.0",
     scheme: "clubber",
     userInterfaceStyle: "automatic",
+    // Sem isto o Expo assume ['ios','android','web'], e o `expo export
+    // --platform=all` do EAS Update tenta empacotar web — que este projeto não
+    // suporta (não há react-native-web). A falha sai disfarçada: o transform de
+    // web não resolve o babel-preset-expo e o erro aparece como "iOS Bundling
+    // failed / Cannot find module".
+    platforms: ["ios", "android"],
     // OTA (EAS Update). Runbook e disciplina de rollback: docs/eas-update.md.
     // fallbackToCacheTimeout 0 = o launch NUNCA espera a rede: o app abre com o
     // bundle que já tem, baixa a atualização em background e aplica no cold
