@@ -1,6 +1,10 @@
 import 'dotenv/config'
 import { BOARD as SPLASH_BOARD } from './scripts/splash-spec.mjs'
 
+// Dois consumidores que não podem divergir: `extra.eas.projectId` (build) e a
+// URL do servidor de updates (OTA). Errar um dos dois publica pra lugar nenhum.
+const EAS_PROJECT_ID = '046e5dc6-83ed-4602-bb1d-c30fe364fafe'
+
 // Reverse-DNS do iOS Client ID = URL scheme que o Google Sign-In registra no
 // Info.plist. Ex: 1234-abc.apps.googleusercontent.com → com.googleusercontent.apps.1234-abc
 function reversedGoogleIosClientId() {
@@ -58,6 +62,31 @@ export default {
     version: "1.0.0",
     scheme: "clubber",
     userInterfaceStyle: "automatic",
+    // OTA (EAS Update). Runbook e disciplina de rollback: docs/eas-update.md.
+    // fallbackToCacheTimeout 0 = o launch NUNCA espera a rede: o app abre com o
+    // bundle que já tem, baixa a atualização em background e aplica no cold
+    // start seguinte. Bloquear aqui atrasaria a splash de quem está em 3G ruim
+    // pra entregar um ganho que pode esperar mais uma abertura.
+    updates: {
+      url: `https://u.expo.dev/${EAS_PROJECT_ID}`,
+      fallbackToCacheTimeout: 0,
+      checkAutomatically: "ON_LOAD",
+      // Canal só para build LOCAL (`env UPDATES_CHANNEL=preview expo run:ios`).
+      // Quem carimba o canal normalmente é o EAS Build, a partir do `channel`
+      // do perfil no eas.json — build local não passa por lá e sairia sem canal
+      // nenhum, incapaz de receber update. Sem a variável, o objeto nem existe,
+      // então o EAS segue carimbando o dele sem interferência.
+      ...(process.env.UPDATES_CHANNEL
+        ? { requestHeaders: { "expo-channel-name": process.env.UPDATES_CHANNEL } }
+        : {}),
+    },
+    // Fingerprint = hash do projeto nativo (config + plugins + deps nativas).
+    // Mexeu em algo que exige binário novo? A runtime version muda sozinha e os
+    // binários antigos param de receber este canal — em vez de receberem um
+    // bundle que chama um módulo nativo que eles não têm e crashar no boot.
+    // A alternativa (policy 'appVersion') dependeria de lembrar de subir a
+    // versão a cada mudança nativa; esta não depende de ninguém lembrar.
+    runtimeVersion: { policy: "fingerprint" },
     // Strings NATIVAS (diálogo de permissão do iOS) por idioma — não confundir
     // com src/shared/i18n/locales/, que é a copy do app: quem renderiza estas é o
     // SO, e elas não passam pelo i18next. O prebuild as vira
@@ -217,7 +246,7 @@ export default {
       // A secret key NUNCA entra no app; tudo sensível passa pelo backend.
       stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
       eas: {
-        projectId: "046e5dc6-83ed-4602-bb1d-c30fe364fafe"
+        projectId: EAS_PROJECT_ID
       }
     }
   }
