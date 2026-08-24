@@ -1143,6 +1143,12 @@
     "revokedBannerBody": "No recibes notificaciones ni comunicaciones, aunque el permiso del sistema esté activo. Activa una opción en Comunicaciones para revertirlo.",
     "deviceTitle": "Permisos del dispositivo",
     "deviceHint": "Lo decide el sistema. Toca para permitir, o para abrir los ajustes si ya lo rechazaste.",
+    "firstRun": {
+      "title": "Ya casi",
+      "body": "Activa lo esencial para ver planes cerca de ti y no perderte lo que pasa en los tuyos.",
+      "continue": "Continuar",
+      "footnote": "Puedes cambiarlo cuando quieras en Configuración."
+    },
     "locationLabel": "Ubicación",
     "locationDescription": "Muestra planes cerca de ti en el mapa y te avisa cuando pasa algo cerca.",
     "notificationsLabel": "Notificaciones",

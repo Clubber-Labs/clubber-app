@@ -1143,6 +1143,12 @@
     "revokedBannerBody": "Você não recebe notificações nem comunicações, mesmo que a permissão do sistema esteja ativa. Ligue uma opção em Comunicações para voltar atrás.",
     "deviceTitle": "Permissões do dispositivo",
     "deviceHint": "Quem decide é o sistema. Toque para permitir, ou para abrir os ajustes se já tiver recusado.",
+    "firstRun": {
+      "title": "Falta pouco",
+      "body": "Libere o essencial pra ver rolês perto de você e não perder o que acontece nos seus.",
+      "continue": "Continuar",
+      "footnote": "Você pode mudar isso quando quiser em Configurações."
+    },
     "locationLabel": "Localização",
     "locationDescription": "Mostra rolês perto de você no mapa e avisa quando algo acontece por perto.",
     "notificationsLabel": "Notificações",
