@@ -22,8 +22,14 @@ export function useLocationInvite(status: ConsentedLocationStatus) {
 
   useEffect(() => {
     // Só em 'askable': quem negou de vez não recebe um convite cujo botão não
-    // conseguiria abrir prompt nenhum — pra esse caso existe o banner.
-    if (status !== 'askable') return
+    // conseguiria abrir prompt nenhum — pra esse caso existe o banner. Sair de
+    // 'askable' também RECOLHE o card: a permissão pode ser concedida fora do
+    // mapa (pedido de primeiro uso, Ajustes do sistema) e ele ficaria na tela
+    // convidando pro que já está feito.
+    if (status !== 'askable') {
+      setVisible(false)
+      return
+    }
     let cancelled = false
 
     AsyncStorage.getItem(SEEN_KEY)

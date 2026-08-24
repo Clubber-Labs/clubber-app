@@ -74,7 +74,6 @@ export async function syncPushRegistration(): Promise<void> {
 // registra. 'denied' inclui o caso "negada e não pode perguntar de novo" —
 // a UI oferece abrir as configurações do sistema.
 export async function enablePush(): Promise<EnablePushResult> {
-  if (!Device.isDevice) return 'unavailable'
   let permissions = await Notifications.getPermissionsAsync()
   if (!permissions.granted) {
     if (!permissions.canAskAgain) return 'denied'
@@ -82,6 +81,9 @@ export async function enablePush(): Promise<EnablePushResult> {
     if (!permissions.granted) return 'denied'
   }
   await ensureAndroidChannel()
+  // Só o TOKEN depende de aparelho real. Barrar antes do prompt escondia o
+  // diálogo do sistema em simulador/emulador — onde o fluxo é testado.
+  if (!Device.isDevice) return 'unavailable'
   const token = await getExpoPushToken()
   if (!token) return 'unavailable'
   await registerToken(token)

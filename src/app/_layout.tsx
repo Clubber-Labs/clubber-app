@@ -30,6 +30,7 @@ import { useAuthStore } from '@/features/auth/store/authStore'
 import { useRestoreSession } from '@/features/auth/hooks/useRestoreSession'
 import { useConsentMirror } from '@/features/privacy/hooks/useConsentMirror'
 import { PolicyUpdateNotice } from '@/features/privacy/components/PolicyUpdateNotice'
+import { FirstRunPermissions } from '@/features/privacy/components/FirstRunPermissions'
 import { endSession } from '@/features/auth/lib/session'
 import { SessionUnavailable } from '@/features/auth/components/SessionUnavailable'
 import { ChatRealtimeMount } from '@/features/chat/components/ChatRealtimeMount'
@@ -224,6 +225,9 @@ export default function RootLayout() {
                     />
                     <AuthGuard />
                     {sessionReady && <PolicyUpdateNotice />}
+                    {/* Depois da splash: o pedido abre num Modal, que sobe
+                        acima do overlay — apareceria sobre a arte de boot. */}
+                    {sessionReady && !showSplash && <FirstRunPermissions />}
                     {chatActive && userId && (
                       <>
                         <ChatRealtimeMount

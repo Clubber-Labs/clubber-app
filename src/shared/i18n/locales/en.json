@@ -1143,6 +1143,12 @@
     "revokedBannerBody": "You receive no notifications or communications, even if the system permission is on. Turn on an option under Communications to undo it.",
     "deviceTitle": "Device permissions",
     "deviceHint": "The system decides. Tap to allow, or to open settings if you've already denied it.",
+    "firstRun": {
+      "title": "Almost there",
+      "body": "Turn on the essentials to see hangouts near you and keep up with what happens in yours.",
+      "continue": "Continue",
+      "footnote": "You can change this any time in Settings."
+    },
     "locationLabel": "Location",
     "locationDescription": "Shows hangouts near you on the map and tells you when something happens nearby.",
     "notificationsLabel": "Notifications",
