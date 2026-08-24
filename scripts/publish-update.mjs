@@ -11,6 +11,15 @@ import { createInterface } from 'node:readline/promises'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import { stdin, stdout } from 'node:process'
+import { config as loadDotenv } from 'dotenv'
+
+// O app.config.js lê API_URL e os tokens de Mapbox/Stripe/Google de process.env
+// e os publica em `extra` — de onde o app inteiro os consome em runtime. No
+// export do EAS o config é avaliado ANTES de o Expo CLI carregar o .env.local:
+// os valores saem undefined, somem do manifesto, e o app que baixar a update
+// fica sem baseURL da API (tela "Sem conexão"), sem mapa e sem pagamentos.
+// Carregar aqui garante que já estejam no ambiente quando o config for lido.
+loadDotenv({ path: '.env.local' })
 
 /**
  * Reproduz o NODE_PATH que o shim do pnpm (node_modules/.bin/expo) exporta.
@@ -129,6 +138,35 @@ for (const task of ['typecheck', 'lint']) {
   } catch {
     fail(`\`pnpm ${task}\` falhou.`, 'Corrija antes de publicar.')
   }
+}
+
+// ── Portão 4: o que vira `extra` no manifesto ────────────────────
+// Estes viram `extra` e o app os lê em runtime. Ausentes, o export NÃO falha:
+// publica um manifesto sem eles, e só o aparelho que baixar descobre — sem
+// baseURL de API a tela é "Sem conexão". Aconteceu em 23/08/2026.
+const REQUIRED_ENV = [
+  'API_URL',
+  'MAPBOX_ACCESS_TOKEN',
+  'STRIPE_PUBLISHABLE_KEY',
+]
+const missingEnv = REQUIRED_ENV.filter(name => !process.env[name])
+if (missingEnv.length) {
+  fail(
+    `Faltam variáveis que o app.config.js publica em \`extra\`: ${missingEnv.join(', ')}.`,
+    'Confira o .env.local — sem elas a update quebra quem a baixar.',
+  )
+}
+
+// Publicar production com a API da máquina local deixaria a base inteira sem
+// backend, e o revert só chega no cold start seguinte de cada usuário.
+if (
+  protectedChannel &&
+  /localhost|127\.0\.0\.1|0\.0\.0\.0|192\.168\./.test(process.env.API_URL ?? '')
+) {
+  fail(
+    `API_URL aponta para a máquina local (${process.env.API_URL}).`,
+    'Uma update de production com essa URL deixa todos os usuários sem backend.',
+  )
 }
 
 // ── Âncora de rollback ───────────────────────────────────────────

@@ -166,6 +166,29 @@ o Babel nem chega a rodar e tudo parece funcionar. Só reproduz com `--clear`.
 Este projeto não tem `react-native-web`, então o export quebra. O
 `app.config.js` declara `['ios','android']`.
 
+**3. O `.env.local` precisa estar carregado ANTES do export.** O `app.config.js`
+lê `API_URL` e os tokens de Mapbox/Stripe/Google de `process.env` e os publica em
+`extra`, de onde o app os consome em runtime. No export do EAS o config é
+avaliado antes de o Expo CLI carregar o `.env.local`: os valores saem
+`undefined` e **somem do manifesto**. O export não falha — quem descobre é o
+aparelho que baixar, e o sintoma é a tela "Sem conexão" (axios sem baseURL),
+mapa vazio e pagamentos quebrados. O `publish-update.mjs` carrega o
+`.env.local` e recusa publicar se faltar qualquer variável que vira `extra`.
+
+---
+
+## A ordem importa: publique DEPOIS de buildar
+
+A política de seleção do `expo-updates` só aceita update **mais nova** que o
+bundle em execução, comparando o `createdAt` da update com o `commitTime` do
+bundle embutido. Publicar antes de gerar o binário produz uma update que o
+aparelho encontra, avalia e **descarta** — o diagnóstico aparece como
+`updateRejectedBySelectionPolicy`.
+
+No fluxo normal isso não morde (build → loja → updates depois). Ao testar
+localmente é fácil inverter: se a update não entra, compare o `createdAt` dela
+com o `commitTime` em `Clubber.app/EXUpdates.bundle/app.manifest`.
+
 ---
 
 ## Testar OTA num build local
