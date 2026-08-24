@@ -12,6 +12,7 @@ import { createRequire } from 'node:module'
 import path from 'node:path'
 import { stdin, stdout } from 'node:process'
 import { config as loadDotenv } from 'dotenv'
+import { EXTRA_FROM_ENV } from './extra-env.mjs'
 
 // O app.config.js lê API_URL e os tokens de Mapbox/Stripe/Google de process.env
 // e os publica em `extra` — de onde o app inteiro os consome em runtime. No
@@ -141,15 +142,13 @@ for (const task of ['typecheck', 'lint']) {
 }
 
 // ── Portão 4: o que vira `extra` no manifesto ────────────────────
-// Estes viram `extra` e o app os lê em runtime. Ausentes, o export NÃO falha:
-// publica um manifesto sem eles, e só o aparelho que baixar descobre — sem
-// baseURL de API a tela é "Sem conexão". Aconteceu em 23/08/2026.
-const REQUIRED_ENV = [
-  'API_URL',
-  'MAPBOX_ACCESS_TOKEN',
-  'STRIPE_PUBLISHABLE_KEY',
-]
-const missingEnv = REQUIRED_ENV.filter(name => !process.env[name])
+// A lista vem do mesmo módulo que o app.config.js usa pra montar o `extra` —
+// variável nova entra em um lugar só e este portão passa a cobri-la. Ausentes,
+// o export NÃO falha: publica um manifesto sem elas, e só o aparelho que baixar
+// descobre — sem baseURL de API a tela é "Sem conexão". Aconteceu em 23/08/2026.
+const missingEnv = Object.values(EXTRA_FROM_ENV).filter(
+  name => !process.env[name],
+)
 if (missingEnv.length) {
   fail(
     `Faltam variáveis que o app.config.js publica em \`extra\`: ${missingEnv.join(', ')}.`,
@@ -157,14 +156,24 @@ if (missingEnv.length) {
   )
 }
 
-// Publicar production com a API da máquina local deixaria a base inteira sem
+/** Endereço que só resolve na máquina/rede de quem publica. */
+function isLocalHost(url) {
+  let host
+  try {
+    host = new URL(url).hostname
+  } catch {
+    return false
+  }
+  if (host === 'localhost' || host.endsWith('.local')) return true
+  if (/^(127\.|10\.|192\.168\.|0\.0\.0\.0$)/.test(host)) return true
+  return /^172\.(1[6-9]|2\d|3[01])\./.test(host)
+}
+
+// Publicar production apontando pra rede local deixaria a base inteira sem
 // backend, e o revert só chega no cold start seguinte de cada usuário.
-if (
-  protectedChannel &&
-  /localhost|127\.0\.0\.1|0\.0\.0\.0|192\.168\./.test(process.env.API_URL ?? '')
-) {
+if (protectedChannel && isLocalHost(process.env.API_URL ?? '')) {
   fail(
-    `API_URL aponta para a máquina local (${process.env.API_URL}).`,
+    `API_URL aponta para a rede local (${process.env.API_URL}).`,
     'Uma update de production com essa URL deixa todos os usuários sem backend.',
   )
 }
@@ -212,7 +221,7 @@ if (anchor) {
 }
 console.log('─────────────────────────────────────────────')
 
-// ── Portão 4: confirmação na mão ─────────────────────────────────
+// ── Portão 5: confirmação na mão ─────────────────────────────────
 if (protectedChannel) {
   if (!stdin.isTTY) {
     fail(

@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import { BOARD as SPLASH_BOARD } from './scripts/splash-spec.mjs'
+import { EXTRA_FROM_ENV } from './scripts/extra-env.mjs'
 
 // Dois consumidores que não podem divergir: `extra.eas.projectId` (build) e a
 // URL do servidor de updates (OTA). Errar um dos dois publica pra lugar nenhum.
@@ -243,14 +244,15 @@ export default {
       "expo-apple-authentication",
       ...socialAuthPlugins()
     ],
+    // Os pares chave↔variável moram em scripts/extra-env.mjs porque o
+    // publish-update.mjs lê a MESMA lista pra recusar publicar sem elas.
     extra: {
-      apiUrl: process.env.API_URL,
-      mapboxAccessToken: process.env.MAPBOX_ACCESS_TOKEN,
-      googleWebClientId: process.env.GOOGLE_WEB_CLIENT_ID,
-      googleIosClientId: process.env.GOOGLE_IOS_CLIENT_ID,
-      // Chave PÚBLICA do Stripe (pk_test_/pk_live_) — PaymentSheet nativa.
-      // A secret key NUNCA entra no app; tudo sensível passa pelo backend.
-      stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+      ...Object.fromEntries(
+        Object.entries(EXTRA_FROM_ENV).map(([key, name]) => [
+          key,
+          process.env[name],
+        ]),
+      ),
       eas: {
         projectId: EAS_PROJECT_ID
       }
