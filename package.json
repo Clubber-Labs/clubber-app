@@ -15,7 +15,11 @@
     "splash:build": "node scripts/build-splash-logo.mjs",
     "build:ios": "eas build --platform ios",
     "build:android": "eas build --platform android",
-    "build:all": "eas build --platform all"
+    "build:all": "eas build --platform all",
+    "update:preview": "node scripts/publish-update.mjs preview",
+    "update:production": "node scripts/publish-update.mjs production",
+    "update:list": "eas update:list --branch production --limit 10",
+    "update:rollback": "eas update:rollback"
   },
   "dependencies": {
     "@date-fns/tz": "^1.5.0",
@@ -51,6 +55,7 @@
     "expo-secure-store": "~15.0.8",
     "expo-splash-screen": "~31.0.13",
     "expo-status-bar": "~3.0.9",
+    "expo-updates": "~29.0.20",
     "expo-video": "~3.0.16",
     "expo-web-browser": "~15.0.11",
     "i18next": "^26.3.6",
