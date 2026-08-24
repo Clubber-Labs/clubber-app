@@ -3,9 +3,11 @@ import { useTranslation } from 'react-i18next'
 import { ArrowSquareOutIcon } from 'phosphor-react-native'
 import * as Linking from 'expo-linking'
 import Constants from 'expo-constants'
+import { bundleIdentity } from '@/shared/lib/updates'
 import { colors } from '@/shared/theme'
 
 const VERSION = Constants.expoConfig?.version ?? '—'
+const BUNDLE = bundleIdentity()
 
 type LinkRowProps = {
   label: string
@@ -38,6 +40,11 @@ export default function AboutScreen() {
         <Text className="text-2xl font-bold text-content">Clubber</Text>
         <Text className="text-sm text-content-muted">
           {t('about.version', { version: VERSION })}
+        </Text>
+        {/* Sem rótulo traduzido de propósito: é um identificador técnico, o que
+            se pede pra pessoa ler em voz alta quando reporta um bug. */}
+        <Text className="text-xs text-content-faint" selectable>
+          {BUNDLE}
         </Text>
       </View>
 
