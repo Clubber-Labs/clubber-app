@@ -856,6 +856,31 @@
       "loadError": "No se pudieron cargar los eventos."
     }
   },
+  "invites": {
+    "landing": {
+      "heading": "{{name}} te invitó",
+      "by": "por {{name}}",
+      "view": "Ver evento",
+      "accept": "Unirme al evento",
+      "loginHint": "Inicia sesión o crea una cuenta para aceptar la invitación.",
+      "loginCta": "Entrar para aceptar"
+    },
+    "errors": {
+      "notFoundTitle": "Invitación no encontrada",
+      "notFoundBody": "Este enlace no existe o ya no está disponible.",
+      "expiredTitle": "Invitación vencida",
+      "expiredBody": "Este enlace ya venció. Pídele uno nuevo a quien te invitó.",
+      "revokedTitle": "Invitación desactivada",
+      "revokedBody": "Quien creó el evento desactivó este enlace.",
+      "canceledTitle": "Evento cancelado",
+      "canceledBody": "El organizador canceló este evento.",
+      "networkTitle": "Sin conexión",
+      "networkBody": "Revisa tu internet e inténtalo de nuevo.",
+      "genericTitle": "Algo salió mal",
+      "genericBody": "No pudimos cargar la invitación. Inténtalo de nuevo.",
+      "goToApp": "Ir a la app"
+    }
+  },
   "feed": {
     "error": "Error al cargar el feed.",
     "emptyFilteredTitle": "No hay eventos con esos filtros",

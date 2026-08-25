@@ -27,6 +27,7 @@ import { queryClient } from '@/shared/lib/queryClient'
 import { ConfirmProvider } from '@/shared/lib/confirm'
 import { OpenInMapsProvider } from '@/shared/lib/openInMaps'
 import { BannerProvider } from '@/shared/lib/banner'
+import { getPendingInviteToken } from '@/shared/lib/secureStore'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useRestoreSession } from '@/features/auth/hooks/useRestoreSession'
 import { useConsentMirror } from '@/features/privacy/hooks/useConsentMirror'
@@ -64,8 +65,11 @@ function AuthGuard() {
     const inAuthGroup = segments[0] === '(auth)'
     const onCompleteProfile =
       inAuthGroup && (segments as string[])[1] === 'complete-profile'
+    // Convite por deep link abre DESLOGADO (GET /invites/:token é público);
+    // sem esta exceção o guard jogaria o usuário no login antes da tela montar.
+    const inInviteFlow = segments[0] === 'invites' || segments[0] === 'e'
 
-    if (status === 'unauthenticated' && !inAuthGroup) {
+    if (status === 'unauthenticated' && !inAuthGroup && !inInviteFlow) {
       // Sessão expirada vai direto pro login (banner "sessão expirou" mora lá);
       // onboarding é só pra quem nunca o viu neste aparelho.
       router.replace(
@@ -83,9 +87,15 @@ function AuthGuard() {
 
     // Consentimento NÃO é portão: o registro já existe quando o usuário chega
     // (criado na transação do cadastro) e política nova vira aviso dispensável,
-    // não bloqueio. Autenticado com perfil completo → app.
+    // não bloqueio. Autenticado com perfil completo → app — a menos que haja um
+    // convite pendente (deep link aberto deslogado): a tela do convite retoma o
+    // accept e limpa o token.
     if (status === 'authenticated' && !profileIncomplete && inAuthGroup) {
-      router.replace('/(tabs)/map')
+      getPendingInviteToken().then(pendingInvite => {
+        router.replace(
+          pendingInvite ? `/invites/${pendingInvite}` : '/(tabs)/map',
+        )
+      })
     }
   }, [
     status,
@@ -123,6 +133,11 @@ function chromeFor(path: string): Chrome {
   // Detalhe do evento: hero imersivo sob a status bar, com botões flutuantes
   // próprios (subrotas como edit/invites são telas normais).
   if (path === 'events/[id]') return { topInset: 'nenhum', header: 'nenhum' }
+  // Convite por deep link (e a rota-espelho /e): tela própria que também abre
+  // deslogada — o header global não se aplica.
+  if (path.startsWith('invites') || path === 'e/[token]') {
+    return { topInset: 'statusBar', header: 'nenhum' }
+  }
   // Telas com cabeçalho próprio (voltar + título + ações) — o global em cima
   // seria redundante.
   if (

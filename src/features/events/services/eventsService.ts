@@ -11,6 +11,7 @@ import type {
   EventPost,
   FeedAuthor,
   FeedEvent,
+  InviteLink,
 } from '@/shared/types'
 import type {
   CreateEventPayload,
@@ -164,6 +165,11 @@ export const eventsService = {
       })
       .then(r => r.data)
   },
+
+  // Idempotente no backend: reusa o link vigente se já houver um (200) ou cria
+  // um novo (201). Author-only — 403 NOT_EVENT_AUTHOR para os demais.
+  createInviteLink: (eventId: string): Promise<InviteLink> =>
+    api.post(`/events/${eventId}/invite-links`).then(r => r.data),
 
   inviteUsers: (eventId: string, invitedIds?: string[]): Promise<void> =>
     api

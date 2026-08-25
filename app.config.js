@@ -119,6 +119,9 @@ export default {
       // chave não estiver no config — quebrava code sign local no Xcode.
       // Override via APPLE_TEAM_ID pra CI/ambientes alternativos.
       appleTeamId: process.env.APPLE_TEAM_ID || 'K238P4B9K4',
+      // Universal link do convite (https://clubber.social/e/<token>). O domínio
+      // precisa servir o apple-app-site-association apontando pra este app.
+      associatedDomains: ['applinks:clubber.social'],
       // O app só usa cripto isenta (HTTPS/ATS). Sem esta chave, TODA subida ao
       // TestFlight pergunta sobre exportação de criptografia na mão.
       infoPlist: {
@@ -160,6 +163,16 @@ export default {
     },
     android: {
       package: 'com.netobonato.clubber',
+      // App Link do convite (par Android do associatedDomains). autoVerify
+      // exige o assetlinks.json publicado em clubber.social.
+      intentFilters: [
+        {
+          action: 'VIEW',
+          autoVerify: true,
+          data: [{ scheme: 'https', host: 'clubber.social', pathPrefix: '/e' }],
+          category: ['BROWSABLE', 'DEFAULT'],
+        },
+      ],
       adaptiveIcon: {
         foregroundImage: "./assets/icon.png",
         backgroundColor: "#0B0B0D",

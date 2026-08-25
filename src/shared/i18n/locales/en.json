@@ -856,6 +856,31 @@
       "loadError": "Couldn't load events."
     }
   },
+  "invites": {
+    "landing": {
+      "heading": "{{name}} invited you",
+      "by": "by {{name}}",
+      "view": "See the event",
+      "accept": "Join the event",
+      "loginHint": "Log in or sign up to accept the invite.",
+      "loginCta": "Log in to join"
+    },
+    "errors": {
+      "notFoundTitle": "Invite not found",
+      "notFoundBody": "This link doesn't exist or isn't available anymore.",
+      "expiredTitle": "Invite expired",
+      "expiredBody": "This link ran out. Ask whoever invited you for a fresh one.",
+      "revokedTitle": "Invite disabled",
+      "revokedBody": "The event creator turned this link off.",
+      "canceledTitle": "Event canceled",
+      "canceledBody": "The organizer called this event off.",
+      "networkTitle": "No connection",
+      "networkBody": "Check your internet and try again.",
+      "genericTitle": "Something went wrong",
+      "genericBody": "We couldn't load the invite. Try again.",
+      "goToApp": "Go to the app"
+    }
+  },
   "feed": {
     "error": "Couldn't load the feed.",
     "emptyFilteredTitle": "No events for these filters",

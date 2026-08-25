@@ -1,7 +1,7 @@
 import { Pressable, Share } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { ShareNetworkIcon } from 'phosphor-react-native'
-import * as Linking from 'expo-linking'
+import { useCreateInviteLink } from '../hooks/useCreateInviteLink'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -12,26 +12,31 @@ type Props = {
   onShared?: () => void
 }
 
-// Botão de compartilhar do header do evento. Mesmo estilo dos outros botões de
-// overlay (ações, denúncia). Visível para qualquer usuário.
+// Botão de compartilhar do header do evento. Só o autor o monta: o link de
+// convite vem de endpoint author-only (403 NOT_EVENT_AUTHOR), e a URL é sempre
+// a do backend — o client nunca monta link de convite.
 export function EventShareButton({ eventId, title, onShared }: Props) {
   const { t } = useTranslation()
+  const createInviteLink = useCreateInviteLink(eventId)
+
   async function handleShare() {
     try {
-      const url = Linking.createURL(`/events/${eventId}`)
+      const { url } = await createInviteLink.mutateAsync()
       const result = await Share.share({
         title,
         message: t('events.share.message', { title, url }),
       })
       if (result.action === Share.sharedAction) onShared?.()
     } catch {
-      // Compartilhamento cancelado/indisponível — silencioso (padrão do app).
+      // Falha ao gerar o link ou compartilhamento cancelado/indisponível —
+      // silencioso (padrão do app).
     }
   }
 
   return (
     <Pressable
       onPress={handleShare}
+      disabled={createInviteLink.isPending}
       hitSlop={8}
       accessibilityRole="button"
       accessibilityLabel={t('events.share.label')}

@@ -45,11 +45,13 @@ function DetailHeader({ event, isAuthor, isPremium, onShared }: HeaderProps) {
         onBack={() => router.back()}
         actions={
           <View className="flex-row items-center gap-2">
-            <EventShareButton
-              eventId={event.id}
-              title={event.title}
-              onShared={onShared}
-            />
+            {isAuthor && (
+              <EventShareButton
+                eventId={event.id}
+                title={event.title}
+                onShared={onShared}
+              />
+            )}
             {isAuthor ? (
               <EventActionsButton
                 eventId={event.id}

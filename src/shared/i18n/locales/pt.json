@@ -856,6 +856,31 @@
       "loadError": "Não foi possível carregar os eventos."
     }
   },
+  "invites": {
+    "landing": {
+      "heading": "{{name}} te convidou",
+      "by": "por {{name}}",
+      "view": "Ver evento",
+      "accept": "Entrar no evento",
+      "loginHint": "Entra na sua conta ou cria uma pra aceitar o convite.",
+      "loginCta": "Entrar pra aceitar"
+    },
+    "errors": {
+      "notFoundTitle": "Convite não encontrado",
+      "notFoundBody": "Esse link não existe ou não está mais disponível.",
+      "expiredTitle": "Convite expirado",
+      "expiredBody": "Esse link já venceu. Pede um novo pra quem te convidou.",
+      "revokedTitle": "Convite desativado",
+      "revokedBody": "Quem criou o evento desativou esse link.",
+      "canceledTitle": "Evento cancelado",
+      "canceledBody": "Esse evento foi cancelado pelo organizador.",
+      "networkTitle": "Sem conexão",
+      "networkBody": "Verifique sua internet e tente de novo.",
+      "genericTitle": "Algo deu errado",
+      "genericBody": "Não foi possível carregar o convite. Tente de novo.",
+      "goToApp": "Ir pro app"
+    }
+  },
   "feed": {
     "error": "Erro ao carregar o feed.",
     "emptyFilteredTitle": "Nenhum evento para esses filtros",

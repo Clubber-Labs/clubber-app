@@ -47,6 +47,18 @@ export const getOnboardingSeen = async (): Promise<boolean> =>
 export const deleteOnboardingSeen = () =>
   SecureStore.deleteItemAsync(ONBOARDING_SEEN_KEY)
 
+// Token de convite aguardando sessão: o deep link abre deslogado, mas o accept
+// exige auth. Vive só entre o CTA de login e a retomada na tela do convite —
+// quem consome SEMPRE limpa. Nunca logar este valor.
+const PENDING_INVITE_TOKEN_KEY = 'pending_invite_token'
+
+export const savePendingInviteToken = (token: string) =>
+  SecureStore.setItemAsync(PENDING_INVITE_TOKEN_KEY, token)
+export const getPendingInviteToken = () =>
+  SecureStore.getItemAsync(PENDING_INVITE_TOKEN_KEY)
+export const deletePendingInviteToken = () =>
+  SecureStore.deleteItemAsync(PENDING_INVITE_TOKEN_KEY)
+
 export const saveLocalePreference = (locale: string) =>
   SecureStore.setItemAsync(LOCALE_PREFERENCE_KEY, locale)
 export const getLocalePreference = () =>
