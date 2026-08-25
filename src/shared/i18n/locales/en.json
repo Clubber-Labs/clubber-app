@@ -989,7 +989,8 @@
       "chatWith": "Chat with {{name}}",
       "removeSelected": "Remove {{name}}",
       "suggestions": "Suggestions",
-      "noSuggestions": "Follow people to see them here, or search by name."
+      "noSuggestions": "Follow people to see them here, or search by name.",
+      "privateNeedsMutual": "Private accounts only appear here when you follow each other."
     },
     "reactions": {
       "label": "{{emoji}} {{count}}",

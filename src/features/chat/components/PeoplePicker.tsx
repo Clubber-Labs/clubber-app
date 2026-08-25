@@ -87,7 +87,14 @@ export function PeoplePicker({ myId, renderItem, belowSearch, filter }: Props) {
           }}
           onEndReachedThreshold={0.4}
           ListEmptyComponent={
-            isSearching ? (
+            // Veio gente e o filtro esvaziou: "siga pessoas" contradiz quem já
+            // segue, e "ninguém encontrado" nega um resultado que existiu.
+            // Explicar a regra troca o beco sem saída por instrução.
+            source.length > 0 ? (
+              <Text className="text-content-faint text-center mt-6 px-8">
+                {t('chat.people.privateNeedsMutual')}
+              </Text>
+            ) : isSearching ? (
               <Text className="text-content-subtle text-center mt-6">
                 {t('chat.people.empty')}
               </Text>
