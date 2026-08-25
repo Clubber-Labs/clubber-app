@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useDebounce } from '@/shared/hooks/useDebounce'
 import { usersSearchService } from '../services/usersSearchService'
-import type { UserMini } from '@/shared/types'
+import type { PickablePerson } from '../types'
 
 export function useChatUserSearch(query: string) {
   const debounced = useDebounce(query, 300)
@@ -17,7 +17,7 @@ export function useChatUserSearch(query: string) {
     enabled: trimmed.length >= 2,
   })
 
-  const users = useMemo<UserMini[]>(
+  const users = useMemo<PickablePerson[]>(
     () => result.data?.pages.flatMap(p => p.data) ?? [],
     [result.data],
   )

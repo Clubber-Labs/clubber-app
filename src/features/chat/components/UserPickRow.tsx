@@ -9,21 +9,32 @@ type Props = {
   user: UserMini
   selected: boolean
   onToggle: () => void
+  // Inerte: já é membro do grupo (sempre junto de `selected`).
+  disabled?: boolean
+  // Motivo do estado inerte, exibido sob o @username. Sem ele a linha só apaga.
+  hint?: string
 }
 
-export function UserPickRow({ user, selected, onToggle }: Props) {
+export function UserPickRow({
+  user,
+  selected,
+  onToggle,
+  disabled = false,
+  hint,
+}: Props) {
   const { t } = useTranslation()
+  const fullName = `${user.name} ${user.lastname}`.trim()
   return (
     <Pressable
       onPress={onToggle}
-      className="flex-row items-center gap-3 px-4 py-3 active:bg-surface"
+      disabled={disabled}
+      className={`flex-row items-center gap-3 px-4 py-3 ${disabled ? 'opacity-50' : 'active:bg-surface'}`}
+      accessibilityRole="checkbox"
+      accessibilityState={{ checked: selected, disabled }}
       accessibilityLabel={
-        selected
-          ? t('chat.people.selected', {
-              name: `${user.name} ${user.lastname}`,
-            })
-          : `${user.name} ${user.lastname}`
+        selected ? t('chat.people.selected', { name: fullName }) : fullName
       }
+      accessibilityHint={hint}
     >
       <UserAvatar name={user.name} avatarUrl={user.avatarUrl} size={44} />
       <View className="flex-1">
@@ -31,6 +42,9 @@ export function UserPickRow({ user, selected, onToggle }: Props) {
           {user.name} {user.lastname}
         </Text>
         <Text className="text-content-subtle text-sm">@{user.username}</Text>
+        {!!hint && (
+          <Text className="text-content-muted text-xs mt-0.5">{hint}</Text>
+        )}
       </View>
       {selected ? (
         <CheckCircleIcon size={24} color={colors.brandEmphasis} weight="fill" />

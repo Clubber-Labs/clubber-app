@@ -11,19 +11,22 @@ import { useTranslation } from 'react-i18next'
 import { MagnifyingGlassIcon } from 'phosphor-react-native'
 import { useChatUserSearch } from '../hooks/useChatUserSearch'
 import { useChatSuggestions } from '../hooks/useChatSuggestions'
-import type { UserMini } from '@/shared/types'
+import type { PickablePerson } from '../types'
 import { colors } from '@/shared/theme'
 
 type Props = {
   myId: string
-  renderItem: (user: UserMini) => ReactElement
+  renderItem: (user: PickablePerson) => ReactElement
   // Slot entre a busca e a lista (ex: chips de selecionados, atalho "Novo grupo").
   belowSearch?: ReactNode
+  // Esconde quem não passa (ex: grupo não aceita perfil privado sem follow).
+  // Aplica à busca e às sugestões.
+  filter?: (person: PickablePerson) => boolean
 }
 
 // Busca de pessoas com sugestões (seguindo + seguidores) enquanto não há query.
 // A linha é definida pelo consumidor — DM abre direto, grupo seleciona.
-export function PeoplePicker({ myId, renderItem, belowSearch }: Props) {
+export function PeoplePicker({ myId, renderItem, belowSearch, filter }: Props) {
   const { t } = useTranslation()
   const [query, setQuery] = useState('')
 
@@ -39,7 +42,8 @@ export function PeoplePicker({ myId, renderItem, belowSearch }: Props) {
     useChatSuggestions(myId)
 
   const isSearching = trimmed.length >= 2
-  const listData = isSearching ? users : suggestions
+  const source = isSearching ? users : suggestions
+  const listData = filter ? source.filter(filter) : source
   const loading = isSearching ? isLoading : suggestionsLoading
 
   return (
@@ -66,14 +70,14 @@ export function PeoplePicker({ myId, renderItem, belowSearch }: Props) {
       ) : (
         <FlatList
           data={listData}
-          keyExtractor={(item: UserMini) => item.id}
+          keyExtractor={(item: PickablePerson) => item.id}
           keyboardShouldPersistTaps="handled"
           className="flex-1"
           renderItem={({ item }) => renderItem(item)}
           ListHeaderComponent={
-            !isSearching && suggestions.length > 0 ? (
+            !isSearching && listData.length > 0 ? (
               <Text className="text-content-subtle text-xs font-semibold uppercase px-4 pt-4 pb-2">
-                Sugestões
+                {t('chat.people.suggestions')}
               </Text>
             ) : null
           }
@@ -85,11 +89,11 @@ export function PeoplePicker({ myId, renderItem, belowSearch }: Props) {
           ListEmptyComponent={
             isSearching ? (
               <Text className="text-content-subtle text-center mt-6">
-                Ninguém encontrado.
+                {t('chat.people.empty')}
               </Text>
             ) : (
               <Text className="text-content-faint text-center mt-6">
-                Siga pessoas para vê-las aqui ou busque por nome.
+                {t('chat.people.noSuggestions')}
               </Text>
             )
           }

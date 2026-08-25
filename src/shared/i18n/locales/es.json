@@ -970,7 +970,8 @@
       "saving": "Guardando…",
       "newGroup": "Nuevo grupo",
       "createNew": "Crear nuevo grupo",
-      "manageParticipant": "Gestionar a {{name}}"
+      "manageParticipant": "Gestionar a {{name}}",
+      "alreadyMember": "Ya está en el grupo"
     },
     "dm": {
       "viewProfile": "Ver perfil",
@@ -985,9 +986,10 @@
       "selected": "{{name}}, seleccionado",
       "you": "(tú)",
       "newConversationTitle": "Nueva conversación",
-      "cannotStart": "No puedes iniciar una conversación con este usuario",
       "chatWith": "Conversar con {{name}}",
-      "removeSelected": "Quitar a {{name}}"
+      "removeSelected": "Quitar a {{name}}",
+      "suggestions": "Sugerencias",
+      "noSuggestions": "Sigue a personas para verlas aquí o busca por nombre."
     },
     "reactions": {
       "label": "{{emoji}} {{count}}",

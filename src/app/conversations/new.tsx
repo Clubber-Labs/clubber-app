@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next'
 import { UsersIcon } from 'phosphor-react-native'
 import { useRouter } from 'expo-router'
 import { useBanner } from '@/shared/lib/banner'
-import { getApiError, isForbiddenError } from '@/shared/lib/apiError'
+import { getApiError } from '@/shared/lib/apiError'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useCreateConversation } from '@/features/chat/hooks/useCreateConversation'
 import { PeoplePicker } from '@/features/chat/components/PeoplePicker'
 import { ChatPersonRow } from '@/features/chat/components/ChatPersonRow'
+import { isReachable } from '@/features/chat/utils/reachability'
 import type { UserMini } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
@@ -27,11 +28,9 @@ export default function NewConversationScreen() {
       })
       router.replace(`/conversations/${conv.id}`)
     } catch (e) {
-      showBanner(
-        isForbiddenError(e)
-          ? t('chat.people.cannotStart')
-          : getApiError(e).message,
-      )
+      // Sem achatar o 403: PRIVATE_PROFILE e CONVERSATION_FORBIDDEN dizem
+      // coisas diferentes ao usuário e as duas já têm tradução.
+      showBanner(getApiError(e).message)
     }
   }
 
@@ -45,6 +44,7 @@ export default function NewConversationScreen() {
 
       <PeoplePicker
         myId={myId ?? ''}
+        filter={isReachable}
         renderItem={user => (
           <ChatPersonRow user={user} onPress={() => openDM(user)} />
         )}

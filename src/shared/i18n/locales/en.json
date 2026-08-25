@@ -970,7 +970,8 @@
       "saving": "Saving…",
       "newGroup": "New group",
       "createNew": "Create new group",
-      "manageParticipant": "Manage {{name}}"
+      "manageParticipant": "Manage {{name}}",
+      "alreadyMember": "Already in the group"
     },
     "dm": {
       "viewProfile": "View profile",
@@ -985,9 +986,10 @@
       "selected": "{{name}}, selected",
       "you": "(you)",
       "newConversationTitle": "New conversation",
-      "cannotStart": "You can't start a conversation with this user",
       "chatWith": "Chat with {{name}}",
-      "removeSelected": "Remove {{name}}"
+      "removeSelected": "Remove {{name}}",
+      "suggestions": "Suggestions",
+      "noSuggestions": "Follow people to see them here, or search by name."
     },
     "reactions": {
       "label": "{{emoji}} {{count}}",
