@@ -14,6 +14,7 @@ import type { UpdateMePayload } from '../../services/usersService'
 import type { UserProfile } from '@/shared/types'
 import { colors } from '@/shared/theme'
 import { USERNAME_MAX_LENGTH, sanitizeUsername } from '@/shared/utils/username'
+import { sanitizeName } from '@/shared/utils/name'
 
 // Campos de texto editáveis um a um. Reúsa a casca e a validação por campo do
 // editProfileSchema — cada tela manda só o PATCH do seu campo.
@@ -42,12 +43,14 @@ const FIELDS: Record<TextFieldKey, FieldConfig> = {
     helpKey: 'profile.fields.name.help',
     autoCapitalize: 'words',
     maxLength: 25,
+    sanitize: sanitizeName,
   },
   lastname: {
     titleKey: 'profile.fields.lastname.title',
     helpKey: 'profile.fields.lastname.help',
     autoCapitalize: 'words',
     maxLength: 55,
+    sanitize: sanitizeName,
   },
   username: {
     titleKey: 'profile.fields.username.title',
@@ -131,7 +134,7 @@ function TextFieldForm({
   return (
     <EditFieldScaffold
       title={t(config.titleKey)}
-      onSave={() => save({ [field]: value } as UpdateMePayload)}
+      onSave={() => save({ [field]: value.trim() } as UpdateMePayload)}
       saving={saving}
       canSave={canSave}
     >

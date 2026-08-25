@@ -4,6 +4,7 @@ import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import type { RegisterInput } from '../../schemas/registerSchema'
 import { DatePicker } from '@/shared/components/DatePicker'
+import { sanitizeName } from '@/shared/utils/name'
 import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
 
@@ -44,7 +45,7 @@ export function StepPersonal({ control, errors }: Props) {
                   className={`border ${errors.name ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                   placeholder={t('auth.fields.namePlaceholder')}
                   placeholderTextColor={colors.contentSubtle}
-                  onChangeText={onChange}
+                  onChangeText={text => onChange(sanitizeName(text))}
                   value={value}
                   autoCapitalize="words"
                 />
@@ -65,7 +66,7 @@ export function StepPersonal({ control, errors }: Props) {
                   className={`border ${errors.lastname ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
                   placeholder={t('auth.fields.lastnamePlaceholder')}
                   placeholderTextColor={colors.contentSubtle}
-                  onChangeText={onChange}
+                  onChangeText={text => onChange(sanitizeName(text))}
                   value={value}
                   autoCapitalize="words"
                 />
