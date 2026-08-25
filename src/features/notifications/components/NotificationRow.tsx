@@ -90,7 +90,11 @@ export function NotificationRow({ notification, onPress }: Props) {
           </View>
         )}
         {actor && (
+          // Decorativo e IRMÃO do link (não filho): sem pointerEvents, o toque
+          // no canto que ele cobre cairia no Pressable da linha e abriria o
+          // alvo em vez do perfil.
           <View
+            pointerEvents="none"
             className="absolute -right-1.5 -bottom-0.5 w-5 h-5 rounded-full items-center justify-center border-2 border-background"
             style={{ backgroundColor: BADGE_COLOR[visual.tone] }}
           >
