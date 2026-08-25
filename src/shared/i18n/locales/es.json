@@ -54,6 +54,8 @@
     "ENDS_AT_IN_PAST": "La hora de fin ya pasó.",
     "END_DATE_BEFORE_START": "El fin no puede ser antes del inicio.",
     "EVENT_ACCESS_DENIED": "No tienes acceso a este evento.",
+    "EVENT_CANCELED": "Este evento fue cancelado.",
+    "EVENT_ENDED": "Este evento ya terminó.",
     "EVENT_NOT_FOUND": "Este evento ya no existe.",
     "FILE_TOO_LARGE": "El archivo supera {{maxMb}} MB.",
     "FOLLOWER_NOT_FOUND": "Esta persona no está entre tus seguidores.",

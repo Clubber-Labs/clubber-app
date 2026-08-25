@@ -54,6 +54,8 @@
     "ENDS_AT_IN_PAST": "The end time is in the past.",
     "END_DATE_BEFORE_START": "The end can't be before the start.",
     "EVENT_ACCESS_DENIED": "You don't have access to this event.",
+    "EVENT_CANCELED": "This event was canceled.",
+    "EVENT_ENDED": "This event has already ended.",
     "EVENT_NOT_FOUND": "This event no longer exists.",
     "FILE_TOO_LARGE": "The file is larger than {{maxMb}} MB.",
     "FOLLOWER_NOT_FOUND": "This person is not among your followers.",
