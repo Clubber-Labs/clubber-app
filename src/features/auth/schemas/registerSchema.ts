@@ -6,6 +6,7 @@ import {
   USERNAME_REGEX,
 } from '@/shared/utils/username'
 import { PHONE_MAX_DIGITS } from '@/shared/utils/masks'
+import { NAME_REGEX } from '@/shared/utils/name'
 
 // Um objeto por etapa do formulário. O aceite dos documentos NÃO é campo daqui:
 // o backend registra na transação do cadastro, e a tela só informa (LegalNotice).
@@ -16,14 +17,16 @@ import { PHONE_MAX_DIGITS } from '@/shared/utils/masks'
 const personalStep = z.object({
   name: z
     .string()
+    .trim()
     .min(4, 'auth.errors.nameMin')
     .max(25, 'auth.errors.nameMax')
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, 'auth.errors.lettersOnly'),
+    .regex(NAME_REGEX, 'auth.errors.lettersOnly'),
   lastname: z
     .string()
+    .trim()
     .min(4, 'auth.errors.lastnameMin')
     .max(55, 'auth.errors.lastnameMax')
-    .regex(/^[a-zA-ZÀ-ÿ\s]+$/, 'auth.errors.lettersOnly'),
+    .regex(NAME_REGEX, 'auth.errors.lettersOnly'),
   birthdate: z.date({ error: 'auth.errors.birthdateRequired' }).refine(
     date => {
       const today = new Date()

@@ -4,6 +4,7 @@ import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import { DatePicker } from '@/shared/components/DatePicker'
 import type { CompleteProfileInput } from '../../schemas/completeProfileSchema'
+import { sanitizeName } from '@/shared/utils/name'
 import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
 
@@ -43,7 +44,7 @@ export function StepIdentity({ control, errors }: Props) {
                   placeholder={t('auth.fields.namePlaceholder')}
                   placeholderTextColor={colors.contentSubtle}
                   autoCapitalize="words"
-                  onChangeText={onChange}
+                  onChangeText={text => onChange(sanitizeName(text))}
                   onBlur={onBlur}
                   value={value}
                 />
@@ -65,7 +66,7 @@ export function StepIdentity({ control, errors }: Props) {
                   placeholder={t('auth.fields.lastnamePlaceholder')}
                   placeholderTextColor={colors.contentSubtle}
                   autoCapitalize="words"
-                  onChangeText={onChange}
+                  onChangeText={text => onChange(sanitizeName(text))}
                   onBlur={onBlur}
                   value={value}
                 />
