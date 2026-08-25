@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { type View } from 'react-native'
+import type { View } from 'react-native'
 import { subscribeKeyboardTop } from '../lib/keyboardTop'
 
 // Quanto o teclado cobre de um elemento ancorado embaixo (bottom sheet).

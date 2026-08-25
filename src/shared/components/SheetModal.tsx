@@ -34,10 +34,11 @@ export function SheetModal({ visible, onClose, children, instantExit }: Props) {
   // lembrar. A superfície segue indo até a borda da tela, passando por trás do
   // teclado — quem recua é o conteúdo, via padding.
   //
-  // SÓ RESOLVE O iOS. O hook depende de keyboardWillShow, que o Android não
-  // emite, e o ADJUST_RESIZE que o RN põe na Dialog do Modal não vale aqui
-  // porque o app é edge-to-edge (android/gradle.properties: edgeToEdgeEnabled).
-  // Fechar o Android exige uma fonte de altura de teclado por WindowInsets.
+  // Vale nas duas plataformas desde que o hook passou a ler o inset do IME (ver
+  // shared/lib/keyboardTop) — o adjustResize que o RN põe na Dialog do Modal não
+  // resolveria, porque o app é edge-to-edge. O Android AQUI DENTRO ainda não foi
+  // medido em device: a Dialog tem janela própria, e se o measureInWindow dela
+  // não casar com a régua de screen, o recuo sai errado em vez de sair zero.
   const { ref: sheetRef, overlap } = useKeyboardOverlap()
 
   // Arrastar a alça pra baixo fecha: segue o dedo; além do limiar (ou num flick),

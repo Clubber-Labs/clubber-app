@@ -11,6 +11,10 @@ import { KeyboardEvents } from 'react-native-keyboard-controller'
 // emite keyboardWill* no Android. A lib lê o inset do IME e emite os quatro
 // eventos nas duas plataformas.
 //
+// A base é `screen` e não `window` porque o app é edge-to-edge: as duas
+// coincidem, e é isso que faz a conta bater com o measureInWindow de quem chama.
+// Se o edge-to-edge cair, esta linha ganha um offset silencioso.
+//
 // `phase` decide o compromisso: 'will' antecipa o movimento (superfície que
 // recua junto com o teclado, sem piscar o fundo); 'did' espera a geometria
 // assentar, que é o que quem mede antes de rolar precisa.
