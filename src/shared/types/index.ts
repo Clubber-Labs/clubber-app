@@ -198,6 +198,32 @@ export type EventDetail = {
   }
 }
 
+// Link de convite gerado pelo autor (POST /events/:id/invite-links). A `url`
+// vem pronta do backend — o client nunca monta a URL pública do convite.
+export type InviteLink = {
+  id: string
+  token: string
+  url: string
+  expiresAt: string
+  usesCount: number
+}
+
+// Preview público do convite (GET /invites/:token — auth opcional).
+export type InvitePreview = {
+  event: {
+    id: string
+    title: string
+    description: string | null
+    date: string
+    endDate: string | null
+    timezone: string
+    isPublic: boolean
+    coverUrl: string | null
+    author: FeedAuthor
+  }
+  viewer: { hasAccess: boolean }
+}
+
 export type Attendance = {
   type: AttendanceType
   userId: string
