@@ -9,6 +9,7 @@ import {
 } from 'react-native'
 import { useMessages } from '../hooks/useMessages'
 import { MessageBubble } from './MessageBubble'
+import { SystemMessage } from './SystemMessage'
 import { DateSeparator } from './DateSeparator'
 import { TypingIndicator } from './TypingIndicator'
 import { buildMessageMeta } from '../utils/groupMessages'
@@ -120,6 +121,17 @@ export function MessageList({
       ListHeaderComponent={<TypingIndicator label={typingLabel} />}
       renderItem={({ item, index }) => {
         const m = meta[index]
+        // Ramifica aqui, não dentro do MessageBubble: status de leitura,
+        // reações, swipe-responder e o sheet de ações não fazem sentido numa
+        // mensagem de sistema — sair antes elimina os quatro de uma vez.
+        if (item.type === 'SYSTEM') {
+          return (
+            <View>
+              {m.showDateSeparator && <DateSeparator iso={item.createdAt} />}
+              <SystemMessage text={item.content ?? ''} />
+            </View>
+          )
+        }
         const status = messageStatus(item, myId, others)
         const replyId = item.replyTo?.id
         const reactions = aggregateReactions(item.reactions, myId)

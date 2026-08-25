@@ -50,6 +50,9 @@ export function lastMessagePreview(
   const msg = item.lastMessage
   if (!msg) return i18n.t('chat.inbox.start', { lng: locale })
   if (msg.deletedAt) return i18n.t('chat.message.deleted', { lng: locale })
+  // Aviso do grupo não é fala de ninguém: prefixar com "Você:"/"Fulano:" daria
+  // "Você: Neto adicionou Maria".
+  if (msg.type === 'SYSTEM') return msg.content ?? ''
 
   const kind = firstAttachmentKind(msg.attachments)
   const body =
@@ -75,5 +78,9 @@ export function lastMessagePreview(
 }
 
 export function isPreviewItalic(item: InboxItem): boolean {
-  return item.lastMessage?.deletedAt != null || item.lastMessage == null
+  return (
+    item.lastMessage?.deletedAt != null ||
+    item.lastMessage?.type === 'SYSTEM' ||
+    item.lastMessage == null
+  )
 }

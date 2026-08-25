@@ -105,7 +105,10 @@ export function applyMessageToInbox(
     }
     if (!target) return prev
 
-    const skipUnread = message.senderId === myId || isActive
+    // SYSTEM fora da contagem, espelhando o `type <> 'SYSTEM'` do COUNT do
+    // backend — sem isso o badge da tab inflava até o próximo refetch.
+    const skipUnread =
+      message.senderId === myId || isActive || message.type === 'SYSTEM'
     const updated: InboxItem = {
       ...target,
       lastMessage: message,
