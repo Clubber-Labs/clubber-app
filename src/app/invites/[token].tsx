@@ -247,8 +247,16 @@ export default function InviteScreen() {
                 x2="0"
                 y2="1"
               >
-                <Stop offset="0" stopColor="#000000" stopOpacity={0.55} />
-                <Stop offset="1" stopColor="#000000" stopOpacity={0} />
+                <Stop
+                  offset="0"
+                  stopColor={colors.background}
+                  stopOpacity={0.55}
+                />
+                <Stop
+                  offset="1"
+                  stopColor={colors.background}
+                  stopOpacity={0}
+                />
               </LinearGradient>
             </Defs>
             <Rect
