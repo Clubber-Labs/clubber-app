@@ -17,7 +17,7 @@ import { EventCardHero } from './EventCardHero'
 import { InlineCommentsSection } from './InlineCommentsSection'
 import { EventAttendeesStack } from './EventAttendeesStack'
 import { FeedReasonBanner } from './FeedReasonBanner'
-import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
+import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { formatRelative, formatTime } from '@/shared/utils/dateFormat'
 import { useLocale } from '@/shared/hooks/useLocale'
@@ -71,7 +71,6 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
   const toggleLike = useToggleLike(event.id)
   const setAttendance = useSetAttendance(event.id)
   const cancelAttendance = useCancelAttendance(event.id)
-  const navigateToProfile = useNavigateToProfile()
 
   const liked = event.userLiked
   const reason = showReason ? event.reason : null
@@ -113,10 +112,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
       )}
 
       <Pressable onPress={onPress}>
-        <EventCardHero
-          event={event}
-          onAuthorPress={() => navigateToProfile(event.author.id)}
-        />
+        <EventCardHero event={event} />
 
         <View className="gap-2 px-4 pt-3">
           <CategoryChip categories={event.categories} />
@@ -127,12 +123,10 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
               {event.title}
             </Text>
           ) : (
-            <Pressable
-              onPress={() => navigateToProfile(event.author.id)}
+            <ProfileLink
+              userId={event.author.id}
+              username={event.author.username}
               className="flex-row items-center gap-2 self-start py-0.5"
-              accessibilityLabel={t('shared.viewProfile', {
-                username: event.author.username,
-              })}
             >
               <UserAvatar
                 name={event.author.name}
@@ -145,7 +139,7 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
                 </Text>
                 {`  ·  ${formatRelative(event.createdAt, locale)}`}
               </Text>
-            </Pressable>
+            </ProfileLink>
           )}
 
           <View className="flex-row items-center gap-4">
@@ -296,9 +290,15 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
         <View className="gap-1 px-4 pb-3 pt-1">
           {event.recentComments.slice(0, 1).map(comment => (
             <View key={comment.id} className="flex-row">
-              <Text className="text-sm font-semibold text-content">
-                {comment.author.username}{' '}
-              </Text>
+              <ProfileLink
+                userId={comment.author.id}
+                username={comment.author.username}
+                hitSlop={6}
+              >
+                <Text className="text-sm font-semibold text-content">
+                  {comment.author.username}{' '}
+                </Text>
+              </ProfileLink>
               <Text
                 className="flex-1 text-sm text-content-tertiary"
                 numberOfLines={2}

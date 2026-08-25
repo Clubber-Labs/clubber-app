@@ -7,7 +7,7 @@ import {
   HeartIcon,
 } from 'phosphor-react-native'
 import { useAuthStore } from '@/features/auth/store/authStore'
-import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
+import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useDeletePost } from '../hooks/usePosts'
@@ -30,7 +30,6 @@ export function PostItem({ eventId, post, onReport }: Props) {
   const locale = useLocale()
   const userId = useAuthStore(s => s.userId)
   const deletePost = useDeletePost(eventId)
-  const navigateToProfile = useNavigateToProfile()
   const confirm = useConfirm()
 
   const isAuthor = userId === post.authorId
@@ -48,12 +47,10 @@ export function PostItem({ eventId, post, onReport }: Props) {
   return (
     <View className="bg-surface rounded-xl p-4 border border-line gap-3">
       <View className="flex-row items-start justify-between">
-        <Pressable
-          onPress={() => navigateToProfile(post.author.id)}
+        <ProfileLink
+          userId={post.author.id}
+          username={post.author.username}
           className="flex-row items-center gap-2 flex-1"
-          accessibilityLabel={t('shared.viewProfile', {
-            username: post.author.username,
-          })}
         >
           <UserAvatar
             name={post.author.name}
@@ -67,7 +64,7 @@ export function PostItem({ eventId, post, onReport }: Props) {
               @{post.author.username} · {formatRelative(post.createdAt, locale)}
             </Text>
           </View>
-        </Pressable>
+        </ProfileLink>
 
         {isAuthor ? (
           <Pressable

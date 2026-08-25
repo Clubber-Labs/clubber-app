@@ -1,10 +1,10 @@
-import { View, Text, Pressable } from 'react-native'
+import { View, Text } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { LockIcon } from 'phosphor-react-native'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { FollowButton } from './FollowButton'
+import { ProfileLink } from './ProfileLink'
 import { useFollowUser } from '../hooks/useFollowUser'
-import { useNavigateToProfile } from '../hooks/useNavigateToProfile'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import {
   hasFullProfile,
@@ -19,7 +19,6 @@ type Props = {
 export function UserSearchCard({ user }: Props) {
   const { t } = useTranslation()
   const viewerId = useAuthStore(s => s.userId)
-  const navigateToProfile = useNavigateToProfile()
   const { follow, unfollow } = useFollowUser(user.id)
 
   const isOwn = user.id === viewerId
@@ -29,12 +28,10 @@ export function UserSearchCard({ user }: Props) {
 
   return (
     <View className="flex-row items-center gap-3 px-4 py-3">
-      <Pressable
-        onPress={() => navigateToProfile(user.id)}
+      <ProfileLink
+        userId={user.id}
+        username={user.username}
         className="flex-row items-center gap-3 flex-1"
-        accessibilityLabel={t('shared.viewProfile', {
-          username: user.username,
-        })}
       >
         <UserAvatar name={fullName} avatarUrl={user.avatarUrl} size={48} />
         <View className="flex-1">
@@ -59,7 +56,7 @@ export function UserSearchCard({ user }: Props) {
             </Text>
           )}
         </View>
-      </Pressable>
+      </ProfileLink>
       <View>
         {isOwn ? (
           <Text className="text-content-subtle text-sm">{t('users.you')}</Text>

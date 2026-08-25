@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { ProhibitIcon, UserIcon } from 'phosphor-react-native'
+import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useBanner } from '@/shared/lib/banner'
@@ -50,13 +51,17 @@ export function DMDetails({ conversation, myId, onViewProfile }: Props) {
 
   return (
     <View className="px-4">
-      <View className="items-center pt-6 pb-4 gap-1.5">
+      <ProfileLink
+        userId={other.id}
+        username={other.username}
+        className="items-center pt-6 pb-4 gap-1.5"
+      >
         <UserAvatar name={other.name} avatarUrl={other.avatarUrl} size={88} />
         <Text className="text-content font-bold text-xl mt-2">
           {other.name} {other.lastname}
         </Text>
         <Text className="text-content-subtle">@{other.username}</Text>
-      </View>
+      </ProfileLink>
 
       <Pressable
         onPress={() => onViewProfile(other.id)}

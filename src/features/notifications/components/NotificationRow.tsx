@@ -1,5 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg'
+import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { formatRelative } from '@/shared/utils/dateFormat'
 import { useLocale } from '@/shared/hooks/useLocale'
@@ -71,13 +72,16 @@ export function NotificationRow({ notification, onPress }: Props) {
         </View>
       )}
 
+      {/* A linha leva ao alvo (evento, rolê); a foto leva sempre a quem agiu. */}
       <View className="relative">
         {actor ? (
-          <UserAvatar
-            name={actor.name}
-            avatarUrl={actor.avatarUrl ?? null}
-            size={44}
-          />
+          <ProfileLink userId={actor.id} username={actor.username}>
+            <UserAvatar
+              name={actor.name}
+              avatarUrl={actor.avatarUrl ?? null}
+              size={44}
+            />
+          </ProfileLink>
         ) : (
           <View
             className={`w-11 h-11 rounded-full border items-center justify-center ${tile.box}`}
