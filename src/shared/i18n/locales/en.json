@@ -111,7 +111,6 @@
     "PROMOTION_NOT_FOUND": "This promotion no longer exists.",
     "PROMOTION_OVERLAP": "There is already a promotion in this period.",
     "PROMOTION_TOO_LONG": "A promotion can last at most {{maxDays}} days.",
-    "PUBLIC_EVENT_NO_INVITES": "Public events don’t use invites.",
     "RADIUS_TOO_LARGE": "The radius can be at most {{maxKm}} km.",
     "REACTION_NOT_FOUND": "This reaction no longer exists.",
     "REPORTED_CONTENT_GONE": "This content no longer exists.",
@@ -801,7 +800,16 @@
       "selectPrompt": "Select people to invite",
       "inviteCount_one": "Invite {{count}} person",
       "inviteCount_other": "Invite {{count}} people",
-      "inviteAll": "Invite all followers"
+      "inviteAll": "Invite all followers",
+      "tabFollowers": "Followers",
+      "tabFollowing": "Following",
+      "tabSearch": "Search",
+      "searchPlaceholder": "Name or @username",
+      "searchHint": "Search someone by name or @username.",
+      "noFollowing": "You don't follow anyone to invite yet.",
+      "noResults": "No one found for that search.",
+      "alreadyInvited": "Invited",
+      "cta": "Invite people"
     },
     "invited": {
       "forbidden": "Only the event author can see the guest list.",

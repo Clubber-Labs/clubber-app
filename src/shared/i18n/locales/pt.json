@@ -111,7 +111,6 @@
     "PROMOTION_NOT_FOUND": "Este destaque não existe mais.",
     "PROMOTION_OVERLAP": "Já existe um destaque neste período.",
     "PROMOTION_TOO_LONG": "O destaque pode durar no máximo {{maxDays}} dias.",
-    "PUBLIC_EVENT_NO_INVITES": "Evento público não usa convites.",
     "RADIUS_TOO_LARGE": "O raio pode ter no máximo {{maxKm}} km.",
     "REACTION_NOT_FOUND": "Esta reação não existe mais.",
     "REPORTED_CONTENT_GONE": "Este conteúdo não existe mais.",
@@ -801,7 +800,16 @@
       "selectPrompt": "Selecione pessoas pra convidar",
       "inviteCount_one": "Convidar {{count}} pessoa",
       "inviteCount_other": "Convidar {{count}} pessoas",
-      "inviteAll": "Convidar todos os seguidores"
+      "inviteAll": "Convidar todos os seguidores",
+      "tabFollowers": "Seguidores",
+      "tabFollowing": "Seguindo",
+      "tabSearch": "Buscar",
+      "searchPlaceholder": "Nome ou @username",
+      "searchHint": "Busca alguém pelo nome ou @username.",
+      "noFollowing": "Você ainda não segue ninguém pra convidar.",
+      "noResults": "Ninguém encontrado com essa busca.",
+      "alreadyInvited": "Convidado",
+      "cta": "Convidar pessoas"
     },
     "invited": {
       "forbidden": "Apenas o autor do evento pode ver os convidados.",
