@@ -53,9 +53,16 @@ export default function InvitesScreen() {
   // Privado: só o autor convida (convite materializa acesso). Público:
   // qualquer usuário logado convida (convite é divulgação) — a elegibilidade
   // de quem pode ser convidado (perfil privado exige follow mútuo) é do
-  // backend.
+  // backend. Evento encerrado/cancelado não convida (mesma janela do RSVP) —
+  // a tela também abre por deep link, então o gate não pode confiar só no
+  // card do detalhe.
+  const inviteWindowOpen =
+    !!event && event.status !== 'PAST' && event.status !== 'CANCELED'
   const canInvite =
-    !!event && !!viewerId && (event.authorId === viewerId || event.isPublic)
+    !!event &&
+    !!viewerId &&
+    inviteWindowOpen &&
+    (event.authorId === viewerId || event.isPublic)
 
   const [source, setSource] = useState<InviteSource>('followers')
   const [query, setQuery] = useState('')
@@ -79,17 +86,23 @@ export default function InvitesScreen() {
     () => new Set((eventInvites ?? []).map(u => u.id)),
     [eventInvites],
   )
+  // O autor do evento não se convida — e pode aparecer em qualquer origem
+  // (na rede de um convidador não-autor ou na busca).
+  const eventAuthorId = event?.authorId
   const followerUsers = useMemo(
-    () => followersQ.data?.pages.flatMap(p => p.data) ?? [],
-    [followersQ.data],
+    () =>
+      (followersQ.data?.pages.flatMap(p => p.data) ?? []).filter(
+        u => u.id !== eventAuthorId,
+      ),
+    [followersQ.data, eventAuthorId],
   )
   const followingUsers = useMemo(
-    () => followingQ.data?.pages.flatMap(p => p.data) ?? [],
-    [followingQ.data],
+    () =>
+      (followingQ.data?.pages.flatMap(p => p.data) ?? []).filter(
+        u => u.id !== eventAuthorId,
+      ),
+    [followingQ.data, eventAuthorId],
   )
-  // A busca alcança qualquer perfil — fora você mesmo e o autor do evento,
-  // que não se convidam.
-  const eventAuthorId = event?.authorId
   const searchResults = useMemo(
     () =>
       searchQ.users.filter(u => u.id !== viewerId && u.id !== eventAuthorId),
@@ -105,11 +118,18 @@ export default function InvitesScreen() {
     })
   }
 
+  // Autor cai na lista de convidados; convidador comum volta pro evento (a
+  // lista é author-only — seria um 403 na cara de quem acabou de convidar).
+  function finishInvite() {
+    if (isAuthor) router.replace(`/events/${id}/invited`)
+    else router.back()
+  }
+
   function handleInviteSelected() {
     if (selected.size === 0) return
     setPendingAction('selected')
     invite.mutate(Array.from(selected), {
-      onSuccess: () => router.replace(`/events/${id}/invited`),
+      onSuccess: finishInvite,
       onSettled: () => setPendingAction(null),
     })
   }
@@ -117,7 +137,7 @@ export default function InvitesScreen() {
   function handleInviteAll() {
     setPendingAction('all')
     invite.mutate(undefined, {
-      onSuccess: () => router.replace(`/events/${id}/invited`),
+      onSuccess: finishInvite,
       onSettled: () => setPendingAction(null),
     })
   }
