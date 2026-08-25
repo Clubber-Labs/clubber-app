@@ -74,9 +74,11 @@ export default function UserProfileScreen() {
   if (profileLoading) return <ProfileLoading />
   if (!profile) return <ProfileEmpty message={t('profile.notFound')} />
 
-  // Pré-validação (UX): só libera DM se o alvo é público OU você o segue (aceito)
-  // — direção VOCÊ→alvo. Bloqueio o client não sabe; fica pro 403 do POST.
-  const canMessage = !profile.isPrivate || profile.followStatus === 'ACCEPTED'
+  // Pré-validação (UX) espelhando o canChatWith do backend: público é livre,
+  // privado exige follow MÚTUO. Bloqueio o client não sabe; fica pro 403 do POST.
+  const canMessage =
+    !profile.isPrivate ||
+    (profile.followStatus === 'ACCEPTED' && profile.followsYou === true)
 
   const followButton = (
     <FollowButton

@@ -1,4 +1,4 @@
-import type { UserMini } from '@/shared/types'
+import type { FollowStatus, UserMini } from '@/shared/types'
 
 export type ConversationType = 'DIRECT' | 'GROUP'
 export type Role = 'MEMBER' | 'ADMIN'
@@ -8,6 +8,19 @@ export type Role = 'MEMBER' | 'ADMIN'
 // campo — a gate de reação trata `undefined` como reagível e o backend é a guarda
 // final (403 em SYSTEM/apagada).
 export type MessageType = 'TEXT' | 'IMAGE' | 'AUDIO' | 'VIDEO' | 'SYSTEM'
+
+// Pessoa exibida num picker de conversa. Além do UserMini, carrega a relação de
+// follow nos DOIS sentidos e a privacidade — é o que permite ao app aplicar o
+// mesmo predicado do `canChatWith` do backend antes de tentar o POST. Um sentido
+// só não responde, porque perfil privado exige mútuo. Opcionais pra degradar
+// contra backend anterior aos campos (ver utils/reachability).
+export type PickablePerson = UserMini & {
+  isPrivate?: boolean
+  // viewer → pessoa
+  followStatus?: FollowStatus
+  // pessoa → viewer, já resolvido em ACCEPTED
+  followsYou?: boolean
+}
 
 // Reação CRUA, uma por (usuário + emoji), como o backend devolve em `reactions`.
 // O front agrega contagem e "minha" (ver utils/reactions). Este produto limita a

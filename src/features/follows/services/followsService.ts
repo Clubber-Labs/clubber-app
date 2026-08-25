@@ -1,5 +1,19 @@
 import { api } from '@/shared/lib/api'
-import type { CursorPaginatedResponse, FeedAuthor } from '@/shared/types'
+import type {
+  CursorPaginatedResponse,
+  FeedAuthor,
+  FollowStatus,
+} from '@/shared/types'
+
+// Além do FeedAuthor, as listas trazem a privacidade e a relação do REQUISITANTE
+// com cada pessoa nos dois sentidos — é o que permite ao chat saber se dá pra
+// abrir conversa sem tentar o POST (privado exige mútuo). Opcionais pra degradar
+// contra backend anterior aos campos.
+export type FollowListUser = FeedAuthor & {
+  isPrivate?: boolean
+  followStatus?: FollowStatus
+  followsYou?: boolean
+}
 
 type ListParams = { limit?: number; cursor?: string }
 
@@ -21,7 +35,7 @@ export const followsService = {
   followers: (
     userId: string,
     params: ListParams = {},
-  ): Promise<CursorPaginatedResponse<FeedAuthor>> =>
+  ): Promise<CursorPaginatedResponse<FollowListUser>> =>
     api
       .get(`/users/${userId}/followers`, { params: buildParams(params) })
       .then(r => r.data),
@@ -29,7 +43,7 @@ export const followsService = {
   following: (
     userId: string,
     params: ListParams = {},
-  ): Promise<CursorPaginatedResponse<FeedAuthor>> =>
+  ): Promise<CursorPaginatedResponse<FollowListUser>> =>
     api
       .get(`/users/${userId}/following`, { params: buildParams(params) })
       .then(r => r.data),

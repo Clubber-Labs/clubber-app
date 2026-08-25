@@ -6,17 +6,16 @@ import {
   UserPlusIcon,
 } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
+import { useRouter } from 'expo-router'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useBanner } from '@/shared/lib/banner'
 import { getApiError } from '@/shared/lib/apiError'
 import { ConversationAvatar } from './ConversationAvatar'
 import { ParticipantRow } from './ParticipantRow'
 import { ParticipantActionsSheet } from './ParticipantActionsSheet'
-import { AddParticipantsModal } from './AddParticipantsModal'
 import { GroupTitleModal } from './GroupTitleModal'
 import { conversationAvatarUsers } from '../utils/conversationDisplay'
 import {
-  useAddParticipant,
   useLeaveGroup,
   useRemoveParticipant,
   useRenameGroup,
@@ -38,15 +37,14 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
     conversation.participants.find(p => p.userId === myId)?.role === 'ADMIN'
 
   const rename = useRenameGroup(id)
-  const addParticipant = useAddParticipant(id)
   const removeParticipant = useRemoveParticipant(id)
   const updateRole = useUpdateRole(id)
   const leave = useLeaveGroup(id)
   const confirm = useConfirm()
   const showBanner = useBanner()
+  const router = useRouter()
 
   const [renameOpen, setRenameOpen] = useState(false)
-  const [addOpen, setAddOpen] = useState(false)
   const [managed, setManaged] = useState<Participant | null>(null)
 
   const onError = (e: unknown) => showBanner(getApiError(e).message)
@@ -126,7 +124,7 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
 
       {amAdmin && (
         <Pressable
-          onPress={() => setAddOpen(true)}
+          onPress={() => router.push(`/conversations/${id}/add-people`)}
           className="flex-row items-center gap-3 px-4 py-3"
         >
           <View className="w-11 h-11 rounded-full bg-surface items-center justify-center">
@@ -163,12 +161,6 @@ export function GroupDetails({ conversation, myId, onLeft }: Props) {
             onError,
           })
         }
-      />
-      <AddParticipantsModal
-        visible={addOpen}
-        onClose={() => setAddOpen(false)}
-        existingIds={conversation.participants.map(p => p.userId)}
-        onAdd={userId => addParticipant.mutate(userId, { onError })}
       />
       <ParticipantActionsSheet
         visible={!!managed}

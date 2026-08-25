@@ -253,6 +253,10 @@ export type UserProfile = {
   // Presente só em /users/me. Ausente em perfis de terceiros (/users/:id).
   role?: UserRole
   followStatus?: FollowStatus
+  // Sentido inverso (pessoa → viewer), já resolvido em ACCEPTED. Junto com
+  // followStatus responde se o follow é mútuo — o que perfil privado exige pra
+  // liberar conversa. Opcional pra degradar contra backend anterior ao campo.
+  followsYou?: boolean
   eventsCount: number
   followersCount: number
   followingCount: number

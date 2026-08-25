@@ -3,14 +3,15 @@ import { View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { useBanner } from '@/shared/lib/banner'
-import { getApiError, isForbiddenError } from '@/shared/lib/apiError'
+import { getApiError } from '@/shared/lib/apiError'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useCreateConversation } from '@/features/chat/hooks/useCreateConversation'
 import { PeoplePicker } from '@/features/chat/components/PeoplePicker'
 import { UserPickRow } from '@/features/chat/components/UserPickRow'
 import { SelectedUserChips } from '@/features/chat/components/SelectedUserChips'
 import { GroupTitleModal } from '@/features/chat/components/GroupTitleModal'
-import type { UserMini } from '@/shared/types'
+import { isReachable } from '@/features/chat/utils/reachability'
+import type { PickablePerson } from '@/features/chat/types'
 
 export default function NewGroupScreen() {
   const { t } = useTranslation()
@@ -19,12 +20,12 @@ export default function NewGroupScreen() {
   const create = useCreateConversation()
   const myId = useAuthStore(s => s.userId)
 
-  const [selected, setSelected] = useState<UserMini[]>([])
+  const [selected, setSelected] = useState<PickablePerson[]>([])
   const [titleOpen, setTitleOpen] = useState(false)
 
   const selectedIds = new Set(selected.map(u => u.id))
 
-  function toggle(user: UserMini) {
+  function toggle(user: PickablePerson) {
     setSelected(prev =>
       prev.some(s => s.id === user.id)
         ? prev.filter(s => s.id !== user.id)
@@ -42,11 +43,9 @@ export default function NewGroupScreen() {
       setTitleOpen(false)
       router.replace(`/conversations/${conv.id}`)
     } catch (e) {
-      showBanner(
-        isForbiddenError(e)
-          ? t('chat.people.cannotStart')
-          : getApiError(e).message,
-      )
+      // Sem achatar o 403: o backend distingue PRIVATE_PROFILE de
+      // CONVERSATION_FORBIDDEN e as duas já têm tradução.
+      showBanner(getApiError(e).message)
     }
   }
 
@@ -60,6 +59,7 @@ export default function NewGroupScreen() {
 
       <PeoplePicker
         myId={myId ?? ''}
+        filter={isReachable}
         renderItem={user => (
           <UserPickRow
             user={user}
