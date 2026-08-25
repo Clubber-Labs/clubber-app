@@ -8,6 +8,7 @@ import {
   type UsernameAvailability,
 } from '@/features/users/hooks/useUsernameAvailability'
 import { formatPhone, phoneDigits } from '@/shared/utils/masks'
+import { sanitizeUsername } from '@/shared/utils/username'
 import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
 
@@ -76,17 +77,21 @@ export function StepAccount({ control, errors }: Props) {
                 className={`border ${usernameFlagged ? 'border-content' : 'border-line'} bg-surface rounded-full px-4 py-3.5 text-base text-content`}
                 placeholder={t('auth.fields.usernamePlaceholder')}
                 placeholderTextColor={colors.contentSubtle}
-                onChangeText={onChange}
+                onChangeText={text => onChange(sanitizeUsername(text))}
                 value={value}
                 autoCapitalize="none"
               />
             )}
           />
-          {showAvailability && (
+          {showAvailability ? (
             <Text
               className={`text-xs ${AVAILABILITY_TEXT[availability].className}`}
             >
               {t(AVAILABILITY_TEXT[availability].label)}
+            </Text>
+          ) : (
+            <Text className="text-xs text-content-subtle">
+              {t('auth.fields.usernameHint')}
             </Text>
           )}
         </View>

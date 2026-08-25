@@ -1,6 +1,11 @@
 import { z } from 'zod'
 import { PHONE_MAX_DIGITS } from '@/shared/utils/masks'
 import { MIN_PREFERRED_CATEGORIES } from '@/shared/utils/rolePreferences'
+import {
+  USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+  USERNAME_REGEX,
+} from '@/shared/utils/username'
 
 const NAME_REGEX = /^[a-zA-ZÀ-ÿ\s]+$/
 
@@ -17,8 +22,9 @@ export const editProfileSchema = z.object({
     .regex(NAME_REGEX, 'auth.errors.lettersOnly'),
   username: z
     .string()
-    .min(4, 'auth.errors.usernameMin')
-    .max(25, 'auth.errors.usernameMax'),
+    .min(USERNAME_MIN_LENGTH, 'auth.errors.usernameMin')
+    .max(USERNAME_MAX_LENGTH, 'auth.errors.usernameMax')
+    .regex(USERNAME_REGEX, 'auth.errors.usernameFormat'),
   phone: z
     .string()
     .min(10, 'auth.errors.phoneMin')

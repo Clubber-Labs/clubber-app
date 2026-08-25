@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Controller } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
 import { formatPhone, phoneDigits } from '@/shared/utils/masks'
+import { sanitizeUsername } from '@/shared/utils/username'
 import type { CompleteProfileInput } from '../../schemas/completeProfileSchema'
 import { useFormFocus } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
@@ -54,12 +55,15 @@ export function StepAccount({ control, errors, email }: Props) {
                 placeholder={t('auth.fields.usernamePlaceholder')}
                 placeholderTextColor={colors.contentSubtle}
                 autoCapitalize="none"
-                onChangeText={onChange}
+                onChangeText={text => onChange(sanitizeUsername(text))}
                 onBlur={onBlur}
                 value={value}
               />
             )}
           />
+          <Text className="text-xs text-content-subtle">
+            {t('auth.fields.usernameHint')}
+          </Text>
         </View>
 
         <View className="gap-1" {...form.anchor('phone')}>

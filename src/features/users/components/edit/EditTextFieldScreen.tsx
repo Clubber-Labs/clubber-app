@@ -13,6 +13,7 @@ import { editProfileSchema } from '../../schemas/editProfileSchema'
 import type { UpdateMePayload } from '../../services/usersService'
 import type { UserProfile } from '@/shared/types'
 import { colors } from '@/shared/theme'
+import { USERNAME_MAX_LENGTH, sanitizeUsername } from '@/shared/utils/username'
 
 // Campos de texto editáveis um a um. Reúsa a casca e a validação por campo do
 // editProfileSchema — cada tela manda só o PATCH do seu campo.
@@ -32,6 +33,7 @@ type FieldConfig = {
   multiline?: boolean
   maxLength?: number
   prefix?: string
+  sanitize?: (text: string) => string
 }
 
 const FIELDS: Record<TextFieldKey, FieldConfig> = {
@@ -51,8 +53,9 @@ const FIELDS: Record<TextFieldKey, FieldConfig> = {
     titleKey: 'profile.fields.username.title',
     helpKey: 'profile.fields.username.help',
     autoCapitalize: 'none',
-    maxLength: 25,
+    maxLength: USERNAME_MAX_LENGTH,
     prefix: '@',
+    sanitize: sanitizeUsername,
   },
   phone: {
     titleKey: 'profile.fields.phone.title',
@@ -158,7 +161,9 @@ function TextFieldForm({
             autoCapitalize={config.autoCapitalize}
             maxLength={config.maxLength}
             value={value}
-            onChangeText={setValue}
+            onChangeText={text =>
+              setValue(config.sanitize ? config.sanitize(text) : text)
+            }
           />
         </View>
       )}
