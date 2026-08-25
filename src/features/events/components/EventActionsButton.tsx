@@ -10,10 +10,9 @@ import { colors } from '@/shared/theme'
 
 type Props = {
   eventId: string
-  isPublic: boolean
 }
 
-export function EventActionsButton({ eventId, isPublic }: Props) {
+export function EventActionsButton({ eventId }: Props) {
   const { t } = useTranslation()
   const [open, setOpen] = useState(false)
   const router = useRouter()
@@ -38,18 +37,12 @@ export function EventActionsButton({ eventId, isPublic }: Props) {
       label: t('events.actions.edit'),
       onPress: () => router.push(`/events/${eventId}/edit`),
     },
-    ...(!isPublic
-      ? [
-          {
-            label: t('events.actions.invite'),
-            onPress: () => router.push(`/events/${eventId}/invites`),
-          },
-          {
-            label: t('events.actions.invited'),
-            onPress: () => router.push(`/events/${eventId}/invited`),
-          },
-        ]
-      : []),
+    // Convidar saiu do menu: virou ação de primeira classe no detalhe
+    // (EventInviteButton). Aqui fica só a lista de convidados, que é do autor.
+    {
+      label: t('events.actions.invited'),
+      onPress: () => router.push(`/events/${eventId}/invited`),
+    },
     {
       label: t('events.actions.deleteEvent'),
       onPress: handleDelete,

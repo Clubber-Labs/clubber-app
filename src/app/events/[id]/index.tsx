@@ -19,6 +19,7 @@ import { EventLocationMap } from '@/features/events/components/EventLocationMap'
 import { EventAttendanceButton } from '@/features/events/components/EventAttendanceButton'
 import { EventPostsFeed } from '@/features/events/components/EventPostsFeed'
 import { EventActionsButton } from '@/features/events/components/EventActionsButton'
+import { EventInviteButton } from '@/features/events/components/EventInviteButton'
 import { EventShareButton } from '@/features/events/components/EventShareButton'
 import { EventAnalyticsEntryCard } from '@/features/event-analytics/components/EventAnalyticsEntryCard'
 import { PromoteEventCard } from '@/features/featured-events/components/PromoteEventCard'
@@ -36,6 +37,9 @@ type HeaderProps = {
 
 function DetailHeader({ event, isAuthor, isPremium, onShared }: HeaderProps) {
   const allowAttendance = event.status !== 'PAST' && event.status !== 'CANCELED'
+  // Privado: só o autor convida. Público: qualquer um. Evento encerrado ou
+  // cancelado não recebe convite — mesma janela do RSVP.
+  const canInvite = (isAuthor || event.isPublic) && allowAttendance
   const router = useRouter()
 
   return (
@@ -53,10 +57,7 @@ function DetailHeader({ event, isAuthor, isPremium, onShared }: HeaderProps) {
               />
             )}
             {isAuthor ? (
-              <EventActionsButton
-                eventId={event.id}
-                isPublic={event.isPublic}
-              />
+              <EventActionsButton eventId={event.id} />
             ) : (
               <ReportButton
                 target={{ type: 'event', id: event.id }}
@@ -78,11 +79,16 @@ function DetailHeader({ event, isAuthor, isPremium, onShared }: HeaderProps) {
             isFeatured={!!event.isFeatured}
           />
         )}
-        {allowAttendance && (
-          <EventAttendanceButton
-            eventId={event.id}
-            current={event.userAttendance}
-          />
+        {(allowAttendance || canInvite) && (
+          <View className="gap-2">
+            {allowAttendance && (
+              <EventAttendanceButton
+                eventId={event.id}
+                current={event.userAttendance}
+              />
+            )}
+            {canInvite && <EventInviteButton eventId={event.id} />}
+          </View>
         )}
         <EventLocationMap event={event} />
       </View>
