@@ -11,7 +11,13 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg'
+import Svg, {
+  Defs,
+  LinearGradient,
+  RadialGradient,
+  Stop,
+  Rect,
+} from 'react-native-svg'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useInvite } from '@/features/invites/hooks/useInvite'
 import { useAcceptInvite } from '@/features/invites/hooks/useAcceptInvite'
@@ -56,10 +62,16 @@ function inviteErrorKind(error: unknown): InviteErrorKind {
 // Flyer de festa é retrato na maioria; um hero fixo em 16:9 decapitava a arte.
 // Mede a imagem e usa a proporção REAL, com clamp pra extremos não engolirem a
 // tela (retrato até 3:4; paisagem até 16:9). Sem capa, gradiente em 16:9.
+// Tradeoff deliberado: arte 9:16 (story) é clampada e o cover corta — exibir
+// inteira deixaria o hero mais alto que a viewport. Se doer no uso real, a
+// evolução é resizeMode contain sobre fundo desfocado.
 function useCoverAspect(url: string | null | undefined): number {
   const [aspect, setAspect] = useState(16 / 9)
   useEffect(() => {
-    if (!url) return
+    if (!url) {
+      setAspect(16 / 9)
+      return
+    }
     let alive = true
     Image.getSize(
       url,
@@ -216,6 +228,37 @@ export default function InviteScreen() {
               />
             </Svg>
           )}
+          {/* A status bar global é light e sumiria sobre arte clara — o scrim
+              garante a leitura sem escurecer o flyer inteiro. */}
+          <Svg
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: insets.top + 44,
+            }}
+          >
+            <Defs>
+              <LinearGradient
+                id="invite-statusbar-scrim"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <Stop offset="0" stopColor="#000000" stopOpacity={0.55} />
+                <Stop offset="1" stopColor="#000000" stopOpacity={0} />
+              </LinearGradient>
+            </Defs>
+            <Rect
+              x="0"
+              y="0"
+              width="100%"
+              height="100%"
+              fill="url(#invite-statusbar-scrim)"
+            />
+          </Svg>
         </View>
 
         <View className="px-6 pt-5 gap-2">
