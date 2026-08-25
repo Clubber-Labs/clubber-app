@@ -299,7 +299,7 @@
       "username": "Username",
       "usernameLong": "Nome de usuário",
       "usernamePlaceholder": "joao.silva",
-      "usernameHint": "Letras minúsculas, números, s e _ — sem espaços.",
+      "usernameHint": "Letras minúsculas, números, ponto e _ — sem espaços.",
       "email": "E-mail",
       "emailPlaceholder": "joao@email.com",
       "emailAccessibility": "E-mail da conta",
