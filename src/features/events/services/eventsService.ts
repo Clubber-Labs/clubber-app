@@ -179,6 +179,11 @@ export const eventsService = {
       )
       .then(() => undefined),
 
+  // A API devolve os registros de convite com o usuário aninhado em `invited`
+  // (o registro traz também inviterId etc., que o app não consome) — o
+  // achatamento pro shape de pessoa acontece aqui, na fronteira.
   listInvites: (eventId: string): Promise<FeedAuthor[]> =>
-    api.get(`/events/${eventId}/invites`).then(r => r.data),
+    api
+      .get<{ invited: FeedAuthor }[]>(`/events/${eventId}/invites`)
+      .then(r => r.data.map(invite => invite.invited)),
 }
