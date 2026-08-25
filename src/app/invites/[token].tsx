@@ -1,15 +1,23 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   View,
   Text,
   Image,
   ActivityIndicator,
   Pressable,
+  ScrollView,
   StyleSheet,
 } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg'
+import Svg, {
+  Defs,
+  LinearGradient,
+  RadialGradient,
+  Stop,
+  Rect,
+} from 'react-native-svg'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useInvite } from '@/features/invites/hooks/useInvite'
 import { useAcceptInvite } from '@/features/invites/hooks/useAcceptInvite'
@@ -51,6 +59,35 @@ function inviteErrorKind(error: unknown): InviteErrorKind {
   return isNotFoundError(error) ? 'notFound' : 'generic'
 }
 
+// Flyer de festa é retrato na maioria; um hero fixo em 16:9 decapitava a arte.
+// Mede a imagem e usa a proporção REAL, com clamp pra extremos não engolirem a
+// tela (retrato até 3:4; paisagem até 16:9). Sem capa, gradiente em 16:9.
+// Tradeoff deliberado: arte 9:16 (story) é clampada e o cover corta — exibir
+// inteira deixaria o hero mais alto que a viewport. Se doer no uso real, a
+// evolução é resizeMode contain sobre fundo desfocado.
+function useCoverAspect(url: string | null | undefined): number {
+  const [aspect, setAspect] = useState(16 / 9)
+  useEffect(() => {
+    if (!url) {
+      setAspect(16 / 9)
+      return
+    }
+    let alive = true
+    Image.getSize(
+      url,
+      (width, height) => {
+        if (!alive || width <= 0 || height <= 0) return
+        setAspect(Math.min(Math.max(width / height, 3 / 4), 16 / 9))
+      },
+      () => {},
+    )
+    return () => {
+      alive = false
+    }
+  }, [url])
+  return aspect
+}
+
 // Erro que encerra o fluxo (troca a tela inteira). Rede/genérico no ACEITE não
 // derruba o card carregado — vira banner e o usuário retenta no botão.
 function blockingErrorKind(
@@ -70,9 +107,11 @@ export default function InviteScreen() {
   const router = useRouter()
   const showBanner = useBanner()
   const status = useAuthStore(s => s.status)
+  const insets = useSafeAreaInsets()
   const { data: invite, isLoading, error, refetch } = useInvite(token ?? '')
   const accept = useAcceptInvite(token ?? '')
   const { mutate: acceptMutate } = accept
+  const coverAspect = useCoverAspect(invite?.event.coverUrl)
 
   const acceptInvite = useCallback(() => {
     acceptMutate(undefined, {
@@ -154,13 +193,18 @@ export default function InviteScreen() {
   const isGuest = status !== 'authenticated'
 
   return (
-    <View className="flex-1 bg-background px-6 pt-6 pb-10">
-      <Text className="text-content text-2xl font-bold">
-        {t('invites.landing.heading', { name: event.author.name })}
-      </Text>
-
-      <View className="mt-6 overflow-hidden rounded-2xl border border-line bg-surface">
-        <View className="h-48 w-full bg-surface-elevated">
+    <View className="flex-1 bg-background">
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 16 }}
+      >
+        {/* Hero imersivo, edge-to-edge sob a status bar (mesma linguagem do
+            detalhe do evento) — a proporção acompanha a arte real. */}
+        <View
+          className="w-full bg-surface-elevated"
+          style={{ aspectRatio: coverAspect }}
+        >
           {event.coverUrl ? (
             <Image
               source={{ uri: event.coverUrl }}
@@ -184,22 +228,60 @@ export default function InviteScreen() {
               />
             </Svg>
           )}
+          {/* A status bar global é light e sumiria sobre arte clara — o scrim
+              garante a leitura sem escurecer o flyer inteiro. */}
+          <Svg
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: insets.top + 44,
+            }}
+          >
+            <Defs>
+              <LinearGradient
+                id="invite-statusbar-scrim"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <Stop
+                  offset="0"
+                  stopColor={colors.background}
+                  stopOpacity={0.55}
+                />
+                <Stop
+                  offset="1"
+                  stopColor={colors.background}
+                  stopOpacity={0}
+                />
+              </LinearGradient>
+            </Defs>
+            <Rect
+              x="0"
+              y="0"
+              width="100%"
+              height="100%"
+              fill="url(#invite-statusbar-scrim)"
+            />
+          </Svg>
         </View>
-        <View className="gap-2 p-4">
-          <Text className="text-content text-xl font-bold">{event.title}</Text>
-          <Text className="text-content-secondary text-sm">
+
+        <View className="px-6 pt-5 gap-2">
+          <Text className="text-content-muted text-base font-semibold">
+            {t('invites.landing.heading', { name: event.author.name })}
+          </Text>
+          <Text className="text-content text-3xl font-bold">{event.title}</Text>
+          <Text className="text-content-secondary text-base">
             {formatDayOfMonthAtTime(event.date, locale, event.timezone)}
           </Text>
-          {!!event.description && (
-            <Text className="text-content-muted text-sm" numberOfLines={3}>
-              {event.description}
-            </Text>
-          )}
-          <View className="mt-1 flex-row items-center gap-2">
+          <View className="mt-2 flex-row items-center gap-2">
             <UserAvatar
               name={event.author.name}
               avatarUrl={event.author.avatarUrl}
-              size={28}
+              size={32}
             />
             <View className="shrink">
               <Text
@@ -213,36 +295,44 @@ export default function InviteScreen() {
               </Text>
             </View>
           </View>
+          {!!event.description && (
+            <Text className="text-content-muted text-sm leading-5 mt-2">
+              {event.description}
+            </Text>
+          )}
         </View>
-      </View>
+      </ScrollView>
 
-      <View className="flex-1" />
-
-      {invite.viewer.hasAccess ? (
-        <Button
-          label={t('invites.landing.view')}
-          size="lg"
-          onPress={() => router.replace(`/events/${event.id}`)}
-        />
-      ) : isGuest ? (
-        <View className="gap-3">
-          <Text className="text-content-muted text-sm text-center">
-            {t('invites.landing.loginHint')}
-          </Text>
+      <View
+        className="px-6 pt-3"
+        style={{ paddingBottom: Math.max(insets.bottom, 16) + 8 }}
+      >
+        {invite.viewer.hasAccess ? (
           <Button
-            label={t('invites.landing.loginCta')}
+            label={t('invites.landing.view')}
             size="lg"
-            onPress={goToLogin}
+            onPress={() => router.replace(`/events/${event.id}`)}
           />
-        </View>
-      ) : (
-        <Button
-          label={t('invites.landing.accept')}
-          size="lg"
-          loading={accept.isPending}
-          onPress={acceptInvite}
-        />
-      )}
+        ) : isGuest ? (
+          <View className="gap-3">
+            <Text className="text-content-muted text-sm text-center">
+              {t('invites.landing.loginHint')}
+            </Text>
+            <Button
+              label={t('invites.landing.loginCta')}
+              size="lg"
+              onPress={goToLogin}
+            />
+          </View>
+        ) : (
+          <Button
+            label={t('invites.landing.accept')}
+            size="lg"
+            loading={accept.isPending}
+            onPress={acceptInvite}
+          />
+        )}
+      </View>
     </View>
   )
 }
