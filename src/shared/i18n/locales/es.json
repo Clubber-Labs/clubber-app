@@ -298,7 +298,8 @@
       "birthdatePlaceholder": "Selecciona tu fecha de nacimiento",
       "username": "Nombre de usuario",
       "usernameLong": "Nombre de usuario",
-      "usernamePlaceholder": "juangarcia",
+      "usernamePlaceholder": "juan.garcia",
+      "usernameHint": "Letras minúsculas, números, punto y _ — sin espacios.",
       "email": "Correo",
       "emailPlaceholder": "juan@email.com",
       "emailAccessibility": "Correo de la cuenta",
@@ -403,6 +404,7 @@
       "minimumAge": "Debes tener al menos 16 años para usar Clubber.",
       "usernameMin": "Mínimo 4 caracteres",
       "usernameMax": "Máximo 25 caracteres",
+      "usernameFormat": "El nombre de usuario solo puede tener letras minúsculas, números, punto y _ — el punto no puede empezar, terminar ni repetirse",
       "emailInvalid": "Correo no válido",
       "phoneMin": "Mínimo 10 dígitos",
       "phoneMax": "Máximo 11 dígitos",
@@ -1055,7 +1057,7 @@
       },
       "username": {
         "title": "Nombre de usuario",
-        "help": "Es como te encuentran en la app. Mínimo 4 caracteres."
+        "help": "Es como te encuentran en la app. De 4 a 25 caracteres: letras minúsculas, números, punto y _ — sin espacios."
       },
       "phone": {
         "title": "Teléfono",

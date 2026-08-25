@@ -3,6 +3,7 @@ import { MIN_PREFERRED_CATEGORIES } from '@/shared/utils/rolePreferences'
 import {
   USERNAME_MAX_LENGTH,
   USERNAME_MIN_LENGTH,
+  USERNAME_REGEX,
 } from '@/shared/utils/username'
 import { PHONE_MAX_DIGITS } from '@/shared/utils/masks'
 
@@ -43,7 +44,8 @@ const accountStep = z.object({
   username: z
     .string()
     .min(USERNAME_MIN_LENGTH, 'auth.errors.usernameMin')
-    .max(USERNAME_MAX_LENGTH, 'auth.errors.usernameMax'),
+    .max(USERNAME_MAX_LENGTH, 'auth.errors.usernameMax')
+    .regex(USERNAME_REGEX, 'auth.errors.usernameFormat'),
   email: z.string().email('auth.errors.emailInvalid'),
   phone: z
     .string()

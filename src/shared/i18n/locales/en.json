@@ -298,7 +298,8 @@
       "birthdatePlaceholder": "Select your date of birth",
       "username": "Username",
       "usernameLong": "Username",
-      "usernamePlaceholder": "johnsmith",
+      "usernamePlaceholder": "john.smith",
+      "usernameHint": "Lowercase letters, numbers, dot and _ — no spaces.",
       "email": "Email",
       "emailPlaceholder": "john@email.com",
       "emailAccessibility": "Account email",
@@ -403,6 +404,7 @@
       "minimumAge": "You must be at least 16 to use Clubber.",
       "usernameMin": "At least 4 characters",
       "usernameMax": "At most 25 characters",
+      "usernameFormat": "Username can only have lowercase letters, numbers, dot and _ — the dot can't start, end or repeat",
       "emailInvalid": "Invalid email",
       "phoneMin": "At least 10 digits",
       "phoneMax": "At most 11 digits",
@@ -1055,7 +1057,7 @@
       },
       "username": {
         "title": "Username",
-        "help": "It's how people find you in the app. At least 4 characters."
+        "help": "It's how people find you in the app. 4 to 25 characters: lowercase letters, numbers, dot and _ — no spaces."
       },
       "phone": {
         "title": "Phone",
