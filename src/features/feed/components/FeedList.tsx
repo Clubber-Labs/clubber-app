@@ -71,6 +71,9 @@ export function FeedList() {
   // ListEmptyComponent pra manter os chips visíveis e o scroll contínuo.
   return (
     <FlatList
+      // A lista hospeda o input de comentário/post: sem isto o primeiro toque em
+      // Enviar apenas fecha o teclado, e o usuário precisa tocar duas vezes.
+      keyboardShouldPersistTaps="handled"
       ref={listRef}
       className="flex-1"
       data={!locationResolved || isLoading || isError ? [] : events}

@@ -1,13 +1,13 @@
 import { useCallback, useMemo, useRef } from 'react'
 import { useFocusEffect } from 'expo-router'
 import {
-  Keyboard,
   TextInput,
   type NativeScrollEvent,
   type NativeSyntheticEvent,
   type ScrollView,
   type View,
 } from 'react-native'
+import { subscribeKeyboardTop } from '../lib/keyboardTop'
 
 type Measurable = {
   measureInWindow(
@@ -73,8 +73,8 @@ export type KeyboardAwareForm = {
  * com erro no submit.
  *
  * A faixa visível sai da medição real da ScrollView na janela cruzada com o
- * topo do teclado: funciona tanto com KeyboardAvoidingView encolhendo a
- * viewport (iOS) quanto com adjustResize (Android), sem contar duas vezes.
+ * topo do teclado: funciona com a viewport encolhendo ou não, sem contar duas
+ * vezes.
  *
  * O scroll acontece uma única vez, sempre com a geometria já assentada: com o
  * teclado abrindo, só depois do keyboardDidShow; com ele já aberto, no próprio
@@ -136,20 +136,16 @@ export function useKeyboardAwareForm(
   // useFocusEffect (e não useEffect): telas empilhadas continuam montadas, e sem
   // isso a tela de baixo também reagiria ao teclado da tela de cima.
   useFocusEffect(
-    useCallback(() => {
-      const subscriptions = [
-        Keyboard.addListener('keyboardDidShow', event => {
-          keyboardTop.current = event.endCoordinates.screenY
+    useCallback(
+      () =>
+        subscribeKeyboardTop('did', top => {
+          keyboardTop.current = top
           // Um frame pra absorver o encolhimento do KeyboardAvoidingView antes
           // de medir — assim o único scroll já sai na posição final.
-          requestAnimationFrame(revealFocused)
+          if (top !== null) requestAnimationFrame(revealFocused)
         }),
-        Keyboard.addListener('keyboardDidHide', () => {
-          keyboardTop.current = null
-        }),
-      ]
-      return () => subscriptions.forEach(subscription => subscription.remove())
-    }, [revealFocused]),
+      [revealFocused],
+    ),
   )
 
   const scrollProps = useMemo(

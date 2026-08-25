@@ -1,12 +1,6 @@
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import {
-  View,
-  Text,
-  Animated,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native'
+import { View, Text, Animated } from 'react-native'
 import { useForm, useWatch, type FieldErrors } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
@@ -183,9 +177,7 @@ export function RegisterForm() {
   ]
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <>
       <View className="gap-6">
         <RegisterProgressBar
           current={currentStep}
@@ -247,6 +239,6 @@ export function RegisterForm() {
 
         {isLastStep && <LegalNotice />}
       </View>
-    </KeyboardAvoidingView>
+    </>
   )
 }

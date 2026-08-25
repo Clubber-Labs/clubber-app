@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Animated, KeyboardAvoidingView, Platform } from 'react-native'
+import { Animated } from 'react-native'
 import { useRouter } from 'expo-router'
 import { useForgotPassword } from '../hooks/useForgotPassword'
 import { useResetPassword } from '../hooks/useResetPassword'
@@ -156,9 +156,7 @@ export function ForgotPasswordForm({ defaultEmail }: Props) {
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <>
       <Animated.View style={{ transform: [{ translateX: slideAnim }] }}>
         {step === 'email' && (
           <StepEmail
@@ -205,6 +203,6 @@ export function ForgotPasswordForm({ defaultEmail }: Props) {
           />
         )}
       </Animated.View>
-    </KeyboardAvoidingView>
+    </>
   )
 }

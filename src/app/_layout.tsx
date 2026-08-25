@@ -19,6 +19,7 @@ import {
 } from '@expo-google-fonts/sora'
 import * as ExpoSplash from 'expo-splash-screen'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { KeyboardProvider } from 'react-native-keyboard-controller'
 import { I18nextProvider } from 'react-i18next'
 import { i18n } from '@/shared/i18n'
 import { useLocaleHydrated } from '@/shared/hooks/useLocaleHydrated'
@@ -190,61 +191,66 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaProvider>
-        {/* Acima do resto: ConfirmProvider e BannerProvider precisam de `t`. */}
-        <I18nextProvider i18n={i18n}>
-          <QueryClientProvider client={queryClient}>
-            <StripeProvider publishableKey={stripePublishableKey}>
-              <ConfirmProvider>
-                <OpenInMapsProvider>
-                  <BannerProvider>
-                    <StatusBar style="light" />
-                    {/* Raiz sem inset e header absoluto: a altura daqui pra baixo
+        {/* Fonte de verdade do teclado (ver shared/lib/keyboardTop). As duas
+            barras são translúcidas porque o app é edge-to-edge — sem declarar,
+            a lib desconta insets que aqui não existem. */}
+        <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
+          {/* Acima do resto: ConfirmProvider e BannerProvider precisam de `t`. */}
+          <I18nextProvider i18n={i18n}>
+            <QueryClientProvider client={queryClient}>
+              <StripeProvider publishableKey={stripePublishableKey}>
+                <ConfirmProvider>
+                  <OpenInMapsProvider>
+                    <BannerProvider>
+                      <StatusBar style="light" />
+                      {/* Raiz sem inset e header absoluto: a altura daqui pra baixo
                       não pode depender da rota (ver chromeFor). */}
-                    <View className="flex-1 bg-background">
-                      <Stack
-                        screenOptions={({ route }) => ({
-                          headerShown: false,
-                          contentStyle: {
-                            backgroundColor: colors.background,
-                            paddingTop: topPaddingFor(route.name),
-                          },
-                        })}
+                      <View className="flex-1 bg-background">
+                        <Stack
+                          screenOptions={({ route }) => ({
+                            headerShown: false,
+                            contentStyle: {
+                              backgroundColor: colors.background,
+                              paddingTop: topPaddingFor(route.name),
+                            },
+                          })}
+                        />
+                        {header !== 'nenhum' && (
+                          <View className="absolute top-0 left-0 right-0">
+                            <GlobalHeader floating={header === 'vidro'} />
+                          </View>
+                        )}
+                        {status === 'offline' && (
+                          <SessionUnavailable onRetry={retry} />
+                        )}
+                      </View>
+                      <SplashOverlay
+                        visible={showSplash}
+                        onMounted={hideNativeSplash}
                       />
-                      {header !== 'nenhum' && (
-                        <View className="absolute top-0 left-0 right-0">
-                          <GlobalHeader floating={header === 'vidro'} />
-                        </View>
-                      )}
-                      {status === 'offline' && (
-                        <SessionUnavailable onRetry={retry} />
-                      )}
-                    </View>
-                    <SplashOverlay
-                      visible={showSplash}
-                      onMounted={hideNativeSplash}
-                    />
-                    <AuthGuard />
-                    {sessionReady && <PolicyUpdateNotice />}
-                    {/* Depois da splash: o pedido abre num Modal, que sobe
+                      <AuthGuard />
+                      {sessionReady && <PolicyUpdateNotice />}
+                      {/* Depois da splash: o pedido abre num Modal, que sobe
                         acima do overlay — apareceria sobre a arte de boot. */}
-                    {sessionReady && !showSplash && <FirstRunPermissions />}
-                    {chatActive && userId && (
-                      <>
-                        <ChatRealtimeMount
-                          myId={userId}
-                          onAuthError={handleSocketAuthError}
-                        />
-                        <NotificationsMount
-                          onAuthError={handleSocketAuthError}
-                        />
-                      </>
-                    )}
-                  </BannerProvider>
-                </OpenInMapsProvider>
-              </ConfirmProvider>
-            </StripeProvider>
-          </QueryClientProvider>
-        </I18nextProvider>
+                      {sessionReady && !showSplash && <FirstRunPermissions />}
+                      {chatActive && userId && (
+                        <>
+                          <ChatRealtimeMount
+                            myId={userId}
+                            onAuthError={handleSocketAuthError}
+                          />
+                          <NotificationsMount
+                            onAuthError={handleSocketAuthError}
+                          />
+                        </>
+                      )}
+                    </BannerProvider>
+                  </OpenInMapsProvider>
+                </ConfirmProvider>
+              </StripeProvider>
+            </QueryClientProvider>
+          </I18nextProvider>
+        </KeyboardProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   )
