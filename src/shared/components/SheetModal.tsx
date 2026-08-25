@@ -12,6 +12,12 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated'
 import { runOnJS } from 'react-native-worklets'
+import { useKeyboardOverlap } from '../hooks/useKeyboardOverlap'
+
+// Respiro entre o topo do teclado e o conteúdo recuado.
+const KEYBOARD_GAP = 16
+// Equivalente ao pb-8 que a folha usa sem teclado (safe area do indicador).
+const RESTING_BOTTOM = 32
 
 type Props = {
   visible: boolean
@@ -23,6 +29,17 @@ type Props = {
 // Bottom sheet imperativo simples (dark theme), no espírito do confirm.tsx.
 // Tap no backdrop fecha; tap no conteúdo não propaga. Genérico — qualquer feature.
 export function SheetModal({ visible, onClose, children, instantExit }: Props) {
+  // Folha com input (nomear grupo, detalhar denúncia) fica ancorada embaixo e
+  // sumia atrás do teclado. Aqui, e não em cada consumidor, pra ninguém ter que
+  // lembrar. A superfície segue indo até a borda da tela, passando por trás do
+  // teclado — quem recua é o conteúdo, via padding.
+  //
+  // SÓ RESOLVE O iOS. O hook depende de keyboardWillShow, que o Android não
+  // emite, e o ADJUST_RESIZE que o RN põe na Dialog do Modal não vale aqui
+  // porque o app é edge-to-edge (android/gradle.properties: edgeToEdgeEnabled).
+  // Fechar o Android exige uma fonte de altura de teclado por WindowInsets.
+  const { ref: sheetRef, overlap } = useKeyboardOverlap()
+
   // Arrastar a alça pra baixo fecha: segue o dedo; além do limiar (ou num flick),
   // fecha — o slide do Modal cuida da saída. Reseta ao reabrir.
   const dragY = useSharedValue(0)
@@ -64,7 +81,12 @@ export function SheetModal({ visible, onClose, children, instantExit }: Props) {
                 sem blur deixava o conteúdo de trás conflitar com a folha; o
                 hairline faz a separação no espírito do liquid glass. */}
             <Pressable
-              className="bg-surface rounded-t-3xl border-t border-white/10 pb-8 pt-2"
+              ref={sheetRef}
+              className="bg-surface rounded-t-3xl border-t border-white/10 pt-2"
+              style={{
+                paddingBottom:
+                  overlap > 0 ? overlap + KEYBOARD_GAP : RESTING_BOTTOM,
+              }}
               onPress={() => {}}
             >
               {/* O padding é o alvo de toque: errar a alça pega o conteúdo de

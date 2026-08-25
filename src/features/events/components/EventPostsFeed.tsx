@@ -47,6 +47,9 @@ export function EventPostsFeed({
   return (
     <>
       <FlatList<EventPost>
+        // A lista hospeda o input de comentário/post: sem isto o primeiro toque em
+        // Enviar apenas fecha o teclado, e o usuário precisa tocar duas vezes.
+        keyboardShouldPersistTaps="handled"
         data={posts}
         keyExtractor={item => item.id}
         contentContainerStyle={{
