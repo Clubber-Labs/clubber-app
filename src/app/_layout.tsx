@@ -133,10 +133,10 @@ function chromeFor(path: string): Chrome {
   // Detalhe do evento: hero imersivo sob a status bar, com botões flutuantes
   // próprios (subrotas como edit/invites são telas normais).
   if (path === 'events/[id]') return { topInset: 'nenhum', header: 'nenhum' }
-  // Convite por deep link (e a rota-espelho /e): tela própria que também abre
-  // deslogada — o header global não se aplica.
+  // Convite por deep link (e a rota-espelho /e): hero imersivo sob a status
+  // bar, como o detalhe do evento; também abre deslogada — sem header global.
   if (path.startsWith('invites') || path === 'e/[token]') {
-    return { topInset: 'statusBar', header: 'nenhum' }
+    return { topInset: 'nenhum', header: 'nenhum' }
   }
   // Telas com cabeçalho próprio (voltar + título + ações) — o global em cima
   // seria redundante.
