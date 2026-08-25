@@ -25,14 +25,26 @@ export function buildMessageMeta(
     const older = messages[i + 1]
     const newer = messages[i - 1]
 
+    // Aviso de sistema quebra a sequência dos dois lados: ele é atribuído ao
+    // ator no backend, então sem isso a mensagem seguinte dessa pessoa herdaria
+    // o "mesmo remetente" e perderia avatar e nome no grupo.
+    const isSystem = msg.type === 'SYSTEM'
     const sameDayOlder =
       !!older && isSameDay(new Date(msg.createdAt), new Date(older.createdAt))
     const sameSenderOlder =
-      !!older && older.senderId === msg.senderId && sameDayOlder
+      !!older &&
+      older.senderId === msg.senderId &&
+      sameDayOlder &&
+      !isSystem &&
+      older.type !== 'SYSTEM'
     const sameDayNewer =
       !!newer && isSameDay(new Date(msg.createdAt), new Date(newer.createdAt))
     const sameSenderNewer =
-      !!newer && newer.senderId === msg.senderId && sameDayNewer
+      !!newer &&
+      newer.senderId === msg.senderId &&
+      sameDayNewer &&
+      !isSystem &&
+      newer.type !== 'SYSTEM'
 
     const isMine = msg.senderId === myId
     const startsRun = !sameSenderOlder

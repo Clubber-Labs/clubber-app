@@ -3,11 +3,12 @@ import type { FollowStatus, UserMini } from '@/shared/types'
 export type ConversationType = 'DIRECT' | 'GROUP'
 export type Role = 'MEMBER' | 'ADMIN'
 
-// Tipo da mensagem (vindo do backend). SYSTEM = aviso de grupo (entrou/saiu);
-// não pode receber reação. Opcional pra degradar em mensagens já em cache sem o
-// campo — a gate de reação trata `undefined` como reagível e o backend é a guarda
-// final (403 em SYSTEM/apagada).
-export type MessageType = 'TEXT' | 'IMAGE' | 'AUDIO' | 'VIDEO' | 'SYSTEM'
+// Espelha o enum MessageType do Prisma (USER | SYSTEM). SYSTEM = aviso de grupo
+// (entrou/saiu/renomeou): renderiza como linha informativa, não conta não-lida e
+// não aceita reação/edição/exclusão. Opcional pra degradar em mensagens já em
+// cache sem o campo — a gate de reação trata `undefined` como reagível e o
+// backend é a guarda final (403 em SYSTEM/apagada).
+export type MessageType = 'USER' | 'SYSTEM'
 
 // Pessoa exibida num picker de conversa. Além do UserMini, carrega a relação de
 // follow nos DOIS sentidos e a privacidade — é o que permite ao app aplicar o
