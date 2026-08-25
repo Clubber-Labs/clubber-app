@@ -1,10 +1,11 @@
-import { View, Text, Image, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Image, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { LockIcon } from 'phosphor-react-native'
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg'
 import { EventDateChip } from './EventDateChip'
 import { EventStatusBadge } from './EventStatusBadge'
 import { SponsoredBadge } from '@/features/featured-events/components/SponsoredBadge'
+import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { formatFullName } from '@/shared/utils/fullName'
 import { eventCategoryEmoji } from '@/shared/utils/eventCategoryEmoji'
@@ -13,7 +14,6 @@ import { colors, categoryHue } from '@/shared/theme'
 
 type Props = {
   event: FeedEvent
-  onAuthorPress?: () => void
 }
 
 // Sombra de texto pra manter o nome legível sobre fotos claras (junto do scrim).
@@ -54,7 +54,7 @@ function TopChips({ event, isPast }: { event: FeedEvent; isPast: boolean }) {
   )
 }
 
-export function EventCardHero({ event, onAuthorPress }: Props) {
+export function EventCardHero({ event }: Props) {
   const { t } = useTranslation()
   const imageUrl = event.images[0]?.url ?? null
   const isPast = event.status === 'PAST' || event.status === 'CANCELED'
@@ -97,11 +97,9 @@ export function EventCardHero({ event, onAuthorPress }: Props) {
         <View className="absolute inset-x-3 top-3">
           <TopChips event={event} isPast={isPast} />
         </View>
-        <Pressable
-          onPress={onAuthorPress}
-          accessibilityLabel={t('shared.viewProfile', {
-            username: event.author.username,
-          })}
+        <ProfileLink
+          userId={event.author.id}
+          username={event.author.username}
           className="absolute inset-x-3 bottom-3 flex-row items-center gap-2"
         >
           <View className="rounded-full border-2 border-white/80">
@@ -126,7 +124,7 @@ export function EventCardHero({ event, onAuthorPress }: Props) {
               {t('events.organizer')}
             </Text>
           </View>
-        </Pressable>
+        </ProfileLink>
       </View>
     )
   }

@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { WarningCircleIcon, ArrowUUpLeftIcon } from 'phosphor-react-native'
+import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { SwipeableRow } from '@/shared/components/SwipeableRow'
 import { SenderLabel } from './SenderLabel'
@@ -198,20 +199,30 @@ export function MessageBubble({
   ) : (
     <View className={`px-3 ${topMargin} bg-background`}>
       {meta.showSenderLabel && (
-        <View className="ml-10">
+        <ProfileLink
+          userId={message.sender.id}
+          username={message.sender.username}
+          className="ml-10 self-start"
+          hitSlop={6}
+        >
           <SenderLabel
             name={`${message.sender.name} ${message.sender.lastname}`.trim()}
           />
-        </View>
+        </ProfileLink>
       )}
       <View className="flex-row items-end gap-2">
         {showGutter &&
           (meta.startsRun ? (
-            <UserAvatar
-              name={message.sender.name}
-              avatarUrl={message.sender.avatarUrl}
-              size={28}
-            />
+            <ProfileLink
+              userId={message.sender.id}
+              username={message.sender.username}
+            >
+              <UserAvatar
+                name={message.sender.name}
+                avatarUrl={message.sender.avatarUrl}
+                size={28}
+              />
+            </ProfileLink>
           ) : (
             <View style={{ width: 28 }} />
           ))}

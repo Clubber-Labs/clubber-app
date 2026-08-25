@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { DotsThreeVerticalIcon } from 'phosphor-react-native'
+import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { RoleBadge } from './RoleBadge'
 import type { Participant } from '../types'
@@ -23,14 +24,20 @@ export function ParticipantRow({
   const user = participant.user
   return (
     <View className="flex-row items-center gap-3 px-4 py-3">
-      <UserAvatar name={user.name} avatarUrl={user.avatarUrl} size={44} />
-      <View className="flex-1">
-        <Text className="text-content-bright font-semibold text-base">
-          {user.name} {user.lastname}
-          {isMe ? ` ${t('chat.people.you')}` : ''}
-        </Text>
-        <Text className="text-content-subtle text-sm">@{user.username}</Text>
-      </View>
+      <ProfileLink
+        userId={user.id}
+        username={user.username}
+        className="flex-row items-center gap-3 flex-1"
+      >
+        <UserAvatar name={user.name} avatarUrl={user.avatarUrl} size={44} />
+        <View className="flex-1">
+          <Text className="text-content-bright font-semibold text-base">
+            {user.name} {user.lastname}
+            {isMe ? ` ${t('chat.people.you')}` : ''}
+          </Text>
+          <Text className="text-content-subtle text-sm">@{user.username}</Text>
+        </View>
+      </ProfileLink>
       {participant.role === 'ADMIN' && <RoleBadge />}
       {canManage && (
         <Pressable

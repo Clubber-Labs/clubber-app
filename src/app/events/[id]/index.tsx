@@ -25,7 +25,6 @@ import { PromoteEventCard } from '@/features/featured-events/components/PromoteE
 import { useTrackEventView } from '@/features/event-analytics/hooks/useTrackEventView'
 import { useTrackEventShare } from '@/features/event-analytics/hooks/useTrackEventShare'
 import { ReportButton } from '@/features/reports/components/ReportButton'
-import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
 import { colors } from '@/shared/theme'
 
 type HeaderProps = {
@@ -37,14 +36,12 @@ type HeaderProps = {
 
 function DetailHeader({ event, isAuthor, isPremium, onShared }: HeaderProps) {
   const allowAttendance = event.status !== 'PAST' && event.status !== 'CANCELED'
-  const navigateToProfile = useNavigateToProfile()
   const router = useRouter()
 
   return (
     <View>
       <EventHeader
         event={event}
-        onAuthorPress={() => navigateToProfile(event.author.id)}
         onBack={() => router.back()}
         actions={
           <View className="flex-row items-center gap-2">

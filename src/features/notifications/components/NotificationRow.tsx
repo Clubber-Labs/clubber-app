@@ -1,5 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg'
+import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { formatRelative } from '@/shared/utils/dateFormat'
 import { useLocale } from '@/shared/hooks/useLocale'
@@ -71,13 +72,16 @@ export function NotificationRow({ notification, onPress }: Props) {
         </View>
       )}
 
+      {/* A linha leva ao alvo (evento, rolê); a foto leva sempre a quem agiu. */}
       <View className="relative">
         {actor ? (
-          <UserAvatar
-            name={actor.name}
-            avatarUrl={actor.avatarUrl ?? null}
-            size={44}
-          />
+          <ProfileLink userId={actor.id} username={actor.username}>
+            <UserAvatar
+              name={actor.name}
+              avatarUrl={actor.avatarUrl ?? null}
+              size={44}
+            />
+          </ProfileLink>
         ) : (
           <View
             className={`w-11 h-11 rounded-full border items-center justify-center ${tile.box}`}
@@ -86,7 +90,11 @@ export function NotificationRow({ notification, onPress }: Props) {
           </View>
         )}
         {actor && (
+          // Decorativo e IRMÃO do link (não filho): sem pointerEvents, o toque
+          // no canto que ele cobre cairia no Pressable da linha e abriria o
+          // alvo em vez do perfil.
           <View
+            pointerEvents="none"
             className="absolute -right-1.5 -bottom-0.5 w-5 h-5 rounded-full items-center justify-center border-2 border-background"
             style={{ backgroundColor: BADGE_COLOR[visual.tone] }}
           >

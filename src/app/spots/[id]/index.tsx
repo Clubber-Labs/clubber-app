@@ -31,7 +31,7 @@ import { CategoryBadge } from '@/shared/components/CategoryBadge'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { SpotLocationMap } from '@/features/spots/components/SpotLocationMap'
 import { useSheetExit } from '@/shared/hooks/useSheetExit'
-import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
+import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { useSpot } from '@/features/spots/hooks/useSpot'
 import { useJoinSpot } from '@/features/spots/hooks/useJoinSpot'
@@ -56,7 +56,6 @@ export default function SpotDetailScreen() {
   const myId = useAuthStore(s => s.userId)
   const confirm = useConfirm()
   const openInMaps = useOpenInMaps()
-  const navigateToProfile = useNavigateToProfile()
 
   const { data: spot, isLoading, error } = useSpot(id)
   const join = useJoinSpot(id)
@@ -150,8 +149,9 @@ export default function SpotDetailScreen() {
         className="flex-1 bg-background"
         contentContainerStyle={{ padding: 20, paddingBottom: 40, gap: 18 }}
       >
-        <Pressable
-          onPress={() => navigateToProfile(spot.creator.id)}
+        <ProfileLink
+          userId={spot.creator.id}
+          username={spot.creator.username}
           className="flex-row items-center gap-3"
         >
           <UserAvatar
@@ -170,7 +170,7 @@ export default function SpotDetailScreen() {
             </Text>
           </View>
           <CaretRightIcon size={16} color={colors.contentFaint} />
-        </Pressable>
+        </ProfileLink>
 
         <View className="gap-2.5">
           <Text className="text-content text-2xl font-bold leading-tight">

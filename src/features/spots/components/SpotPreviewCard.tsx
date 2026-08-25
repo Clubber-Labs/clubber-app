@@ -6,6 +6,7 @@ import {
   CaretRightIcon,
 } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
+import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useCategories } from '@/shared/hooks/useCategories'
 import { formatSpotWindow, isSpotLiveNow } from '../utils/spotWindow'
@@ -78,7 +79,11 @@ export function SpotPreviewCard({
         </View>
 
         <View className="flex-1 gap-1 pr-6">
-          <View className="flex-row items-center gap-2">
+          <ProfileLink
+            userId={spot.creator.id}
+            username={spot.creator.username}
+            className="flex-row items-center gap-2"
+          >
             <UserAvatar
               name={spot.creator.name}
               avatarUrl={spot.creator.avatarUrl}
@@ -92,7 +97,7 @@ export function SpotPreviewCard({
                 username: spot.creator.username,
               })}
             </Text>
-          </View>
+          </ProfileLink>
           <Text
             className="text-base font-extrabold text-content"
             numberOfLines={1}

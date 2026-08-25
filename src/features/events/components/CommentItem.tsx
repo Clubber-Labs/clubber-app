@@ -2,7 +2,7 @@ import { View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { FlagIcon, HeartIcon, TrashIcon } from 'phosphor-react-native'
 import { useToggleCommentLike } from '../hooks/useComments'
-import { useNavigateToProfile } from '@/features/users/hooks/useNavigateToProfile'
+import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { formatRelative } from '@/shared/utils/dateFormat'
 import { useLocale } from '@/shared/hooks/useLocale'
 import { SwipeableRow } from '@/shared/components/SwipeableRow'
@@ -21,7 +21,6 @@ type Props = {
 export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
   const { t } = useTranslation()
   const locale = useLocale()
-  const navigateToProfile = useNavigateToProfile()
   const toggleLike = useToggleCommentLike(eventId)
 
   function handleLike() {
@@ -34,16 +33,15 @@ export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
   const card = (
     <View className="bg-surface rounded-2xl p-4 border border-line">
       <View className="flex-row items-center justify-between mb-1">
-        <Pressable
-          onPress={() => navigateToProfile(comment.author.id)}
-          accessibilityLabel={t('shared.viewProfile', {
-            username: comment.author.username,
-          })}
+        <ProfileLink
+          userId={comment.author.id}
+          username={comment.author.username}
+          hitSlop={6}
         >
           <Text className="text-sm font-semibold text-content">
             {comment.author.name} {comment.author.lastname}
           </Text>
-        </Pressable>
+        </ProfileLink>
         <View className="flex-row items-center gap-2">
           <Text className="text-xs text-content-subtle">
             {formatRelative(comment.createdAt, locale)}

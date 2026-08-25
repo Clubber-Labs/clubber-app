@@ -23,6 +23,7 @@ import { useLocale } from '@/shared/hooks/useLocale'
 import { formatFullName } from '@/shared/utils/fullName'
 import { CategoryBadge } from '@/shared/components/CategoryBadge'
 import { AddressLink } from '@/shared/components/AddressLink'
+import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { EventStatusBadge } from './EventStatusBadge'
 import { EventDateChip } from './EventDateChip'
@@ -33,7 +34,6 @@ import { colors } from '@/shared/theme'
 
 type Props = {
   event: EventDetail
-  onAuthorPress?: () => void
   // Voltar — vira botão flutuante no topo-esquerdo (hero imersivo sem header).
   onBack?: () => void
   // Menu do autor (editar/excluir) ou botão de denúncia — definido pela tela,
@@ -71,7 +71,7 @@ function MetaRow({
   )
 }
 
-export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
+export function EventHeader({ event, onBack, actions }: Props) {
   const { t } = useTranslation()
   const locale = useLocale()
   const insets = useSafeAreaInsets()
@@ -121,11 +121,9 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
           <View className="flex-row">
             <EventStatusBadge status={event.status} date={event.date} />
           </View>
-          <Pressable
-            onPress={onAuthorPress}
-            accessibilityLabel={t('shared.viewProfile', {
-              username: event.author.username,
-            })}
+          <ProfileLink
+            userId={event.author.id}
+            username={event.author.username}
             className="flex-row items-center gap-2.5"
           >
             <View className="rounded-full border-2 border-white/70">
@@ -146,7 +144,7 @@ export function EventHeader({ event, onAuthorPress, onBack, actions }: Props) {
                 {t('events.organizer')}
               </Text>
             </View>
-          </Pressable>
+          </ProfileLink>
         </View>
         <EventDateChip
           date={event.date}

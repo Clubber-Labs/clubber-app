@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import type { FriendAttendance } from '@/shared/types'
 
@@ -34,11 +35,13 @@ export function EventAttendeesStack({ attendees, totalAttendances }: Props) {
             className="rounded-full border-2 border-surface"
             style={{ marginLeft: i === 0 ? 0 : -10 }}
           >
-            <UserAvatar
-              name={a.user.name}
-              avatarUrl={a.user.avatarUrl}
-              size={26}
-            />
+            <ProfileLink userId={a.user.id} username={a.user.username}>
+              <UserAvatar
+                name={a.user.name}
+                avatarUrl={a.user.avatarUrl}
+                size={26}
+              />
+            </ProfileLink>
           </View>
         ))}
       </View>
