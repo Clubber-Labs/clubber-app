@@ -27,6 +27,9 @@ export function HiddenArtistsEditor({ artists, isSaving, onToggle }: Props) {
 
   const hiddenCount = artists.filter(a => a.hidden).length
 
+  // Cada toque manda a lista COMPLETA de escondidos, não um diff. Por isso a
+  // grade trava enquanto salva (`isSaving`): dois toques em voo poderiam
+  // chegar fora de ordem, e o mais antigo desfaria o mais novo.
   function toggle(artistId: string) {
     const next = artists
       .filter(a => (a.id === artistId ? !a.hidden : a.hidden))
