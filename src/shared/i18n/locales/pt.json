@@ -1398,6 +1398,9 @@
       "label": "No repeat",
       "description": "Destaca seu artista mais ouvido acima da fileira, com os estilos dele."
     },
+    "confirmed": {
+      "label": "o Spotify confirma"
+    },
     "match": {
       "count_one": "{{count}} artista em comum",
       "count_other": "{{count}} artistas em comum"

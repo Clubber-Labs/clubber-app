@@ -145,6 +145,7 @@ export function ProfileHeader({
               ...(profile.preferredSubcategories ?? []),
             ]),
           ]}
+          confirmed={profile.spotifyConfirmedInterests}
         />
 
         {highlights}
