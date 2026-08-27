@@ -9,7 +9,6 @@ import {
 import { useTranslation } from 'react-i18next'
 import { CameraIcon } from 'phosphor-react-native'
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg'
-import { TopArtistsRow } from '@/features/spotify/components/TopArtistsRow'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { ProfileStats } from './ProfileStats'
 import { ProfilePreferredCategories } from './ProfilePreferredCategories'
@@ -26,6 +25,10 @@ type Props = {
   onFollowingPress?: () => void
   // Editar (perfil próprio) ou Seguir/Mensagem (de outro) — definido pela tela.
   actions?: ReactNode
+  // Slot entre as preferências e as ações. Existe para o header não precisar
+  // conhecer features que o importam: `users` é a folha que as outras puxam,
+  // então quem compõe é a tela, que pode importar as duas pontas.
+  highlights?: ReactNode
 }
 
 const AVATAR_SIZE = 80
@@ -42,6 +45,7 @@ export function ProfileHeader({
   onFollowersPress,
   onFollowingPress,
   actions,
+  highlights,
 }: Props) {
   const { t } = useTranslation()
   const fullName = formatFullName(profile.name, profile.lastname)
@@ -143,7 +147,7 @@ export function ProfileHeader({
           ]}
         />
 
-        <TopArtistsRow artists={profile.topArtists ?? []} />
+        {highlights}
 
         {actions && <View className="mt-4">{actions}</View>}
       </View>

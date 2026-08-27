@@ -28,8 +28,9 @@ export default function SpotifySettingsScreen() {
   const applyGenres = useApplySpotifyGenres()
   const { preferences, updatePreference } = useProductPreferences()
 
-  // Otimista no hook, que reverte sozinho se o PUT falhar — o switch voltando
-  // já é a mensagem. Um erro aqui em cima seria redundante.
+  // Otimista no hook, que reverte sozinho se o PUT falhar. O switch voltando
+  // mostra QUE não salvou, mas não por quê — daí a mensagem, como faz a tela
+  // de privacidade com as outras preferências de produto.
   async function handleVisibilityChange(value: boolean) {
     setError(null)
     const ok = await updatePreference('spotifyArtistsVisible', value)
