@@ -1,3 +1,4 @@
+import { feedKey } from '@/features/events/hooks/cacheKeys'
 import { userKeys } from '@/features/users/hooks/cacheKeys'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { spotifyService } from '../services/spotifyService'
@@ -16,7 +17,7 @@ export function useApplySpotifyGenres() {
     // reler em vez de servir o cache antigo.
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all })
-      queryClient.invalidateQueries({ queryKey: ['feed'] })
+      queryClient.invalidateQueries({ queryKey: feedKey })
     },
   })
 }

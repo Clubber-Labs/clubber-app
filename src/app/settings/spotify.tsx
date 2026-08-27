@@ -116,11 +116,13 @@ export default function SpotifySettingsScreen() {
         <SpotifyLinkCard profile={profile} />
 
         {/* Só faz sentido oferecer quando há gosto sincronizado: vínculo
-            revogado tem dado congelado, e sem gênero não há o que aplicar. */}
-        {profile.status === 'ACTIVE' && profile.genres.length > 0 && (
+            revogado tem dado congelado, e sem gênero não há o que aplicar.
+            Espera o `me` porque sem os interesses atuais a seção ofereceria
+            estilos que já estão no perfil. */}
+        {profile.status === 'ACTIVE' && profile.genres.length > 0 && me && (
           <ApplyGenresSection
             genres={profile.genres}
-            currentInterests={me?.preferredSubcategories ?? []}
+            currentInterests={me.preferredSubcategories ?? []}
             isApplying={applyGenres.isPending}
             onApply={handleApplyGenres}
           />

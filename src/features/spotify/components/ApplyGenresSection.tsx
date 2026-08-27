@@ -28,17 +28,17 @@ export function ApplyGenresSection({
   const { t } = useTranslation()
   const { labelFor } = useCategories()
 
-  const novos = genres.filter(g => !currentInterests.includes(g))
-  const [desmarcados, setDesmarcados] = useState<string[]>([])
+  const newGenres = genres.filter(g => !currentInterests.includes(g))
+  const [unchecked, setUnchecked] = useState<string[]>([])
 
   function toggle(genre: string) {
-    setDesmarcados(prev =>
+    setUnchecked(prev =>
       prev.includes(genre) ? prev.filter(g => g !== genre) : [...prev, genre],
     )
   }
 
   // Tudo que veio do Spotify já está no perfil: não há o que oferecer.
-  if (novos.length === 0) {
+  if (newGenres.length === 0) {
     return (
       <View className="bg-surface border border-line rounded-2xl p-5 gap-1">
         <Text className="text-content font-semibold text-sm">
@@ -51,7 +51,7 @@ export function ApplyGenresSection({
     )
   }
 
-  const selecionados = novos.filter(g => !desmarcados.includes(g))
+  const selected = newGenres.filter(g => !unchecked.includes(g))
 
   return (
     <View className="bg-surface border border-line rounded-2xl p-5 gap-4">
@@ -65,11 +65,11 @@ export function ApplyGenresSection({
       </View>
 
       <View className="flex-row flex-wrap gap-2">
-        {novos.map(genre => (
+        {newGenres.map(genre => (
           <Chip
             key={genre}
             label={labelFor(genre)}
-            active={!desmarcados.includes(genre)}
+            active={!unchecked.includes(genre)}
             onPress={() => toggle(genre)}
             disabled={isApplying}
           />
@@ -77,10 +77,10 @@ export function ApplyGenresSection({
       </View>
 
       <Button
-        label={t('spotify.apply.cta', { count: selecionados.length })}
-        onPress={() => onApply(selecionados)}
+        label={t('spotify.apply.cta', { count: selected.length })}
+        onPress={() => onApply(selected)}
         loading={isApplying}
-        disabled={isApplying || selecionados.length === 0}
+        disabled={isApplying || selected.length === 0}
       />
     </View>
   )
