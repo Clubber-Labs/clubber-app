@@ -126,6 +126,10 @@
     "SOCIAL_PROVIDER_MISCONFIGURED": "Este login está indisponível no momento.",
     "SOCIAL_PROVIDER_UNAVAILABLE": "{{provider}} está fora do ar. Tente de novo em instantes.",
     "SOCIAL_USER_MISSING": "Não encontramos uma conta ligada a esse login.",
+    "SPOTIFY_ACCOUNT_IN_USE": "Essa conta do Spotify já está vinculada a outro perfil.",
+    "SPOTIFY_NOT_LINKED": "Você ainda não vinculou sua conta do Spotify.",
+    "SPOTIFY_RATE_LIMITED": "O Spotify pediu uma pausa. Tente de novo daqui a pouco.",
+    "SPOTIFY_SCOPE_MISSING": "Precisamos da permissão de artistas mais ouvidos pra isso funcionar. Tente de novo e aceite tudo.",
     "SPOT_CANCELED": "Este rolê foi cancelado.",
     "SPOT_FRIENDS_ONLY": "Este rolê é só para amigos.",
     "SPOT_INACTIVE": "Este rolê não está mais ativo.",
@@ -1249,6 +1253,8 @@
     "notificationsHint": "Push, eventos próximos e categorias preferidas",
     "spots": "Sugestões de rolês",
     "spotsHint": "Raio da busca de rolês no mapa",
+    "spotify": "Spotify",
+    "spotifyHint": "Vincule sua conta e o app aprende seu som",
     "language": "Idioma",
     "languageHint": "Idioma do app, das notificações e dos e-mails",
     "privacy": "Privacidade",
@@ -1276,6 +1282,10 @@
     },
     "languageScreen": {
       "subtitle": "Vale também para as notificações e os e-mails que a gente envia."
+    },
+    "spotifyScreen": {
+      "subtitle": "Com a conta vinculada, o Clubber passa a conhecer o que você escuta de verdade.",
+      "revokeElsewhere": "Desvincular aqui apaga o que guardamos. Pra tirar o acesso do Clubber de vez, é em spotify.com/account/apps."
     }
   },
   "about": {
@@ -1348,6 +1358,30 @@
         "description": "Um selo exclusivo no seu perfil que passa credibilidade à primeira vista."
       }
     }
+  },
+  "spotify": {
+    "card": {
+      "title": "Spotify",
+      "pitch": "Vincule e a gente usa seu gosto real pra sugerir rolê — sem você preencher formulário nenhum.",
+      "visibilityNotice": "Seus artistas mais ouvidos passam a aparecer no seu perfil. Dá pra esconder aqui depois, quando quiser.",
+      "syncedOn": "Atualizado em {{date}}",
+      "revokedHint": "O acesso foi retirado no Spotify. Reconecte pra voltar a atualizar seu gosto."
+    },
+    "status": {
+      "active": "Conectado",
+      "revoked": "Reconectar"
+    },
+    "actions": {
+      "connect": "Vincular Spotify",
+      "reconnect": "Reconectar",
+      "disconnect": "Desvincular"
+    },
+    "disconnect": {
+      "title": "Desvincular o Spotify?",
+      "message": "A gente apaga seus artistas e para de atualizar seu gosto. Os interesses que você já aplicou continuam no seu perfil.",
+      "confirm": "Desvincular"
+    },
+    "loadError": "Não foi possível carregar seu Spotify."
   },
   "account": {
     "title": "Propriedade e controle da conta",

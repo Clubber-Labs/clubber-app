@@ -5,10 +5,12 @@ import {
   UserCircleIcon,
   BellIcon,
   SparkleIcon,
+  SpotifyLogoIcon,
   TranslateIcon,
   ShieldCheckIcon,
   InfoIcon,
 } from 'phosphor-react-native'
+import { spotifyClientId } from '@/features/spotify/lib/spotifyAuth'
 import { SettingsRow } from '@/shared/components/SettingsRow'
 
 export default function SettingsScreen() {
@@ -46,6 +48,16 @@ export default function SettingsScreen() {
           icon={SparkleIcon}
           onPress={() => router.push('/settings/spots')}
         />
+        {/* Build sem credencial do Spotify não oferece a opção: melhor não
+            existir do que abrir uma tela que só saberia dar erro. */}
+        {spotifyClientId() && (
+          <SettingsRow
+            label={t('settings.spotify')}
+            description={t('settings.spotifyHint')}
+            icon={SpotifyLogoIcon}
+            onPress={() => router.push('/settings/spotify')}
+          />
+        )}
         <SettingsRow
           label={t('settings.language')}
           description={t('settings.languageHint')}

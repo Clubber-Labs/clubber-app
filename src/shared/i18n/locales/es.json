@@ -126,6 +126,10 @@
     "SOCIAL_PROVIDER_MISCONFIGURED": "Este inicio de sesión no está disponible ahora.",
     "SOCIAL_PROVIDER_UNAVAILABLE": "{{provider}} no está disponible. Inténtalo en unos instantes.",
     "SOCIAL_USER_MISSING": "No encontramos una cuenta ligada a ese inicio de sesión.",
+    "SPOTIFY_ACCOUNT_IN_USE": "Esa cuenta de Spotify ya está vinculada a otro perfil.",
+    "SPOTIFY_NOT_LINKED": "Todavía no vinculaste tu cuenta de Spotify.",
+    "SPOTIFY_RATE_LIMITED": "Spotify nos pidió una pausa. Probá de nuevo en un rato.",
+    "SPOTIFY_SCOPE_MISSING": "Necesitamos permiso para ver tus artistas más escuchados. Probá de nuevo y aceptá todo.",
     "SPOT_CANCELED": "Este plan fue cancelado.",
     "SPOT_FRIENDS_ONLY": "Este plan es solo para amigos.",
     "SPOT_INACTIVE": "Este plan ya no está activo.",
@@ -1249,6 +1253,8 @@
     "notificationsHint": "Push, eventos cercanos y categorías preferidas",
     "spots": "Sugerencias de planes",
     "spotsHint": "Radio de búsqueda de planes en el mapa",
+    "spotify": "Spotify",
+    "spotifyHint": "Vinculá tu cuenta y la app aprende tu música",
     "language": "Idioma",
     "languageHint": "Idioma de la app, las notificaciones y los correos",
     "privacy": "Privacidad",
@@ -1276,6 +1282,10 @@
     },
     "languageScreen": {
       "subtitle": "También vale para las notificaciones y los correos que enviamos."
+    },
+    "spotifyScreen": {
+      "subtitle": "Con la cuenta vinculada, Clubber conoce lo que escuchás de verdad.",
+      "revokeElsewhere": "Desvincular acá borra lo que guardamos. Para cortarle el acceso del todo, andá a spotify.com/account/apps."
     }
   },
   "about": {
@@ -1348,6 +1358,30 @@
         "description": "Una insignia exclusiva en tu perfil que transmite credibilidad a primera vista."
       }
     }
+  },
+  "spotify": {
+    "card": {
+      "title": "Spotify",
+      "pitch": "Vinculá y usamos tu gusto real para sugerirte planes — sin llenar ningún formulario.",
+      "visibilityNotice": "Tus artistas más escuchados van a aparecer en tu perfil. Podés ocultarlos acá después, cuando quieras.",
+      "syncedOn": "Actualizado el {{date}}",
+      "revokedHint": "Te sacaron el acceso en Spotify. Reconectá para seguir actualizando tu gusto."
+    },
+    "status": {
+      "active": "Conectado",
+      "revoked": "Reconectar"
+    },
+    "actions": {
+      "connect": "Vincular Spotify",
+      "reconnect": "Reconectar",
+      "disconnect": "Desvincular"
+    },
+    "disconnect": {
+      "title": "¿Desvincular Spotify?",
+      "message": "Borramos tus artistas y dejamos de actualizar tu gusto. Los intereses que ya aplicaste siguen en tu perfil.",
+      "confirm": "Desvincular"
+    },
+    "loadError": "No pudimos cargar tu Spotify."
   },
   "account": {
     "title": "Propiedad y control de la cuenta",
