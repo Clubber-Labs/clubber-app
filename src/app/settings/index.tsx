@@ -5,17 +5,22 @@ import {
   UserCircleIcon,
   BellIcon,
   SparkleIcon,
-  SpotifyLogoIcon,
   TranslateIcon,
   ShieldCheckIcon,
   InfoIcon,
 } from 'phosphor-react-native'
+import { SpotifyMark } from '@/shared/components/SpotifyMark'
+import { useSpotifyProfile } from '@/features/spotify/hooks/useSpotifyProfile'
 import { spotifyClientId } from '@/features/spotify/lib/spotifyAuth'
 import { SettingsRow } from '@/shared/components/SettingsRow'
+import { colors } from '@/shared/theme'
 
 export default function SettingsScreen() {
   const { t } = useTranslation()
   const router = useRouter()
+  // Só consulta o vínculo em build que oferece a linha do Spotify.
+  const { data: spotify } = useSpotifyProfile({ enabled: !!spotifyClientId() })
+  const spotifyLinked = !!spotify?.linked && spotify.status === 'ACTIVE'
 
   return (
     <ScrollView
@@ -54,7 +59,8 @@ export default function SettingsScreen() {
           <SettingsRow
             label={t('settings.spotify')}
             description={t('settings.spotifyHint')}
-            icon={SpotifyLogoIcon}
+            icon={SpotifyMark}
+            iconColor={spotifyLinked ? colors.spotify : undefined}
             onPress={() => router.push('/settings/spotify')}
           />
         )}

@@ -1,9 +1,8 @@
-import { colors } from '@/shared/theme'
 import type { FeaturedArtist } from '@/shared/types'
 import * as Linking from 'expo-linking'
-import { SpotifyLogoIcon } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
 import { Image, Pressable, Text, View } from 'react-native'
+import { SpotifyMark } from '@/shared/components/SpotifyMark'
 
 type Props = {
   artist: FeaturedArtist | null | undefined
@@ -46,13 +45,13 @@ export function FeaturedArtistCard({ artist }: Props) {
             resizeMode="cover"
           />
         ) : (
-          <SpotifyLogoIcon size={20} color={colors.contentFaint} />
+          <SpotifyMark size={20} />
         )}
       </View>
 
       <View className="flex-1">
         <View className="flex-row items-center gap-1.5">
-          <SpotifyLogoIcon size={12} color={colors.contentSubtle} />
+          <SpotifyMark size={12} />
           <Text className="text-content-subtle text-[10px] font-semibold uppercase tracking-wider">
             {t('spotify.featured.label')}
           </Text>

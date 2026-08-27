@@ -1,9 +1,8 @@
-import { colors } from '@/shared/theme'
 import type { ProfileArtist } from '@/shared/types'
 import * as Linking from 'expo-linking'
-import { SpotifyLogoIcon } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
 import { Image, Pressable, ScrollView, Text, View } from 'react-native'
+import { SpotifyMark } from '@/shared/components/SpotifyMark'
 
 type Props = {
   artists: ProfileArtist[]
@@ -27,7 +26,7 @@ export function TopArtistsRow({ artists }: Props) {
   return (
     <View className="mt-4 gap-2">
       <View className="flex-row items-center gap-1.5">
-        <SpotifyLogoIcon size={14} color={colors.contentMuted} />
+        <SpotifyMark size={14} />
         <Text className="text-content-muted text-xs font-medium">
           {t('spotify.profile.title')}
         </Text>
@@ -69,7 +68,7 @@ export function TopArtistsRow({ artists }: Props) {
                 }}
                 className="bg-surface border border-line items-center justify-center"
               >
-                <SpotifyLogoIcon size={24} color={colors.contentFaint} />
+                <SpotifyMark size={24} />
               </View>
             )}
             <Text

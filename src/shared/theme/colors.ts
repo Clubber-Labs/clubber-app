@@ -60,6 +60,10 @@ export const colors = {
 
   // informação (ex: confirmação de "lido")
   info: '#7dd3fc',
+
+  // marca de terceiro, sem variável no global.css — as guidelines do Spotify
+  // pedem o logo verde oficial ou branco
+  spotify: '#1ED760',
 } as const
 
 export type ColorToken = keyof typeof colors
