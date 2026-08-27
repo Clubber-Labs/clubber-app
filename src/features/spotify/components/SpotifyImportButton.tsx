@@ -6,13 +6,13 @@ import {
   MAX_PREFERRED_CATEGORIES,
   MAX_PREFERRED_INTERESTS,
 } from '@/shared/utils/rolePreferences'
-import { CheckCircleIcon, SpotifyLogoIcon } from 'phosphor-react-native'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, Pressable, Text, View } from 'react-native'
 import { FALLBACK_GENRE_CATEGORY, MAX_IMPORTED_GENRES } from '../constants'
 import { useLinkSpotify } from '../hooks/useLinkSpotify'
 import { spotifyClientId } from '../lib/spotifyAuth'
+import { SpotifyMark } from '@/shared/components/SpotifyMark'
 
 export type ImportedTaste = {
   categories: string[]
@@ -59,24 +59,28 @@ export function SpotifyImportButton({
       if (result.kind !== 'linked') return
 
       const genres = result.profile.genres.slice(0, MAX_IMPORTED_GENRES)
-      if (genres.length === 0) return
 
-      // Sem categoria compatível o estilo importado nunca casaria com evento
-      // nenhum. A checagem sai da taxonomia do servidor, não de lista fixa.
-      const compatible = genres.some(genre =>
-        (genreAppliesTo(genre) ?? []).some(c => categories.includes(c)),
-      )
-      const nextCategories = compatible
-        ? categories
-        : [...new Set([...categories, FALLBACK_GENRE_CATEGORY])]
+      if (genres.length > 0) {
+        // Sem categoria compatível o estilo importado nunca casaria com evento
+        // nenhum. A checagem sai da taxonomia do servidor, não de lista fixa.
+        const compatible = genres.some(genre =>
+          (genreAppliesTo(genre) ?? []).some(c => categories.includes(c)),
+        )
+        const nextCategories = compatible
+          ? categories
+          : [...new Set([...categories, FALLBACK_GENRE_CATEGORY])]
 
-      onImport({
-        categories: nextCategories.slice(0, MAX_PREFERRED_CATEGORIES),
-        interests: [...new Set([...interests, ...genres])].slice(
-          0,
-          MAX_PREFERRED_INTERESTS,
-        ),
-      })
+        onImport({
+          categories: nextCategories.slice(0, MAX_PREFERRED_CATEGORIES),
+          interests: [...new Set([...interests, ...genres])].slice(
+            0,
+            MAX_PREFERRED_INTERESTS,
+          ),
+        })
+      }
+
+      // Vincular sem nenhum gênero mapeado também é desfecho — calar aqui
+      // faria o sucesso parecer defeito.
       setImported(genres)
     } catch (err) {
       setError(getApiError(err).message)
@@ -89,15 +93,20 @@ export function SpotifyImportButton({
   // nem estar à vista. Sem dizer o que entrou, a pessoa não tem como saber se
   // funcionou — e ainda precisa poder conferir, porque o formulário é dela.
   if (imported) {
+    const isEmpty = imported.length === 0
     return (
-      <View className="flex-row items-start gap-2.5 bg-surface border border-line rounded-xl px-3.5 py-3">
-        <CheckCircleIcon size={18} color={colors.success} />
+      <View className="flex-row items-center gap-3 bg-surface border border-line rounded-xl px-3.5 py-3">
+        <SpotifyMark size={36} />
         <View className="flex-1">
           <Text className="text-content-secondary text-sm font-semibold">
-            {t('spotify.onboarding.done', { count: imported.length })}
+            {isEmpty
+              ? t('spotify.onboarding.doneEmpty')
+              : t('spotify.onboarding.done', { count: imported.length })}
           </Text>
           <Text className="text-content-muted text-xs mt-0.5 leading-4">
-            {labelsFor(imported)}
+            {isEmpty
+              ? t('spotify.onboarding.doneEmptyHint')
+              : labelsFor(imported)}
           </Text>
         </View>
       </View>
@@ -117,7 +126,7 @@ export function SpotifyImportButton({
           <ActivityIndicator size="small" color={colors.contentMuted} />
         ) : (
           <>
-            <SpotifyLogoIcon size={18} color={colors.content} />
+            <SpotifyMark size={18} color={colors.content} />
             <Text className="text-content-secondary text-sm font-semibold">
               {t('spotify.onboarding.cta')}
             </Text>
