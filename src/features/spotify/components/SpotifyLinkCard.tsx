@@ -1,10 +1,10 @@
 import { useLocale } from '@/shared/hooks/useLocale'
 import { colors } from '@/shared/theme'
 import { formatDayOfMonthYear } from '@/shared/utils/dateFormat'
-import { SpotifyLogoIcon } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
 import { Text, View } from 'react-native'
 import type { SpotifyProfile } from '../types'
+import { SpotifyMark } from '@/shared/components/SpotifyMark'
 
 type Props = {
   profile: SpotifyProfile
@@ -23,7 +23,12 @@ export function SpotifyLinkCard({ profile }: Props) {
     <View className="bg-surface border border-line rounded-2xl p-5 gap-4">
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center gap-2">
-          <SpotifyLogoIcon size={20} color={colors.brandText} />
+          {/* Verde oficial só com vínculo funcionando: revogado é vínculo
+              quebrado, e verde ali diria que está tudo bem. */}
+          <SpotifyMark
+            size={20}
+            color={profile.linked && !isRevoked ? undefined : colors.brandText}
+          />
           <Text className="text-content font-bold text-lg">
             {t('spotify.card.title')}
           </Text>

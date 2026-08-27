@@ -1385,7 +1385,9 @@
       "cta": "Já ouço no Spotify",
       "hint": "A gente marca seus estilos pra você — é só conferir.",
       "done_one": "Pronto — marcamos {{count}} estilo pra você",
-      "done_other": "Pronto — marcamos {{count}} estilos pra você"
+      "done_other": "Pronto — marcamos {{count}} estilos pra você",
+      "doneEmpty": "Spotify vinculado — nada pra marcar ainda",
+      "doneEmptyHint": "Não deu pra descobrir seus estilos ainda — marca à mão aqui embaixo."
     },
     "status": {
       "active": "Conectado",

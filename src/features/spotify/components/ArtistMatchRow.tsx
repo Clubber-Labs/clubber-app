@@ -1,9 +1,9 @@
 import { colors } from '@/shared/theme'
 import type { ArtistMatch } from '@/shared/types'
 import * as Linking from 'expo-linking'
-import { SpotifyLogoIcon } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
 import { Image, Pressable, Text, View } from 'react-native'
+import { SpotifyMark } from '@/shared/components/SpotifyMark'
 
 type Props = {
   match: ArtistMatch | null | undefined
@@ -57,7 +57,7 @@ export function ArtistMatchRow({ match }: Props) {
                   resizeMode="cover"
                 />
               ) : (
-                <SpotifyLogoIcon size={16} color={colors.contentFaint} />
+                <SpotifyMark size={16} color={colors.contentFaint} />
               )}
             </Pressable>
           ))}
@@ -68,9 +68,7 @@ export function ArtistMatchRow({ match }: Props) {
         <View className="flex-row items-center gap-1.5">
           {/* Só credita quando há conteúdo do Spotify na tela: no modo
               contagem não vai nome nem foto, então não há o que atribuir. */}
-          {match.named.length > 0 && (
-            <SpotifyLogoIcon size={13} color={colors.contentMuted} />
-          )}
+          {match.named.length > 0 && <SpotifyMark size={13} />}
           <Text className="text-content-secondary text-sm font-semibold">
             {t('spotify.match.count', { count: match.count })}
           </Text>

@@ -1385,7 +1385,9 @@
       "cta": "I listen on Spotify",
       "hint": "We check your styles for you — just look them over.",
       "done_one": "Done — we checked {{count}} style for you",
-      "done_other": "Done — we checked {{count}} styles for you"
+      "done_other": "Done — we checked {{count}} styles for you",
+      "doneEmpty": "Spotify linked — nothing to check yet",
+      "doneEmptyHint": "We couldn't work out your styles yet — pick them by hand below."
     },
     "status": {
       "active": "Connected",

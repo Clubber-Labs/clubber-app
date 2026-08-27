@@ -1,11 +1,17 @@
+import type { ComponentType } from 'react'
 import { Pressable, View, Text } from 'react-native'
-import { CaretRightIcon, type Icon } from 'phosphor-react-native'
+import { CaretRightIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
+
+/** Aceita phosphor e marcas próprias (ex.: SpotifyMark) — basta size/color. */
+type RowIcon = ComponentType<{ size?: number; color?: string }>
 
 type Props = {
   label: string
   description?: string
-  icon?: Icon
+  icon?: RowIcon
+  /** Sobrepõe a cor padrão do ícone (ex.: marca de terceiro na cor oficial). */
+  iconColor?: string
   destructive?: boolean
   onPress: () => void
 }
@@ -16,6 +22,7 @@ export function SettingsRow({
   label,
   description,
   icon: IconComponent,
+  iconColor,
   destructive,
   onPress,
 }: Props) {
@@ -28,7 +35,9 @@ export function SettingsRow({
         {IconComponent && (
           <IconComponent
             size={20}
-            color={destructive ? colors.danger : colors.contentMuted}
+            color={
+              iconColor ?? (destructive ? colors.danger : colors.contentMuted)
+            }
           />
         )}
         <View className="flex-1">

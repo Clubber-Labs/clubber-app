@@ -1,8 +1,9 @@
 import { colors } from '@/shared/theme'
-import { EyeSlashIcon, SpotifyLogoIcon } from 'phosphor-react-native'
+import { EyeSlashIcon } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
 import { Image, Pressable, Text, View } from 'react-native'
 import type { SpotifyArtist } from '../types'
+import { SpotifyMark } from '@/shared/components/SpotifyMark'
 
 type Props = {
   artists: SpotifyArtist[]
@@ -79,7 +80,7 @@ export function HiddenArtistsEditor({ artists, isSaving, onToggle }: Props) {
                   resizeMode="cover"
                 />
               ) : (
-                <SpotifyLogoIcon size={22} color={colors.contentFaint} />
+                <SpotifyMark size={22} color={colors.contentFaint} />
               )}
             </View>
 
