@@ -1,5 +1,22 @@
 # Integração Spotify — gosto musical real no Clubber
 
+> **⚠️ STATUS (2026-08-27): DORMENTE.** F1/F2 foram implementadas, mas a feature
+> está desligada em produção/TestFlight (env `SPOTIFY_CLIENT_ID` ausente do EAS)
+> e **nenhum sistema do app deve ser construído assumindo dados do Spotify**.
+> Motivos, verificados empiricamente contra a API:
+>
+> 1. O Spotify **removeu o campo `genres`** (e `popularity`/`followers`) dos
+>    objetos de artista para apps novos — o import de gêneros retorna vazio.
+>    O de-para e o pipeline funcionam; falta insumo. Plano B: tabela
+>    artista→gênero (curadoria + MusicBrainz/Last.fm).
+> 2. **Extended Quota Mode** (necessário pro público vincular) exige, desde
+>    mai/2025, empresa registrada + serviço lançado + **250k MAU comprovados** +
+>    prova de receita. O Development Mode limita o vínculo a uma allowlist de
+>    ~5 contas de teste.
+>
+> O texto abaixo é o plano original — vale como referência de arquitetura, mas
+> as premissas sobre `genres` e sobre o pedido de quota estão superadas.
+
 Plano de implementação (2026-08-25, não iniciado). Objetivo: o usuário vincula
 a conta do Spotify e o Clubber passa a conhecer o gosto musical REAL dele —
 top artistas e gêneros — alimentando personalização, matching de eventos por
