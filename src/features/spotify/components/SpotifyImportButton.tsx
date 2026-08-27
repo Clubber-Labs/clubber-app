@@ -6,7 +6,7 @@ import {
   MAX_PREFERRED_CATEGORIES,
   MAX_PREFERRED_INTERESTS,
 } from '@/shared/utils/rolePreferences'
-import { SpotifyLogoIcon } from 'phosphor-react-native'
+import { CheckCircleIcon, SpotifyLogoIcon } from 'phosphor-react-native'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, Pressable, Text, View } from 'react-native'
@@ -40,8 +40,9 @@ export function SpotifyImportButton({
   onImport,
 }: Props) {
   const { t } = useTranslation()
-  const { genreAppliesTo } = useCategories()
+  const { genreAppliesTo, labelsFor } = useCategories()
   const [error, setError] = useState<string | null>(null)
+  const [imported, setImported] = useState<string[] | null>(null)
 
   // Sem recarregar o perfil: o submit do formulário é quem grava, e um refetch
   // que falhasse aqui desmontaria o formulário inteiro.
@@ -57,12 +58,12 @@ export function SpotifyImportButton({
       // Desistiu na tela do Spotify: a tela fica como estava, sem alarde.
       if (result.kind !== 'linked') return
 
-      const imported = result.profile.genres.slice(0, MAX_IMPORTED_GENRES)
-      if (imported.length === 0) return
+      const genres = result.profile.genres.slice(0, MAX_IMPORTED_GENRES)
+      if (genres.length === 0) return
 
       // Sem categoria compatível o estilo importado nunca casaria com evento
       // nenhum. A checagem sai da taxonomia do servidor, não de lista fixa.
-      const compatible = imported.some(genre =>
+      const compatible = genres.some(genre =>
         (genreAppliesTo(genre) ?? []).some(c => categories.includes(c)),
       )
       const nextCategories = compatible
@@ -71,17 +72,37 @@ export function SpotifyImportButton({
 
       onImport({
         categories: nextCategories.slice(0, MAX_PREFERRED_CATEGORIES),
-        interests: [...new Set([...interests, ...imported])].slice(
+        interests: [...new Set([...interests, ...genres])].slice(
           0,
           MAX_PREFERRED_INTERESTS,
         ),
       })
+      setImported(genres)
     } catch (err) {
       setError(getApiError(err).message)
     }
   }
 
   const disabled = link.isPending || !link.isReady
+
+  // Autorizou e voltou: a marcação acontece nos seletores abaixo, que podem
+  // nem estar à vista. Sem dizer o que entrou, a pessoa não tem como saber se
+  // funcionou — e ainda precisa poder conferir, porque o formulário é dela.
+  if (imported) {
+    return (
+      <View className="flex-row items-start gap-2.5 bg-surface border border-line rounded-xl px-3.5 py-3">
+        <CheckCircleIcon size={18} color={colors.success} />
+        <View className="flex-1">
+          <Text className="text-content-secondary text-sm font-semibold">
+            {t('spotify.onboarding.done', { count: imported.length })}
+          </Text>
+          <Text className="text-content-muted text-xs mt-0.5 leading-4">
+            {labelsFor(imported)}
+          </Text>
+        </View>
+      </View>
+    )
+  }
 
   return (
     <View className="gap-2">

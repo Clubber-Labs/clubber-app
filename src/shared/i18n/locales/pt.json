@@ -1383,7 +1383,9 @@
     },
     "onboarding": {
       "cta": "Já ouço no Spotify",
-      "hint": "A gente marca seus estilos pra você — é só conferir."
+      "hint": "A gente marca seus estilos pra você — é só conferir.",
+      "done_one": "Pronto — marcamos {{count}} estilo pra você",
+      "done_other": "Pronto — marcamos {{count}} estilos pra você"
     },
     "status": {
       "active": "Conectado",
