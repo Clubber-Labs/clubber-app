@@ -1,8 +1,10 @@
 import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
 import { useProductPreferences } from '@/features/privacy/hooks/useProductPreferences'
 import { ApplyGenresSection } from '@/features/spotify/components/ApplyGenresSection'
+import { HiddenArtistsEditor } from '@/features/spotify/components/HiddenArtistsEditor'
 import { SpotifyLinkCard } from '@/features/spotify/components/SpotifyLinkCard'
 import { useApplySpotifyGenres } from '@/features/spotify/hooks/useApplySpotifyGenres'
+import { useHiddenArtists } from '@/features/spotify/hooks/useHiddenArtists'
 import { useLinkSpotify } from '@/features/spotify/hooks/useLinkSpotify'
 import { useSpotifyProfile } from '@/features/spotify/hooks/useSpotifyProfile'
 import { useUnlinkSpotify } from '@/features/spotify/hooks/useUnlinkSpotify'
@@ -26,6 +28,7 @@ export default function SpotifySettingsScreen() {
   const link = useLinkSpotify()
   const unlink = useUnlinkSpotify()
   const applyGenres = useApplySpotifyGenres()
+  const hiddenArtists = useHiddenArtists()
   const { preferences, updatePreference } = useProductPreferences()
 
   // Otimista no hook, que reverte sozinho se o PUT falhar. O switch voltando
@@ -41,6 +44,15 @@ export default function SpotifySettingsScreen() {
     setError(null)
     try {
       await applyGenres.mutateAsync(genres)
+    } catch (err) {
+      setError(getApiError(err).message)
+    }
+  }
+
+  async function handleToggleArtist(hiddenArtistIds: string[]) {
+    setError(null)
+    try {
+      await hiddenArtists.mutateAsync(hiddenArtistIds)
     } catch (err) {
       setError(getApiError(err).message)
     }
@@ -151,6 +163,16 @@ export default function SpotifySettingsScreen() {
               isLast
             />
           </View>
+        )}
+
+        {/* Aparece mesmo com a exibição geral desligada: o artista escondido
+            também sai da contagem de artistas em comum. */}
+        {profile.linked && (
+          <HiddenArtistsEditor
+            artists={profile.artists}
+            isSaving={hiddenArtists.isPending}
+            onToggle={handleToggleArtist}
+          />
         )}
 
         <FormError message={error} />

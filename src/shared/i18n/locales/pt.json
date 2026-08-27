@@ -1375,6 +1375,12 @@
       "upToDateTitle": "Seu perfil já está com seu som",
       "upToDateBody": "Tudo que veio do Spotify já está nos seus interesses."
     },
+    "hidden": {
+      "title": "Quem aparece",
+      "body": "Toque pra esconder um artista do seu perfil. Ele continua contando pro que a gente te sugere.",
+      "someHidden_one": "{{count}} escondido. Toque de novo pra trazer de volta.",
+      "someHidden_other": "{{count}} escondidos. Toque de novo pra trazer de volta."
+    },
     "onboarding": {
       "cta": "Já ouço no Spotify",
       "hint": "A gente marca seus estilos pra você — é só conferir."
