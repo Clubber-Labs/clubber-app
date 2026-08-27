@@ -16,13 +16,7 @@ export default function SpotifySettingsScreen() {
   const confirm = useConfirm()
   const [error, setError] = useState<string | null>(null)
 
-  const {
-    data: profile,
-    isLoading,
-    isError,
-    refetch,
-    isFetching,
-  } = useSpotifyProfile()
+  const { data: profile, isError, refetch, isFetching } = useSpotifyProfile()
   const link = useLinkSpotify()
   const unlink = useUnlinkSpotify()
 
@@ -56,28 +50,28 @@ export default function SpotifySettingsScreen() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <View className="flex-1 bg-background items-center justify-center">
-        <ActivityIndicator color={colors.brand} />
-      </View>
-    )
-  }
-
-  // Falha de rede/5xx: sem esta saída o `!profile` prenderia a tela num
-  // spinner eterno, já que o TanStack desliga o isLoading ao desistir.
-  if (isError || !profile) {
+  // O erro só toma a tela quando NÃO há o que mostrar. Com perfil em cache,
+  // um refetch que falhou não justifica trocar dado utilizável por uma tela de
+  // erro — e sem esta saída o `!profile` prenderia num spinner eterno, já que
+  // o TanStack desliga o isLoading ao desistir.
+  if (!profile) {
     return (
       <View className="flex-1 bg-background items-center justify-center px-8 gap-3">
-        <Text className="text-content-muted text-center text-sm">
-          {t('spotify.loadError')}
-        </Text>
-        <Button
-          label={t('common.retry')}
-          variant="secondary"
-          onPress={() => refetch()}
-          loading={isFetching}
-        />
+        {isError ? (
+          <>
+            <Text className="text-content-muted text-center text-sm">
+              {t('spotify.loadError')}
+            </Text>
+            <Button
+              label={t('common.retry')}
+              variant="secondary"
+              onPress={() => refetch()}
+              loading={isFetching}
+            />
+          </>
+        ) : (
+          <ActivityIndicator color={colors.brand} />
+        )}
       </View>
     )
   }
