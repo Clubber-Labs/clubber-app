@@ -9,6 +9,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { CameraIcon } from 'phosphor-react-native'
 import Svg, { Defs, RadialGradient, Stop, Rect } from 'react-native-svg'
+import { TopArtistsRow } from '@/features/spotify/components/TopArtistsRow'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { ProfileStats } from './ProfileStats'
 import { ProfilePreferredCategories } from './ProfilePreferredCategories'
@@ -141,6 +142,8 @@ export function ProfileHeader({
             ]),
           ]}
         />
+
+        <TopArtistsRow artists={profile.topArtists ?? []} />
 
         {actions && <View className="mt-4">{actions}</View>}
       </View>

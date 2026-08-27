@@ -1379,6 +1379,14 @@
       "active": "Connected",
       "revoked": "Reconnect"
     },
+    "profile": {
+      "title": "Most played on Spotify"
+    },
+    "visibility": {
+      "label": "Show on my profile",
+      "description": "Anyone visiting your profile sees your most played artists. Turn it off and they disappear for everyone.",
+      "saveError": "We could not save that. Try again."
+    },
     "actions": {
       "connect": "Link Spotify",
       "reconnect": "Reconnect",

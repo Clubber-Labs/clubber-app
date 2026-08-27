@@ -262,6 +262,14 @@ export type AccountStatus =
   | 'PENDING_DELETION'
   | 'ANONYMIZED'
 
+/** Artista do Spotify exibido no perfil. `spotifyUrl` é a atribuição de volta. */
+export type ProfileArtist = {
+  id: string
+  name: string
+  imageUrl: string | null
+  spotifyUrl: string
+}
+
 export type UserProfile = {
   id: string
   name: string
@@ -292,6 +300,13 @@ export type UserProfile = {
   // Interesses de 2º nível (subcategorias + gêneros) na mesma lista. Mesma
   // semântica de presença/ausência de preferredCategories.
   preferredSubcategories?: string[]
+  // Top artistas do Spotify já FILTRADOS pelo servidor: vem vazio quando o
+  // dono escondeu, ocultou o artista ou o vínculo foi revogado. O app só
+  // desenha — nunca decide o que mostrar.
+  topArtists?: ProfileArtist[]
+  // Estado do toggle de exibição. Só em /users/me: em perfil de terceiro nem
+  // revelamos que alguém escondeu algo.
+  spotifyArtistsVisible?: boolean
   // Raio de interesse das notificações de proximidade (km). Presente só em
   // /users/me e só em backends que já expõem o campo no select privado.
   notifyRadiusKm?: number
