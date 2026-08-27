@@ -323,6 +323,10 @@ export type UserProfile = {
   // Interesses de 2º nível (subcategorias + gêneros) na mesma lista. Mesma
   // semântica de presença/ausência de preferredCategories.
   preferredSubcategories?: string[]
+  // Subconjunto dos interesses acima que o gosto real no Spotify sustenta. O
+  // servidor cruza; vem vazio quando o dono escondeu a música, o vínculo foi
+  // revogado ou não há interseção.
+  spotifyConfirmedInterests?: string[]
   // Top artistas do Spotify já FILTRADOS pelo servidor: vem vazio quando o
   // dono escondeu, ocultou o artista ou o vínculo foi revogado. O app só
   // desenha — nunca decide o que mostrar.
