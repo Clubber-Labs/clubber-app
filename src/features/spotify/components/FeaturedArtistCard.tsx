@@ -12,11 +12,10 @@ type Props = {
 const FACE_SIZE = 52
 
 /**
- * O mais ouvido, acima da fileira. Guardamos a posição de cada artista e
- * desenhávamos os cinco iguais — o número um diz mais sobre alguém que os
- * outros quatro juntos.
+ * O mais ouvido, acima da fileira: o número um diz mais sobre alguém do que os
+ * outros quatro juntos, e some na fileira se desenhado do mesmo tamanho.
  *
- * Os gêneros crus do Spotify vão como legenda: são a ponte entre o artista e
+ * Os gêneros crus do Spotify vão como legenda — são a ponte entre o artista e
  * os estilos que aparecem nos chips do perfil.
  */
 export function FeaturedArtistCard({ artist }: Props) {

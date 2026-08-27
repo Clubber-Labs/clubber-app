@@ -22,7 +22,9 @@ export function ConsentToggleRow({
     <View
       className={`flex-row items-start py-4 px-4 ${!isLast ? 'border-b border-line' : ''}`}
     >
-      <View className="flex-1 mr-4">
+      {/* O texto esmaece junto: só o Switch acinzentado deixaria a linha com
+          cara de ativa, e a pessoa tentaria mexer no que não responde. */}
+      <View className={`flex-1 mr-4 ${disabled ? 'opacity-40' : ''}`}>
         <Text className="text-sm font-semibold text-content">{label}</Text>
         <Text className="text-xs text-content-muted mt-1 leading-4">
           {description}
