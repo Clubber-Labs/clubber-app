@@ -12,6 +12,8 @@ const DEFAULTS: ProductPreferences = {
   analytics: true,
   spotifyArtistsVisible: true,
   spotifyTopArtistVisible: true,
+  // Único que nasce desligado: expõe três janelas onde havia uma.
+  spotifyWindowVisible: false,
 }
 
 /**
@@ -34,6 +36,8 @@ export function useProductPreferences() {
       profile?.spotifyArtistsVisible ?? DEFAULTS.spotifyArtistsVisible,
     spotifyTopArtistVisible:
       profile?.spotifyTopArtistVisible ?? DEFAULTS.spotifyTopArtistVisible,
+    spotifyWindowVisible:
+      profile?.spotifyWindowVisible ?? DEFAULTS.spotifyWindowVisible,
   }
 
   /**

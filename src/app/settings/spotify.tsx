@@ -46,6 +46,12 @@ export default function SpotifySettingsScreen() {
     if (!ok) setError(t('spotify.visibility.saveError'))
   }
 
+  async function handleWindowChange(value: boolean) {
+    setError(null)
+    const ok = await updatePreference('spotifyWindowVisible', value)
+    if (!ok) setError(t('spotify.visibility.saveError'))
+  }
+
   async function handleApplyGenres(genres: string[]) {
     setError(null)
     try {
@@ -174,6 +180,13 @@ export default function SpotifySettingsScreen() {
               description={t('spotify.featured.description')}
               value={preferences.spotifyTopArtistVisible}
               onChange={handleFeaturedChange}
+              disabled={!preferences.spotifyArtistsVisible}
+            />
+            <ConsentToggleRow
+              label={t('spotify.windows.label')}
+              description={t('spotify.windows.description')}
+              value={preferences.spotifyWindowVisible}
+              onChange={handleWindowChange}
               disabled={!preferences.spotifyArtistsVisible}
               isLast
             />

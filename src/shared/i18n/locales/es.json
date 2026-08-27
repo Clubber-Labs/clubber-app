@@ -1405,6 +1405,13 @@
       "description": "Quien visita tu perfil ve tus artistas más escuchados. Apagalo y desaparecen para todos.",
       "saveError": "No pudimos guardarlo. Probá de nuevo."
     },
+    "windows": {
+      "label": "Dejar elegir el período",
+      "description": "Quien visita puede alternar entre lo que escuchás ahora, en los últimos 6 meses y desde siempre.",
+      "short_term": "Ahora",
+      "medium_term": "6 meses",
+      "long_term": "Siempre"
+    },
     "actions": {
       "connect": "Vincular Spotify",
       "reconnect": "Reconectar",

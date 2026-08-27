@@ -1405,6 +1405,13 @@
       "description": "Anyone visiting your profile sees your most played artists. Turn it off and they disappear for everyone.",
       "saveError": "We could not save that. Try again."
     },
+    "windows": {
+      "label": "Let people pick the period",
+      "description": "Visitors can switch between what you listen to now, over the last 6 months, and all time.",
+      "short_term": "Right now",
+      "medium_term": "6 months",
+      "long_term": "All time"
+    },
     "actions": {
       "connect": "Link Spotify",
       "reconnect": "Reconnect",

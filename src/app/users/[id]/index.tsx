@@ -108,6 +108,7 @@ export default function UserProfileScreen() {
                 <ProfileMusicSection
                   featured={profile.featuredArtist}
                   artists={profile.topArtists ?? []}
+                  windows={profile.artistWindows}
                   match={profile.artistMatch}
                 />
               }

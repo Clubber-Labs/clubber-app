@@ -284,6 +284,15 @@ export type FeaturedArtist = ProfileArtist & {
   genres: string[]
 }
 
+/** As três janelas do /me/top/artists, da mais recente pra mais longa. */
+export const SPOTIFY_WINDOWS = [
+  'short_term',
+  'medium_term',
+  'long_term',
+] as const
+
+export type SpotifyWindow = (typeof SPOTIFY_WINDOWS)[number]
+
 export type UserProfile = {
   id: string
   name: string
@@ -327,6 +336,11 @@ export type UserProfile = {
   // Já vem null quando o dono desligou o destaque, escondeu a fileira ou
   // ocultou o próprio primeiro colocado.
   featuredArtist?: FeaturedArtist | null
+  // Seletor de período. Estado do toggle, só em /users/me.
+  spotifyWindowVisible?: boolean
+  // As três janelas, e null quando o dono não ligou o seletor — o servidor
+  // não manda o que não deve ser exibido.
+  artistWindows?: Record<SpotifyWindow, FeaturedArtist[]> | null
   // Só em perfil de terceiro, e null quando não há interseção — o servidor
   // não devolve "0 em comum", que não seria informação.
   artistMatch?: ArtistMatch | null
