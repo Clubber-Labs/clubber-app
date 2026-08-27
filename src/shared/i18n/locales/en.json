@@ -1383,7 +1383,9 @@
     },
     "onboarding": {
       "cta": "I listen on Spotify",
-      "hint": "We check your styles for you — just look them over."
+      "hint": "We check your styles for you — just look them over.",
+      "done_one": "Done — we checked {{count}} style for you",
+      "done_other": "Done — we checked {{count}} styles for you"
     },
     "status": {
       "active": "Connected",
