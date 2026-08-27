@@ -31,7 +31,10 @@ export function ProfilePreferredCategories({ values, confirmed }: Props) {
             key={value}
             className="bg-brand-surface px-2.5 py-1 rounded-md flex-row items-center gap-1"
             // O selo é só ícone: sem isto o leitor de tela anuncia o estilo
-            // sem a única coisa que a marca acrescenta.
+            // sem a única coisa que a marca acrescenta. `accessible` agrupa o
+            // chip num elemento único — View não é elemento de acessibilidade
+            // por padrão, e o label num View comum é ignorado.
+            accessible={isBacked}
             accessibilityLabel={
               isBacked ? `${label}, ${t('spotify.confirmed.label')}` : undefined
             }
