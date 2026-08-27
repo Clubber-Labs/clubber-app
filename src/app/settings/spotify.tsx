@@ -1,7 +1,10 @@
+import { ApplyGenresSection } from '@/features/spotify/components/ApplyGenresSection'
 import { SpotifyLinkCard } from '@/features/spotify/components/SpotifyLinkCard'
+import { useApplySpotifyGenres } from '@/features/spotify/hooks/useApplySpotifyGenres'
 import { useLinkSpotify } from '@/features/spotify/hooks/useLinkSpotify'
 import { useSpotifyProfile } from '@/features/spotify/hooks/useSpotifyProfile'
 import { useUnlinkSpotify } from '@/features/spotify/hooks/useUnlinkSpotify'
+import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { Button } from '@/shared/components/Button'
 import { FormError } from '@/shared/components/FormError'
 import { getApiError } from '@/shared/lib/apiError'
@@ -17,8 +20,19 @@ export default function SpotifySettingsScreen() {
   const [error, setError] = useState<string | null>(null)
 
   const { data: profile, isError, refetch, isFetching } = useSpotifyProfile()
+  const { data: me } = useMyProfile()
   const link = useLinkSpotify()
   const unlink = useUnlinkSpotify()
+  const applyGenres = useApplySpotifyGenres()
+
+  async function handleApplyGenres(genres: string[]) {
+    setError(null)
+    try {
+      await applyGenres.mutateAsync(genres)
+    } catch (err) {
+      setError(getApiError(err).message)
+    }
+  }
 
   // Erro fica inline, não em banner: a ação é deliberada e o usuário está
   // olhando pra esta tela — é o padrão de deactivate.tsx.
@@ -100,6 +114,19 @@ export default function SpotifySettingsScreen() {
 
       <View className="mx-4 mt-4 gap-3">
         <SpotifyLinkCard profile={profile} />
+
+        {/* Só faz sentido oferecer quando há gosto sincronizado: vínculo
+            revogado tem dado congelado, e sem gênero não há o que aplicar.
+            Espera o `me` porque sem os interesses atuais a seção ofereceria
+            estilos que já estão no perfil. */}
+        {profile.status === 'ACTIVE' && profile.genres.length > 0 && me && (
+          <ApplyGenresSection
+            genres={profile.genres}
+            currentInterests={me.preferredSubcategories ?? []}
+            isApplying={applyGenres.isPending}
+            onApply={handleApplyGenres}
+          />
+        )}
 
         <FormError message={error} />
 

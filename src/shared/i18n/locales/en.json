@@ -1367,6 +1367,14 @@
       "syncedOn": "Updated on {{date}}",
       "revokedHint": "Access was revoked on Spotify. Reconnect to keep your taste up to date."
     },
+    "apply": {
+      "title": "Apply to your profile",
+      "body": "We found these styles in what you listen to. Whatever you keep checked joins your interests — what was already there stays.",
+      "cta_one": "Apply {{count}} style",
+      "cta_other": "Apply {{count}} styles",
+      "upToDateTitle": "Your profile already matches your sound",
+      "upToDateBody": "Everything from Spotify is already in your interests."
+    },
     "status": {
       "active": "Connected",
       "revoked": "Reconnect"
