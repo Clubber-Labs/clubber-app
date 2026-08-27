@@ -16,7 +16,13 @@ export default function SpotifySettingsScreen() {
   const confirm = useConfirm()
   const [error, setError] = useState<string | null>(null)
 
-  const { data: profile, isLoading } = useSpotifyProfile()
+  const {
+    data: profile,
+    isLoading,
+    isError,
+    refetch,
+    isFetching,
+  } = useSpotifyProfile()
   const link = useLinkSpotify()
   const unlink = useUnlinkSpotify()
 
@@ -50,7 +56,7 @@ export default function SpotifySettingsScreen() {
     }
   }
 
-  if (isLoading || !profile) {
+  if (isLoading) {
     return (
       <View className="flex-1 bg-background items-center justify-center">
         <ActivityIndicator color={colors.brand} />
@@ -58,8 +64,30 @@ export default function SpotifySettingsScreen() {
     )
   }
 
+  // Falha de rede/5xx: sem esta saída o `!profile` prenderia a tela num
+  // spinner eterno, já que o TanStack desliga o isLoading ao desistir.
+  if (isError || !profile) {
+    return (
+      <View className="flex-1 bg-background items-center justify-center px-8 gap-3">
+        <Text className="text-content-muted text-center text-sm">
+          {t('spotify.loadError')}
+        </Text>
+        <Button
+          label={t('common.retry')}
+          variant="secondary"
+          onPress={() => refetch()}
+          loading={isFetching}
+        />
+      </View>
+    )
+  }
+
   const busy = link.isPending || unlink.isPending
   const isRevoked = profile.linked && profile.status === 'REVOKED'
+  // O useAuthRequest gera o desafio PKCE de forma assíncrona: tocar antes
+  // disso lançaria "indisponível neste build", que seria mentira — o build
+  // está certo, só ainda não terminou de preparar.
+  const canLink = link.isReady && !busy
 
   return (
     <ScrollView
@@ -88,7 +116,7 @@ export default function SpotifySettingsScreen() {
                 label={t('spotify.actions.reconnect')}
                 onPress={handleLink}
                 loading={link.isPending}
-                disabled={busy}
+                disabled={!canLink}
               />
             )}
             <Button
@@ -109,7 +137,7 @@ export default function SpotifySettingsScreen() {
             label={t('spotify.actions.connect')}
             onPress={handleLink}
             loading={link.isPending}
-            disabled={busy}
+            disabled={!canLink}
           />
         )}
       </View>

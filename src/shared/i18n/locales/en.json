@@ -1380,7 +1380,8 @@
       "title": "Unlink Spotify?",
       "message": "We delete your artists and stop updating your taste. Interests you already applied stay on your profile.",
       "confirm": "Unlink"
-    }
+    },
+    "loadError": "We could not load your Spotify."
   },
   "account": {
     "title": "Account ownership and control",

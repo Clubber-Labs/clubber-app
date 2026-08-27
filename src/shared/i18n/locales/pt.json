@@ -1380,7 +1380,8 @@
       "title": "Desvincular o Spotify?",
       "message": "A gente apaga seus artistas e para de atualizar seu gosto. Os interesses que você já aplicou continuam no seu perfil.",
       "confirm": "Desvincular"
-    }
+    },
+    "loadError": "Não foi possível carregar seu Spotify."
   },
   "account": {
     "title": "Propriedade e controle da conta",
