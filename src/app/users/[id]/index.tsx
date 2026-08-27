@@ -107,8 +107,6 @@ export default function UserProfileScreen() {
               profile={profile}
               highlights={
                 <>
-                  {/* Primeiro o gosto dela, depois o que vocês têm em comum —
-                      o match é a conclusão, não a abertura. */}
                   <TopArtistsRow artists={profile.topArtists ?? []} />
                   <ArtistMatchRow match={profile.artistMatch} />
                 </>

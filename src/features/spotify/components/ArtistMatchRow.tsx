@@ -1,8 +1,9 @@
 import { colors } from '@/shared/theme'
 import type { ArtistMatch } from '@/shared/types'
+import * as Linking from 'expo-linking'
 import { SpotifyLogoIcon } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
-import { Image, Text, View } from 'react-native'
+import { Image, Pressable, Text, View } from 'react-native'
 
 type Props = {
   match: ArtistMatch | null | undefined
@@ -29,8 +30,15 @@ export function ArtistMatchRow({ match }: Props) {
       {match.named.length > 0 && (
         <View className="flex-row">
           {match.named.map((artist, index) => (
-            <View
+            <Pressable
               key={artist.id}
+              // Caminho de volta pro Spotify, que a atribuição exige. Não dá
+              // pra contar com a fileira acima: o match cruza os vinte
+              // sincronizados, e ela mostra cinco.
+              onPress={() => {
+                Linking.openURL(artist.spotifyUrl).catch(() => {})
+              }}
+              hitSlop={{ top: 8, bottom: 8 }}
               style={{
                 width: FACE_SIZE,
                 height: FACE_SIZE,
@@ -40,7 +48,7 @@ export function ArtistMatchRow({ match }: Props) {
                 marginLeft: index === 0 ? 0 : -11,
                 overflow: 'hidden',
               }}
-              className="bg-surface-elevated items-center justify-center"
+              className="bg-surface-elevated items-center justify-center active:opacity-70"
             >
               {artist.imageUrl ? (
                 <Image
@@ -51,15 +59,22 @@ export function ArtistMatchRow({ match }: Props) {
               ) : (
                 <SpotifyLogoIcon size={16} color={colors.contentFaint} />
               )}
-            </View>
+            </Pressable>
           ))}
         </View>
       )}
 
       <View className="flex-1">
-        <Text className="text-content-secondary text-sm font-semibold">
-          {t('spotify.match.count', { count: match.count })}
-        </Text>
+        <View className="flex-row items-center gap-1.5">
+          {/* Só credita quando há conteúdo do Spotify na tela: no modo
+              contagem não vai nome nem foto, então não há o que atribuir. */}
+          {match.named.length > 0 && (
+            <SpotifyLogoIcon size={13} color={colors.contentMuted} />
+          )}
+          <Text className="text-content-secondary text-sm font-semibold">
+            {t('spotify.match.count', { count: match.count })}
+          </Text>
+        </View>
         {/* Sem nomes quando o dono escondeu a fileira: sobra só a contagem. */}
         {!!names && (
           <Text numberOfLines={1} className="text-content-muted text-xs mt-0.5">
