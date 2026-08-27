@@ -1375,6 +1375,12 @@
       "upToDateTitle": "Your profile already matches your sound",
       "upToDateBody": "Everything from Spotify is already in your interests."
     },
+    "hidden": {
+      "title": "Who shows up",
+      "body": "Tap to hide an artist from your profile. They still count toward what we suggest to you.",
+      "someHidden_one": "{{count}} hidden. Tap again to bring them back.",
+      "someHidden_other": "{{count}} hidden. Tap again to bring them back."
+    },
     "onboarding": {
       "cta": "I listen on Spotify",
       "hint": "We check your styles for you — just look them over."

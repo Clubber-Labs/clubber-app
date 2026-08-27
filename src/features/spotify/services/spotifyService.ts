@@ -24,4 +24,8 @@ export const spotifyService = {
     api
       .post('/spotify/apply-genres', genres ? { genres } : {})
       .then(r => r.data),
+
+  // Substituição: manda a lista completa de escondidos, não um diff.
+  setHiddenArtists: (hiddenArtistIds: string[]): Promise<SpotifyProfile> =>
+    api.patch('/spotify/hidden-artists', { hiddenArtistIds }).then(r => r.data),
 }
