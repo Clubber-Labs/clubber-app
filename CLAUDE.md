@@ -19,6 +19,21 @@
 
 ---
 
+## ⚠️ Integração Spotify — DORMENTE, não construir sobre ela
+
+A feature existe e permanece no código (`src/features/spotify/`, backend `spotify-link`), mas está **desligada em produção e TestFlight** — e deve continuar assim. Motivo: o Spotify removeu o campo `genres` da API para apps novos (o import de gêneros retorna vazio) e liberar o vínculo para o público exige Extended Quota Mode, que hoje só aceita empresa registrada com 250 mil MAU comprovados. Sem isso, o vínculo funciona apenas para a allowlist de ~5 contas de teste do Development Mode.
+
+**O interruptor é a env `SPOTIFY_CLIENT_ID`** (mapeada para `extra.spotifyClientId` em `scripts/extra-env.mjs`). Ausente do build, todo o UI de vínculo some sozinho: botão do cadastro (`SpotifyImportButton`), linha em Configurações e a tela de vínculo. Builds de produção/preview **não** definem essa env; só dev local do círculo beta define.
+
+**Regras para qualquer agente ou dev:**
+
+- **Não desenvolver nada que dependa de dados do Spotify** — gêneros, artistas, vínculo — em nenhum sistema: feed, push notifications, matching, ranking, onboarding. Hoje **nenhum** desses sistemas consome Spotify (auditado em 27/08/2026), e deve permanecer assim até decisão explícita de reativar.
+- A **exibição passiva no perfil** (fileira de artistas, artista destaque, artistas em comum, selo de confirmado) fica como está: renderiza o que o backend mandar e desaparece para quem não vinculou. Não remover, não expandir.
+- Mudanças em `src/features/spotify/` só sob pedido explícito do owner.
+- Contexto completo, restrições da API e plano de reativação: `docs/integracao-spotify.md`.
+
+---
+
 ## Scripts disponíveis
 
 ```bash

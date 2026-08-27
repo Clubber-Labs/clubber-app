@@ -163,6 +163,14 @@ RNMAPBOX_MAPS_DOWNLOAD_TOKEN=sk.ey...seu_token_aqui
 
 > Em produção, os valores são injetados via EAS Secrets — nunca ficam no repositório.
 
+### Integração Spotify — DORMENTE
+
+A feature de vincular Spotify (`src/features/spotify/`) existe, funciona e **fica desligada de propósito**: o Spotify removeu o campo `genres` da API para apps novos, e liberar o vínculo para o público exige Extended Quota Mode (empresa registrada + 250 mil MAU comprovados — inalcançável pré-lançamento; apps fora disso ficam limitados a uma allowlist de ~5 contas de teste).
+
+O interruptor é a env `SPOTIFY_CLIENT_ID`: **ausente** (produção, preview/TestFlight), todo o UI de vínculo some do app; **presente** (dev local do círculo beta), o fluxo funciona para as contas allowlistadas. A exibição passiva no perfil (artistas de quem já vinculou) continua em qualquer build — vem do nosso backend.
+
+**Não desenvolver nada assumindo dados do Spotify** (feed, push, matching, onboarding). Contexto completo em `docs/integracao-spotify.md` e no `CLAUDE.md`.
+
 ## Como rodar localmente (passo a passo)
 
 ### 1) Subir backend/API
