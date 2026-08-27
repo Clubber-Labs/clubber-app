@@ -11,6 +11,7 @@ const DEFAULTS: ProductPreferences = {
   socialVisibility: true,
   analytics: true,
   spotifyArtistsVisible: true,
+  spotifyTopArtistVisible: true,
 }
 
 /**
@@ -31,6 +32,8 @@ export function useProductPreferences() {
     analytics: profile?.analytics ?? DEFAULTS.analytics,
     spotifyArtistsVisible:
       profile?.spotifyArtistsVisible ?? DEFAULTS.spotifyArtistsVisible,
+    spotifyTopArtistVisible:
+      profile?.spotifyTopArtistVisible ?? DEFAULTS.spotifyTopArtistVisible,
   }
 
   /**

@@ -279,6 +279,11 @@ export type ArtistMatch = {
   named: ProfileArtist[]
 }
 
+/** O mais ouvido, com os gêneros crus do Spotify como legenda. */
+export type FeaturedArtist = ProfileArtist & {
+  genres: string[]
+}
+
 export type UserProfile = {
   id: string
   name: string
@@ -316,6 +321,12 @@ export type UserProfile = {
   // Estado do toggle de exibição. Só em /users/me: em perfil de terceiro nem
   // revelamos que alguém escondeu algo.
   spotifyArtistsVisible?: boolean
+  // Destacar o mais ouvido. Diferente dos outros toggles, volta também em
+  // perfil de terceiro: é layout, e dá pra ver na tela se está destacado.
+  spotifyTopArtistVisible?: boolean
+  // Já vem null quando o dono desligou o destaque, escondeu a fileira ou
+  // ocultou o próprio primeiro colocado.
+  featuredArtist?: FeaturedArtist | null
   // Só em perfil de terceiro, e null quando não há interseção — o servidor
   // não devolve "0 em comum", que não seria informação.
   artistMatch?: ArtistMatch | null
