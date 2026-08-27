@@ -338,9 +338,10 @@ export type UserProfile = {
   featuredArtist?: FeaturedArtist | null
   // Seletor de período. Estado do toggle, só em /users/me.
   spotifyWindowVisible?: boolean
-  // As três janelas, e null quando o dono não ligou o seletor — o servidor
-  // não manda o que não deve ser exibido.
-  artistWindows?: Record<SpotifyWindow, FeaturedArtist[]> | null
+  // As janelas COM artistas, e null quando o dono não ligou o seletor ou não
+  // sobra mais de uma — o servidor não manda o que não deve ser exibido, nem
+  // janela vazia (conta nova não tem histórico de um ano).
+  artistWindows?: Partial<Record<SpotifyWindow, FeaturedArtist[]>> | null
   // Só em perfil de terceiro, e null quando não há interseção — o servidor
   // não devolve "0 em comum", que não seria informação.
   artistMatch?: ArtistMatch | null

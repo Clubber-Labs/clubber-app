@@ -3,6 +3,8 @@ import { useTranslation } from 'react-i18next'
 import { Pressable, Text, View } from 'react-native'
 
 type Props = {
+  /** Só as janelas que têm artistas — o servidor omite as vazias. */
+  available: SpotifyWindow[]
   value: SpotifyWindow
   onChange: (window: SpotifyWindow) => void
 }
@@ -18,13 +20,19 @@ const LABEL_KEYS = {
  * Escolha do período no perfil. Quem alterna é quem visita: "o que ele ouve
  * agora" e "o que ele sempre ouviu" são perguntas de quem está olhando, e o
  * dono já decidiu o que importa ao ligar o seletor.
+ *
+ * Desenha só as janelas recebidas, na ordem canônica — uma aba que não mostra
+ * nada parece defeito.
  */
-export function WindowSelector({ value, onChange }: Props) {
+export function WindowSelector({ available, value, onChange }: Props) {
   const { t } = useTranslation()
+
+  const windows = SPOTIFY_WINDOWS.filter(w => available.includes(w))
+  if (windows.length < 2) return null
 
   return (
     <View className="flex-row bg-surface rounded-full p-1 mt-3 gap-1">
-      {SPOTIFY_WINDOWS.map(window => {
+      {windows.map(window => {
         const active = window === value
         return (
           <Pressable
