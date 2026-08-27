@@ -1382,6 +1382,10 @@
     "profile": {
       "title": "Most played on Spotify"
     },
+    "match": {
+      "count_one": "{{count}} artist in common",
+      "count_other": "{{count}} artists in common"
+    },
     "visibility": {
       "label": "Show on my profile",
       "description": "Anyone visiting your profile sees your most played artists. Turn it off and they disappear for everyone.",

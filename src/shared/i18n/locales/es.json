@@ -1382,6 +1382,10 @@
     "profile": {
       "title": "Más escuchados en Spotify"
     },
+    "match": {
+      "count_one": "{{count}} artista en común",
+      "count_other": "{{count}} artistas en común"
+    },
     "visibility": {
       "label": "Mostrar en mi perfil",
       "description": "Quien visita tu perfil ve tus artistas más escuchados. Apagalo y desaparecen para todos.",

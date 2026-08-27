@@ -13,6 +13,7 @@ import { useUserProfile } from '@/features/users/hooks/useProfile'
 import { useUserEvents } from '@/features/users/hooks/useUserEvents'
 import { useFollowUser } from '@/features/users/hooks/useFollowUser'
 import { useCreateConversation } from '@/features/chat/hooks/useCreateConversation'
+import { ArtistMatchRow } from '@/features/spotify/components/ArtistMatchRow'
 import { TopArtistsRow } from '@/features/spotify/components/TopArtistsRow'
 import { ProfileHeader } from '@/features/users/components/ProfileHeader'
 import { FollowButton } from '@/features/users/components/FollowButton'
@@ -104,7 +105,14 @@ export default function UserProfileScreen() {
           <>
             <ProfileHeader
               profile={profile}
-              highlights={<TopArtistsRow artists={profile.topArtists ?? []} />}
+              highlights={
+                <>
+                  {/* Primeiro o gosto dela, depois o que vocês têm em comum —
+                      o match é a conclusão, não a abertura. */}
+                  <TopArtistsRow artists={profile.topArtists ?? []} />
+                  <ArtistMatchRow match={profile.artistMatch} />
+                </>
+              }
               isOwnProfile={isOwnProfile}
               onFollowersPress={() =>
                 router.push(`/users/${profile.id}/followers`)
