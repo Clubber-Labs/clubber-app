@@ -22,6 +22,7 @@ import { useConfirm } from '@/shared/lib/confirm'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
+import { TopArtistsRow } from '@/features/spotify/components/TopArtistsRow'
 import { ProfileHeader } from '@/features/users/components/ProfileHeader'
 import { EditProfileButton } from '@/features/users/components/EditProfileButton'
 import { ProfileEventsList } from '@/features/users/components/ProfileEventsList'
@@ -160,6 +161,7 @@ export default function ProfileScreen() {
           <>
             <ProfileHeader
               profile={profile}
+              highlights={<TopArtistsRow artists={profile.topArtists ?? []} />}
               isOwnProfile
               avatarUploading={uploadAvatar.isPending}
               onAvatarPress={handlePickAvatar}

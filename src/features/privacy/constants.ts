@@ -39,6 +39,10 @@ export type ProductPreferences = {
   socialFeed: boolean
   socialVisibility: boolean
   analytics: boolean
+  // Fora do PRODUCT_PREFERENCE_ITEMS de propósito: o toggle mora na tela do
+  // Spotify, ao lado do vínculo que o torna relevante. Aqui, entre switches de
+  // quem nem vinculou a conta, seria ruído.
+  spotifyArtistsVisible: boolean
 }
 
 /** Bloco 3 — preferências de produto: ligadas por padrão, opt-out. */

@@ -1379,6 +1379,14 @@
       "active": "Conectado",
       "revoked": "Reconectar"
     },
+    "profile": {
+      "title": "Mais ouvidos no Spotify"
+    },
+    "visibility": {
+      "label": "Mostrar no meu perfil",
+      "description": "Quem visita seu perfil vê seus artistas mais ouvidos. Desligue e eles somem pra todo mundo.",
+      "saveError": "Não foi possível salvar. Tente de novo."
+    },
     "actions": {
       "connect": "Vincular Spotify",
       "reconnect": "Reconectar",

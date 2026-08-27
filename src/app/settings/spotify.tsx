@@ -1,3 +1,5 @@
+import { ConsentToggleRow } from '@/features/privacy/components/ConsentToggleRow'
+import { useProductPreferences } from '@/features/privacy/hooks/useProductPreferences'
 import { ApplyGenresSection } from '@/features/spotify/components/ApplyGenresSection'
 import { SpotifyLinkCard } from '@/features/spotify/components/SpotifyLinkCard'
 import { useApplySpotifyGenres } from '@/features/spotify/hooks/useApplySpotifyGenres'
@@ -24,6 +26,16 @@ export default function SpotifySettingsScreen() {
   const link = useLinkSpotify()
   const unlink = useUnlinkSpotify()
   const applyGenres = useApplySpotifyGenres()
+  const { preferences, updatePreference } = useProductPreferences()
+
+  // Otimista no hook, que reverte sozinho se o PUT falhar. O switch voltando
+  // mostra QUE não salvou, mas não por quê — daí a mensagem, como faz a tela
+  // de privacidade com as outras preferências de produto.
+  async function handleVisibilityChange(value: boolean) {
+    setError(null)
+    const ok = await updatePreference('spotifyArtistsVisible', value)
+    if (!ok) setError(t('spotify.visibility.saveError'))
+  }
 
   async function handleApplyGenres(genres: string[]) {
     setError(null)
@@ -126,6 +138,19 @@ export default function SpotifySettingsScreen() {
             isApplying={applyGenres.isPending}
             onApply={handleApplyGenres}
           />
+        )}
+
+        {/* Só depois de vinculado: sem artistas o toggle não governa nada. */}
+        {profile.linked && (
+          <View className="bg-surface-sunken border border-line rounded-xl overflow-hidden">
+            <ConsentToggleRow
+              label={t('spotify.visibility.label')}
+              description={t('spotify.visibility.description')}
+              value={preferences.spotifyArtistsVisible}
+              onChange={handleVisibilityChange}
+              isLast
+            />
+          </View>
         )}
 
         <FormError message={error} />
