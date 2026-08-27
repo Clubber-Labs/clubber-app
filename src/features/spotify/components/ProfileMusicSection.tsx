@@ -1,8 +1,9 @@
-import type {
-  ArtistMatch,
-  FeaturedArtist,
-  ProfileArtist,
-  SpotifyWindow,
+import {
+  type ArtistMatch,
+  type FeaturedArtist,
+  type ProfileArtist,
+  SPOTIFY_WINDOWS,
+  type SpotifyWindow,
 } from '@/shared/types'
 import { useState } from 'react'
 import { ArtistMatchRow } from './ArtistMatchRow'
@@ -36,19 +37,25 @@ export function ProfileMusicSection({
   windows,
   match,
 }: Props) {
-  const available = (windows ? Object.keys(windows) : []) as SpotifyWindow[]
-  // A padrão só é o início quando existe: sem histórico de 6 meses, começar
-  // nela mostraria uma tela vazia antes de qualquer toque.
-  const [window, setWindow] = useState<SpotifyWindow>(
-    available.includes(DEFAULT_WINDOW)
-      ? DEFAULT_WINDOW
-      : (available[0] ?? DEFAULT_WINDOW),
-  )
+  const [picked, setPicked] = useState<SpotifyWindow>(DEFAULT_WINDOW)
+
+  // Filtra a ordem canônica em vez de ler as chaves do objeto: "a primeira
+  // disponível" tem de significar a mais recente, não a que o servidor
+  // serializou primeiro.
+  const available = SPOTIFY_WINDOWS.filter(w => windows?.[w])
+
+  // Resolvido no render, não guardado: as janelas podem chegar DEPOIS da
+  // montagem — o dono liga o toggle e volta pro perfil sem a tela desmontar —
+  // e um estado inicial fixo deixaria o seletor sem aba ativa quando a janela
+  // padrão não existe.
+  const selectedWindow = available.includes(picked)
+    ? picked
+    : (available[0] ?? picked)
 
   // Só o destaque e a fileira mudam de janela; o match não, porque o servidor
   // cruza sempre a padrão — comparar o "agora" de um com o "sempre" de outro
   // não diria nada.
-  const windowArtists = windows?.[window]
+  const windowArtists = windows?.[selectedWindow]
   // `featured` nulo significa que o dono desligou o destaque: nesse caso
   // nenhuma janela destaca ninguém.
   const showFeatured = !!featured
@@ -64,8 +71,8 @@ export function ProfileMusicSection({
       {windows && (
         <WindowSelector
           available={available}
-          value={window}
-          onChange={setWindow}
+          value={selectedWindow}
+          onChange={setPicked}
         />
       )}
       <FeaturedArtistCard artist={currentFeatured} />
