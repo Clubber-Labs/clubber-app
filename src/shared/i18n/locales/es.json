@@ -774,7 +774,15 @@
     },
     "share": {
       "label": "Compartir evento",
-      "message": "{{title}}\n\nMíralo en Clubber: {{url}}"
+      "message": "{{title}}\n\nMíralo en Clubber: {{url}}",
+      "sheetTitle": "Compartir",
+      "otherApps": "Otras apps",
+      "stories": {
+        "option": "Stories de Instagram",
+        "optionHint": "Abre Instagram con el arte del evento",
+        "byAuthor": "por @{{username}}",
+        "linkCopied": "Enlace copiado — pégalo en el sticker de Enlace de la historia"
+      }
     },
     "venue": {
       "search": "Buscar establecimiento",

@@ -20,6 +20,13 @@ export const EXTRA_FROM_ENV = {
   // Chave PÚBLICA do Stripe (pk_test_/pk_live_) — PaymentSheet nativa.
   // A secret key NUNCA entra no app; tudo sensível passa pelo backend.
   stripePublishableKey: 'STRIPE_PUBLISHABLE_KEY',
+  // App ID do app da Meta — identifica quem mandou o conteúdo no intent de
+  // Stories do Instagram (`source_application`). Público (vai no binário); o
+  // APP SECRET nunca entra aqui. É o MESMO app que o login social usa: o valor
+  // é idêntico ao FACEBOOK_APP_ID do backend, e o nome é igual de propósito
+  // pra ninguém registrar um segundo app na Meta achando que são coisas
+  // diferentes. Ausente, a opção "Stories" some da folha de compartilhar.
+  facebookAppId: 'FACEBOOK_APP_ID',
   // Client ID do Spotify — público por natureza (vai na URL de autorização).
   // O client secret NUNCA entra no app: quem troca o code por token é o
   // backend, e é só por isso que o PKCE daqui é seguro.

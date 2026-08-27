@@ -133,6 +133,10 @@ export default {
         // declaração é o que liga o language matching.
         CFBundleAllowMixedLocalizations: true,
         CFBundleLocalizations: ['pt-BR', 'en', 'es'],
+        // Sem declarar o scheme, o canOpenURL do compartilhar-nos-stories
+        // devolve false mesmo com o Instagram instalado — e a opção some da
+        // folha em todo iPhone. Par iOS do <queries> em plugins/.
+        LSApplicationQueriesSchemes: ['instagram-stories'],
       },
       // O prebuild NÃO gera PrivacyInfo.xcprivacy sozinho — sem esta chave o
       // --clean apaga o manifesto e a referência dele no pbxproj. Conteúdo
@@ -255,6 +259,8 @@ export default {
       // Gera o entitlement com.apple.developer.applesignin no prebuild.
       // Android não é afetado (o botão nem renderiza lá).
       "expo-apple-authentication",
+      // Visibilidade do Instagram no Android (compartilhar nos Stories).
+      "./plugins/withInstagramStories",
       ...socialAuthPlugins()
     ],
     // Os pares chave↔variável moram em scripts/extra-env.mjs porque o
