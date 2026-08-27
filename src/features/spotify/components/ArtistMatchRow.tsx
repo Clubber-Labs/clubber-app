@@ -57,7 +57,7 @@ export function ArtistMatchRow({ match }: Props) {
                   resizeMode="cover"
                 />
               ) : (
-                <SpotifyMark size={16} />
+                <SpotifyMark size={16} color={colors.contentFaint} />
               )}
             </Pressable>
           ))}

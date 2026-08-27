@@ -2,7 +2,11 @@ import { Image } from 'react-native'
 
 type Props = {
   size?: number
-  /** Sem cor = verde oficial do asset. Passe um tom pro estado desvinculado. */
+  /**
+   * Sem cor = verde oficial do asset. Passe um tom nos contextos sem vínculo
+   * e nos placeholders de foto de artista (lá o ícone é "falta foto", não
+   * marca do Spotify).
+   */
   color?: string
 }
 
@@ -17,6 +21,10 @@ export function SpotifyMark({ size = 20, color }: Props) {
       source={require('../../../assets/spotify-icon.png')}
       style={{ width: size, height: size, tintColor: color }}
       resizeMode="contain"
+      // Sempre decorativo: o texto adjacente é quem nomeia (atribuição, rótulo
+      // da linha) — sem isto o TalkBack anuncia uma imagem sem nome.
+      accessible={false}
+      importantForAccessibility="no"
     />
   )
 }

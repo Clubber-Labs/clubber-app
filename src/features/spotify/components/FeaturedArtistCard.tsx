@@ -1,3 +1,4 @@
+import { colors } from '@/shared/theme'
 import type { FeaturedArtist } from '@/shared/types'
 import * as Linking from 'expo-linking'
 import { useTranslation } from 'react-i18next'
@@ -45,7 +46,7 @@ export function FeaturedArtistCard({ artist }: Props) {
             resizeMode="cover"
           />
         ) : (
-          <SpotifyMark size={20} />
+          <SpotifyMark size={20} color={colors.contentFaint} />
         )}
       </View>
 

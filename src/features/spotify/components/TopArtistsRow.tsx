@@ -1,3 +1,4 @@
+import { colors } from '@/shared/theme'
 import type { ProfileArtist } from '@/shared/types'
 import * as Linking from 'expo-linking'
 import { useTranslation } from 'react-i18next'
@@ -68,7 +69,7 @@ export function TopArtistsRow({ artists }: Props) {
                 }}
                 className="bg-surface border border-line items-center justify-center"
               >
-                <SpotifyMark size={24} />
+                <SpotifyMark size={24} color={colors.contentFaint} />
               </View>
             )}
             <Text

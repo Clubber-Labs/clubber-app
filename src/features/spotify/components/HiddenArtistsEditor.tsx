@@ -80,7 +80,7 @@ export function HiddenArtistsEditor({ artists, isSaving, onToggle }: Props) {
                   resizeMode="cover"
                 />
               ) : (
-                <SpotifyMark size={22} />
+                <SpotifyMark size={22} color={colors.contentFaint} />
               )}
             </View>
 
