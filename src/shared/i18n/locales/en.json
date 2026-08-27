@@ -126,6 +126,10 @@
     "SOCIAL_PROVIDER_MISCONFIGURED": "This sign-in method is unavailable right now.",
     "SOCIAL_PROVIDER_UNAVAILABLE": "{{provider}} is unavailable. Try again shortly.",
     "SOCIAL_USER_MISSING": "We couldn't find an account linked to that sign-in.",
+    "SPOTIFY_ACCOUNT_IN_USE": "That Spotify account is already linked to another profile.",
+    "SPOTIFY_NOT_LINKED": "You have not linked your Spotify account yet.",
+    "SPOTIFY_RATE_LIMITED": "Spotify asked us to slow down. Try again in a bit.",
+    "SPOTIFY_SCOPE_MISSING": "We need permission to see your top artists. Try again and accept all of it.",
     "SPOT_CANCELED": "This hangout was canceled.",
     "SPOT_FRIENDS_ONLY": "This hangout is for friends only.",
     "SPOT_INACTIVE": "This hangout is no longer active.",
@@ -1249,6 +1253,8 @@
     "notificationsHint": "Push, nearby events and preferred categories",
     "spots": "Hangout suggestions",
     "spotsHint": "Search radius for hangouts on the map",
+    "spotify": "Spotify",
+    "spotifyHint": "Link your account so the app learns your sound",
     "language": "Language",
     "languageHint": "Language of the app, notifications and emails",
     "privacy": "Privacy",
@@ -1276,6 +1282,10 @@
     },
     "languageScreen": {
       "subtitle": "It also applies to the notifications and emails we send you."
+    },
+    "spotifyScreen": {
+      "subtitle": "With your account linked, Clubber gets to know what you actually listen to.",
+      "revokeElsewhere": "Unlinking here deletes what we stored. To cut Clubber off entirely, head to spotify.com/account/apps."
     }
   },
   "about": {
@@ -1347,6 +1357,29 @@
         "title": "Premium badge",
         "description": "An exclusive badge on your profile that signals credibility at first glance."
       }
+    }
+  },
+  "spotify": {
+    "card": {
+      "title": "Spotify",
+      "pitch": "Link it and we use your real taste to pick what to show you — no form to fill in.",
+      "visibilityNotice": "Your most played artists will show on your profile. You can hide them here later, whenever you want.",
+      "syncedOn": "Updated on {{date}}",
+      "revokedHint": "Access was revoked on Spotify. Reconnect to keep your taste up to date."
+    },
+    "status": {
+      "active": "Connected",
+      "revoked": "Reconnect"
+    },
+    "actions": {
+      "connect": "Link Spotify",
+      "reconnect": "Reconnect",
+      "disconnect": "Unlink"
+    },
+    "disconnect": {
+      "title": "Unlink Spotify?",
+      "message": "We delete your artists and stop updating your taste. Interests you already applied stay on your profile.",
+      "confirm": "Unlink"
     }
   },
   "account": {
