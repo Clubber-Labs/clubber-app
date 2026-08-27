@@ -1,7 +1,8 @@
 import { View, Text, TextInput, Switch, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Controller } from 'react-hook-form'
+import { Controller, useController } from 'react-hook-form'
 import type { Control, FieldErrors } from 'react-hook-form'
+import { SpotifyImportButton } from '@/features/spotify/components/SpotifyImportButton'
 import { CategoryMultiSelect } from '@/shared/components/CategoryMultiSelect'
 import { InterestsMultiSelect } from '@/shared/components/InterestsMultiSelect'
 import type { CompleteProfileInput } from '../../schemas/completeProfileSchema'
@@ -17,6 +18,17 @@ export function StepInterests({ control, errors }: Props) {
   const form = useFormFocus()
   const { t } = useTranslation()
 
+  // O atalho do Spotify escreve nos dois campos de uma vez, então lê e grava
+  // por aqui — os Controller abaixo seguem servindo a marcação manual.
+  const { field: categoriesField } = useController({
+    control,
+    name: 'preferredCategories',
+  })
+  const { field: interestsField } = useController({
+    control,
+    name: 'preferredSubcategories',
+  })
+
   return (
     <View className="gap-5">
       <View className="gap-1">
@@ -27,6 +39,17 @@ export function StepInterests({ control, errors }: Props) {
           {t('auth.completeProfile.interests.subtitle')}
         </Text>
       </View>
+
+      {/* Acima dos seletores de propósito: o atalho só vale enquanto o
+          trabalho manual ainda não foi feito. */}
+      <SpotifyImportButton
+        categories={categoriesField.value ?? []}
+        interests={interestsField.value ?? []}
+        onImport={next => {
+          categoriesField.onChange(next.categories)
+          interestsField.onChange(next.interests)
+        }}
+      />
 
       <View className="gap-5">
         <View className="gap-2" {...form.anchor('preferredCategories')}>

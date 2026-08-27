@@ -1375,6 +1375,10 @@
       "upToDateTitle": "Tu perfil ya tiene tu música",
       "upToDateBody": "Todo lo que vino de Spotify ya está en tus intereses."
     },
+    "onboarding": {
+      "cta": "Escucho en Spotify",
+      "hint": "Marcamos tus estilos por vos — solo revisá."
+    },
     "status": {
       "active": "Conectado",
       "revoked": "Reconectar"

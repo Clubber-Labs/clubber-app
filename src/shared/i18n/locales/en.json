@@ -1375,6 +1375,10 @@
       "upToDateTitle": "Your profile already matches your sound",
       "upToDateBody": "Everything from Spotify is already in your interests."
     },
+    "onboarding": {
+      "cta": "I listen on Spotify",
+      "hint": "We check your styles for you — just look them over."
+    },
     "status": {
       "active": "Connected",
       "revoked": "Reconnect"
