@@ -270,6 +270,15 @@ export type ProfileArtist = {
   spotifyUrl: string
 }
 
+/**
+ * Artistas que o visitante e o dono do perfil ouvem em comum. `named` vem
+ * vazio quando o dono escondeu a fileira — aí só a contagem é exibível.
+ */
+export type ArtistMatch = {
+  count: number
+  named: ProfileArtist[]
+}
+
 export type UserProfile = {
   id: string
   name: string
@@ -307,6 +316,9 @@ export type UserProfile = {
   // Estado do toggle de exibição. Só em /users/me: em perfil de terceiro nem
   // revelamos que alguém escondeu algo.
   spotifyArtistsVisible?: boolean
+  // Só em perfil de terceiro, e null quando não há interseção — o servidor
+  // não devolve "0 em comum", que não seria informação.
+  artistMatch?: ArtistMatch | null
   // Raio de interesse das notificações de proximidade (km). Presente só em
   // /users/me e só em backends que já expõem o campo no select privado.
   notifyRadiusKm?: number
