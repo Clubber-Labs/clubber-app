@@ -40,7 +40,7 @@ export function SpotifyImportButton({
   onImport,
 }: Props) {
   const { t } = useTranslation()
-  const { genreAppliesTo, labelFor } = useCategories()
+  const { genreAppliesTo, labelsFor } = useCategories()
   const [error, setError] = useState<string | null>(null)
   const [imported, setImported] = useState<string[] | null>(null)
 
@@ -58,12 +58,12 @@ export function SpotifyImportButton({
       // Desistiu na tela do Spotify: a tela fica como estava, sem alarde.
       if (result.kind !== 'linked') return
 
-      const imported = result.profile.genres.slice(0, MAX_IMPORTED_GENRES)
-      if (imported.length === 0) return
+      const genres = result.profile.genres.slice(0, MAX_IMPORTED_GENRES)
+      if (genres.length === 0) return
 
       // Sem categoria compatível o estilo importado nunca casaria com evento
       // nenhum. A checagem sai da taxonomia do servidor, não de lista fixa.
-      const compatible = imported.some(genre =>
+      const compatible = genres.some(genre =>
         (genreAppliesTo(genre) ?? []).some(c => categories.includes(c)),
       )
       const nextCategories = compatible
@@ -72,12 +72,12 @@ export function SpotifyImportButton({
 
       onImport({
         categories: nextCategories.slice(0, MAX_PREFERRED_CATEGORIES),
-        interests: [...new Set([...interests, ...imported])].slice(
+        interests: [...new Set([...interests, ...genres])].slice(
           0,
           MAX_PREFERRED_INTERESTS,
         ),
       })
-      setImported(imported)
+      setImported(genres)
     } catch (err) {
       setError(getApiError(err).message)
     }
@@ -97,7 +97,7 @@ export function SpotifyImportButton({
             {t('spotify.onboarding.done', { count: imported.length })}
           </Text>
           <Text className="text-content-muted text-xs mt-0.5 leading-4">
-            {imported.map(labelFor).join(', ')}
+            {labelsFor(imported)}
           </Text>
         </View>
       </View>
