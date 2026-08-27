@@ -1405,6 +1405,13 @@
       "description": "Quem visita seu perfil vê seus artistas mais ouvidos. Desligue e eles somem pra todo mundo.",
       "saveError": "Não foi possível salvar. Tente de novo."
     },
+    "windows": {
+      "label": "Deixar escolher o período",
+      "description": "Quem visita pode alternar entre o que você ouve agora, nos últimos 6 meses e desde sempre.",
+      "short_term": "Atualmente",
+      "medium_term": "6 meses",
+      "long_term": "Sempre"
+    },
     "actions": {
       "connect": "Vincular Spotify",
       "reconnect": "Reconectar",

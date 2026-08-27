@@ -165,6 +165,7 @@ export default function ProfileScreen() {
                 <ProfileMusicSection
                   featured={profile.featuredArtist}
                   artists={profile.topArtists ?? []}
+                  windows={profile.artistWindows}
                 />
               }
               isOwnProfile
