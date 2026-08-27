@@ -1367,6 +1367,14 @@
       "syncedOn": "Actualizado el {{date}}",
       "revokedHint": "Te sacaron el acceso en Spotify. Reconectá para seguir actualizando tu gusto."
     },
+    "apply": {
+      "title": "Aplicar a tu perfil",
+      "body": "Encontramos estos estilos en lo que escuchás. Lo que dejes marcado entra en tus intereses — lo que ya estaba sigue igual.",
+      "cta_one": "Aplicar {{count}} estilo",
+      "cta_other": "Aplicar {{count}} estilos",
+      "upToDateTitle": "Tu perfil ya tiene tu música",
+      "upToDateBody": "Todo lo que vino de Spotify ya está en tus intereses."
+    },
     "status": {
       "active": "Conectado",
       "revoked": "Reconectar"

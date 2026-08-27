@@ -21,3 +21,10 @@ export type SpotifyProfile = {
   genres: string[]
   artists: SpotifyArtist[]
 }
+
+export type ApplyGenresResult = {
+  /** O que de fato entrou (o servidor limita a quantidade). */
+  applied: string[]
+  /** Estado final dos interesses do perfil, já com o merge. */
+  interests: string[]
+}
