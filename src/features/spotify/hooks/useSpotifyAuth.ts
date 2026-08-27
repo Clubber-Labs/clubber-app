@@ -1,11 +1,11 @@
-import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
+import { useAuthRequest } from 'expo-auth-session'
 import { useCallback } from 'react'
 import {
   SPOTIFY_DISCOVERY,
-  SPOTIFY_REDIRECT_PATH,
   SPOTIFY_SCOPES,
   type SpotifyAuthResult,
   spotifyClientId,
+  spotifyRedirectUri,
 } from '../lib/spotifyAuth'
 
 /**
@@ -24,10 +24,7 @@ export function useSpotifyAuth() {
       clientId: clientId ?? '',
       scopes: SPOTIFY_SCOPES,
       usePKCE: true,
-      redirectUri: makeRedirectUri({
-        scheme: 'clubber',
-        path: SPOTIFY_REDIRECT_PATH,
-      }),
+      redirectUri: spotifyRedirectUri(),
     },
     SPOTIFY_DISCOVERY,
   )
