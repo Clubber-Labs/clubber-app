@@ -1,6 +1,10 @@
 import { z } from 'zod'
 import { PHONE_MAX_DIGITS } from '@/shared/utils/masks'
-import { MIN_PREFERRED_CATEGORIES } from '@/shared/utils/rolePreferences'
+import {
+  MAX_PREFERRED_CATEGORIES,
+  MAX_PREFERRED_INTERESTS,
+  MIN_PREFERRED_CATEGORIES,
+} from '@/shared/utils/rolePreferences'
 import { NAME_REGEX } from '@/shared/utils/name'
 import {
   USERNAME_MAX_LENGTH,
@@ -37,10 +41,10 @@ export const editProfileSchema = z.object({
   preferredCategories: z
     .array(z.string())
     .min(MIN_PREFERRED_CATEGORIES, 'auth.errors.categoriesMin')
-    .max(10, 'auth.errors.categoriesMax'),
+    .max(MAX_PREFERRED_CATEGORIES, 'auth.errors.categoriesMax'),
   preferredSubcategories: z
     .array(z.string())
-    .max(30, 'auth.errors.subcategoriesMax'),
+    .max(MAX_PREFERRED_INTERESTS, 'auth.errors.subcategoriesMax'),
 })
 
 export type EditProfileInput = z.infer<typeof editProfileSchema>

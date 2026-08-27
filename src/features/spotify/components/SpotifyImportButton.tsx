@@ -1,45 +1,47 @@
-import type { CompleteProfileInput } from '@/features/auth/schemas/completeProfileSchema'
 import { FormError } from '@/shared/components/FormError'
 import { useCategories } from '@/shared/hooks/useCategories'
 import { getApiError } from '@/shared/lib/apiError'
 import { colors } from '@/shared/theme'
+import {
+  MAX_PREFERRED_CATEGORIES,
+  MAX_PREFERRED_INTERESTS,
+} from '@/shared/utils/rolePreferences'
 import { SpotifyLogoIcon } from 'phosphor-react-native'
 import { useState } from 'react'
-import { type Control, useController } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { ActivityIndicator, Pressable, Text, View } from 'react-native'
+import { FALLBACK_GENRE_CATEGORY, MAX_IMPORTED_GENRES } from '../constants'
 import { useLinkSpotify } from '../hooks/useLinkSpotify'
 import { spotifyClientId } from '../lib/spotifyAuth'
-import { FALLBACK_GENRE_CATEGORY, MAX_IMPORTED_GENRES } from '../constants'
 
-type Props = {
-  control: Control<CompleteProfileInput>
+export type ImportedTaste = {
+  categories: string[]
+  interests: string[]
 }
 
-const MAX_INTERESTS = 30
+type Props = {
+  categories: string[]
+  interests: string[]
+  /** Recebe as duas listas já mescladas — quem grava é o formulário. */
+  onImport: (next: ImportedTaste) => void
+}
 
 /**
- * Atalho do cadastro: vincula o Spotify e já deixa os seletores marcados, o que
- * transforma o formulário de questionário em confirmação — o momento de maior
- * fricção é justamente este.
+ * Atalho do cadastro: vincula o Spotify e devolve os interesses já mesclados,
+ * o que transforma o formulário de questionário em confirmação — o momento de
+ * maior fricção é justamente este.
  *
- * NÃO grava no perfil: só pré-preenche, e quem grava segue sendo o submit do
- * formulário. Assim, abandonar o cadastro no meio não deixa preferência
- * escrita pela metade.
+ * Não conhece o formulário (nem react-hook-form) de propósito: recebe listas e
+ * devolve listas. Assim esta feature não precisa importar a de cadastro.
  */
-export function SpotifyImportButton({ control }: Props) {
+export function SpotifyImportButton({
+  categories,
+  interests,
+  onImport,
+}: Props) {
   const { t } = useTranslation()
   const { genreAppliesTo } = useCategories()
   const [error, setError] = useState<string | null>(null)
-
-  const { field: categories } = useController({
-    control,
-    name: 'preferredCategories',
-  })
-  const { field: interests } = useController({
-    control,
-    name: 'preferredSubcategories',
-  })
 
   // Sem recarregar o perfil: o submit do formulário é quem grava, e um refetch
   // que falhasse aqui desmontaria o formulário inteiro.
@@ -58,40 +60,39 @@ export function SpotifyImportButton({ control }: Props) {
       const imported = result.profile.genres.slice(0, MAX_IMPORTED_GENRES)
       if (imported.length === 0) return
 
-      const currentInterests = interests.value ?? []
-      interests.onChange(
-        [...new Set([...currentInterests, ...imported])].slice(
-          0,
-          MAX_INTERESTS,
-        ),
-      )
-
       // Sem categoria compatível o estilo importado nunca casaria com evento
       // nenhum. A checagem sai da taxonomia do servidor, não de lista fixa.
-      const currentCategories = categories.value ?? []
       const compatible = imported.some(genre =>
-        (genreAppliesTo(genre) ?? []).some(c => currentCategories.includes(c)),
+        (genreAppliesTo(genre) ?? []).some(c => categories.includes(c)),
       )
-      if (!compatible) {
-        categories.onChange([...currentCategories, FALLBACK_GENRE_CATEGORY])
-      }
+      const nextCategories = compatible
+        ? categories
+        : [...new Set([...categories, FALLBACK_GENRE_CATEGORY])]
+
+      onImport({
+        categories: nextCategories.slice(0, MAX_PREFERRED_CATEGORIES),
+        interests: [...new Set([...interests, ...imported])].slice(
+          0,
+          MAX_PREFERRED_INTERESTS,
+        ),
+      })
     } catch (err) {
       setError(getApiError(err).message)
     }
   }
 
-  const busy = link.isPending
+  const disabled = link.isPending || !link.isReady
 
   return (
     <View className="gap-2">
       <Pressable
         onPress={handleImport}
-        disabled={busy || !link.isReady}
-        className={`flex-row items-center justify-center gap-2 border border-line-strong rounded-xl py-3.5 active:opacity-70 ${
-          busy || !link.isReady ? 'opacity-50' : ''
+        disabled={disabled}
+        className={`flex-row items-center justify-center gap-2 border border-line-strong rounded-full py-3.5 active:opacity-70 ${
+          disabled ? 'opacity-50' : ''
         }`}
       >
-        {busy ? (
+        {link.isPending ? (
           <ActivityIndicator size="small" color={colors.contentMuted} />
         ) : (
           <>
