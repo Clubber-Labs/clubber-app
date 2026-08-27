@@ -43,6 +43,7 @@ export type ProductPreferences = {
   // Spotify, ao lado do vínculo que o torna relevante. Aqui, entre switches de
   // quem nem vinculou a conta, seria ruído.
   spotifyArtistsVisible: boolean
+  spotifyTopArtistVisible: boolean
 }
 
 /** Bloco 3 — preferências de produto: ligadas por padrão, opt-out. */

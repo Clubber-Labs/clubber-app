@@ -13,8 +13,7 @@ import { useUserProfile } from '@/features/users/hooks/useProfile'
 import { useUserEvents } from '@/features/users/hooks/useUserEvents'
 import { useFollowUser } from '@/features/users/hooks/useFollowUser'
 import { useCreateConversation } from '@/features/chat/hooks/useCreateConversation'
-import { ArtistMatchRow } from '@/features/spotify/components/ArtistMatchRow'
-import { TopArtistsRow } from '@/features/spotify/components/TopArtistsRow'
+import { ProfileMusicSection } from '@/features/spotify/components/ProfileMusicSection'
 import { ProfileHeader } from '@/features/users/components/ProfileHeader'
 import { FollowButton } from '@/features/users/components/FollowButton'
 import { MessageButton } from '@/features/users/components/MessageButton'
@@ -106,11 +105,11 @@ export default function UserProfileScreen() {
             <ProfileHeader
               profile={profile}
               highlights={
-                <>
-                  {/* O match vem depois: é conclusão do gosto dela, não abertura. */}
-                  <TopArtistsRow artists={profile.topArtists ?? []} />
-                  <ArtistMatchRow match={profile.artistMatch} />
-                </>
+                <ProfileMusicSection
+                  featured={profile.featuredArtist}
+                  artists={profile.topArtists ?? []}
+                  match={profile.artistMatch}
+                />
               }
               isOwnProfile={isOwnProfile}
               onFollowersPress={() =>

@@ -1392,6 +1392,10 @@
     "profile": {
       "title": "Mais ouvidos no Spotify"
     },
+    "featured": {
+      "label": "No repeat",
+      "description": "Destaca seu artista mais ouvido acima da fileira, com os estilos dele."
+    },
     "match": {
       "count_one": "{{count}} artista em comum",
       "count_other": "{{count}} artistas em comum"

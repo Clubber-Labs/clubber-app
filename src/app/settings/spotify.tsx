@@ -40,6 +40,12 @@ export default function SpotifySettingsScreen() {
     if (!ok) setError(t('spotify.visibility.saveError'))
   }
 
+  async function handleFeaturedChange(value: boolean) {
+    setError(null)
+    const ok = await updatePreference('spotifyTopArtistVisible', value)
+    if (!ok) setError(t('spotify.visibility.saveError'))
+  }
+
   async function handleApplyGenres(genres: string[]) {
     setError(null)
     try {
@@ -160,6 +166,15 @@ export default function SpotifySettingsScreen() {
               description={t('spotify.visibility.description')}
               value={preferences.spotifyArtistsVisible}
               onChange={handleVisibilityChange}
+            />
+            {/* Só governa algo com a fileira ligada: sem ela não há destaque
+                pra mostrar nem esconder. */}
+            <ConsentToggleRow
+              label={t('spotify.featured.label')}
+              description={t('spotify.featured.description')}
+              value={preferences.spotifyTopArtistVisible}
+              onChange={handleFeaturedChange}
+              disabled={!preferences.spotifyArtistsVisible}
               isLast
             />
           </View>
