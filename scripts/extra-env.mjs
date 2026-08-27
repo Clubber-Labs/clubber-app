@@ -20,4 +20,8 @@ export const EXTRA_FROM_ENV = {
   // Chave PÚBLICA do Stripe (pk_test_/pk_live_) — PaymentSheet nativa.
   // A secret key NUNCA entra no app; tudo sensível passa pelo backend.
   stripePublishableKey: 'STRIPE_PUBLISHABLE_KEY',
+  // Client ID do Spotify — público por natureza (vai na URL de autorização).
+  // O client secret NUNCA entra no app: quem troca o code por token é o
+  // backend, e é só por isso que o PKCE daqui é seguro.
+  spotifyClientId: 'SPOTIFY_CLIENT_ID',
 }
