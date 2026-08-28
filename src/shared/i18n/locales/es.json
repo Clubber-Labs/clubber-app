@@ -774,7 +774,28 @@
     },
     "share": {
       "label": "Compartir evento",
-      "message": "{{title}}\n\nMíralo en Clubber: {{url}}"
+      "message": "{{title}}\n\nMíralo en Clubber: {{url}}",
+      "sheetTitle": "Compartir",
+      "otherApps": "Otras apps",
+      "stories": {
+        "option": "Stories de Instagram",
+        "optionHint": "Abre Instagram con el arte del evento",
+        "byAuthor": "por @{{username}}",
+        "linkCopied": "Enlace copiado — pégalo en el sticker de Enlace de la historia",
+        "linkCopiedReturn": "¡Enlace copiado! Vuelve a Instagram y pégalo en el sticker de Enlace",
+        "instructions": {
+          "title": "Añade el enlace a tu historia",
+          "iosStep1": "Cuando se abra en Instagram, vuelve aquí a Clubber, el enlace de invitación estará disponible para copiar.",
+          "iosStep2": "De vuelta en Instagram: toca stickers → Link → Pegar.",
+          "bodyAndroid": "En Instagram: toca stickers → Link → Pegar para añadir el enlace de invitación.",
+          "confirm": "Abrir Instagram"
+        },
+        "returnSheet": {
+          "title": "Copia el enlace de invitación",
+          "body": "Después de copiar, vuelve a Instagram: toca stickers → Link → Pegar.",
+          "copy": "Copiar enlace"
+        }
+      }
     },
     "venue": {
       "search": "Buscar establecimiento",

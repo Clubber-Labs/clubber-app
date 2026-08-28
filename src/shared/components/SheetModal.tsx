@@ -14,6 +14,11 @@ import Animated, {
 import { runOnJS } from 'react-native-worklets'
 import { useKeyboardOverlap } from '../hooks/useKeyboardOverlap'
 
+// Saída do `animationType="slide"` do Modal do RN. Quem fecha uma folha e
+// apresenta OUTRA coisa em seguida (share do sistema, outra modal) precisa
+// esperar isto — no iOS o atropelo estoura "presentation is in progress".
+export const SHEET_EXIT_MS = 320
+
 // Respiro entre o topo do teclado e o conteúdo recuado.
 const KEYBOARD_GAP = 16
 // Equivalente ao pb-8 que a folha usa sem teclado (safe area do indicador).

@@ -774,7 +774,28 @@
     },
     "share": {
       "label": "Share event",
-      "message": "{{title}}\n\nCheck it out on Clubber: {{url}}"
+      "message": "{{title}}\n\nCheck it out on Clubber: {{url}}",
+      "sheetTitle": "Share",
+      "otherApps": "Other apps",
+      "stories": {
+        "option": "Instagram Stories",
+        "optionHint": "Opens Instagram with the event artwork",
+        "byAuthor": "by @{{username}}",
+        "linkCopied": "Link copied — paste it into the story’s Link sticker",
+        "linkCopiedReturn": "Link copied! Head back to Instagram and paste it into the Link sticker",
+        "instructions": {
+          "title": "Add the link to your story",
+          "iosStep1": "When it opens in Instagram, come back here to Clubber, and the invite link will be ready to copy.",
+          "iosStep2": "Back in Instagram: tap stickers → Link → Paste.",
+          "bodyAndroid": "In Instagram: tap stickers → Link → Paste to add the invite link.",
+          "confirm": "Open Instagram"
+        },
+        "returnSheet": {
+          "title": "Copy the invite link",
+          "body": "After copying, head back to Instagram: tap stickers → Link → Paste.",
+          "copy": "Copy link"
+        }
+      }
     },
     "venue": {
       "search": "Search for a venue",
