@@ -41,7 +41,7 @@ const FLYER_TOP = 300
 const FLYER_MAX_WIDTH = 920
 const FLYER_MAX_HEIGHT = 933
 const FLYER_TEXT_GAP = 80
-const FLYER_ROTATION = '2deg'
+const FLYER_ROTATION = '4deg'
 
 const TAPE_SIZE = { width: 280, height: 72 }
 
@@ -189,7 +189,14 @@ export function StoryArtTemplate({ data, onReady }: Props) {
         </View>
         {/* Fora do bloco que recorta, senão a pílula do sticker seria cortada
             pelo raio do flyer. */}
-        <View style={{ position: 'absolute', left: u(-28), bottom: u(-36) }}>
+        <View
+          style={{
+            position: 'absolute',
+            left: u(-28),
+            bottom: u(-36),
+            transform: [{ rotate: '8deg' }],
+          }}
+        >
           <BrandStickerWordmark height={u(40)} />
         </View>
       </View>

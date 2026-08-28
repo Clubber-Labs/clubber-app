@@ -35,10 +35,17 @@ export function canShareToInstagramStories(): Promise<boolean> {
 }
 
 // `backgroundImage` ocupa o story inteiro e o usuário não a redimensiona.
-// O link tocável (`linkUrl`) é restrito a parceiros da Meta — por isso a URL
-// vai impressa na arte e o app copia pro clipboard; ver docs/share-stories-instagram.md.
+//
+// iOS — o handoff da lib É o UIPasteboard (arte via setItems + openURL), e
+// ficou PROVADO em aparelho (28/08/2026) que o Instagram LIMPA o pasteboard
+// inteiro ao consumir a arte. Portanto: nunca copiar a URL antes do share (o
+// setItems a apaga), nunca escrevê-la junto (morre na limpeza) e nunca tentar
+// reescrever depois (escrita em background é no-op silencioso). A cópia do
+// link acontece na VOLTA ao app, em primeiro plano — ver useShareToStories.
+// Diagnóstico completo: docs/share-stories-instagram.md.
 export async function shareToInstagramStories(
   backgroundImageUri: string,
+  linkUrl: string,
 ): Promise<boolean> {
   if (!facebookAppId) return false
   try {
@@ -46,10 +53,37 @@ export async function shareToInstagramStories(
       social: Social.InstagramStories,
       appId: facebookAppId,
       backgroundImage: backgroundImageUri,
+      // Sticker de link nativo — o mesmo mecanismo do Spotify. Campo original
+      // da lib (`com.instagram.sharedSticker.linkURL` no iOS, extra `link_url`
+      // no Android), restrito a parceiros da Meta: se um dia o programa abrir,
+      // o story sai com CTA tocável sem mudança aqui. Ignorado (o caso de
+      // hoje, provado em aparelho), o story sai só com a arte.
+      linkUrl,
     })
     return true
   } catch {
-    // IG fechado, usuário cancelou, asset recusado — silencioso (padrão do app).
+    // IG ausente/fechado, usuário cancelou, asset recusado — silencioso
+    // (padrão do app); o chamador decide o fallback.
+    return false
+  }
+}
+
+// Saída de emergência quando o handoff do IG não acontece: a mesma arte pelo
+// share do sistema. Este caminho NÃO passa pelo pasteboard do Instagram, então
+// a URL copiada antes dele sobrevive.
+export async function shareStoryArtToSystem(
+  imageUri: string,
+): Promise<boolean> {
+  try {
+    const { success } = await Share.open({
+      url: imageUri,
+      // A captura sai em JPG (ver StoryArtCapture) — o mime errado faz o
+      // destino tratar o arquivo como binário opaco.
+      type: 'image/jpeg',
+      failOnCancel: false,
+    })
+    return success
+  } catch {
     return false
   }
 }

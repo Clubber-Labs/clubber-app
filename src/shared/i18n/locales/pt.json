@@ -781,7 +781,20 @@
         "option": "Stories do Instagram",
         "optionHint": "Abre o Instagram com a arte do evento",
         "byAuthor": "por @{{username}}",
-        "linkCopied": "Link copiado — cole no sticker de Link do story"
+        "linkCopied": "Link copiado! cole no sticker de Link do story",
+        "linkCopiedReturn": "Link copiado! Volte ao Instagram e cole no sticker de Link",
+        "instructions": {
+          "title": "Adicione o link no seu story",
+          "iosStep1": "Quando abrir no Instagram, volte aqui no Clubber, o link do convite estará disponível para ser copiado.",
+          "iosStep2": "De volta ao Instagram: toque em stickers → Link → Colar.",
+          "bodyAndroid": "No Instagram: toque em stickers → Link → Colar para adicionar o link do convite.",
+          "confirm": "Abrir o Instagram"
+        },
+        "returnSheet": {
+          "title": "Copie o link do convite",
+          "body": "Depois de copiar, volte ao Instagram: toque em stickers → Link → Colar.",
+          "copy": "Copiar link"
+        }
       }
     },
     "venue": {

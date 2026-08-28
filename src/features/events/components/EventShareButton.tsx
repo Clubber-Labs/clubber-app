@@ -8,6 +8,9 @@ import { useCanShareToStories } from '../hooks/useCanShareToStories'
 import { useShareToStories } from '../hooks/useShareToStories'
 import { ShareOptionsSheet } from './share/ShareOptionsSheet'
 import { StoryArtCapture } from './share/StoryArtCapture'
+import { StoryLinkInstructions } from './share/StoryLinkInstructions'
+import { StoryLinkReturnSheet } from './share/StoryLinkReturnSheet'
+import { SHEET_EXIT_MS } from '@/shared/components/SheetModal'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -16,12 +19,6 @@ type Props = {
   // a tela liga isso ao tracking de analytics.
   onShared?: () => void
 }
-
-// O share do sistema é um UIActivityViewController: apresentá-lo enquanto a
-// folha ainda desliza pra fora estoura "presentation is in progress" no iOS. O
-// caminho dos Stories não sofre disso (abre outro app por URL/Intent), mas
-// esperar nos dois mantém uma regra só.
-const SHEET_EXIT_MS = 320
 
 // Botão de compartilhar do header do evento. Só o autor o monta: o link de
 // convite vem de endpoint author-only (403 NOT_EVENT_AUTHOR), e a URL é sempre
@@ -47,6 +44,10 @@ export function EventShareButton({ event, onShared }: Props) {
     }
   }
 
+  // O share do sistema é um UIActivityViewController: apresentá-lo enquanto a
+  // folha ainda desliza pra fora estoura "presentation is in progress" no iOS.
+  // O caminho dos Stories não sofre disso (abre outro app por URL/Intent), mas
+  // esperar nos dois mantém uma regra só.
   function chooseOption(run: () => void) {
     setSheetVisible(false)
     setTimeout(run, SHEET_EXIT_MS)
@@ -81,6 +82,16 @@ export function EventShareButton({ event, onShared }: Props) {
           onCaptured={stories.handleCaptured}
         />
       )}
+      <StoryLinkInstructions
+        visible={stories.instructionsVisible}
+        onConfirm={stories.confirmInstructions}
+        onClose={stories.dismissInstructions}
+      />
+      <StoryLinkReturnSheet
+        visible={stories.returnSheetVisible}
+        onCopy={stories.copyReturnLink}
+        onClose={stories.dismissReturnSheet}
+      />
     </>
   )
 }
