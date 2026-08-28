@@ -10,7 +10,9 @@ const INSTAGRAM_PACKAGE = 'com.instagram.android'
 module.exports = function withInstagramStories(config) {
   return withAndroidManifest(config, config => {
     const { manifest } = config.modResults
-    manifest.queries = manifest.queries ?? [{}]
+    // ?.length cobre nullish E array vazio — plugin anterior pode deixar
+    // `queries: []`, e desestruturar o primeiro elemento estouraria o prebuild.
+    if (!manifest.queries?.length) manifest.queries = [{}]
     const [queries] = manifest.queries
     queries.package = queries.package ?? []
     const declared = queries.package.some(

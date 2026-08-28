@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { View } from 'react-native'
 import { useFonts, Sora_700Bold } from '@expo-google-fonts/sora'
 import { captureRef } from 'react-native-view-shot'
@@ -23,6 +23,9 @@ export function StoryArtCapture({ data, onCaptured }: Props) {
   const viewRef = useRef<View>(null)
   const captured = useRef(false)
   const [drawn, setDrawn] = useState(false)
+  // Estável de propósito: onReady entra nas deps do efeito do template — uma
+  // arrow nova por render o faria re-rodar à toa.
+  const markDrawn = useCallback(() => setDrawn(true), [])
 
   // A arte só se declara pronta quando o flyer carrega E o título é medido. Se
   // um dos dois nunca responder (rede pendurada), captura mesmo assim: sem
@@ -84,7 +87,7 @@ export function StoryArtCapture({ data, onCaptured }: Props) {
         height: STORY_HEIGHT_DP,
       }}
     >
-      <StoryArtTemplate data={data} onReady={() => setDrawn(true)} />
+      <StoryArtTemplate data={data} onReady={markDrawn} />
     </View>
   )
 }
