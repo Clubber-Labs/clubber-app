@@ -7,24 +7,25 @@ import { spotsService } from '../services/spotsService'
 import { spotKeys } from './cacheKeys'
 import type { Spot } from '../types'
 
-type ViewportSnapshot = Array<[QueryKey, Spot[] | undefined]>
+type ListSnapshot = Array<[QueryKey, Spot[] | undefined]>
 
-// Cancelamento com optimistic remove dos balões (todas as variações de
-// viewport) — padrão canônico de CLAUDE.md. DELETE é idempotente no backend.
+// Cancelamento com optimistic remove do rolê nas duas listagens (balões do mapa
+// e cards do feed) — padrão canônico de CLAUDE.md. DELETE é idempotente no
+// backend.
 export function useCancelSpot(id: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: () => spotsService.cancel(id),
     onMutate: async () => {
-      await queryClient.cancelQueries({ queryKey: spotKeys.viewportAll })
-      const prev: ViewportSnapshot = queryClient.getQueriesData<Spot[]>({
-        queryKey: spotKeys.viewportAll,
-      })
-      queryClient.setQueriesData<Spot[]>(
-        { queryKey: spotKeys.viewportAll },
-        old => old?.filter(spot => spot.id !== id),
-      )
+      const prev: ListSnapshot = []
+      for (const key of spotKeys.listAll) {
+        await queryClient.cancelQueries({ queryKey: key })
+        prev.push(...queryClient.getQueriesData<Spot[]>({ queryKey: key }))
+        queryClient.setQueriesData<Spot[]>({ queryKey: key }, old =>
+          old?.filter(spot => spot.id !== id),
+        )
+      }
       return { prev }
     },
     onError: (_err, _vars, ctx) => {
@@ -34,7 +35,9 @@ export function useCancelSpot(id: string) {
       queryClient.removeQueries({ queryKey: spotKeys.detail(id) })
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: spotKeys.viewportAll })
+      for (const key of spotKeys.listAll) {
+        queryClient.invalidateQueries({ queryKey: key })
+      }
     },
   })
 }

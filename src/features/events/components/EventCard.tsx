@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import { UsersIcon, HeartIcon, ChatCircleIcon } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg'
+import { CardHighlightFrame } from '@/shared/components/CardHighlightFrame'
 import { useToggleLike } from '../hooks/useToggleLike'
 import { EventCardHero } from './EventCardHero'
 import { EventCardPerforation } from './EventCardPerforation'
@@ -45,12 +45,6 @@ export function EventCard({
 }: Props) {
   const { t } = useTranslation()
   const [expanded, setExpanded] = useState(false)
-  // Medida real do card pro frame de destaque: Rect com "100%" não
-  // re-resolve quando a altura do container muda (RNSVG/new arch) — a
-  // moldura ficava cortada no meio do card.
-  const [frameSize, setFrameSize] = useState<{ w: number; h: number } | null>(
-    null,
-  )
   // O contorno do card é desenhado, não é `border`: ver EventCardOutline.
   const [cardSize, setCardSize] = useState<{ w: number; h: number } | null>(
     null,
@@ -82,7 +76,6 @@ export function EventCard({
   const live = event.status === 'ONGOING'
   const framed = live || event.isFeatured
   const frameStops = live ? SPECTRUM : METAL
-  const frameId = `card-frame-${event.id}`
 
   const card = (
     // Sem borda: ela e o picote disputavam a aresta. Filho de View com borda é
@@ -216,56 +209,9 @@ export function EventCard({
   if (!framed) return <View className="mb-3">{card}</View>
 
   return (
-    <View
-      className="relative mb-3"
-      onLayout={e => {
-        const { width, height } = e.nativeEvent.layout
-        setFrameSize(prev =>
-          prev?.w === width && prev?.h === height
-            ? prev
-            : { w: width, h: height },
-        )
-      }}
-    >
+    <View className="relative mb-3">
       {card}
-      {frameSize && (
-        <Svg
-          width={frameSize.w}
-          height={frameSize.h}
-          style={StyleSheet.absoluteFill}
-          pointerEvents="none"
-        >
-          <Defs>
-            <LinearGradient id={frameId} x1="0" y1="0" x2="1" y2="1">
-              <Stop offset="0" stopColor={frameStops[0]} />
-              <Stop offset="0.5" stopColor={frameStops[1]} />
-              <Stop offset="1" stopColor={frameStops[2]} />
-            </LinearGradient>
-          </Defs>
-          {/* Mini-glow (mesma linguagem dos pins) + traço do frame. */}
-          <Rect
-            x={2}
-            y={2}
-            width={frameSize.w - 4}
-            height={frameSize.h - 4}
-            rx={12}
-            fill="none"
-            stroke={`url(#${frameId})`}
-            strokeWidth={6}
-            strokeOpacity={0.2}
-          />
-          <Rect
-            x={1.25}
-            y={1.25}
-            width={frameSize.w - 2.5}
-            height={frameSize.h - 2.5}
-            rx={12.5}
-            fill="none"
-            stroke={`url(#${frameId})`}
-            strokeWidth={2.5}
-          />
-        </Svg>
-      )}
+      <CardHighlightFrame stops={frameStops} />
     </View>
   )
 }

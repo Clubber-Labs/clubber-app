@@ -12,9 +12,11 @@ export function useJoinSpot(id: string) {
   return useMutation({
     mutationFn: () => spotsService.join(id),
     onSuccess: () => {
-      // memberCount mudou — sincroniza detail e balões do mapa.
+      // memberCount mudou — sincroniza detail, balões do mapa e cards do feed.
       queryClient.invalidateQueries({ queryKey: spotKeys.detail(id) })
-      queryClient.invalidateQueries({ queryKey: spotKeys.viewportAll })
+      for (const key of spotKeys.listAll) {
+        queryClient.invalidateQueries({ queryKey: key })
+      }
       void primeAfterSocialAction()
     },
   })

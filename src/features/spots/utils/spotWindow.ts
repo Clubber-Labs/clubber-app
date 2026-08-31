@@ -33,3 +33,22 @@ export function isSpotLiveNow(startsAt: string, endsAt: string): boolean {
     new Date(startsAt).getTime() <= now && now <= new Date(endsAt).getTime()
   )
 }
+
+// Quanto da janela já passou (0–1) e quanto falta em minutos — barra e texto do
+// countdown saem daqui. `now` entra por parâmetro pra função continuar pura: o
+// relógio é do chamador, que decide de quanto em quanto tempo reavaliar.
+export function spotProgress(
+  startsAt: string,
+  endsAt: string,
+  now: number,
+): { ratio: number; minutesLeft: number } {
+  const start = new Date(startsAt).getTime()
+  const end = new Date(endsAt).getTime()
+  const span = end - start
+  if (!(span > 0)) return { ratio: 1, minutesLeft: 0 }
+  const elapsed = Math.min(Math.max(now - start, 0), span)
+  return {
+    ratio: elapsed / span,
+    minutesLeft: Math.max(Math.ceil((end - now) / 60_000), 0),
+  }
+}

@@ -31,6 +31,10 @@ export const SPOT_BALLOON_TAIL_ANCHOR = {
   x: (7.5 + PAD) / CANVAS_W,
   y: (57 + PAD) / CANVAS_H,
 }
+// Caixa que o balão ocupa, em unidades de SPOT_BALLOON_SIZE. Quem o planta fora
+// do Mapbox (sem o anchor do MarkerView) precisa dela pra pousar a ponta do
+// rabinho no ponto certo.
+export const SPOT_BALLOON_CANVAS = { width: CANVAS_W, height: CANVAS_H }
 // Foto do criador CENTRALIZADA na caixa do balão.
 const AVATAR_SIZE = 36
 const AVATAR_LEFT = PAD + (BOX_W - AVATAR_SIZE) / 2

@@ -577,6 +577,30 @@
       "choose": "Escolher esse rolê",
       "chooseNamed": "Escolher {{name}}"
     },
+    "feedCard": {
+      "now": "AGORA",
+      "friendsOnly": "Só amigos",
+      "moreActions": "Mais opções do rolê",
+      "placeWithDistance": "{{place}} · a {{distance}}",
+      "away": "a {{distance}}",
+      "untilTime": "até {{time}}",
+      "startedAt": "começou {{time}}",
+      "timeRange": "{{start}}–{{end}}",
+      "dayLine": "{{weekday}}, {{day}}",
+      "pulseSolo": "por <b>@{{username}}</b>",
+      "pulseLive_one": "<b>{{names}}</b> está nesse rolê",
+      "pulseLive_other": "<b>{{names}}</b> estão nesse rolê",
+      "pulseGroup": "<b>{{name}}</b> e mais {{count}} já estão no grupo",
+      "byUser": "por @{{username}}",
+      "meta": "por @{{username}} · {{emoji}} {{category}}",
+      "metaCategory": "{{emoji}} {{category}}",
+      "rollingNow": "ROLANDO AGORA",
+      "endsInHours": "acaba em {{count}}h",
+      "endsInMinutes": "acaba em {{count}}min",
+      "joinLive": "Chegar junto · entrar no chat",
+      "join": "Entrar no chat",
+      "openChat": "Abrir chat do grupo"
+    },
     "consent": {
       "title": "Precisamos da sua localização",
       "description": "Pra sugerir rolês perto de você. Usada só agora — nada de rastreamento em segundo plano.",
@@ -970,7 +994,8 @@
     "emptyFilteredTitle": "Nenhum evento para esses filtros",
     "emptyFilteredBody": "Tente outros filtros ou limpe a seleção.",
     "emptyTitle": "Nada por aqui ainda",
-    "emptyBody": "Siga pessoas para ver os eventos delas no seu feed."
+    "emptyBody": "Siga pessoas para ver os eventos delas no seu feed.",
+    "nearbySpots": "Rolês perto de você"
   },
   "tabs": {
     "feed": "Feed",

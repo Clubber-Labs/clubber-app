@@ -577,6 +577,30 @@
       "choose": "Elegir este plan",
       "chooseNamed": "Elegir {{name}}"
     },
+    "feedCard": {
+      "now": "AHORA",
+      "friendsOnly": "Solo amigos",
+      "moreActions": "Más opciones del plan",
+      "placeWithDistance": "{{place}} · a {{distance}}",
+      "away": "a {{distance}}",
+      "untilTime": "hasta {{time}}",
+      "startedAt": "empezó {{time}}",
+      "timeRange": "{{start}}–{{end}}",
+      "dayLine": "{{weekday}}, {{day}}",
+      "pulseSolo": "por <b>@{{username}}</b>",
+      "pulseLive_one": "<b>{{names}}</b> está en este plan",
+      "pulseLive_other": "<b>{{names}}</b> están en este plan",
+      "pulseGroup": "<b>{{name}}</b> y {{count}} más ya están en el grupo",
+      "byUser": "por @{{username}}",
+      "meta": "por @{{username}} · {{emoji}} {{category}}",
+      "metaCategory": "{{emoji}} {{category}}",
+      "rollingNow": "PASANDO AHORA",
+      "endsInHours": "termina en {{count}}h",
+      "endsInMinutes": "termina en {{count}}min",
+      "joinLive": "Súmate · entra al chat",
+      "join": "Entrar al chat",
+      "openChat": "Abrir chat del grupo"
+    },
     "consent": {
       "title": "Necesitamos tu ubicación",
       "description": "Para sugerir planes cerca de ti. Se usa solo ahora — sin rastreo en segundo plano.",
@@ -970,7 +994,8 @@
     "emptyFilteredTitle": "No hay eventos con esos filtros",
     "emptyFilteredBody": "Prueba otros filtros o limpia la selección.",
     "emptyTitle": "Nada por aquí todavía",
-    "emptyBody": "Sigue a personas para ver sus eventos en tu feed."
+    "emptyBody": "Sigue a personas para ver sus eventos en tu feed.",
+    "nearbySpots": "Planes cerca de ti"
   },
   "tabs": {
     "feed": "Feed",

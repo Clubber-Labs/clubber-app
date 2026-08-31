@@ -13,7 +13,9 @@ export function useRenewSpot(id: string) {
     onSuccess: spot => {
       // O Spot volta com endsAt +24h — a janela na tela atualiza na hora.
       queryClient.setQueryData(spotKeys.detail(id), spot)
-      queryClient.invalidateQueries({ queryKey: spotKeys.viewportAll })
+      for (const key of spotKeys.listAll) {
+        queryClient.invalidateQueries({ queryKey: key })
+      }
     },
   })
 }

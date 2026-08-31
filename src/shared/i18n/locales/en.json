@@ -577,6 +577,30 @@
       "choose": "Choose this hangout",
       "chooseNamed": "Choose {{name}}"
     },
+    "feedCard": {
+      "now": "NOW",
+      "friendsOnly": "Friends only",
+      "moreActions": "More hangout options",
+      "placeWithDistance": "{{place}} · {{distance}} away",
+      "away": "{{distance}} away",
+      "untilTime": "until {{time}}",
+      "startedAt": "started {{time}}",
+      "timeRange": "{{start}}–{{end}}",
+      "dayLine": "{{weekday}}, {{day}}",
+      "pulseSolo": "by <b>@{{username}}</b>",
+      "pulseLive_one": "<b>{{names}}</b> is at this hangout",
+      "pulseLive_other": "<b>{{names}}</b> are at this hangout",
+      "pulseGroup": "<b>{{name}}</b> and {{count}} more are already in the group",
+      "byUser": "by @{{username}}",
+      "meta": "by @{{username}} · {{emoji}} {{category}}",
+      "metaCategory": "{{emoji}} {{category}}",
+      "rollingNow": "HAPPENING NOW",
+      "endsInHours": "ends in {{count}}h",
+      "endsInMinutes": "ends in {{count}}min",
+      "joinLive": "Join in · enter the chat",
+      "join": "Enter the chat",
+      "openChat": "Open group chat"
+    },
     "consent": {
       "title": "We need your location",
       "description": "To suggest hangouts near you. Used only right now — no background tracking.",
@@ -970,7 +994,8 @@
     "emptyFilteredTitle": "No events for these filters",
     "emptyFilteredBody": "Try other filters or clear the selection.",
     "emptyTitle": "Nothing here yet",
-    "emptyBody": "Follow people to see their events in your feed."
+    "emptyBody": "Follow people to see their events in your feed.",
+    "nearbySpots": "Hangouts near you"
   },
   "tabs": {
     "feed": "Feed",

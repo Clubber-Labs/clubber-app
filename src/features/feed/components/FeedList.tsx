@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import {
   FlatList,
   View,
@@ -9,15 +9,18 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { useFeed } from '../hooks/useFeed'
+import { toFeedItems, type FeedItem } from '../utils/feedItems'
 import { EventCard } from '@/features/events/components/EventCard'
 import { EventStatusFilter } from '@/features/events/components/EventStatusFilter'
+import { SpotFeedCard } from '@/features/spots/components/SpotFeedCard'
+import { useNearbySpots } from '@/features/spots/hooks/useNearbySpots'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import { useActiveTabPress } from '@/shared/hooks/useActiveTabPress'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 import { useConsentedLocation } from '@/features/privacy/hooks/useConsentedLocation'
 import { flattenInfiniteList } from '@/shared/utils/infiniteList'
-import type { EventStatus, FeedEvent } from '@/shared/types'
+import type { EventStatus } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
 export function FeedList() {
@@ -30,10 +33,10 @@ export function FeedList() {
   // concedida; negado/erro → feed sem proximidade (descoberta só por categoria).
   const { coords, status: locationStatus } = useConsentedLocation()
   const locationResolved = locationStatus !== 'loading'
-  const near =
-    locationStatus === 'ready' && coords
-      ? { nearLat: coords[1], nearLng: coords[0] }
-      : {}
+  const userCoords = locationStatus === 'ready' ? coords : null
+  const near = userCoords
+    ? { nearLat: userCoords[1], nearLng: userCoords[0] }
+    : {}
   const {
     data,
     isLoading,
@@ -51,20 +54,33 @@ export function FeedList() {
     // seguido de outro com near (reiniciaria a paginação).
     { enabled: locationResolved },
   )
-  const { refreshing, onRefresh } = usePullRefresh(refetch)
+  // Seção "Rolês perto de você": mesmas coords do feed. Sem consentimento ou
+  // sem resultado ela some inteira — nada de placeholder nem de erro visível,
+  // porque a falha dela não pode custar o feed a quem só quer os eventos.
+  const { data: spots, refetch: refetchSpots } = useNearbySpots(userCoords)
+
+  const refresh = useCallback(async () => {
+    await Promise.all([refetch(), refetchSpots()])
+  }, [refetch, refetchSpots])
+  const { refreshing, onRefresh } = usePullRefresh(refresh)
 
   // Re-tap na aba Feed: volta ao topo e atualiza (padrão de plataforma).
-  const listRef = useRef<FlatList<FeedEvent>>(null)
+  const listRef = useRef<FlatList<FeedItem>>(null)
   useActiveTabPress(() => {
     listRef.current?.scrollToOffset({ offset: 0, animated: true })
-    refetch()
+    void refresh()
   })
 
   // Dedup defensivo por id: o mesmo evento pode reaparecer entre páginas
   // (empates de ranking ou re-surface por sinais sociais entre sessões).
   // Memoiza pra não reconstruir o Set a cada render não relacionado.
   const events = useMemo(() => flattenInfiniteList(data), [data])
+  const items = useMemo(() => toFeedItems(events, spots ?? []), [events, spots])
   const filtering = statusFilter.length > 0
+  const ready = locationResolved && !isLoading && !isError
+  // Os rolês abrem a lista, então basta olhar o primeiro item pra saber se a
+  // seção existe nesta rodada.
+  const hasNearbySpots = ready && items[0]?.type === 'spot'
 
   // Tudo (chips de filtro inclusos) vive na FlatList: o conteúdo rola por
   // baixo do header de vidro. Estados de load/erro/vazio entram como
@@ -76,8 +92,8 @@ export function FeedList() {
       keyboardShouldPersistTaps="handled"
       ref={listRef}
       className="flex-1"
-      data={!locationResolved || isLoading || isError ? [] : events}
-      keyExtractor={(item: FeedEvent) => item.id}
+      data={ready ? items : []}
+      keyExtractor={(item: FeedItem) => item.key}
       contentContainerStyle={{
         flexGrow: 1,
         paddingTop: headerClearance,
@@ -85,8 +101,18 @@ export function FeedList() {
         paddingBottom: tabBarClearance,
       }}
       ListHeaderComponent={
-        <View className="-mx-4 pb-3">
-          <EventStatusFilter value={statusFilter} onChange={setStatusFilter} />
+        <View className="pb-3">
+          <View className="-mx-4">
+            <EventStatusFilter
+              value={statusFilter}
+              onChange={setStatusFilter}
+            />
+          </View>
+          {hasNearbySpots && (
+            <Text className="pt-3 text-[11px] font-bold uppercase tracking-wider text-content-subtle">
+              {t('feed.nearbySpots')}
+            </Text>
+          )}
         </View>
       }
       ListEmptyComponent={
@@ -111,16 +137,20 @@ export function FeedList() {
           </View>
         )
       }
-      renderItem={({ item }) => (
-        <EventCard
-          event={item}
-          onPress={() => router.push(`/events/${item.id}`)}
-          // A tela é dona da localização: o useUserLocation monta estado e
-          // listener de AppState próprios a cada chamada, então um por card
-          // sairia caro numa lista.
-          userCoords={locationStatus === 'ready' ? coords : null}
-        />
-      )}
+      renderItem={({ item }) =>
+        item.type === 'spot' ? (
+          <SpotFeedCard spot={item.spot} userCoords={userCoords} />
+        ) : (
+          <EventCard
+            event={item.event}
+            onPress={() => router.push(`/events/${item.event.id}`)}
+            // A tela é dona da localização: o useUserLocation monta estado e
+            // listener de AppState próprios a cada chamada, então um por card
+            // sairia caro numa lista.
+            userCoords={userCoords}
+          />
+        )
+      }
       refreshControl={
         <RefreshControl
           refreshing={refreshing}

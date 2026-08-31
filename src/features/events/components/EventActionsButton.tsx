@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useDeleteEvent } from '../hooks/useDeleteEvent'
-import { EventActionsMenu, type EventAction } from './EventActionsMenu'
+import { ActionsMenu, type MenuAction } from '@/shared/components/ActionsMenu'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -32,7 +32,7 @@ export function EventActionsButton({ eventId }: Props) {
     })
   }
 
-  const actions: EventAction[] = [
+  const actions: MenuAction[] = [
     {
       label: t('events.actions.edit'),
       onPress: () => router.push(`/events/${eventId}/edit`),
@@ -60,7 +60,7 @@ export function EventActionsButton({ eventId }: Props) {
       >
         <DotsThreeIcon size={22} color={colors.content} weight="bold" />
       </Pressable>
-      <EventActionsMenu
+      <ActionsMenu
         visible={open}
         actions={actions}
         onClose={() => setOpen(false)}

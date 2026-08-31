@@ -1,7 +1,7 @@
 import { Modal, View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 
-export type EventAction = {
+export type MenuAction = {
   label: string
   onPress: () => void
   destructive?: boolean
@@ -9,11 +9,13 @@ export type EventAction = {
 
 type Props = {
   visible: boolean
-  actions: EventAction[]
+  actions: MenuAction[]
   onClose: () => void
 }
 
-export function EventActionsMenu({ visible, actions, onClose }: Props) {
+// Folha de ações do ⋯ — lista simples ancorada no pé da tela, sem ícone. Usada
+// por qualquer conteúdo com dono e denunciante (evento, publicação, rolê).
+export function ActionsMenu({ visible, actions, onClose }: Props) {
   const { t } = useTranslation()
   return (
     <Modal

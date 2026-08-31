@@ -11,6 +11,10 @@ import type {
 
 type ListParams = Bbox & MapFilterParams & { limit?: number }
 
+// Coordenadas em graus decimais, separadas (e não [lng, lat]) porque é o que a
+// query string espera. Sem radiusKm de propósito — ver listNearby.
+type NearbyParams = { nearLat: number; nearLng: number; limit?: number }
+
 export const spotsService = {
   // Consome quota diária — o caller deve travar o botão enquanto pendente.
   generateSuggestions: (
@@ -56,6 +60,17 @@ export const spotsService = {
         // Backend espera array repetido (status=A&status=B), não brackets nem
         // CSV — CSV volta 400.
         paramsSerializer: { indexes: null },
+      })
+      .then(r => r.data),
+
+  // Modo ponto+raio, mutuamente exclusivo com o bbox acima: mesma resposta,
+  // ordenada pelo backend (afinidade de categoria/interesse antes de distância)
+  // — o cliente não reordena. `radiusKm` fica de fora de propósito: omitido, o
+  // backend usa o spotRadiusKm salvo do usuário (10 km pra quem não configurou).
+  listNearby: ({ nearLat, nearLng, limit }: NearbyParams): Promise<Spot[]> =>
+    api
+      .get('/spots', {
+        params: { nearLat, nearLng, ...(limit ? { limit } : {}) },
       })
       .then(r => r.data),
 

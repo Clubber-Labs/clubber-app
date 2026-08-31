@@ -15,7 +15,9 @@ export function useCreateSpot() {
     onSuccess: spot => {
       // Semeia a detail pra navegação pós-publicação não refetchar à toa.
       queryClient.setQueryData(spotKeys.detail(spot.id), spot)
-      queryClient.invalidateQueries({ queryKey: spotKeys.viewportAll })
+      for (const key of spotKeys.listAll) {
+        queryClient.invalidateQueries({ queryKey: key })
+      }
     },
   })
 }

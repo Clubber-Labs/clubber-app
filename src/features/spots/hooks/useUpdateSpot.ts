@@ -14,7 +14,9 @@ export function useUpdateSpot(id: string) {
       spotsService.update(id, toUpdateSpotPayload(data)),
     onSuccess: spot => {
       queryClient.setQueryData(spotKeys.detail(id), spot)
-      queryClient.invalidateQueries({ queryKey: spotKeys.viewportAll })
+      for (const key of spotKeys.listAll) {
+        queryClient.invalidateQueries({ queryKey: key })
+      }
     },
   })
 }

@@ -9,7 +9,7 @@ import { useReportFlow } from '@/features/reports/hooks/useReportFlow'
 import { ReportReasonSheet } from '@/features/reports/components/ReportReasonSheet'
 import { REPORT_TITLE_KEYS } from '@/features/reports/utils/reportLabels'
 import { useDeleteEvent } from '../hooks/useDeleteEvent'
-import { EventActionsMenu, type EventAction } from './EventActionsMenu'
+import { ActionsMenu, type MenuAction } from '@/shared/components/ActionsMenu'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -46,7 +46,7 @@ export function EventCardMenu({ eventId, authorId }: Props) {
     if (ok) deleteEvent()
   }
 
-  const actions: EventAction[] = isAuthor
+  const actions: MenuAction[] = isAuthor
     ? [
         {
           label: t('events.actions.edit'),
@@ -80,7 +80,7 @@ export function EventCardMenu({ eventId, authorId }: Props) {
       >
         <DotsThreeIcon size={20} color={colors.content} weight="bold" />
       </Pressable>
-      <EventActionsMenu
+      <ActionsMenu
         visible={open}
         actions={actions}
         onClose={() => setOpen(false)}
