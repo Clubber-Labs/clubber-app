@@ -128,18 +128,18 @@ export default function InvitesScreen() {
   function handleInviteSelected() {
     if (selected.size === 0) return
     setPendingAction('selected')
-    invite.mutate(Array.from(selected), {
-      onSuccess: finishInvite,
-      onSettled: () => setPendingAction(null),
-    })
+    invite.mutate(
+      { kind: 'selected', userIds: Array.from(selected) },
+      { onSuccess: finishInvite, onSettled: () => setPendingAction(null) },
+    )
   }
 
   function handleInviteAll() {
     setPendingAction('all')
-    invite.mutate(undefined, {
-      onSuccess: finishInvite,
-      onSettled: () => setPendingAction(null),
-    })
+    invite.mutate(
+      { kind: 'all' },
+      { onSuccess: finishInvite, onSettled: () => setPendingAction(null) },
+    )
   }
 
   if (eventLoading) {
