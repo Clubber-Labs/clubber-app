@@ -9,12 +9,13 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { useFeed } from '../hooks/useFeed'
-import { FeedKindFilter } from './FeedKindFilter'
+import { FeedKindTabs } from './FeedKindTabs'
 import { FeedSpotsNeedLocation } from './FeedSpotsNeedLocation'
 import type { FeedItem, FeedKind } from '../types'
 import { EventCard } from '@/features/events/components/EventCard'
 import { EventStatusFilter } from '@/features/events/components/EventStatusFilter'
 import { SpotFeedCard } from '@/features/spots/components/SpotFeedCard'
+import { Collapsible } from '@/shared/components/Collapsible'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import { useActiveTabPress } from '@/shared/hooks/useActiveTabPress'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
@@ -44,8 +45,14 @@ export function FeedList() {
   // Rolê é ancorado num lugar: pedir SPOTS sem coords devolveria vazio sempre.
   // A tela troca a lista pelo convite a ligar a localização.
   const spotsWithoutLocation = kind === 'SPOTS' && !userCoords
+  // Próximos/Passados é vocabulário de evento — rolê vive numa janela curta e
+  // não tem esse eixo. A linha some na aba Rolês, mas a seleção fica no state:
+  // voltar pra Eventos devolve o filtro como estava.
+  const statusApplies = kind !== 'SPOTS'
+  const status = statusApplies && statusFilter.length ? statusFilter : undefined
   const {
     data,
+    counts,
     isLoading,
     isError,
     isFetchingNextPage,
@@ -54,7 +61,7 @@ export function FeedList() {
     refetch,
   } = useFeed(
     {
-      status: statusFilter.length ? statusFilter : undefined,
+      status,
       kinds: kind,
       ...near,
     },
@@ -75,11 +82,11 @@ export function FeedList() {
   // (empates de ranking ou re-surface por sinais sociais entre sessões).
   // Memoiza pra não reconstruir o Set a cada render não relacionado.
   const items = useMemo(() => flattenInfiniteList(data), [data])
-  const filtering = statusFilter.length > 0
+  const filtering = status !== undefined
 
-  // Tudo (chips de filtro inclusos) vive na FlatList: o conteúdo rola por
-  // baixo do header de vidro. Estados de load/erro/vazio entram como
-  // ListEmptyComponent pra manter os chips visíveis e o scroll contínuo.
+  // Tudo (abas e chips de filtro inclusos) vive na FlatList: o conteúdo rola
+  // por baixo do header de vidro. Estados de load/erro/vazio entram como
+  // ListEmptyComponent pra manter os filtros visíveis e o scroll contínuo.
   return (
     <FlatList
       // A lista hospeda o input de comentário/post: sem isto o primeiro toque em
@@ -99,9 +106,16 @@ export function FeedList() {
         paddingBottom: tabBarClearance,
       }}
       ListHeaderComponent={
-        <View className="-mx-4 gap-2 pb-3">
-          <FeedKindFilter value={kind} onChange={setKind} />
-          <EventStatusFilter value={statusFilter} onChange={setStatusFilter} />
+        <View className="-mx-4 pb-3">
+          <FeedKindTabs value={kind} onChange={setKind} counts={counts} />
+          <Collapsible open={statusApplies}>
+            <View className="pt-3">
+              <EventStatusFilter
+                value={statusFilter}
+                onChange={setStatusFilter}
+              />
+            </View>
+          </Collapsible>
         </View>
       }
       ListEmptyComponent={

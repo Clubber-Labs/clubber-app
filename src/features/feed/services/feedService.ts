@@ -1,6 +1,6 @@
 import { api } from '@/shared/lib/api'
-import type { FeedItem, FeedKind } from '../types'
-import type { CursorPaginatedResponse, EventStatus } from '@/shared/types'
+import type { FeedKind, FeedPage } from '../types'
+import type { EventStatus } from '@/shared/types'
 
 type FeedParams = {
   cursor?: string
@@ -33,7 +33,7 @@ export const feedService = {
     nearLat,
     nearLng,
     radiusKm,
-  }: FeedParams = {}): Promise<CursorPaginatedResponse<FeedItem>> =>
+  }: FeedParams = {}): Promise<FeedPage> =>
     api
       .get('/feed', {
         params: {

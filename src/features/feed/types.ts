@@ -1,5 +1,9 @@
 import type { Spot } from '@/features/spots/types'
-import type { FeedEvent, FeedReason } from '@/shared/types'
+import type {
+  CursorPaginatedResponse,
+  FeedEvent,
+  FeedReason,
+} from '@/shared/types'
 
 /**
  * Filtro de tipo do feed. EVENTS é o default do backend (preserva o contrato
@@ -16,3 +20,17 @@ export type FeedKind = 'EVENTS' | 'SPOTS' | 'ALL'
 export type FeedItem =
   | ({ type: 'EVENT' } & FeedEvent)
   | ({ type: 'SPOT'; reason?: FeedReason } & Spot)
+
+/**
+ * Total elegível por pool, para a contagem das abas de tipo. Cada campo é
+ * opcional de propósito: o backend ainda não manda `counts`, e a aba precisa
+ * continuar desenhando só o rótulo quando o número não vier.
+ */
+export type FeedCounts = {
+  events?: number
+  spots?: number
+}
+
+export type FeedPage = CursorPaginatedResponse<FeedItem> & {
+  counts?: FeedCounts
+}
