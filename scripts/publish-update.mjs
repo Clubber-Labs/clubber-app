@@ -158,6 +158,24 @@ if (missingEnv.length) {
   )
 }
 
+// O inverso da armadilha: a variável dormente DEFINIDA na hora de publicar
+// acende a feature pra quem baixar — e, por mudar o app.config.js, muda o
+// fingerprint: a update nem chegaria nos binários instalados. Quem publica de
+// uma máquina do círculo beta tem a do Spotify no .env.local e não faria ideia.
+// Preview (interno) segue com aviso; production recusa.
+const dormantPresent = [...OPTIONAL_EXTRA_ENV].filter(name => process.env[name])
+if (dormantPresent.length) {
+  if (protectedChannel) {
+    fail(
+      `Variável de feature dormente definida no ambiente: ${dormantPresent.join(', ')}.`,
+      'Ela ligaria a feature pra base inteira e mudaria a runtime version (a update nem chegaria). Tire do .env.local antes de publicar production.',
+    )
+  }
+  console.warn(
+    `\n⚠  ${dormantPresent.join(', ')} definida — esta update sai com a feature LIGADA.`,
+  )
+}
+
 /** Endereço que só resolve na máquina/rede de quem publica. */
 function isLocalHost(url) {
   let host
