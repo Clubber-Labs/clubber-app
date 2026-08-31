@@ -1,0 +1,48 @@
+diff --git a/android/src/main/java/com/rnmapbox/rnmbx/modules/RNMBXSnapshotModule.kt b/android/src/main/java/com/rnmapbox/rnmbx/modules/RNMBXSnapshotModule.kt
+index 771884c6d6c6ed703bc752744ca4020192e741a0..6b42ae8e06dcfd8bda170e0d264a48f3a200fbdd 100644
+--- a/android/src/main/java/com/rnmapbox/rnmbx/modules/RNMBXSnapshotModule.kt
++++ b/android/src/main/java/com/rnmapbox/rnmbx/modules/RNMBXSnapshotModule.kt
+@@ -47,7 +47,10 @@ class RNMBXSnapshotModule(private val mContext: ReactApplicationContext) :
+         mContext.runOnUiQueueThread {
+             val snapshotterID = UUID.randomUUID().toString()
+             val showLogo = if (jsOptions.hasKey("withLogo")) jsOptions.getBoolean("withLogo") else true
+-            val overlayOptions = SnapshotOverlayOptions(showLogo = showLogo)
++            // withLogo governa a marca d'água INTEIRA: sem showAttributes o
++            // crédito fica queimado no PNG, sem opção no JS.
++            val overlayOptions =
++                SnapshotOverlayOptions(showLogo = showLogo, showAttributes = showLogo)
+             val snapshotter = Snapshotter(mContext, getOptions(jsOptions), overlayOptions)
+             snapshotter.setStyleUri(jsOptions.getString("styleURL")!!)
+             try {
+diff --git a/ios/RNMBX/RNMBXSnapshotModule.swift b/ios/RNMBX/RNMBXSnapshotModule.swift
+index 1d1e2869b092bcf7166cc17121bceba82670948f..a42af741f39d039cf9a528365f69ce2a8530c075 100644
+--- a/ios/RNMBX/RNMBXSnapshotModule.swift
++++ b/ios/RNMBX/RNMBXSnapshotModule.swift
+@@ -1,4 +1,5 @@
+ import MapboxMaps
++import UIKit
+ 
+ @objc(RNMBXSnapshotModule)
+ class RNMBXSnapshotModule : NSObject {
+@@ -93,12 +94,18 @@ class RNMBXSnapshotModule : NSObject {
+           let height = jsOptions["height"] as? NSNumber else {
+       throw RNMBXError.paramError("width, height: is not a number")
+     }
+-    let showsLogo = jsOptions["withLogo"] as? Bool ?? true
++    let showsChrome = jsOptions["withLogo"] as? Bool ?? true
++    // pixelRatio 1.0 rasterizava o PNG em pontos, não em pixels: num aparelho
++    // 3x a imagem subia esticada 3x e saía borrada. O Android já usa a
++    // densidade da tela (displayMetrics.density) — isto só alinha o iOS.
+     var mapSnapshotOptions = MapSnapshotOptions(
+       size: CGSize(width: width.doubleValue, height: height.doubleValue),
+-      pixelRatio: 1.0
++      pixelRatio: UIScreen.main.scale
+     )
+-    mapSnapshotOptions.showsLogo = showsLogo
++    mapSnapshotOptions.showsLogo = showsChrome
++    // withLogo governa a marca d'água INTEIRA. Sem isto o showsAttribution fica
++    // no default (true) e o crédito continua queimado no PNG, sem opção no JS.
++    mapSnapshotOptions.showsAttribution = showsChrome
+ 
+     return mapSnapshotOptions
+   }

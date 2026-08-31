@@ -1,0 +1,2 @@
+patchedDependencies:
+  '@rnmapbox/maps': patches/@rnmapbox__maps.patch
