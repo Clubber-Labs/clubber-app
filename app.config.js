@@ -195,6 +195,12 @@ export default {
       // install quebra em lib estática ("cannot yet be integrated as static
       // libraries", visto no EAS em 2026-08-21). modular_headers é o fix que
       // o próprio CocoaPods recomenda; version fica livre de propósito.
+      //
+      // ATENÇÃO: este bloco NÃO resolve sozinho. O plugin escreve `extraPods`
+      // no Podfile.properties.json, mas nenhum template de Podfile do SDK atual
+      // lê essa chave — quem declara de verdade é ./plugins/withModularHeaders.
+      // Fica aqui como intenção declarada (e volta a funcionar sozinho se o
+      // template passar a ler a chave).
       ["expo-build-properties", {
         ios: {
           extraPods: [
@@ -261,6 +267,8 @@ export default {
       "expo-apple-authentication",
       // Visibilidade do Instagram no Android (compartilhar nos Stories).
       "./plugins/withInstagramStories",
+      // Declara modular_headers no Podfile — o extraPods acima não basta.
+      "./plugins/withModularHeaders",
       ...socialAuthPlugins()
     ],
     // Os pares chave↔variável moram em scripts/extra-env.mjs porque o

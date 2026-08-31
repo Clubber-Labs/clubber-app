@@ -92,6 +92,10 @@ async function run({
 }: SnapshotRequest): Promise<string | null> {
   await acquire()
   try {
+    // `width`/`height` vão em PONTOS e `withLogo` desliga a marca d'água
+    // inteira (logo + crédito) — os dois só se comportam assim por causa de
+    // patches/@rnmapbox__maps.patch. Sem o patch o PNG sai borrado no iOS
+    // (pixelRatio fixo em 1.0) e com o crédito queimado nas duas plataformas.
     const uri = await Mapbox.snapshotManager.takeSnap({
       centerCoordinate: [longitude, latitude],
       zoomLevel: SPOT_SNAPSHOT_ZOOM,
