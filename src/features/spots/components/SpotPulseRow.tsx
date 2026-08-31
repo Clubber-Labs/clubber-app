@@ -12,8 +12,12 @@ type Props = {
 
 const AVATAR_SIZE = 36
 const OVERLAP = -12
+// Caixa real de cada círculo: sem largura explícita, o Yoga SOMA o border-2
+// do wrapper ao avatar — 36 vira 40. Medir com 36 superestimava o fit e o
+// último rosto podia vazar da linha (flex-row não quebra nem clipa).
+const AVATAR_BOX = AVATAR_SIZE + 4
 // Passo horizontal de cada círculo além do primeiro (avatar ou disco "+N").
-const AVATAR_STEP = AVATAR_SIZE + OVERLAP
+const AVATAR_STEP = AVATAR_BOX + OVERLAP
 // Antes do onLayout medir a linha: o mínimo histórico, sem risco de estourar.
 const FALLBACK_AVATARS = 3
 // Duas assinaturas bastam pra frase: a terceira já é ruído, e quem sobra está
@@ -22,8 +26,8 @@ const MAX_NAMES = 2
 
 // Quantos círculos cabem na linha sem quebrar.
 function fitCount(width: number): number {
-  if (width < AVATAR_SIZE) return 1
-  return 1 + Math.floor((width - AVATAR_SIZE) / AVATAR_STEP)
+  if (width < AVATAR_BOX) return 1
+  return 1 + Math.floor((width - AVATAR_BOX) / AVATAR_STEP)
 }
 
 /**
