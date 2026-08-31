@@ -206,10 +206,10 @@ export function EventCard({
     </View>
   )
 
-  if (!framed) return <View className="mb-3">{card}</View>
+  if (!framed) return <View className="mb-10">{card}</View>
 
   return (
-    <View className="relative mb-3">
+    <View className="relative mb-10">
       {card}
       <CardHighlightFrame stops={frameStops} />
     </View>

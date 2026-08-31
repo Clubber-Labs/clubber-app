@@ -8,7 +8,7 @@ import { PHOTO_RATIO } from './EventCardHero'
  */
 export function EventCardSkeleton() {
   return (
-    <View className="mb-3 overflow-hidden rounded-xl bg-surface">
+    <View className="mb-10 overflow-hidden rounded-xl bg-surface">
       <View
         className="justify-between p-3"
         style={{ aspectRatio: PHOTO_RATIO }}

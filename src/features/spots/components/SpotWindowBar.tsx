@@ -102,7 +102,9 @@ export function SpotWindowBar({ spot, live, userCoords, onPress }: Props) {
           ) : (
             <View className="flex-1" />
           )}
-          {!!place && <View className="w-px self-stretch bg-line/60" />}
+          {!!place && (
+            <View className="w-px self-stretch bg-line-strong my-2" />
+          )}
           <View className="items-end py-2 pl-2.5 pr-3">
             <Text className="text-sm font-extrabold text-content">
               {when.primary}
