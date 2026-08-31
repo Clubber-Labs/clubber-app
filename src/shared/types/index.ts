@@ -415,15 +415,6 @@ export type UserProfile = {
   }
 }
 
-export type UserEventsPage = CursorPaginatedResponse<UserEventSummary> & {
-  /**
-   * Total da vitrine do perfil: criados + presenças confirmadas visíveis a
-   * QUEM está olhando. Não é o `eventsCount` do perfil, que conta só autoria e
-   * alimenta a linha de stats. Vem só na 1ª página.
-   */
-  total?: number
-}
-
 export type UserEventSummary = {
   id: string
   title: string
