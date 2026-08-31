@@ -1,6 +1,6 @@
 import { ScrollView, View } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Chip } from '@/shared/components/Chip'
+import { StatusChip } from './StatusChip'
 import type { EventStatus } from '@/shared/types'
 
 type Option = {
@@ -37,11 +37,14 @@ export function EventStatusFilter({ value, onChange, wrap }: Props) {
   }
 
   const chips = OPTIONS.map(option => (
-    <Chip
+    <StatusChip
       key={option.value}
       label={t(option.labelKey)}
       active={value.includes(option.value)}
       onPress={() => toggle(option.value)}
+      // No sheet do mapa (wrap) os chips de status dividem a folha com os de
+      // categoria: a moldura do espectro ali viraria só mais uma cor na pilha.
+      spectrum={!wrap && option.value === 'ONGOING'}
     />
   ))
 
@@ -53,7 +56,13 @@ export function EventStatusFilter({ value, onChange, wrap }: Props) {
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 12, gap: 8 }}
+      // ScrollView do RN vem com flexShrink 1: dentro de um pai de altura
+      // definida (o Collapsible que esconde a linha na aba Rolês) ele encolhe
+      // junto e a fileira mede zero — some pra sempre. Aqui ela sempre tem a
+      // altura dos chips, e quem clipa é o pai.
+      style={{ flexShrink: 0 }}
+      // 16 alinha o 1º chip com o rótulo das abas e com a borda dos cards.
+      contentContainerStyle={{ paddingHorizontal: 16, gap: 8 }}
     >
       {chips}
     </ScrollView>

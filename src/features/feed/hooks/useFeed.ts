@@ -1,8 +1,8 @@
-import { useMemo } from 'react'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useMemo, useRef } from 'react'
+import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
 import { feedService } from '../services/feedService'
 import { normalizeFilters } from '@/shared/utils/normalizeFilters'
-import type { FeedKind } from '../types'
+import type { FeedCounts, FeedKind } from '../types'
 import type { EventStatus } from '@/shared/types'
 
 type Filters = {
@@ -34,7 +34,7 @@ export function useFeed(
   // near* entram na queryKey: mudar de localização reinicia a paginação.
   const normalized = useMemo(() => normalizeFilters(filters), [filters])
 
-  return useInfiniteQuery({
+  const query = useInfiniteQuery({
     queryKey: ['feed', normalized],
     queryFn: ({ pageParam }) =>
       feedService.getFeed({ cursor: pageParam, ...normalized }),
@@ -42,6 +42,19 @@ export function useFeed(
     // cursor é token opaco: parar quando vier null (inclui cursor antigo/expirado,
     // que o backend responde com data:[] e nextCursor:null — fim, não erro).
     getNextPageParam: lastPage => lastPage.nextCursor ?? null,
+    // Trocar de aba não esvazia a lista: os itens da anterior ficam até os novos
+    // chegarem. Sem isto o toque na aba pagava, ali mesmo, o desmonte de todos
+    // os cards montados — a árvore mais cara da tela — antes de a resposta sair.
+    placeholderData: keepPreviousData,
     enabled,
   })
+
+  // A contagem por aba vem na 1ª página. Trocar de aba é outra queryKey (data
+  // volta a undefined), então segurar a última conhecida evita o número piscar
+  // a cada troca — some de vez só antes da 1ª resposta da sessão.
+  const lastCounts = useRef<FeedCounts | undefined>(undefined)
+  const counts = query.data?.pages[0]?.counts ?? lastCounts.current
+  lastCounts.current = counts
+
+  return { ...query, counts }
 }

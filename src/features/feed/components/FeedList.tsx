@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import {
   FlatList,
   View,
@@ -9,12 +9,12 @@ import {
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { useFeed } from '../hooks/useFeed'
-import { FeedKindFilter } from './FeedKindFilter'
+import { FeedKindTabs } from './FeedKindTabs'
+import { FeedRow } from './FeedRow'
 import { FeedSpotsNeedLocation } from './FeedSpotsNeedLocation'
 import type { FeedItem, FeedKind } from '../types'
-import { EventCard } from '@/features/events/components/EventCard'
 import { EventStatusFilter } from '@/features/events/components/EventStatusFilter'
-import { SpotFeedCard } from '@/features/spots/components/SpotFeedCard'
+import { Collapsible } from '@/shared/components/Collapsible'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import { useActiveTabPress } from '@/shared/hooks/useActiveTabPress'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
@@ -44,17 +44,24 @@ export function FeedList() {
   // Rolê é ancorado num lugar: pedir SPOTS sem coords devolveria vazio sempre.
   // A tela troca a lista pelo convite a ligar a localização.
   const spotsWithoutLocation = kind === 'SPOTS' && !userCoords
+  // Próximos/Passados é vocabulário de evento — rolê vive numa janela curta e
+  // não tem esse eixo. A linha some na aba Rolês, mas a seleção fica no state:
+  // voltar pra Eventos devolve o filtro como estava.
+  const statusApplies = kind !== 'SPOTS'
+  const status = statusApplies && statusFilter.length ? statusFilter : undefined
   const {
     data,
+    counts,
     isLoading,
     isError,
     isFetchingNextPage,
+    isPlaceholderData,
     hasNextPage,
     fetchNextPage,
     refetch,
   } = useFeed(
     {
-      status: statusFilter.length ? statusFilter : undefined,
+      status,
       kinds: kind,
       ...near,
     },
@@ -63,6 +70,11 @@ export function FeedList() {
     { enabled: locationResolved && !spotsWithoutLocation },
   )
   const { refreshing, onRefresh } = usePullRefresh(refetch)
+  // Estável: um arrow novo por render anularia o memo da linha.
+  const openEvent = useCallback(
+    (id: string) => router.push(`/events/${id}`),
+    [router],
+  )
 
   // Re-tap na aba Feed: volta ao topo e atualiza (padrão de plataforma).
   const listRef = useRef<FlatList<FeedItem>>(null)
@@ -75,11 +87,11 @@ export function FeedList() {
   // (empates de ranking ou re-surface por sinais sociais entre sessões).
   // Memoiza pra não reconstruir o Set a cada render não relacionado.
   const items = useMemo(() => flattenInfiniteList(data), [data])
-  const filtering = statusFilter.length > 0
+  const filtering = status !== undefined
 
-  // Tudo (chips de filtro inclusos) vive na FlatList: o conteúdo rola por
-  // baixo do header de vidro. Estados de load/erro/vazio entram como
-  // ListEmptyComponent pra manter os chips visíveis e o scroll contínuo.
+  // Tudo (abas e chips de filtro inclusos) vive na FlatList: o conteúdo rola
+  // por baixo do header de vidro. Estados de load/erro/vazio entram como
+  // ListEmptyComponent pra manter os filtros visíveis e o scroll contínuo.
   return (
     <FlatList
       // A lista hospeda o input de comentário/post: sem isto o primeiro toque em
@@ -87,11 +99,23 @@ export function FeedList() {
       keyboardShouldPersistTaps="handled"
       ref={listRef}
       className="flex-1"
-      data={!locationResolved || isLoading || isError ? [] : items}
+      data={
+        spotsWithoutLocation || !locationResolved || isLoading || isError
+          ? []
+          : items
+      }
       // Chave composta por legibilidade, não por necessidade: os ids são uuid()
       // nas duas tabelas e não colidem — é o que deixa o resto do app casar
       // item de feed por id cru (like, presença, remoção otimista).
       keyExtractor={(item: FeedItem) => `${item.type}-${item.id}`}
+      // Cada card ocupa quase uma tela e paga duas rodadas de medição (moldura e
+      // picote) mais os SVGs. Nos defaults do RN a troca de aba montava 10 de
+      // uma vez — o toque na aba engasgava esperando isso. Dois cobrem a
+      // viewport; o resto entra em lotes pequenos, já com a lista respondendo.
+      initialNumToRender={2}
+      maxToRenderPerBatch={2}
+      updateCellsBatchingPeriod={80}
+      windowSize={5}
       contentContainerStyle={{
         flexGrow: 1,
         paddingTop: headerClearance,
@@ -99,9 +123,16 @@ export function FeedList() {
         paddingBottom: tabBarClearance,
       }}
       ListHeaderComponent={
-        <View className="-mx-4 gap-2 pb-3">
-          <FeedKindFilter value={kind} onChange={setKind} />
-          <EventStatusFilter value={statusFilter} onChange={setStatusFilter} />
+        <View className="-mx-4 pb-3">
+          <FeedKindTabs value={kind} onChange={setKind} counts={counts} />
+          <Collapsible open={statusApplies}>
+            <View className="pt-3">
+              <EventStatusFilter
+                value={statusFilter}
+                onChange={setStatusFilter}
+              />
+            </View>
+          </Collapsible>
         </View>
       }
       ListEmptyComponent={
@@ -128,20 +159,9 @@ export function FeedList() {
           </View>
         )
       }
-      renderItem={({ item }) =>
-        item.type === 'SPOT' ? (
-          <SpotFeedCard spot={item} userCoords={userCoords} />
-        ) : (
-          <EventCard
-            event={item}
-            onPress={() => router.push(`/events/${item.id}`)}
-            // A tela é dona da localização: o useUserLocation monta estado e
-            // listener de AppState próprios a cada chamada, então um por card
-            // sairia caro numa lista.
-            userCoords={userCoords}
-          />
-        )
-      }
+      renderItem={({ item }) => (
+        <FeedRow item={item} userCoords={userCoords} onOpenEvent={openEvent} />
+      )}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -150,7 +170,11 @@ export function FeedList() {
         />
       }
       onEndReached={() => {
-        if (hasNextPage && !isFetchingNextPage) fetchNextPage()
+        // isPlaceholderData: a lista ainda mostra a aba anterior; paginar aqui
+        // pediria a página 2 de uma query cuja página 1 nem chegou.
+        if (hasNextPage && !isFetchingNextPage && !isPlaceholderData) {
+          fetchNextPage()
+        }
       }}
       onEndReachedThreshold={0.3}
       ListFooterComponent={
