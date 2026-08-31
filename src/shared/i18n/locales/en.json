@@ -56,6 +56,8 @@
     "EVENT_ACCESS_DENIED": "You don't have access to this event.",
     "EVENT_CANCELED": "This event was canceled.",
     "EVENT_ENDED": "This event has already ended.",
+    "EVENT_IMAGE_LIMIT": "At most {{max}} photos per event.",
+    "EVENT_IMAGE_NOT_FOUND": "This photo is no longer in the event.",
     "EVENT_NOT_FOUND": "This event no longer exists.",
     "FILE_TOO_LARGE": "The file is larger than {{maxMb}} MB.",
     "FOLLOWER_NOT_FOUND": "This person is not among your followers.",
@@ -67,6 +69,7 @@
     "FRIENDS_FILTER_REQUIRES_AUTH": "Sign in to filter by friends.",
     "GROUP_NEEDS_PARTICIPANT": "A group needs at least one participant.",
     "GROUP_ONLY_OPERATION": "That only works in group conversations.",
+    "IMAGE_ORDER_MISMATCH": "The photos changed while you were reordering. Check the gallery and try again.",
     "IMAGE_REQUIRED": "Choose an image.",
     "INVALID_AUDIO_CONTENT": "We couldn't read this audio.",
     "INVALID_AUDIO_METADATA": "The audio metadata is invalid.",
@@ -811,6 +814,15 @@
       "cover": "Cover",
       "removePhoto": "Remove photo",
       "addPhotos": "Add photos"
+    },
+    "imagesEditor": {
+      "hint": "The first photo is the cover. Tap to set the cover, hold to drag.",
+      "savedOnTheSpot": "Every change is saved right away.",
+      "setCover": "Set as cover",
+      "currentCover": "Cover photo",
+      "uploading": "Uploading photo",
+      "removeMessage": "The photo leaves the event for everyone.",
+      "removeConfirm": "Remove"
     },
     "share": {
       "message": "{{title}}\n\nCheck it out on Clubber: {{url}}",

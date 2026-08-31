@@ -27,3 +27,9 @@ export function useFormFocus(): KeyboardAwareForm {
     throw new Error('useFormFocus precisa de um <FormFocusProvider> acima.')
   return form
 }
+
+// Para quem só quer o formulário SE estiver dentro de um — seção que trava a
+// rolagem enquanto arrasta, e que fora de formulário simplesmente não trava.
+export function useOptionalFormFocus(): KeyboardAwareForm | null {
+  return useContext(FormFocusContext)
+}

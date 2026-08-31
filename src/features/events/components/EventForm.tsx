@@ -25,6 +25,9 @@ import { LocationPreview } from './LocationPreview'
 import { VenuePicker, type VenueSelection } from './VenuePicker'
 import { useConsentedLocation } from '@/features/privacy/hooks/useConsentedLocation'
 import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
+// Publica o formulário pras seções injetadas (imagesSection): elas alcançam o
+// scroll e o foco sem prop drilling pela tela que monta o EventForm.
+import { FormFocusProvider } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
 
 // Identidade estável: o useWatch do FormSubmitButton tem `name` nas deps do
@@ -108,231 +111,233 @@ export function EventForm({
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      className="flex-1"
-    >
-      <ScrollView
-        {...form.scrollProps}
-        contentContainerStyle={{ padding: 20, paddingBottom: 40, gap: 20 }}
+    <FormFocusProvider value={form}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        className="flex-1"
       >
-        {imagesSection}
+        <ScrollView
+          {...form.scrollProps}
+          contentContainerStyle={{ padding: 20, paddingBottom: 40, gap: 20 }}
+        >
+          {imagesSection}
 
-        <View className="gap-1" {...form.anchor('title')}>
-          <Text className="text-sm font-medium text-content-tertiary">
-            {t('events.form.title')}
-          </Text>
-          <Controller
-            control={control}
-            name="title"
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                {...form.input('title')}
-                className={`border ${errors.title ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
-                placeholder={t('events.form.titlePlaceholder')}
-                placeholderTextColor={colors.contentSubtle}
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
-        </View>
-
-        <View className="gap-1" {...form.anchor('description')}>
-          <Text className="text-sm font-medium text-content-tertiary">
-            {t('events.form.description')}
-          </Text>
-          <Controller
-            control={control}
-            name="description"
-            render={({ field: { onChange, value } }) => (
-              <TextInput
-                {...form.input('description')}
-                className={`border ${errors.description ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content min-h-[96px]`}
-                placeholder={t('events.form.descriptionPlaceholder')}
-                placeholderTextColor={colors.contentSubtle}
-                value={value ?? ''}
-                onChangeText={onChange}
-                multiline
-                textAlignVertical="top"
-              />
-            )}
-          />
-        </View>
-
-        <View className="gap-1" {...form.anchor('date')}>
-          <Text className="text-sm font-medium text-content-tertiary">
-            {t('events.form.dateTime')}
-          </Text>
-          <Controller
-            control={control}
-            name="date"
-            render={({ field: { onChange, value } }) => (
-              <DatePicker
-                value={value}
-                onChange={onChange}
-                mode="datetime"
-                placeholder={t('events.form.dateTimePlaceholder')}
-                minimumDate={new Date()}
-                hasError={!!errors.date}
-              />
-            )}
-          />
-        </View>
-
-        <View className="gap-1" {...form.anchor('endDate')}>
-          <Text className="text-sm font-medium text-content-tertiary">
-            {t('events.form.endTime')}{' '}
-            <Text className="text-content-subtle text-xs">
-              {t('events.form.optional')}
+          <View className="gap-1" {...form.anchor('title')}>
+            <Text className="text-sm font-medium text-content-tertiary">
+              {t('events.form.title')}
             </Text>
-          </Text>
-          <Controller
-            control={control}
-            name="endDate"
-            render={({ field: { onChange, value } }) => (
-              <DatePicker
-                value={value}
-                onChange={onChange}
-                mode="datetime"
-                placeholder={t('events.form.endTimePlaceholder')}
-                minimumDate={startDate ?? new Date()}
-                hasError={!!errors.endDate}
-              />
-            )}
-          />
-        </View>
+            <Controller
+              control={control}
+              name="title"
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  {...form.input('title')}
+                  className={`border ${errors.title ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content`}
+                  placeholder={t('events.form.titlePlaceholder')}
+                  placeholderTextColor={colors.contentSubtle}
+                  value={value}
+                  onChangeText={onChange}
+                />
+              )}
+            />
+          </View>
 
-        <View className="gap-1" {...form.anchor('categories')}>
-          <Text className="text-sm font-medium text-content-tertiary">
-            {t('events.form.categories')}
-          </Text>
-          <Controller
-            control={control}
-            name="categories"
-            render={({ field: { onChange, value } }) => (
-              <CategoryMultiSelect value={value} onChange={onChange} />
-            )}
-          />
-        </View>
-
-        <View className="gap-1" {...form.anchor('subcategories')}>
-          <Text className="text-sm font-medium text-content-tertiary">
-            {t('shared.interests.title')}{' '}
-            <Text className="text-content-subtle text-xs">
-              {t('events.form.optional')}
+          <View className="gap-1" {...form.anchor('description')}>
+            <Text className="text-sm font-medium text-content-tertiary">
+              {t('events.form.description')}
             </Text>
-          </Text>
-          <Controller
-            control={control}
-            name="subcategories"
-            render={({ field: { onChange, value } }) => (
-              <SubcategorySelect
-                selectedCategories={selectedCategories}
-                value={value}
-                onChange={onChange}
-              />
-            )}
-          />
-        </View>
+            <Controller
+              control={control}
+              name="description"
+              render={({ field: { onChange, value } }) => (
+                <TextInput
+                  {...form.input('description')}
+                  className={`border ${errors.description ? 'border-content' : 'border-line'} bg-surface rounded-xl px-4 py-3.5 text-base text-content min-h-[96px]`}
+                  placeholder={t('events.form.descriptionPlaceholder')}
+                  placeholderTextColor={colors.contentSubtle}
+                  value={value ?? ''}
+                  onChangeText={onChange}
+                  multiline
+                  textAlignVertical="top"
+                />
+              )}
+            />
+          </View>
 
-        <View className="gap-1" {...form.anchor('address')}>
-          <Text className="text-sm font-medium text-content-tertiary">
-            {t('events.form.location')}
-          </Text>
-          <VenuePicker
-            value={{
-              address: address ?? '',
-              venueName: venueName ?? null,
-              placeId: placeId ?? null,
-            }}
-            onChange={patchLocation}
-            coords={coords}
-            hasError={!!errors.address}
-          />
-        </View>
-
-        <View className="gap-1" {...form.anchor('latitude')}>
-          <Text className="text-sm font-medium text-content-tertiary">
-            {t('events.form.locationOnMap')}
-          </Text>
-          <LocationPreview
-            value={
-              typeof latitude === 'number' && typeof longitude === 'number'
-                ? { latitude, longitude }
-                : null
-            }
-            hasError={!!errors.latitude || !!errors.longitude}
-            categories={selectedCategories}
-          />
-          {(errors.latitude || errors.longitude) && (
-            <Text className="text-content text-xs">
-              {t('events.form.locationMissing')}
+          <View className="gap-1" {...form.anchor('date')}>
+            <Text className="text-sm font-medium text-content-tertiary">
+              {t('events.form.dateTime')}
             </Text>
-          )}
-        </View>
+            <Controller
+              control={control}
+              name="date"
+              render={({ field: { onChange, value } }) => (
+                <DatePicker
+                  value={value}
+                  onChange={onChange}
+                  mode="datetime"
+                  placeholder={t('events.form.dateTimePlaceholder')}
+                  minimumDate={new Date()}
+                  hasError={!!errors.date}
+                />
+              )}
+            />
+          </View>
 
-        <Controller
-          control={control}
-          name="isPublic"
-          render={({ field: { onChange, value } }) => (
-            <View className="gap-1">
-              <Text className="text-sm font-medium text-content-tertiary">
-                {t('events.form.whoSees')}
+          <View className="gap-1" {...form.anchor('endDate')}>
+            <Text className="text-sm font-medium text-content-tertiary">
+              {t('events.form.endTime')}{' '}
+              <Text className="text-content-subtle text-xs">
+                {t('events.form.optional')}
               </Text>
-              <View className="flex-row gap-1 bg-surface border border-line rounded-xl p-1">
-                {([true, false] as const).map(option => {
-                  const active = value === option
-                  const VisibilityIcon = option ? GlobeIcon : LockIcon
-                  return (
-                    <Pressable
-                      key={String(option)}
-                      onPress={() => onChange(option)}
-                      accessibilityRole="button"
-                      accessibilityState={{ selected: active }}
-                      className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2.5 ${
-                        active ? 'bg-surface-elevated' : ''
-                      }`}
-                    >
-                      <VisibilityIcon
-                        size={16}
-                        color={active ? colors.content : colors.contentMuted}
-                      />
-                      <Text
-                        className={`text-sm font-semibold ${
-                          active ? 'text-content' : 'text-content-muted'
+            </Text>
+            <Controller
+              control={control}
+              name="endDate"
+              render={({ field: { onChange, value } }) => (
+                <DatePicker
+                  value={value}
+                  onChange={onChange}
+                  mode="datetime"
+                  placeholder={t('events.form.endTimePlaceholder')}
+                  minimumDate={startDate ?? new Date()}
+                  hasError={!!errors.endDate}
+                />
+              )}
+            />
+          </View>
+
+          <View className="gap-1" {...form.anchor('categories')}>
+            <Text className="text-sm font-medium text-content-tertiary">
+              {t('events.form.categories')}
+            </Text>
+            <Controller
+              control={control}
+              name="categories"
+              render={({ field: { onChange, value } }) => (
+                <CategoryMultiSelect value={value} onChange={onChange} />
+              )}
+            />
+          </View>
+
+          <View className="gap-1" {...form.anchor('subcategories')}>
+            <Text className="text-sm font-medium text-content-tertiary">
+              {t('shared.interests.title')}{' '}
+              <Text className="text-content-subtle text-xs">
+                {t('events.form.optional')}
+              </Text>
+            </Text>
+            <Controller
+              control={control}
+              name="subcategories"
+              render={({ field: { onChange, value } }) => (
+                <SubcategorySelect
+                  selectedCategories={selectedCategories}
+                  value={value}
+                  onChange={onChange}
+                />
+              )}
+            />
+          </View>
+
+          <View className="gap-1" {...form.anchor('address')}>
+            <Text className="text-sm font-medium text-content-tertiary">
+              {t('events.form.location')}
+            </Text>
+            <VenuePicker
+              value={{
+                address: address ?? '',
+                venueName: venueName ?? null,
+                placeId: placeId ?? null,
+              }}
+              onChange={patchLocation}
+              coords={coords}
+              hasError={!!errors.address}
+            />
+          </View>
+
+          <View className="gap-1" {...form.anchor('latitude')}>
+            <Text className="text-sm font-medium text-content-tertiary">
+              {t('events.form.locationOnMap')}
+            </Text>
+            <LocationPreview
+              value={
+                typeof latitude === 'number' && typeof longitude === 'number'
+                  ? { latitude, longitude }
+                  : null
+              }
+              hasError={!!errors.latitude || !!errors.longitude}
+              categories={selectedCategories}
+            />
+            {(errors.latitude || errors.longitude) && (
+              <Text className="text-content text-xs">
+                {t('events.form.locationMissing')}
+              </Text>
+            )}
+          </View>
+
+          <Controller
+            control={control}
+            name="isPublic"
+            render={({ field: { onChange, value } }) => (
+              <View className="gap-1">
+                <Text className="text-sm font-medium text-content-tertiary">
+                  {t('events.form.whoSees')}
+                </Text>
+                <View className="flex-row gap-1 bg-surface border border-line rounded-xl p-1">
+                  {([true, false] as const).map(option => {
+                    const active = value === option
+                    const VisibilityIcon = option ? GlobeIcon : LockIcon
+                    return (
+                      <Pressable
+                        key={String(option)}
+                        onPress={() => onChange(option)}
+                        accessibilityRole="button"
+                        accessibilityState={{ selected: active }}
+                        className={`flex-1 flex-row items-center justify-center gap-1.5 rounded-lg py-2.5 ${
+                          active ? 'bg-surface-elevated' : ''
                         }`}
                       >
-                        {option
-                          ? t('events.visibility.public')
-                          : t('events.visibility.private')}
-                      </Text>
-                    </Pressable>
-                  )
-                })}
+                        <VisibilityIcon
+                          size={16}
+                          color={active ? colors.content : colors.contentMuted}
+                        />
+                        <Text
+                          className={`text-sm font-semibold ${
+                            active ? 'text-content' : 'text-content-muted'
+                          }`}
+                        >
+                          {option
+                            ? t('events.visibility.public')
+                            : t('events.visibility.private')}
+                        </Text>
+                      </Pressable>
+                    )
+                  })}
+                </View>
+                <Text className="text-xs text-content-muted">
+                  {value
+                    ? t('events.form.publicHint')
+                    : t('events.form.privateHint')}
+                </Text>
               </View>
-              <Text className="text-xs text-content-muted">
-                {value
-                  ? t('events.form.publicHint')
-                  : t('events.form.privateHint')}
-              </Text>
-            </View>
-          )}
-        />
-      </ScrollView>
+            )}
+          />
+        </ScrollView>
 
-      <View className="border-t border-line bg-surface-sunken px-5 pt-4 pb-12 gap-3">
-        <FormError message={submitError ? errorMessage : null} />
-        <FormSubmitButton
-          control={control}
-          required={REQUIRED_FIELDS}
-          label={submitting ? submittingLabel : submitLabel}
-          onPress={handleSubmit(onSubmit, errors =>
-            showFormErrors(messagesFromErrors(errors)),
-          )}
-          loading={submitting}
-        />
-      </View>
-    </KeyboardAvoidingView>
+        <View className="border-t border-line bg-surface-sunken px-5 pt-4 pb-12 gap-3">
+          <FormError message={submitError ? errorMessage : null} />
+          <FormSubmitButton
+            control={control}
+            required={REQUIRED_FIELDS}
+            label={submitting ? submittingLabel : submitLabel}
+            onPress={handleSubmit(onSubmit, errors =>
+              showFormErrors(messagesFromErrors(errors)),
+            )}
+            loading={submitting}
+          />
+        </View>
+      </KeyboardAvoidingView>
+    </FormFocusProvider>
   )
 }

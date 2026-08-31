@@ -56,6 +56,8 @@
     "EVENT_ACCESS_DENIED": "Você não tem acesso a este evento.",
     "EVENT_CANCELED": "Este evento foi cancelado.",
     "EVENT_ENDED": "Este evento já terminou.",
+    "EVENT_IMAGE_LIMIT": "No máximo {{max}} fotos por evento.",
+    "EVENT_IMAGE_NOT_FOUND": "Esta foto não está mais no evento.",
     "EVENT_NOT_FOUND": "Este evento não existe mais.",
     "FILE_TOO_LARGE": "O arquivo passa de {{maxMb}} MB.",
     "FOLLOWER_NOT_FOUND": "Esta pessoa não está entre seus seguidores.",
@@ -67,6 +69,7 @@
     "FRIENDS_FILTER_REQUIRES_AUTH": "Entre na sua conta para filtrar por amigos.",
     "GROUP_NEEDS_PARTICIPANT": "Um grupo precisa de pelo menos um participante.",
     "GROUP_ONLY_OPERATION": "Isso só vale para conversas em grupo.",
+    "IMAGE_ORDER_MISMATCH": "As fotos mudaram enquanto você reordenava. Confira a galeria e tente de novo.",
     "IMAGE_REQUIRED": "Escolha uma imagem.",
     "INVALID_AUDIO_CONTENT": "Não foi possível ler este áudio.",
     "INVALID_AUDIO_METADATA": "Os dados do áudio estão inválidos.",
@@ -811,6 +814,15 @@
       "cover": "Capa",
       "removePhoto": "Remover foto",
       "addPhotos": "Adicionar fotos"
+    },
+    "imagesEditor": {
+      "hint": "A primeira foto é a capa. Toque para definir a capa, segure para arrastar.",
+      "savedOnTheSpot": "Cada mudança é salva na hora.",
+      "setCover": "Definir como capa",
+      "currentCover": "Foto de capa",
+      "uploading": "Enviando foto",
+      "removeMessage": "A foto sai do evento para todo mundo.",
+      "removeConfirm": "Remover"
     },
     "share": {
       "message": "{{title}}\n\nConfira no Clubber: {{url}}",
