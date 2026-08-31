@@ -34,17 +34,23 @@ function formatUnit(
   unit: 'meter' | 'kilometer' | 'foot' | 'mile',
   maximumFractionDigits: number,
 ): string {
+  // Arredonda no VALOR, não só na opção: o Hermes do iOS ignora
+  // maximumFractionDigits com style:'unit' e despeja o float inteiro —
+  // "3,896 km" (três casas do default do ICU), que em pt-BR se lê como
+  // 3.896 km. A opção fica de cinto pros engines que a respeitam.
+  const factor = 10 ** maximumFractionDigits
+  const rounded = Math.round(value * factor) / factor
   try {
     return new Intl.NumberFormat(locale, {
       style: 'unit',
       unit,
       unitDisplay: 'short',
       maximumFractionDigits,
-    }).format(value)
+    }).format(rounded)
   } catch {
     const number = new Intl.NumberFormat(locale, {
       maximumFractionDigits,
-    }).format(value)
+    }).format(rounded)
     return i18n.t(`format.unit.${unit}` as const, {
       lng: locale,
       value: number,
