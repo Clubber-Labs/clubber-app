@@ -8,9 +8,9 @@ import { getApiError } from '@/shared/lib/apiError'
 import { useBanner } from '@/shared/lib/banner'
 import type { EventDetail, EventImage } from '@/shared/types'
 
-// Teto que o backend pratica hoje. Vale só até o primeiro 409: quem manda no
-// número é o `params.max` de EVENT_IMAGE_LIMIT, e é dele que a tela passa a
-// viver se o backend mudar o limite.
+// Teto conhecido até o backend desmentir. O 409 EVENT_IMAGE_LIMIT corrige o
+// número pra baixo; pra cima ele nunca chega, porque o app para de oferecer o +
+// antes de tentar — um teto maior só entraria por um GET que o declarasse.
 const FALLBACK_MAX_IMAGES = 5
 
 function patchGallery(

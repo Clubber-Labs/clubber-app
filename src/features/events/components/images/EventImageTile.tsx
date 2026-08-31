@@ -166,7 +166,7 @@ export function EventImageTile({
             accessibilityIgnoresInvertColors
           />
           {isCover && (
-            <View className="absolute bottom-1 left-1 rounded bg-background/70 border border-line-strong px-1.5 py-0.5">
+            <View className="absolute bottom-1 left-1 rounded-full bg-background/70 border border-line-strong px-2 py-0.5">
               <Text className="text-content text-[9px] font-bold uppercase">
                 {t('events.imagePicker.cover')}
               </Text>

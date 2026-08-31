@@ -25,16 +25,16 @@ import { LocationPreview } from './LocationPreview'
 import { VenuePicker, type VenueSelection } from './VenuePicker'
 import { useConsentedLocation } from '@/features/privacy/hooks/useConsentedLocation'
 import { useKeyboardAwareForm } from '@/shared/hooks/useKeyboardAwareForm'
+import {
+  useFormErrorBanner,
+  messagesFromErrors,
+} from '@/shared/hooks/useFormErrorBanner'
 // Publica o formulário pras seções injetadas (imagesSection): elas alcançam o
 // scroll e o foco sem prop drilling pela tela que monta o EventForm.
 import { FormFocusProvider } from '@/shared/lib/formFocus'
 import { colors } from '@/shared/theme'
 
 // Identidade estável: o useWatch do FormSubmitButton tem `name` nas deps do
-import {
-  useFormErrorBanner,
-  messagesFromErrors,
-} from '@/shared/hooks/useFormErrorBanner'
 // efeito de subscrição, e um literal inline re-assinaria a cada tecla digitada.
 const REQUIRED_FIELDS: Path<CreateEventInput>[] = [
   'title',
