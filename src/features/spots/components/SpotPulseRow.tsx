@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { View, Text } from 'react-native'
-import { Trans } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import type { Spot } from '../types'
@@ -12,18 +12,21 @@ type Props = {
 
 const AVATAR_SIZE = 36
 const OVERLAP = -12
+// Caixa real de cada círculo: sem largura explícita, o Yoga SOMA o border-2
+// do wrapper ao avatar — 36 vira 40. Medir com 36 superestimava o fit e o
+// último rosto podia vazar da linha (flex-row não quebra nem clipa).
+const AVATAR_BOX = AVATAR_SIZE + 4
 // Passo horizontal de cada círculo além do primeiro (avatar ou disco "+N").
-const AVATAR_STEP = AVATAR_SIZE + OVERLAP
-// Antes do onLayout medir a linha: o mínimo histórico, sem risco de estourar.
+const AVATAR_STEP = AVATAR_BOX + OVERLAP
+// Antes de as medições chegarem: o mínimo histórico, sem risco de estourar.
 const FALLBACK_AVATARS = 3
-// Duas assinaturas bastam pra frase: a terceira já é ruído, e quem sobra está
-// contado no "+N" da pilha.
-const MAX_NAMES = 2
+// O gap-2.5 entre a pilha e a frase — sai do espaço disponível pros círculos.
+const ROW_GAP = 10
 
-// Quantos círculos cabem na linha sem quebrar.
+// Quantos círculos cabem na largura dada sem quebrar.
 function fitCount(width: number): number {
-  if (width < AVATAR_SIZE) return 1
-  return 1 + Math.floor((width - AVATAR_SIZE) / AVATAR_STEP)
+  if (width < AVATAR_BOX) return 1
+  return 1 + Math.floor((width - AVATAR_BOX) / AVATAR_STEP)
 }
 
 /**
@@ -31,13 +34,16 @@ function fitCount(width: number): number {
  * linha do corpo porque num rolê a pergunta é "quem vai estar lá", não "o que
  * é" — o título vem depois.
  *
- * A pilha enche a linha inteira com quantos avatares couberem (medido no
- * onLayout) e fecha no disco "+N"; a frase com os nomes vive na linha de
- * baixo. O backend manda a prévia já limitada — ver SPOT_MEMBER_PREVIEW no
- * feed.service, que espelha o teto do aparelho mais largo.
+ * UMA linha, sempre: a frase é estática (sem nomes — nome dinâmico tornava a
+ * largura imprevisível e empurrava texto pra segunda linha) e mede o que mede;
+ * os círculos ocupam o que sobrar, com o disco "+N" na última vaga. Quem se
+ * adapta é a quantidade de avatares, nunca a linha. O backend manda a prévia
+ * já limitada — ver SPOT_MEMBER_PREVIEW no feed.service.
  */
 export function SpotPulseRow({ spot, live }: Props) {
+  const { t } = useTranslation()
   const [rowWidth, setRowWidth] = useState<number | null>(null)
+  const [phraseWidth, setPhraseWidth] = useState<number | null>(null)
   const members = spot.members?.length ? spot.members : [spot.creator]
   const bold = <Text className="font-bold text-content" />
 
@@ -65,25 +71,28 @@ export function SpotPulseRow({ spot, live }: Props) {
     )
   }
 
-  const fit = rowWidth === null ? FALLBACK_AVATARS : fitCount(rowWidth)
+  const avatarSpace =
+    rowWidth !== null && phraseWidth !== null
+      ? rowWidth - phraseWidth - ROW_GAP
+      : null
+  const fit = avatarSpace === null ? FALLBACK_AVATARS : fitCount(avatarSpace)
   let visible = members.slice(0, fit)
   let overflow = spot.memberCount - visible.length
   if (overflow > 0 && visible.length === fit) {
-    // O disco "+N" ocupa um círculo: abre a vaga dele.
-    visible = visible.slice(0, fit - 1)
+    // O disco "+N" ocupa um círculo: abre a vaga dele (sem zerar os rostos).
+    visible = visible.slice(0, Math.max(1, fit - 1))
     overflow = spot.memberCount - visible.length
   }
-  const names = members.slice(0, MAX_NAMES).map(member => member.name)
 
   return (
-    <View className="gap-2">
-      <View
-        className="flex-row"
-        onLayout={e => {
-          const next = Math.floor(e.nativeEvent.layout.width)
-          setRowWidth(prev => (prev === next ? prev : next))
-        }}
-      >
+    <View
+      className="flex-row items-center gap-2.5"
+      onLayout={e => {
+        const next = Math.floor(e.nativeEvent.layout.width)
+        setRowWidth(prev => (prev === next ? prev : next))
+      }}
+    >
+      <View className="flex-row">
         {visible.map((member, i) => (
           <View
             key={member.id}
@@ -102,10 +111,12 @@ export function SpotPulseRow({ spot, live }: Props) {
         {overflow > 0 && (
           <View
             className="items-center justify-center rounded-full border-2 border-surface bg-surface-elevated"
+            // AVATAR_BOX, não AVATAR_SIZE: com largura explícita a borda entra
+            // no box (border-box) — 36 deixaria o disco 4px menor que os rostos.
             style={{
               marginLeft: OVERLAP,
-              width: AVATAR_SIZE,
-              height: AVATAR_SIZE,
+              width: AVATAR_BOX,
+              height: AVATAR_BOX,
             }}
           >
             <Text className="text-[11px] font-bold text-content-secondary">
@@ -114,22 +125,17 @@ export function SpotPulseRow({ spot, live }: Props) {
           </View>
         )}
       </View>
-      <Text className="text-[13px] text-content-muted" numberOfLines={2}>
-        {live ? (
-          <Trans
-            i18nKey="spots.feedCard.pulseLive"
-            count={names.length}
-            values={{ names: names.join(', ') }}
-            components={{ b: bold }}
-          />
-        ) : (
-          <Trans
-            i18nKey="spots.feedCard.pulseGroup"
-            count={spot.memberCount - 1}
-            values={{ name: members[0].name }}
-            components={{ b: bold }}
-          />
-        )}
+      <Text
+        className="text-[13px] text-content-muted"
+        numberOfLines={1}
+        // A frase não encolhe nem quebra: ela é a medida fixa da conta acima.
+        style={{ flexShrink: 0 }}
+        onLayout={e => {
+          const next = Math.ceil(e.nativeEvent.layout.width)
+          setPhraseWidth(prev => (prev === next ? prev : next))
+        }}
+      >
+        {t(live ? 'spots.feedCard.pulseLive' : 'spots.feedCard.pulseGroup')}
       </Text>
     </View>
   )
