@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -50,12 +50,16 @@ export default function UserProfileScreen() {
   const createConversation = useCreateConversation()
   // refetch ignora o `enabled` da query: sem acesso ao conteúdo (perfil
   // privado), forçar a vitrine bateria num endpoint que vai negar.
-  const { refreshing, onRefresh } = usePullRefresh(() =>
-    Promise.all([
-      refetchProfile(),
-      ...(canSeeContent ? [eventsQuery.refetch()] : []),
-    ]),
+  const { refetch: refetchEvents } = eventsQuery
+  const refreshAll = useCallback(
+    () =>
+      Promise.all([
+        refetchProfile(),
+        ...(canSeeContent ? [refetchEvents()] : []),
+      ]),
+    [refetchProfile, refetchEvents, canSeeContent],
   )
+  const { refreshing, onRefresh } = usePullRefresh(refreshAll)
 
   const events = useMemo(
     () => eventsQuery.data?.pages.flatMap(p => p.data) ?? [],
@@ -112,10 +116,11 @@ export default function UserProfileScreen() {
         hasNextPage={eventsQuery.hasNextPage ?? false}
         isFetchingNextPage={eventsQuery.isFetchingNextPage}
         isLoading={eventsQuery.isLoading}
-        // Sem vitrine à vista não há o que trocar por fantasma — o refresh
-        // atualiza só o header, sem o RefreshControl piscar skeleton à toa.
-        refreshing={refreshing && canSeeContent}
+        refreshing={refreshing}
         onRefresh={onRefresh}
+        // Sem vitrine à vista o refresh atualiza só o header: o spinner gira
+        // normal, mas a grade não pisca fantasma de uma lista que não vem.
+        showSkeletonOnRefresh={canSeeContent}
         onLoadMore={eventsQuery.fetchNextPage}
         empty={
           <ProfileEventsEmpty variant={canSeeContent ? 'other' : 'private'} />

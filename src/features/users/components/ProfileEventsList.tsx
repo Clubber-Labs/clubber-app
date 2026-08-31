@@ -22,6 +22,9 @@ type Props = {
   // fantasma enquanto dura — mesmo padrão do feed. Ausente, a lista fica sem.
   refreshing?: boolean
   onRefresh?: () => void
+  // Desligue quando o refresh não refaz a vitrine (perfil privado): o spinner
+  // segue girando, mas a grade não vira fantasma de uma lista que não vem.
+  showSkeletonOnRefresh?: boolean
   onLoadMore: () => void
   // Aba com pílula/header flutuantes passa os clearances; perfil de terceiros
   // (stack, header no fluxo) usa os defaults.
@@ -46,6 +49,7 @@ export function ProfileEventsList({
   isLoading = false,
   refreshing = false,
   onRefresh,
+  showSkeletonOnRefresh = true,
   onLoadMore,
   bottomPadding = 32,
   topPadding = 0,
@@ -63,7 +67,8 @@ export function ProfileEventsList({
   // manterem largura igual sem o último esticar pra largura cheia.
   const rows: Row[] =
     events.length % 2 ? [...events, { __spacer: 'spacer' }] : events
-  const data: Row[] = refreshing ? [] : rows
+  const ghosting = refreshing && showSkeletonOnRefresh
+  const data: Row[] = ghosting ? [] : rows
 
   return (
     <FlatList
@@ -89,7 +94,7 @@ export function ProfileEventsList({
         )
       }
       ListEmptyComponent={
-        isLoading || refreshing ? <ProfileEventsSkeleton /> : empty
+        isLoading || ghosting ? <ProfileEventsSkeleton /> : empty
       }
       ListFooterComponent={
         isFetchingNextPage ? (
@@ -109,8 +114,8 @@ export function ProfileEventsList({
           />
         ) : undefined
       }
-      // refreshing: a grade está escondida atrás da fantasma com data=[] —
-      // paginar aqui buscaria página nova pra uma lista fora da tela.
+      // refreshing: o refetch em voo vai substituir as páginas — paginar
+      // agora pediria página nova pra uma lista que está sendo trocada.
       onEndReached={() => hasNextPage && !refreshing && onLoadMore()}
       onEndReachedThreshold={0.3}
     />

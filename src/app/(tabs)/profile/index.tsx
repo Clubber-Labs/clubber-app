@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { View, Text } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
@@ -56,9 +56,11 @@ export default function ProfileScreen() {
     isLoading: eventsLoading,
     refetch: refetchEvents,
   } = useUserEvents(userId)
-  const { refreshing, onRefresh } = usePullRefresh(() =>
-    Promise.all([refetchProfile(), refetchEvents()]),
+  const refreshAll = useCallback(
+    () => Promise.all([refetchProfile(), refetchEvents()]),
+    [refetchProfile, refetchEvents],
   )
+  const { refreshing, onRefresh } = usePullRefresh(refreshAll)
   const uploadAvatar = useUploadAvatar()
   const performLogout = useLogout()
   const confirm = useConfirm()
