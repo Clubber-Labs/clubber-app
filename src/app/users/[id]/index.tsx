@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { useAuthStore } from '@/features/auth/store/authStore'
@@ -18,6 +18,7 @@ import { ProfileHeader } from '@/features/users/components/ProfileHeader'
 import { FollowButton } from '@/features/users/components/FollowButton'
 import { MessageButton } from '@/features/users/components/MessageButton'
 import { ProfileEventsList } from '@/features/users/components/ProfileEventsList'
+import { ProfileEventsSectionTitle } from '@/features/users/components/ProfileEventsSectionTitle'
 import { ProfileEventsEmpty } from '@/features/users/components/ProfileEventsEmpty'
 import { ProfileLoading } from '@/features/users/components/ProfileLoading'
 import { ProfileEmpty } from '@/features/users/components/ProfileEmpty'
@@ -47,6 +48,9 @@ export default function UserProfileScreen() {
     () => eventsQuery.data?.pages.flatMap(p => p.data) ?? [],
     [eventsQuery.data],
   )
+  // Total da vitrine (criados + presenças), não o eventsCount de autoria que
+  // alimenta a linha de stats. Só a 1ª página traz.
+  const eventsTotal = eventsQuery.data?.pages[0]?.total
 
   async function openConversation() {
     if (createConversation.isPending) return
@@ -94,8 +98,10 @@ export default function UserProfileScreen() {
     <View className="flex-1 bg-background">
       <ProfileEventsList
         events={events}
+        ownerId={id}
         hasNextPage={eventsQuery.hasNextPage ?? false}
         isFetchingNextPage={eventsQuery.isFetchingNextPage}
+        isLoading={eventsQuery.isLoading}
         onLoadMore={eventsQuery.fetchNextPage}
         empty={
           <ProfileEventsEmpty variant={canSeeContent ? 'other' : 'private'} />
@@ -137,16 +143,7 @@ export default function UserProfileScreen() {
                 ) : undefined
               }
             />
-            <View className="flex-row items-center gap-2 px-4 pb-3 pt-5">
-              <Text className="text-content-secondary text-sm font-extrabold uppercase tracking-wide">
-                {t('profile.eventsSection')}
-              </Text>
-              {profile.eventsCount > 0 && (
-                <Text className="text-content-subtle text-xs font-bold">
-                  {profile.eventsCount}
-                </Text>
-              )}
-            </View>
+            <ProfileEventsSectionTitle count={eventsTotal} />
           </>
         }
       />
