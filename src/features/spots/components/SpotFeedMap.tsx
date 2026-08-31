@@ -6,9 +6,8 @@ import { LivePill } from '@/shared/components/LivePill'
 import { useSpotSnapshot } from '../hooks/useSpotSnapshot'
 import {
   SpotBalloon,
-  SPOT_BALLOON_CANVAS,
+  spotBalloonTailOffset,
   SPOT_BALLOON_SIZE,
-  SPOT_BALLOON_TAIL_ANCHOR,
 } from './SpotBalloon'
 import { SpotMapPlaceholder } from './SpotMapPlaceholder'
 import { SpotRouteTrail } from './SpotRouteTrail'
@@ -52,6 +51,7 @@ export function SpotFeedMap({
 
   // O snapshot é centrado no rolê: a ponta do rabinho pousa no centro da caixa.
   const center = { x: (width ?? 0) / 2, y: SPOT_FEED_MAP_HEIGHT / 2 }
+  const tail = spotBalloonTailOffset(SPOT_BALLOON_SIZE)
 
   return (
     <View
@@ -85,11 +85,8 @@ export function SpotFeedMap({
         <View
           style={{
             position: 'absolute',
-            left:
-              center.x - SPOT_BALLOON_TAIL_ANCHOR.x * SPOT_BALLOON_CANVAS.width,
-            top:
-              center.y -
-              SPOT_BALLOON_TAIL_ANCHOR.y * SPOT_BALLOON_CANVAS.height,
+            left: center.x - tail.x,
+            top: center.y - tail.y,
           }}
         >
           <SpotBalloon spot={spot} size={SPOT_BALLOON_SIZE} />
