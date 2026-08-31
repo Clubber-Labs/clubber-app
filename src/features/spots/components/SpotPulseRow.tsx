@@ -111,10 +111,12 @@ export function SpotPulseRow({ spot, live }: Props) {
         {overflow > 0 && (
           <View
             className="items-center justify-center rounded-full border-2 border-surface bg-surface-elevated"
+            // AVATAR_BOX, não AVATAR_SIZE: com largura explícita a borda entra
+            // no box (border-box) — 36 deixaria o disco 4px menor que os rostos.
             style={{
               marginLeft: OVERLAP,
-              width: AVATAR_SIZE,
-              height: AVATAR_SIZE,
+              width: AVATAR_BOX,
+              height: AVATAR_BOX,
             }}
           >
             <Text className="text-[11px] font-bold text-content-secondary">
