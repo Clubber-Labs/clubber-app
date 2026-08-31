@@ -70,7 +70,10 @@ export function FeedKindTabs({ value, onChange, counts }: Props) {
 
   return (
     <View className="h-11 border-b border-line">
-      <View className="flex-row h-full px-4 gap-[22px]">
+      <View
+        accessibilityRole="tablist"
+        className="flex-row h-full px-4 gap-[22px]"
+      >
         {OPTIONS.map(option => {
           const isActive = option.value === value
           const count = option.countKey ? counts?.[option.countKey] : undefined
