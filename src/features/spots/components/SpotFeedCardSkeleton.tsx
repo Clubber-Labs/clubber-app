@@ -8,7 +8,7 @@ import { SPOT_FEED_MAP_HEIGHT } from './SpotFeedMap'
  */
 export function SpotFeedCardSkeleton() {
   return (
-    <View className="mb-3 overflow-hidden rounded-xl bg-surface">
+    <View className="mb-10 overflow-hidden rounded-xl bg-surface">
       <View
         className="bg-surface-elevated"
         style={{ height: SPOT_FEED_MAP_HEIGHT }}

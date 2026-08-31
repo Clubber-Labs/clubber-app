@@ -298,8 +298,8 @@ export function EventCardHero({ event, userCoords, onPress, banner }: Props) {
         <Rect {...SCRIM_BLEED} fill={`url(#${plainId})`} />
       </Svg>
       <View
-        className="absolute -right-2 -top-4"
-        style={{ opacity: 0.12 }}
+        className="absolute -right-2 top-10"
+        style={{ opacity: 0.25 }}
         pointerEvents="none"
       >
         <Text className="text-[84px]">

@@ -17,6 +17,8 @@ type Props = {
   event: FeedEvent
 }
 
+const TIME_BASELINE_NUDGE = 9
+
 /**
  * O canhoto: quando é, e se você vai. É a metade destacável do ingresso, então
  * carrega só a decisão — o que o evento É já foi dito pelo pôster acima.
@@ -33,11 +35,10 @@ export function EventCardStub({ event }: Props) {
 
   const timezone = event.timezone ?? undefined
   // Abreviações vêm com ponto em vários idiomas ("sáb.", "set.") — em caixa
-  // alta e com o separador ·, o ponto vira sujeira.
+  // alta o ponto vira sujeira.
   const strip = (value: string) => value.replace(/\./g, '')
-  const weekdayMonth = `${strip(formatWeekday(event.date, locale, timezone))} · ${strip(
-    formatMonthShort(event.date, locale, timezone),
-  )}`
+  const weekday = strip(formatWeekday(event.date, locale, timezone))
+  const month = strip(formatMonthShort(event.date, locale, timezone))
 
   const going = event.userAttendance === 'CONFIRMED'
   const declined = event.userAttendance === 'NOT_INTERESTED'
@@ -52,15 +53,33 @@ export function EventCardStub({ event }: Props) {
 
   return (
     <View className="flex-row items-center justify-between gap-3 px-4 py-3">
-      <View>
-        <Text className="text-[10px] font-bold uppercase tracking-[2px] text-content-muted">
-          {weekdayMonth}
-        </Text>
-        <View className="flex-row items-baseline gap-2">
+      {/* Uma coluna por par: o rótulo manda na largura e o valor pousa sob ele
+          — dia da semana sobre o dia, mês sobre a hora. */}
+      <View className="flex-row">
+        <View className="flex-col items-center gap-1">
+          <Text className="text-[10px] font-bold uppercase tracking-[2px] text-content-muted">
+            {weekday}
+          </Text>
           <Text className="text-[30px] font-extrabold leading-none text-content">
             {formatDayNumber(event.date, locale, timezone)}
           </Text>
-          <Text className="text-[18px] font-extrabold text-content-secondary">
+        </View>
+        {/* O · fica ENTRE as colunas, não colado num rótulo: dentro de um deles
+            ele entraria na conta da centralização e tortaria o par. */}
+        <Text className="relative left-1.5 self-start text-[14px] leading-none font-black text-content-muted">
+          ·
+        </Text>
+        <View className="flex-col items-center">
+          <Text className="text-[10px] font-bold uppercase tracking-[2px] text-content-muted">
+            {month}
+          </Text>
+          <Text
+            className="text-[18px] font-extrabold leading-none text-content-secondary"
+            // Em colunas separadas não há mais irmão pra alinhar por baseline:
+            // a hora desce ~0.72em da diferença de corpo (30 e 18) pra pousar
+            // na mesma linha-base do número do dia.
+            style={{ marginTop: TIME_BASELINE_NUDGE }}
+          >
             {formatTime(event.date, locale, timezone)}
           </Text>
         </View>

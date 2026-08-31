@@ -42,24 +42,12 @@ export function SpotFeedCard({ spot, userCoords }: Props) {
   const isCreator = !!viewerId && viewerId === spot.creator.id
   const category = spot.categories[0]
   const emoji = eventCategoryEmoji(spot.categories)
-  const username = spot.creator.username
   // Rolê só com o criador: a assinatura dele já É a linha do pulso acima, e
-  // repeti-la aqui seria eco — a meta fica só com a categoria.
+  // repeti-la aqui seria eco.
   const solo = spot.memberCount <= 1
-  const meta = category
-    ? solo
-      ? t('spots.feedCard.metaCategory', {
-          emoji,
-          category: labelFor(category),
-        })
-      : t('spots.feedCard.meta', {
-          username,
-          emoji,
-          category: labelFor(category),
-        })
-    : solo
-      ? null
-      : t('spots.feedCard.byUser', { username })
+  const meta = solo
+    ? null
+    : t('spots.feedCard.byUser', { username: spot.creator.username })
 
   const card = (
     <View className="overflow-hidden rounded-xl bg-surface">
@@ -81,18 +69,31 @@ export function SpotFeedCard({ spot, userCoords }: Props) {
         <View className="gap-3 p-3">
           <SpotPulseRow spot={spot} live={live} />
 
-          <View className="gap-1">
-            <Text
-              className="text-[19px] font-extrabold leading-tight text-content"
-              numberOfLines={2}
-            >
-              {spot.title}
-            </Text>
-            {!!meta && (
-              <Text className="text-xs text-content-muted" numberOfLines={1}>
-                {meta}
-              </Text>
+          <View className="gap-2">
+            {/* Mesma pílula do card de evento, um degrau acima do fundo: ali
+                ela pousa sobre a capa, aqui sobre a superfície do card. */}
+            {!!category && (
+              <View className="flex-row items-center gap-1 self-start rounded-full bg-surface-elevated px-2.5 py-1">
+                <Text className="text-[11px]">{emoji}</Text>
+                <Text className="text-[11px] font-bold text-content-secondary">
+                  {labelFor(category)}
+                </Text>
+              </View>
             )}
+
+            <View className="gap-1">
+              <Text
+                className="text-[19px] font-extrabold leading-tight text-content"
+                numberOfLines={2}
+              >
+                {spot.title}
+              </Text>
+              {!!meta && (
+                <Text className="text-xs text-content-muted" numberOfLines={1}>
+                  {meta}
+                </Text>
+              )}
+            </View>
           </View>
 
           {!live && !!spot.description && (
@@ -113,10 +114,10 @@ export function SpotFeedCard({ spot, userCoords }: Props) {
     </View>
   )
 
-  if (!live) return <View className="mb-3">{card}</View>
+  if (!live) return <View className="mb-10">{card}</View>
 
   return (
-    <View className="relative mb-3">
+    <View className="relative mb-10">
       {card}
       <CardHighlightFrame stops={SPECTRUM} />
     </View>
