@@ -1,11 +1,14 @@
 // Padrão otimista canônico — ver CLAUDE.md → "Tratamento de erros e feedback".
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { eventsService } from '../services/eventsService'
-import { eventKeys } from './cacheKeys'
+import { eventKeys, invalidateEventViews } from './cacheKeys'
 import type { EventDetail } from '@/shared/types'
 
-// Check-in só existe no detalhe (é a tela do "estou aqui"): feed e mapa não
-// exibem a contagem, então nada além do cache do evento precisa de patch.
+// O patch otimista é só da contagem, que vive no detalhe — feed e mapa não a
+// exibem. Mas o backend também grava presença CONFIRMED no mesmo check-in, e
+// ESSA o feed e o mapa exibem: por isso a invalidação é a das views de evento,
+// não só a do detalhe. 'none' porque o card não mudou aqui e refetch ativo só
+// reordenaria o feed embaixo de quem está na tela do evento.
 export function useCheckIn(eventId: string) {
   const queryClient = useQueryClient()
   const detailKey = eventKeys.detail(eventId)
@@ -32,6 +35,6 @@ export function useCheckIn(eventId: string) {
     onError: (_err, _vars, ctx) => {
       if (ctx?.prev) queryClient.setQueryData(detailKey, ctx.prev)
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: detailKey }),
+    onSettled: () => invalidateEventViews(queryClient, eventId, 'none'),
   })
 }

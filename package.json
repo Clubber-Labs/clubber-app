@@ -12,6 +12,7 @@
     "format": "prettier --write src/",
     "format:check": "prettier --check src/",
     "typecheck": "tsc --noEmit",
+    "check:error-codes": "node scripts/check-error-codes.mjs",
     "splash:build": "node scripts/build-splash-logo.mjs",
     "build:ios": "eas build --platform ios",
     "build:android": "eas build --platform android",

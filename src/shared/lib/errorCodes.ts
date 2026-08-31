@@ -1,9 +1,8 @@
 // Códigos com copy própria em `errors.<CODE>`. A lista existe pra o typecheck
-// cobrar a chave: incluir um código aqui sem traduzi-lo nos três dicionários
-// quebra o build. O que fica de fora cai no genérico porque comprovadamente não
-// chega a esta tela — MFA (o app não tem o fluxo), moderação de plataforma,
-// séries de evento (nenhum endpoint chamado aqui), webhook do Stripe e os 500
-// de invariante, cuja copy honesta É a genérica.
+// cobrar a chave: incluir um código aqui sem traduzi-lo em pt.json quebra o
+// build. O que não tem copy vai em UNTRANSLATED_ERROR_CODES com o motivo — as
+// duas listas juntas têm que cobrir o vocabulário do backend, e é isso que o
+// `pnpm check:error-codes` verifica.
 export const TRANSLATED_ERROR_CODES = [
   'ACCOUNT_ANONYMIZED',
   'ACCOUNT_BANNED',
@@ -20,6 +19,7 @@ export const TRANSLATED_ERROR_CODES = [
   'BILLING_PRICE_MISCONFIGURED',
   'BLOCK_NOT_FOUND',
   'COMMENT_NOT_FOUND',
+  'COMMENT_REPLY_DEPTH',
   'CONSENT_EXPORT_EMPTY',
   'CONSENT_NOT_FOUND',
   'CONVERSATION_FORBIDDEN',
@@ -38,6 +38,7 @@ export const TRANSLATED_ERROR_CODES = [
   'EVENT_IMAGE_LIMIT',
   'EVENT_IMAGE_NOT_FOUND',
   'EVENT_NOT_FOUND',
+  'EVENT_NOT_STARTED',
   'FILE_TOO_LARGE',
   'FOLLOWER_NOT_FOUND',
   'FOLLOW_NOT_FOUND',
@@ -80,6 +81,7 @@ export const TRANSLATED_ERROR_CODES = [
   'NOT_PROFILE_OWNER',
   'NOT_SPOT_CREATOR',
   'NO_USERS_TO_INVITE',
+  'PARENT_COMMENT_NOT_FOUND',
   'PARTICIPANT_NOT_FOUND',
   'PASSWORD_REQUIRED',
   'PHONE_TAKEN',
@@ -140,6 +142,52 @@ export const TRANSLATED_ERROR_CODES = [
 ] as const
 
 export type TranslatedErrorCode = (typeof TRANSLATED_ERROR_CODES)[number]
+
+// Códigos do vocabulário do backend que caem DE PROPÓSITO na genérica. Estar
+// aqui é uma afirmação: ou não chega a nenhuma tela deste app, ou chega por um
+// canal que já tem copy própria. O que o guarda não consegue perceber é uma
+// entrada que envelheceu — por isso cada motivo está escrito, pra quem
+// construir a feature saber que o código muda de lista junto.
+export const UNTRANSLATED_ERROR_CODES = [
+  // MFA: o app não tem o fluxo (o enrollment é do admin web).
+  'INVALID_MFA_CODE',
+  'MFA_ADMIN_ONLY',
+  'MFA_ALREADY_ENABLED',
+  'MFA_ENROLLMENT_SCOPE',
+  'MFA_SETUP_NOT_STARTED',
+
+  // Console de moderação: o app denuncia, mas não julga denúncia nem pune.
+  'ADMIN_ONLY',
+  'CANNOT_MODERATE_ADMIN',
+  'INVALID_REPORT_ACTION',
+  'REPORT_BACKS_ACTIVE_PUNISHMENT',
+  'REPORT_EVIDENCE_NOT_FOUND',
+  'REPORT_NOT_ABOUT_USER',
+  'REPORT_NOT_FOUND',
+  'SELF_MODERATION',
+  'USER_ALREADY_BANNED',
+
+  // Séries de evento: nenhum endpoint de série é chamado aqui.
+  'NOT_SERIES_AUTHOR',
+  'SERIES_ALREADY_CANCELED',
+  'SERIES_NOT_FOUND',
+
+  // Webhook do Stripe: o interlocutor é o Stripe, não o app.
+  'INVALID_SIGNATURE',
+  'MISSING_STRIPE_SIGNATURE',
+
+  // 500 de invariante: a copy honesta É a genérica.
+  'COMMENT_SCOPE_MISSING',
+  'INTERNAL_ERROR',
+
+  // Têm copy própria fora de `errors.<CODE>`: VALIDATION_ERROR vira
+  // `errors.validation.<issue>` no apiError, e os de link de convite viram
+  // estado de tela em app/invites/[token].tsx.
+  'INVITE_LINK_EXPIRED',
+  'INVITE_LINK_NOT_FOUND',
+  'INVITE_LINK_REVOKED',
+  'VALIDATION_ERROR',
+] as const
 
 // Keyword nativa do Zod que volta em `issues[].code` do VALIDATION_ERROR. É
 // outro vocabulário: nada a ver com as chaves de Zod local, que são do cliente.
