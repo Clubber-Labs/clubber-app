@@ -115,6 +115,10 @@ export function FeedList() {
         <EventCard
           event={item}
           onPress={() => router.push(`/events/${item.id}`)}
+          // A tela é dona da localização: o useUserLocation monta estado e
+          // listener de AppState próprios a cada chamada, então um por card
+          // sairia caro numa lista.
+          userCoords={locationStatus === 'ready' ? coords : null}
         />
       )}
       refreshControl={

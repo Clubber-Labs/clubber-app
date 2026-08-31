@@ -20,12 +20,20 @@ import { colors } from '@/shared/theme'
 type Props = {
   eventId: string
   myAttendance: AttendanceType | null
+  // O autor não responde RSVP ao próprio evento — sem isto ele cairia no
+  // "marque presença para postar", sem botão nenhum que o tirasse de lá. É
+  // também o que dá a ele a moderação dos posts alheios.
+  isAuthor?: boolean
+  // Convite do input, quando a tela quer trocar o padrão (evento ao vivo).
+  placeholder?: string
   ListHeaderComponent?: ReactElement
 }
 
 export function EventPostsFeed({
   eventId,
   myAttendance,
+  isAuthor = false,
+  placeholder,
   ListHeaderComponent,
 }: Props) {
   const { t } = useTranslation()
@@ -42,7 +50,13 @@ export function EventPostsFeed({
   const report = useReportFlow()
 
   const posts = data?.pages.flatMap(page => page.data) ?? []
-  const canPost = myAttendance === 'CONFIRMED' || myAttendance === 'INTERESTED'
+  const canPost =
+    isAuthor || myAttendance === 'CONFIRMED' || myAttendance === 'INTERESTED'
+  // A paginação é por cursor e não devolve total: contar o que está carregado
+  // enquanto há próxima página anunciaria um número que cresce ao rolar.
+  const subtitle = hasNextPage
+    ? t('events.posts.sectionFrom')
+    : t('events.posts.sectionSubtitle', { count: posts.length })
 
   return (
     <>
@@ -52,18 +66,23 @@ export function EventPostsFeed({
         keyboardShouldPersistTaps="handled"
         data={posts}
         keyExtractor={item => item.id}
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-          gap: 10,
-          paddingBottom: 60,
-        }}
+        // Sem padding horizontal: a foto do post vai de ponta a ponta. Quem
+        // precisa de margem (cabeçalho, texto, ações) a aplica por dentro.
+        contentContainerStyle={{ paddingBottom: 60 }}
         ListHeaderComponent={
-          <View className="gap-3">
+          <View className="gap-3 px-4 pb-3">
             {ListHeaderComponent}
+            <View className="gap-0.5">
+              <Text className="text-base font-extrabold text-content">
+                {t('events.posts.sectionTitle')}
+              </Text>
+              <Text className="text-xs text-content-muted">{subtitle}</Text>
+            </View>
             <CreatePostInput
               eventId={eventId}
               disabled={!canPost}
               disabledReason={t('events.posts.attendToPost')}
+              placeholder={placeholder}
             />
           </View>
         }
@@ -71,6 +90,7 @@ export function EventPostsFeed({
           <PostItem
             eventId={eventId}
             post={item}
+            isOrganizer={isAuthor}
             onReport={
               item.authorId !== myId
                 ? () => report.requestReport({ type: 'post', id: item.id })
@@ -78,7 +98,7 @@ export function EventPostsFeed({
             }
           />
         )}
-        ItemSeparatorComponent={() => <View className="h-2" />}
+        ItemSeparatorComponent={() => <View className="h-px bg-line" />}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -98,8 +118,8 @@ export function EventPostsFeed({
               className="py-8"
             />
           ) : (
-            <View className="py-10 items-center">
-              <Text className="text-center text-content-muted text-sm">
+            <View className="items-center px-4 py-10">
+              <Text className="text-center text-sm text-content-muted">
                 {t('events.posts.empty')}
               </Text>
             </View>

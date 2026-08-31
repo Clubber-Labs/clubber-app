@@ -1,103 +1,127 @@
+import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { FlagIcon, HeartIcon, TrashIcon } from 'phosphor-react-native'
+import { HeartIcon } from 'phosphor-react-native'
 import { useToggleCommentLike } from '../hooks/useComments'
+import { CommentActionsSheet } from './CommentActionsSheet'
 import { ProfileLink } from '@/features/users/components/ProfileLink'
+import { UserAvatar } from '@/shared/components/UserAvatar'
 import { formatRelative } from '@/shared/utils/dateFormat'
 import { useLocale } from '@/shared/hooks/useLocale'
-import { SwipeableRow } from '@/shared/components/SwipeableRow'
 import type { EventComment } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
 type Props = {
   comment: EventComment
   eventId: string
-  // Presente só quando o usuário pode apagar (é o autor) — habilita swipe-apagar.
+  // Presente quando o usuário pode apagar: autor do comentário ou organizador.
   onDelete?: () => void
-  // Presente só para comentários de terceiros — exibe o atalho de denúncia.
+  // Presente só para comentários de terceiros.
   onReport?: () => void
 }
 
+const AVATAR = 32
+
+/**
+ * Uma linha de conversa — sem card, sem raio, sem borda em volta. A lista é
+ * uma lista: o que separa um comentário do outro é o divisor que a seção
+ * desenha, não uma caixa por item.
+ *
+ * Moderação some atrás do long-press: um ⋯ fixo em cada linha custaria ruído
+ * permanente por uma ação rara.
+ */
 export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
   const { t } = useTranslation()
   const locale = useLocale()
+  const [sheetOpen, setSheetOpen] = useState(false)
   const toggleLike = useToggleCommentLike(eventId)
 
-  function handleLike() {
-    toggleLike.mutate({
-      commentId: comment.id,
-      currentlyLiked: comment.userLiked,
-    })
-  }
+  const moderable = !!onDelete || !!onReport
+  // Comentário otimista ainda não existe no backend: curtir ou moderar iria
+  // bater num id que não é o final.
+  const settled = !comment.pending
 
-  const card = (
-    <View className="bg-surface rounded-2xl p-4 border border-line">
-      <View className="flex-row items-center justify-between mb-1">
+  return (
+    <>
+      <Pressable
+        onLongPress={
+          moderable && settled ? () => setSheetOpen(true) : undefined
+        }
+        delayLongPress={300}
+        className="flex-row gap-3 px-4 py-3"
+        style={{ opacity: comment.pending ? 0.6 : 1 }}
+      >
         <ProfileLink
           userId={comment.author.id}
           username={comment.author.username}
-          hitSlop={6}
         >
-          <Text className="text-sm font-semibold text-content">
-            {comment.author.name} {comment.author.lastname}
-          </Text>
+          <UserAvatar
+            name={comment.author.name}
+            avatarUrl={comment.author.avatarUrl}
+            size={AVATAR}
+          />
         </ProfileLink>
-        <View className="flex-row items-center gap-2">
-          <Text className="text-xs text-content-subtle">
-            {formatRelative(comment.createdAt, locale)}
-          </Text>
-          {onReport && (
-            <Pressable
-              onPress={onReport}
-              hitSlop={8}
-              accessibilityRole="button"
-              accessibilityLabel={t('events.comments.report')}
+
+        <View className="flex-1 gap-1">
+          <View className="flex-row items-center gap-1.5">
+            <ProfileLink
+              userId={comment.author.id}
+              username={comment.author.username}
+              hitSlop={6}
             >
-              <FlagIcon size={14} color={colors.contentSubtle} />
-            </Pressable>
-          )}
-        </View>
-      </View>
-      <Text className="text-sm text-content-secondary">{comment.content}</Text>
-      <Pressable
-        onPress={handleLike}
-        disabled={toggleLike.isPending}
-        className="flex-row items-center gap-1 mt-2 self-start"
-        accessibilityLabel={
-          comment.userLiked
-            ? t('events.comments.unlike')
-            : t('events.comments.like')
-        }
-      >
-        <HeartIcon
-          size={16}
-          weight={comment.userLiked ? 'fill' : 'regular'}
-          color={comment.userLiked ? colors.danger : colors.contentMuted}
-        />
-        {comment.reactionsCount > 0 && (
-          <Text
-            className={`text-xs ${comment.userLiked ? 'text-danger' : 'text-content-muted'}`}
-          >
-            {comment.reactionsCount}
+              <Text className="text-sm font-bold text-content">
+                {comment.author.username}
+              </Text>
+            </ProfileLink>
+            <Text className="text-xs text-content-subtle">
+              {`· ${formatRelative(comment.createdAt, locale)}`}
+            </Text>
+          </View>
+
+          <Text className="text-[15px] leading-[22px] text-content">
+            {comment.content}
           </Text>
-        )}
+        </View>
+
+        <Pressable
+          onPress={() =>
+            toggleLike.mutate({
+              commentId: comment.id,
+              currentlyLiked: comment.userLiked,
+            })
+          }
+          disabled={!settled}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityState={{ selected: comment.userLiked }}
+          accessibilityLabel={
+            comment.userLiked
+              ? t('events.comments.unlike')
+              : t('events.comments.like')
+          }
+          className="items-center gap-0.5 pt-0.5"
+        >
+          <HeartIcon
+            size={16}
+            weight={comment.userLiked ? 'fill' : 'regular'}
+            color={comment.userLiked ? colors.danger : colors.contentMuted}
+          />
+          {comment.reactionsCount > 0 && (
+            <Text
+              className={`text-[11px] ${comment.userLiked ? 'text-danger' : 'text-content-muted'}`}
+            >
+              {comment.reactionsCount}
+            </Text>
+          )}
+        </Pressable>
       </Pressable>
-    </View>
-  )
 
-  if (!onDelete) return card
-
-  return (
-    <SwipeableRow
-      rightActions={[
-        {
-          icon: TrashIcon,
-          label: t('events.comments.delete'),
-          onPress: onDelete,
-        },
-      ]}
-    >
-      {card}
-    </SwipeableRow>
+      <CommentActionsSheet
+        visible={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        onReport={onReport}
+        onDelete={onDelete}
+      />
+    </>
   )
 }

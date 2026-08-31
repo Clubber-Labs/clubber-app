@@ -5,6 +5,7 @@ import {
 } from '@tanstack/react-query'
 import type { InfiniteData } from '@tanstack/react-query'
 import { eventsService } from '../services/eventsService'
+import { usePostLikesStore } from '../store/postLikesStore'
 import { removeFromInfiniteList } from '@/shared/utils/infiniteList'
 import type { CursorPaginatedResponse, EventPost } from '@/shared/types'
 
@@ -58,6 +59,67 @@ export function useUploadPostImages(eventId: string) {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: postsKey(eventId) })
     },
+  })
+}
+
+/**
+ * Curtir post, padrão otimista canônico + a memória do postLikesStore.
+ *
+ * O store não é enfeite: como o GET não devolve `userLiked`, o invalidate do
+ * `onSettled` apagaria o estado da curtida e o toque seguinte chamaria `like`
+ * outra vez em vez de `unlike` — coração vazio e contagem subindo em dobro. A
+ * contagem continua vindo do servidor; o store guarda só o "fui eu".
+ */
+export function useTogglePostLike(eventId: string) {
+  const queryClient = useQueryClient()
+  const key = postsKey(eventId)
+  const setLiked = usePostLikesStore(s => s.setLiked)
+
+  return useMutation({
+    mutationFn: ({
+      postId,
+      currentlyLiked,
+    }: {
+      postId: string
+      currentlyLiked: boolean
+    }) =>
+      currentlyLiked
+        ? eventsService.unlikePost(postId)
+        : eventsService.likePost(postId),
+    onMutate: async ({ postId, currentlyLiked }) => {
+      await queryClient.cancelQueries({ queryKey: key })
+      const prev = queryClient.getQueryData<PostsCache>(key)
+      setLiked(postId, !currentlyLiked)
+      queryClient.setQueryData<PostsCache>(key, old =>
+        !old
+          ? old
+          : {
+              ...old,
+              pages: old.pages.map(page => ({
+                ...page,
+                data: page.data.map(post =>
+                  post.id === postId
+                    ? {
+                        ...post,
+                        userLiked: !currentlyLiked,
+                        _count: post._count && {
+                          ...post._count,
+                          reactions:
+                            post._count.reactions + (currentlyLiked ? -1 : 1),
+                        },
+                      }
+                    : post,
+                ),
+              })),
+            },
+      )
+      return { prev }
+    },
+    onError: (_err, { postId, currentlyLiked }, ctx) => {
+      setLiked(postId, currentlyLiked)
+      if (ctx?.prev) queryClient.setQueryData(key, ctx.prev)
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
   })
 }
 

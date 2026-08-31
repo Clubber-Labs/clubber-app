@@ -106,6 +106,9 @@ export type EventComment = {
   author: CommentAuthor
   reactionsCount: number
   userLiked: boolean
+  // Só existe no cache: marca o comentário otimista que ainda não voltou do
+  // backend, pra lista poder exibi-lo esmaecido. Nunca vem da API.
+  pending?: boolean
 }
 
 export type EventImage = {
@@ -158,6 +161,32 @@ export type FeedEvent = {
   }
 }
 
+/**
+ * Check-in do "estou aqui agora" — só faz sentido com o evento ONGOING. O bloco
+ * inteiro é opcional: sua PRESENÇA é o que diz que o backend já serve check-in,
+ * e a UI (card do participante, resumo do autor, contagem em "Quem está lá")
+ * some sozinha enquanto ele não vier.
+ */
+export type EventCheckIns = {
+  count: number
+  viewerCheckedIn: boolean
+  // Quem chegou, em destaque (amigos primeiro) — mesma forma de topAttendances.
+  top?: FriendAttendance[]
+}
+
+/**
+ * O convite que trouxe QUEM ESTÁ VENDO ao evento. Ausente para quem chegou pelo
+ * feed, pelo mapa ou por link público — aí o RSVP aparece sem o card de convite.
+ */
+export type EventInviteContext = {
+  inviter: FeedAuthor
+  createdAt: string
+  // Outros convidados em destaque (amigos primeiro) e o total deles — a prova
+  // social do "junto com Lia e mais 10".
+  others?: FeedAuthor[]
+  othersCount?: number
+}
+
 export type EventDetail = {
   id: string
   title: string
@@ -189,6 +218,9 @@ export type EventDetail = {
   // Participantes em destaque (amigos primeiro) para a prova social "quem vai".
   // Espelha o que o mapa/feed já trazem; o backend popula em GET /events/:id.
   topAttendances?: FriendAttendance[]
+  // Aditivos — ver EventCheckIns/EventInviteContext.
+  checkIns?: EventCheckIns
+  viewerInvite?: EventInviteContext
   userLiked: boolean
   userAttendance: AttendanceType | null
   _count: {
@@ -239,6 +271,10 @@ export type EventPost = {
   eventId: string
   author: CommentAuthor
   images?: EventImage[]
+  // Aditivo: o backend ainda não devolve o estado da curtida do viewer (ao
+  // contrário de FeedEvent e EventComment). Enquanto não vier, o coração
+  // nasce vazio e só o toque otimista o preenche — ver useTogglePostLike.
+  userLiked?: boolean
   _count?: {
     comments: number
     reactions: number

@@ -16,13 +16,15 @@ import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { isForbiddenError } from '@/shared/lib/apiError'
 import { EventHeader } from '@/features/events/components/EventHeader'
 import { EventLocationMap } from '@/features/events/components/EventLocationMap'
-import { EventAttendanceButton } from '@/features/events/components/EventAttendanceButton'
 import { EventPostsFeed } from '@/features/events/components/EventPostsFeed'
 import { EventActionsButton } from '@/features/events/components/EventActionsButton'
-import { EventInviteButton } from '@/features/events/components/EventInviteButton'
-import { EventShareButton } from '@/features/events/components/EventShareButton'
-import { EventAnalyticsEntryCard } from '@/features/event-analytics/components/EventAnalyticsEntryCard'
-import { PromoteEventCard } from '@/features/featured-events/components/PromoteEventCard'
+import { EventTicketCard } from '@/features/events/components/detail/EventTicketCard'
+import { EventRsvpRow } from '@/features/events/components/detail/EventRsvpRow'
+import { EventInviteCard } from '@/features/events/components/detail/EventInviteCard'
+import { EventCheckInCard } from '@/features/events/components/detail/EventCheckInCard'
+import { EventCheckInSummary } from '@/features/events/components/detail/EventCheckInSummary'
+import { EventPromotionSection } from '@/features/events/components/detail/EventPromotionSection'
+import { EventAttendeesSection } from '@/features/events/components/detail/EventAttendeesSection'
 import { useTrackEventView } from '@/features/event-analytics/hooks/useTrackEventView'
 import { useTrackEventShare } from '@/features/event-analytics/hooks/useTrackEventShare'
 import { ReportButton } from '@/features/reports/components/ReportButton'
@@ -40,7 +42,19 @@ function DetailHeader({ event, isAuthor, isPremium, onShared }: HeaderProps) {
   // Privado: só o autor convida. Público: qualquer um. Evento encerrado ou
   // cancelado não recebe convite — mesma janela do RSVP.
   const canInvite = (isAuthor || event.isPublic) && allowAttendance
+  const isLive = event.status === 'ONGOING'
   const router = useRouter()
+
+  // O ingresso ancora o topo pra quem organiza (não há RSVP a responder) e cai
+  // abaixo da resposta pra quem foi convidado — a decisão vem primeiro.
+  const ticket = <EventTicketCard event={event} />
+  const rsvp = (
+    <EventRsvpRow
+      eventId={event.id}
+      current={event.userAttendance}
+      canInvite={canInvite}
+    />
+  )
 
   return (
     <View>
@@ -48,42 +62,58 @@ function DetailHeader({ event, isAuthor, isPremium, onShared }: HeaderProps) {
         event={event}
         onBack={() => router.back()}
         actions={
-          <View className="flex-row items-center gap-2">
-            {isAuthor && <EventShareButton event={event} onShared={onShared} />}
-            {isAuthor ? (
-              <EventActionsButton eventId={event.id} />
-            ) : (
-              <ReportButton
-                target={{ type: 'event', id: event.id }}
-                variant="overlay"
-              />
-            )}
-          </View>
+          isAuthor ? (
+            <EventActionsButton eventId={event.id} />
+          ) : (
+            <ReportButton target={{ type: 'event', id: event.id }} />
+          )
         }
       />
       <View className="gap-5 pt-5 pb-5">
-        {isAuthor && (
-          <EventAnalyticsEntryCard eventId={event.id} isPremium={isPremium} />
+        {isAuthor && ticket}
+
+        {!isAuthor &&
+          allowAttendance &&
+          (event.viewerInvite ? (
+            <EventInviteCard invite={event.viewerInvite}>
+              {rsvp}
+            </EventInviteCard>
+          ) : (
+            rsvp
+          ))}
+
+        {isLive &&
+          event.checkIns &&
+          (isAuthor ? (
+            <EventCheckInSummary
+              checkIns={event.checkIns}
+              confirmedCount={event._count.attendances}
+            />
+          ) : (
+            <EventCheckInCard
+              eventId={event.id}
+              venueName={event.venueName}
+              checkIns={event.checkIns}
+            />
+          ))}
+
+        {!isAuthor && ticket}
+
+        {!!event.description && (
+          <Text className="text-content-secondary text-[15px] leading-6">
+            {event.description}
+          </Text>
         )}
+
         {isAuthor && (
-          <PromoteEventCard
-            eventId={event.id}
-            eventDate={event.date}
+          <EventPromotionSection
+            event={event}
             isPremium={isPremium}
-            isFeatured={!!event.isFeatured}
+            onShared={onShared}
           />
         )}
-        {(allowAttendance || canInvite) && (
-          <View className="gap-2">
-            {allowAttendance && (
-              <EventAttendanceButton
-                eventId={event.id}
-                current={event.userAttendance}
-              />
-            )}
-            {canInvite && <EventInviteButton eventId={event.id} />}
-          </View>
-        )}
+
+        <EventAttendeesSection event={event} />
         <EventLocationMap event={event} />
       </View>
       <View className="border-t border-line" />
@@ -154,6 +184,8 @@ export default function EventDetailScreen() {
     )
   }
 
+  const isAuthor = event.authorId === userId
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -162,10 +194,18 @@ export default function EventDetailScreen() {
       <EventPostsFeed
         eventId={event.id}
         myAttendance={event.userAttendance}
+        isAuthor={isAuthor}
+        // Evento ao vivo muda o convite do input: não é "conte sobre o
+        // evento", é "mostre o que está rolando agora".
+        placeholder={
+          event.status === 'ONGOING'
+            ? t('events.posts.placeholderLive')
+            : undefined
+        }
         ListHeaderComponent={
           <DetailHeader
             event={event}
-            isAuthor={event.authorId === userId}
+            isAuthor={isAuthor}
             isPremium={!!profile?.isPremium}
             onShared={() => trackShare()}
           />

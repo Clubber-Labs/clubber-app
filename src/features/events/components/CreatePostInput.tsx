@@ -7,36 +7,52 @@ import {
   ActivityIndicator,
   Keyboard,
 } from 'react-native'
-import { PaperPlaneTiltIcon } from 'phosphor-react-native'
+import { CameraIcon, PaperPlaneTiltIcon } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
 import { useAddPost, useUploadPostImages } from '../hooks/usePosts'
 import { EventImagePicker } from './EventImagePicker'
 import { useMe } from '@/features/auth/hooks/useMe'
+import { UserAvatar } from '@/shared/components/UserAvatar'
 import { colors } from '@/shared/theme'
 
 const MAX_POST_IMAGES = 4
+const AVATAR = 36
 
 type Props = {
   eventId: string
   disabled?: boolean
   disabledReason?: string
+  placeholder?: string
 }
 
-export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
+/**
+ * Convite a postar, compacto: uma linha com avatar, campo e câmera. Só cresce
+ * (contador, seletor de fotos, botão de enviar) quando há o que enviar — em
+ * repouso ele não pode competir com os posts logo abaixo.
+ */
+export function CreatePostInput({
+  eventId,
+  disabled,
+  disabledReason,
+  placeholder,
+}: Props) {
   const { t } = useTranslation()
   const [text, setText] = useState('')
   const [imageUris, setImageUris] = useState<string[]>([])
+  const [pickerOpen, setPickerOpen] = useState(false)
   const { data: me } = useMe()
   const addPost = useAddPost(eventId)
   const uploadImages = useUploadPostImages(eventId)
+
+  const filled = !!text.trim()
+  const expanded = filled || pickerOpen || imageUris.length > 0
 
   function handleSend() {
     const content = text.trim()
     if (!content) return
     Keyboard.dismiss()
     // Texto-first: cria o post e, com sucesso, sobe as imagens contra o id
-    // criado (mesmo padrão do create de evento). A navegação/limpeza não
-    // espera o upload terminar.
+    // criado (mesmo padrão do create de evento). A limpeza não espera o upload.
     const uris = imageUris
     addPost.mutate(content, {
       onSuccess: post => {
@@ -45,14 +61,15 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
         }
         setText('')
         setImageUris([])
+        setPickerOpen(false)
       },
     })
   }
 
   if (disabled) {
     return (
-      <View className="bg-brand-surface rounded-xl px-4 py-3">
-        <Text className="text-sm text-brand-text-strong">
+      <View className="rounded-xl bg-surface-elevated px-4 py-3">
+        <Text className="text-sm text-content-secondary">
           {disabledReason ?? t('events.posts.cannotPost')}
         </Text>
       </View>
@@ -60,54 +77,73 @@ export function CreatePostInput({ eventId, disabled, disabledReason }: Props) {
   }
 
   return (
-    <View className="bg-surface border border-line rounded-xl p-3 gap-2">
-      <View className="flex-row gap-2 items-start">
-        <View className="w-9 h-9 rounded-full bg-brand-surface-strong items-center justify-center">
-          <Text className="text-brand-text-strong font-semibold">
-            {me?.name?.[0]?.toUpperCase() ?? '?'}
-          </Text>
-        </View>
+    <View className="gap-2 rounded-2xl border border-line bg-surface p-2.5">
+      <View className="flex-row items-center gap-2.5">
+        <UserAvatar
+          name={me?.name ?? ''}
+          avatarUrl={me?.avatarUrl}
+          size={AVATAR}
+        />
         <TextInput
-          className="flex-1 text-base text-content min-h-[40px] max-h-32 pt-2"
-          placeholder={t('events.posts.placeholder')}
+          className="max-h-28 flex-1 text-[15px] text-content"
+          placeholder={placeholder ?? t('events.posts.placeholder')}
           placeholderTextColor={colors.contentSubtle}
           value={text}
           onChangeText={setText}
           multiline
           maxLength={1000}
         />
+        {!expanded && (
+          <Pressable
+            onPress={() => setPickerOpen(true)}
+            hitSlop={6}
+            accessibilityRole="button"
+            accessibilityLabel={t('events.posts.imagesLabel')}
+            className="h-9 w-9 items-center justify-center rounded-full bg-surface-elevated"
+          >
+            <CameraIcon size={18} color={colors.contentSecondary} />
+          </Pressable>
+        )}
       </View>
 
-      <View className="pl-11">
-        <EventImagePicker
-          uris={imageUris}
-          onChange={setImageUris}
-          maxCount={MAX_POST_IMAGES}
-          label={t('events.posts.imagesLabel')}
-        />
-      </View>
-
-      <View className="flex-row items-center justify-between pl-11">
-        <Text className="text-xs text-content-subtle">{text.length}/1000</Text>
-        <Pressable
-          onPress={handleSend}
-          disabled={!text.trim() || addPost.isPending}
-          className={`flex-row items-center gap-1 px-4 py-2 rounded-lg ${text.trim() && !addPost.isPending ? 'bg-brand' : 'bg-surface-higher'}`}
-        >
-          {addPost.isPending ? (
-            <ActivityIndicator size="small" color={colors.content} />
-          ) : (
-            <PaperPlaneTiltIcon
-              size={14}
-              weight="fill"
-              color={colors.content}
-            />
-          )}
-          <Text className="text-sm font-semibold text-content">
-            {t('events.posts.publish')}
-          </Text>
-        </Pressable>
-      </View>
+      {expanded && (
+        <View className="gap-2 pl-[46px]">
+          <EventImagePicker
+            uris={imageUris}
+            onChange={setImageUris}
+            maxCount={MAX_POST_IMAGES}
+            label={t('events.posts.imagesLabel')}
+          />
+          <View className="flex-row items-center justify-between">
+            <Text className="text-xs text-content-subtle">
+              {`${text.length}/1000`}
+            </Text>
+            <Pressable
+              onPress={handleSend}
+              disabled={!filled || addPost.isPending}
+              accessibilityRole="button"
+              className={`flex-row items-center gap-1.5 rounded-full px-4 py-2 ${
+                filled && !addPost.isPending ? 'bg-content' : 'bg-surface-high'
+              }`}
+            >
+              {addPost.isPending ? (
+                <ActivityIndicator size="small" color={colors.background} />
+              ) : (
+                <PaperPlaneTiltIcon
+                  size={14}
+                  weight="fill"
+                  color={filled ? colors.background : colors.contentMuted}
+                />
+              )}
+              <Text
+                className={`text-sm font-bold ${filled && !addPost.isPending ? 'text-background' : 'text-content-muted'}`}
+              >
+                {t('events.posts.publish')}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      )}
     </View>
   )
 }

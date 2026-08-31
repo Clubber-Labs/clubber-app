@@ -7,7 +7,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from 'react-native-reanimated'
-import { MediaViewerModal } from '@/shared/components/MediaViewerModal'
+import { MediaViewerModal } from './MediaViewerModal'
 import { useSwipeToDismiss } from '@/shared/hooks/useSwipeToDismiss'
 
 type Props = {
@@ -17,6 +17,9 @@ type Props = {
 
 const { width, height } = Dimensions.get('window')
 
+// Foto em tela cheia (contain — a imagem inteira, sem o corte do enquadramento
+// de origem), com pinch, arrastar e duplo toque pra voltar ao tamanho. Mora em
+// shared porque atende chat e detalhe de evento; nada aqui é de uma feature.
 export function ImageViewerModal({ url, onClose }: Props) {
   const { t } = useTranslation()
   // translateY/bgOpacity e o dismiss vertical vêm do hook compartilhado; o resto
@@ -104,7 +107,7 @@ export function ImageViewerModal({ url, onClose }: Props) {
     <MediaViewerModal
       gesture={composed}
       bgStyle={bgStyle}
-      closeLabel={t('chat.media.closeImage')}
+      closeLabel={t('shared.mediaViewer.closeImage')}
       onClose={onClose}
     >
       <Animated.View className="flex-1 items-center justify-center">

@@ -92,6 +92,10 @@ export const eventsService = {
   cancelAttendance: (eventId: string): Promise<void> =>
     api.delete(`/events/${eventId}/attendances`).then(() => undefined),
 
+  // "Cheguei" do evento ao vivo. Idempotente no backend: repetir não duplica.
+  checkIn: (eventId: string): Promise<void> =>
+    api.post(`/events/${eventId}/check-ins`).then(() => undefined),
+
   likeEvent: (eventId: string): Promise<void> =>
     api.post(`/events/${eventId}/reactions`).then(() => undefined),
 
