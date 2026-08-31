@@ -12,7 +12,7 @@ import { createRequire } from 'node:module'
 import path from 'node:path'
 import { stdin, stdout } from 'node:process'
 import { config as loadDotenv } from 'dotenv'
-import { EXTRA_FROM_ENV } from './extra-env.mjs'
+import { EXTRA_FROM_ENV, OPTIONAL_EXTRA_ENV } from './extra-env.mjs'
 
 // O app.config.js lê API_URL e os tokens de Mapbox/Stripe/Google de process.env
 // e os publica em `extra` — de onde o app inteiro os consome em runtime. No
@@ -146,9 +146,11 @@ for (const task of ['typecheck', 'lint']) {
 // variável nova entra em um lugar só e este portão passa a cobri-la. Ausentes,
 // o export NÃO falha: publica um manifesto sem elas, e só o aparelho que baixar
 // descobre — sem baseURL de API a tela é "Sem conexão". Aconteceu em 23/08/2026.
-const missingEnv = Object.values(EXTRA_FROM_ENV).filter(
-  name => !process.env[name],
-)
+// OPTIONAL_EXTRA_ENV fica de fora: são as que a ausência É o estado esperado
+// (o interruptor do Spotify). Barrar por elas empurraria quem publica a
+// defini-las só pra destravar o portão.
+const absent = Object.values(EXTRA_FROM_ENV).filter(name => !process.env[name])
+const missingEnv = absent.filter(name => !OPTIONAL_EXTRA_ENV.has(name))
 if (missingEnv.length) {
   fail(
     `Faltam variáveis que o app.config.js publica em \`extra\`: ${missingEnv.join(', ')}.`,
@@ -205,6 +207,10 @@ console.log('\n─────────────────────�
 console.log(`  canal      ${channel}`)
 console.log(`  commit     ${sha} — ${subject}`)
 console.log(`  substitui  ${anchor ?? '(nada publicado ainda)'}`)
+const dormant = absent.filter(name => OPTIONAL_EXTRA_ENV.has(name))
+if (dormant.length) {
+  console.log(`  desligado  ${dormant.join(', ')}`)
+}
 // A variável entra no app.config.js, e o fingerprint hasheia o config: com ela
 // a runtime version é OUTRA. Publicar sem ela, para um aparelho que rodou um
 // build local com ela (ou o contrário), não dá erro — a update simplesmente
