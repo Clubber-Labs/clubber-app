@@ -12,7 +12,7 @@ import { createRequire } from 'node:module'
 import path from 'node:path'
 import { stdin, stdout } from 'node:process'
 import { config as loadDotenv } from 'dotenv'
-import { EXTRA_FROM_ENV } from './extra-env.mjs'
+import { EXTRA_FROM_ENV, OPTIONAL_EXTRA_ENV } from './extra-env.mjs'
 
 // O app.config.js lê API_URL e os tokens de Mapbox/Stripe/Google de process.env
 // e os publica em `extra` — de onde o app inteiro os consome em runtime. No
@@ -146,13 +146,33 @@ for (const task of ['typecheck', 'lint']) {
 // variável nova entra em um lugar só e este portão passa a cobri-la. Ausentes,
 // o export NÃO falha: publica um manifesto sem elas, e só o aparelho que baixar
 // descobre — sem baseURL de API a tela é "Sem conexão". Aconteceu em 23/08/2026.
-const missingEnv = Object.values(EXTRA_FROM_ENV).filter(
-  name => !process.env[name],
-)
+// OPTIONAL_EXTRA_ENV fica de fora: são as que a ausência É o estado esperado
+// (o interruptor do Spotify). Barrar por elas empurraria quem publica a
+// defini-las só pra destravar o portão.
+const absent = Object.values(EXTRA_FROM_ENV).filter(name => !process.env[name])
+const missingEnv = absent.filter(name => !OPTIONAL_EXTRA_ENV.has(name))
 if (missingEnv.length) {
   fail(
     `Faltam variáveis que o app.config.js publica em \`extra\`: ${missingEnv.join(', ')}.`,
     'Confira o .env.local — sem elas a update quebra quem a baixar.',
+  )
+}
+
+// O inverso da armadilha: a variável dormente DEFINIDA na hora de publicar
+// acende a feature pra quem baixar — e, por mudar o app.config.js, muda o
+// fingerprint: a update nem chegaria nos binários instalados. Quem publica de
+// uma máquina do círculo beta tem a do Spotify no .env.local e não faria ideia.
+// Preview (interno) segue com aviso; production recusa.
+const dormantPresent = [...OPTIONAL_EXTRA_ENV].filter(name => process.env[name])
+if (dormantPresent.length) {
+  if (protectedChannel) {
+    fail(
+      `Variável de feature dormente definida no ambiente: ${dormantPresent.join(', ')}.`,
+      'Ela ligaria a feature pra base inteira e mudaria a runtime version (a update nem chegaria). Tire do .env.local antes de publicar production.',
+    )
+  }
+  console.warn(
+    `\n⚠  ${dormantPresent.join(', ')} definida — esta update sai com a feature LIGADA.`,
   )
 }
 
@@ -205,6 +225,10 @@ console.log('\n─────────────────────�
 console.log(`  canal      ${channel}`)
 console.log(`  commit     ${sha} — ${subject}`)
 console.log(`  substitui  ${anchor ?? '(nada publicado ainda)'}`)
+const dormant = absent.filter(name => OPTIONAL_EXTRA_ENV.has(name))
+if (dormant.length) {
+  console.log(`  desligado  ${dormant.join(', ')}`)
+}
 // A variável entra no app.config.js, e o fingerprint hasheia o config: com ela
 // a runtime version é OUTRA. Publicar sem ela, para um aparelho que rodou um
 // build local com ela (ou o contrário), não dá erro — a update simplesmente

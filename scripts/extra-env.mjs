@@ -32,3 +32,19 @@ export const EXTRA_FROM_ENV = {
   // backend, e é só por isso que o PKCE daqui é seguro.
   spotifyClientId: 'SPOTIFY_CLIENT_ID',
 }
+
+/**
+ * Variáveis cuja AUSÊNCIA é o estado esperado — o portão do publish não pode
+ * barrar por elas.
+ *
+ * SPOTIFY_CLIENT_ID é o interruptor da integração dormente (ver CLAUDE.md e
+ * docs/integracao-spotify.md): sem ela todo o UI de vínculo some sozinho, e é
+ * assim que os builds de produção e preview saem. Exigi-la aqui empurra quem
+ * publica a defini-la só pra destravar o portão — reacendendo, numa OTA e sem
+ * passar por build, uma feature que o Spotify não libera pra apps novos.
+ *
+ * De quebra, definir a variável muda o app.config.js e portanto o fingerprint:
+ * a runtime version passaria a ser outra e a update simplesmente nunca chegaria
+ * nos binários que já estão instalados, sem erro nenhum.
+ */
+export const OPTIONAL_EXTRA_ENV = new Set(['SPOTIFY_CLIENT_ID'])
