@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { View, Text } from 'react-native'
 import { Trans } from 'react-i18next'
 import { ProfileLink } from '@/features/users/components/ProfileLink'
@@ -11,20 +12,33 @@ type Props = {
 
 const AVATAR_SIZE = 36
 const OVERLAP = -12
-const MAX_AVATARS = 3
+// Passo horizontal de cada círculo além do primeiro (avatar ou disco "+N").
+const AVATAR_STEP = AVATAR_SIZE + OVERLAP
+// Antes do onLayout medir a linha: o mínimo histórico, sem risco de estourar.
+const FALLBACK_AVATARS = 3
 // Duas assinaturas bastam pra frase: a terceira já é ruído, e quem sobra está
 // contado no "+N" da pilha.
 const MAX_NAMES = 2
+
+// Quantos círculos cabem na linha sem quebrar.
+function fitCount(width: number): number {
+  if (width < AVATAR_SIZE) return 1
+  return 1 + Math.floor((width - AVATAR_SIZE) / AVATAR_STEP)
+}
 
 /**
  * Pulso social: quem já está no rolê, em fotos e em uma frase. É a primeira
  * linha do corpo porque num rolê a pergunta é "quem vai estar lá", não "o que
  * é" — o título vem depois.
+ *
+ * A pilha enche a linha inteira com quantos avatares couberem (medido no
+ * onLayout) e fecha no disco "+N"; a frase com os nomes vive na linha de
+ * baixo. O backend manda a prévia já limitada — ver SPOT_MEMBER_PREVIEW no
+ * feed.service, que espelha o teto do aparelho mais largo.
  */
 export function SpotPulseRow({ spot, live }: Props) {
+  const [rowWidth, setRowWidth] = useState<number | null>(null)
   const members = spot.members?.length ? spot.members : [spot.creator]
-  const visible = members.slice(0, MAX_AVATARS)
-  const overflow = spot.memberCount - visible.length
   const bold = <Text className="font-bold text-content" />
 
   // Só o criador: não há pulso pra mostrar, e a linha vira a assinatura dele.
@@ -51,11 +65,25 @@ export function SpotPulseRow({ spot, live }: Props) {
     )
   }
 
+  const fit = rowWidth === null ? FALLBACK_AVATARS : fitCount(rowWidth)
+  let visible = members.slice(0, fit)
+  let overflow = spot.memberCount - visible.length
+  if (overflow > 0 && visible.length === fit) {
+    // O disco "+N" ocupa um círculo: abre a vaga dele.
+    visible = visible.slice(0, fit - 1)
+    overflow = spot.memberCount - visible.length
+  }
   const names = members.slice(0, MAX_NAMES).map(member => member.name)
 
   return (
-    <View className="flex-row items-center gap-2.5">
-      <View className="flex-row">
+    <View className="gap-2">
+      <View
+        className="flex-row"
+        onLayout={e => {
+          const next = Math.floor(e.nativeEvent.layout.width)
+          setRowWidth(prev => (prev === next ? prev : next))
+        }}
+      >
         {visible.map((member, i) => (
           <View
             key={member.id}
@@ -86,7 +114,7 @@ export function SpotPulseRow({ spot, live }: Props) {
           </View>
         )}
       </View>
-      <Text className="flex-1 text-[13px] text-content-muted" numberOfLines={2}>
+      <Text className="text-[13px] text-content-muted" numberOfLines={2}>
         {live ? (
           <Trans
             i18nKey="spots.feedCard.pulseLive"

@@ -1,13 +1,7 @@
 import { useId, useState, type ReactNode } from 'react'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { CaretLeftIcon, LockIcon } from 'phosphor-react-native'
-import Svg, {
-  Defs,
-  RadialGradient,
-  LinearGradient,
-  Stop,
-  Rect,
-} from 'react-native-svg'
+import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { useTranslation } from 'react-i18next'
 import {
@@ -24,8 +18,9 @@ import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { EventStatusBadge } from './EventStatusBadge'
 import { EventImagesCarousel } from './EventImagesCarousel'
+import { eventCategoryEmoji } from '@/shared/utils/eventCategoryEmoji'
 import type { EventDetail } from '@/shared/types'
-import { colors, SPECTRUM } from '@/shared/theme'
+import { categoryHue, colors, SPECTRUM } from '@/shared/theme'
 
 type Props = {
   event: EventDetail
@@ -95,14 +90,17 @@ export function EventHeader({ event, onBack, actions }: Props) {
   const gradId = `event-hero-grad-${event.id}`
   const scrimId = `event-hero-scrim-${event.id}`
   const category = event.categories[0]
+  const cover = categoryHue(category).cover
   const titleSize = posterTitleSize(event.title)
 
   return (
     <View>
-      {/* HERO full-bleed: -mx-4 cancela o padding (16px) do container pai. */}
-      <View className="relative -mx-4">
-        <View style={{ height: HERO_HEIGHT }} className="overflow-hidden">
-          {hasImages ? (
+      {/* HERO full-bleed: -mx-4 cancela o padding (16px) do container pai.
+          Com foto é um pôster de altura fixa; sem foto a altura é a do próprio
+          conteúdo — gradiente não é informação e não ganha tela. */}
+      <View className="relative -mx-4 overflow-hidden">
+        {hasImages ? (
+          <View style={{ height: HERO_HEIGHT }} className="overflow-hidden">
             <EventImagesCarousel
               images={event.images}
               height={HERO_HEIGHT}
@@ -112,13 +110,20 @@ export function EventHeader({ event, onBack, actions }: Props) {
                 setExpandedUrl(event.images[position]?.url ?? null)
               }
             />
-          ) : (
+          </View>
+        ) : (
+          <>
+            {/* Mesma língua da capa sem foto do card (EventCardHero): matiz
+                da CATEGORIA com a massa de cor no topo — cor é informação —
+                e o emoji como marca d'água. O scrim funde o pé no background,
+                igual faz com foto. */}
             <Svg style={StyleSheet.absoluteFill}>
               <Defs>
-                <RadialGradient id={gradId} cx="0" cy="0" r="1">
-                  <Stop offset="0" stopColor={colors.brandSurfaceStrong} />
-                  <Stop offset="0.62" stopColor={colors.surface} />
-                </RadialGradient>
+                <LinearGradient id={gradId} x1="1" y1="1" x2="0" y2="0">
+                  <Stop offset="0" stopColor={cover[0]} />
+                  <Stop offset="0.55" stopColor={cover[1]} />
+                  <Stop offset="1" stopColor={cover[2]} />
+                </LinearGradient>
               </Defs>
               <Rect
                 x="0"
@@ -128,8 +133,17 @@ export function EventHeader({ event, onBack, actions }: Props) {
                 fill={`url(#${gradId})`}
               />
             </Svg>
-          )}
-        </View>
+            <View
+              className="absolute -right-8"
+              style={{ top: insets.top + 8, opacity: 0.2 }}
+              pointerEvents="none"
+            >
+              <Text style={{ fontSize: 128 }}>
+                {eventCategoryEmoji(event.categories)}
+              </Text>
+            </View>
+          </>
+        )}
 
         {/* Scrim: transparente no alto, opaco no rodapé — o último pixel é o
             próprio background, e o pôster funde na página sem costura. */}
@@ -199,7 +213,13 @@ export function EventHeader({ event, onBack, actions }: Props) {
         )}
 
         <View
-          className="absolute inset-x-4 bottom-5 gap-3"
+          className={
+            hasImages ? 'absolute inset-x-4 bottom-5 gap-3' : 'gap-3 px-4 pb-6'
+          }
+          // Sem foto o conteúdo entra no fluxo e dita a altura do hero; o
+          // paddingTop abre espaço pra linha (absoluta) de voltar/ações e dá
+          // uma faixa de respiro pro gradiente + emoji lerem como capa.
+          style={hasImages ? undefined : { paddingTop: insets.top + 96 }}
           pointerEvents="box-none"
         >
           <View
