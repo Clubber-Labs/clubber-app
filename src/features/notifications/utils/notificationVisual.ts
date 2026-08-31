@@ -9,9 +9,11 @@ import {
   SparkleIcon,
   UsersIcon,
   ClockIcon,
+  BellIcon,
 } from 'phosphor-react-native'
 import type { Icon } from 'phosphor-react-native'
 import type { NotificationType } from '../schemas/notificationSchema'
+import { isKnownNotificationType } from './isKnownNotificationType'
 
 // Tom semântico do selo/tile — a cor concreta vive no NotificationRow, pra
 // manter este utilitário livre de presentation (className/hex).
@@ -29,6 +31,7 @@ const VISUALS: Record<NotificationType, NotificationVisual> = {
   EVENT_INVITE: { icon: EnvelopeIcon, tone: 'brand' },
   EVENT_COMMENT: { icon: ChatCircleIcon, tone: 'brand' },
   POST_COMMENT: { icon: ChatCircleIcon, tone: 'brand' },
+  COMMENT_REPLY: { icon: ChatCircleIcon, tone: 'brand' },
   EVENT_REACTION: { icon: HeartIcon, tone: 'danger' },
   POST_REACTION: { icon: HeartIcon, tone: 'danger' },
   COMMENT_REACTION: { icon: HeartIcon, tone: 'danger' },
@@ -39,6 +42,11 @@ const VISUALS: Record<NotificationType, NotificationVisual> = {
   SPOT_RENEWAL: { icon: ClockIcon, tone: 'warning' },
 }
 
-export function notificationVisual(type: NotificationType): NotificationVisual {
-  return VISUALS[type]
+// Tipo que este app não conhece ainda: sino neutro, pra linha render igual.
+const UNKNOWN_VISUAL: NotificationVisual = { icon: BellIcon, tone: 'brand' }
+
+// Total por construção — `type` vem cru do servidor e nunca sai daqui undefined
+// (o acesso a `.tone` no NotificationRow não tem guarda).
+export function notificationVisual(type: string): NotificationVisual {
+  return isKnownNotificationType(type) ? VISUALS[type] : UNKNOWN_VISUAL
 }
