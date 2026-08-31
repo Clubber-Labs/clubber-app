@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { ChatCircleIcon, DotsThreeIcon, HeartIcon } from 'phosphor-react-native'
-import { EventActionsMenu, type EventAction } from './EventActionsMenu'
+import { ActionsMenu, type MenuAction } from '@/shared/components/ActionsMenu'
 import { PostImages } from './PostImages'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { ProfileLink } from '@/features/users/components/ProfileLink'
@@ -61,7 +61,7 @@ export function PostItem({ eventId, post, onReport, isOrganizer }: Props) {
     if (ok) deletePost.mutate(post.id)
   }
 
-  const actions: EventAction[] = [
+  const actions: MenuAction[] = [
     ...(onReport
       ? [{ label: t('events.posts.report'), onPress: onReport }]
       : []),
@@ -172,7 +172,7 @@ export function PostItem({ eventId, post, onReport, isOrganizer }: Props) {
         </Text>
       )}
 
-      <EventActionsMenu
+      <ActionsMenu
         visible={menuOpen}
         actions={actions}
         onClose={() => setMenuOpen(false)}

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { spotsService } from '../services/spotsService'
-import { spotKeys } from './cacheKeys'
+import { spotKeys, spotListKeys } from './cacheKeys'
 import {
   toUpdateSpotPayload,
   type EditSpotInput,
@@ -14,7 +14,9 @@ export function useUpdateSpot(id: string) {
       spotsService.update(id, toUpdateSpotPayload(data)),
     onSuccess: spot => {
       queryClient.setQueryData(spotKeys.detail(id), spot)
-      queryClient.invalidateQueries({ queryKey: spotKeys.viewportAll })
+      for (const key of spotListKeys) {
+        queryClient.invalidateQueries({ queryKey: key })
+      }
     },
   })
 }
