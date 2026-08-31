@@ -88,8 +88,9 @@ export function FeedList() {
       ref={listRef}
       className="flex-1"
       data={!locationResolved || isLoading || isError ? [] : items}
-      // O id sozinho não basta: evento e rolê vêm da mesma lista e de tabelas
-      // diferentes.
+      // Chave composta por legibilidade, não por necessidade: os ids são uuid()
+      // nas duas tabelas e não colidem — é o que deixa o resto do app casar
+      // item de feed por id cru (like, presença, remoção otimista).
       keyExtractor={(item: FeedItem) => `${item.type}-${item.id}`}
       contentContainerStyle={{
         flexGrow: 1,

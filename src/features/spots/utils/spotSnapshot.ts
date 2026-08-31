@@ -47,6 +47,10 @@ function release() {
 // O snapshotter não conhece a config de lightPreset do StyleImport (aquilo é do
 // MapView): o tema do PNG é o que o próprio estilo traz salvo, então a URL do
 // estilo É a terceira parte da chave.
+//
+// A MEDIDA fica de fora de propósito: o mesmo lugar em caixas de larguras
+// diferentes reusa o PNG esticado pelo cover, e gerar um por tamanho custaria
+// outra instância nativa do snapshotter pra uma diferença que ninguém vê.
 export function spotSnapshotKey(placeId: string): string {
   return `${placeId}-${SPOT_SNAPSHOT_ZOOM}-${MAP_STYLE_URL}`
 }

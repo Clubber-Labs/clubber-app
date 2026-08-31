@@ -97,10 +97,8 @@ export function SpotPulseRow({ spot, live }: Props) {
         ) : (
           <Trans
             i18nKey="spots.feedCard.pulseGroup"
-            values={{
-              name: members[0].name,
-              count: spot.memberCount - 1,
-            }}
+            count={spot.memberCount - 1}
+            values={{ name: members[0].name }}
             components={{ b: bold }}
           />
         )}
