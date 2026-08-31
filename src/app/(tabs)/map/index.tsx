@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { View, Text, ActivityIndicator, Keyboard, Linking } from 'react-native'
+import { View, Text, ActivityIndicator, Keyboard } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import Mapbox from '@rnmapbox/maps'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -19,10 +19,10 @@ import {
 } from '@/features/map/hooks/useEventClusters'
 import { useMapCamera } from '@/features/map/hooks/useMapCamera'
 import { useLocationGate } from '@/features/privacy/hooks/useLocationGate'
+import { useRequestLocationAccess } from '@/features/privacy/hooks/useRequestLocationAccess'
 import { useUserLiveLocation } from '@/shared/hooks/useUserLiveLocation'
 import { useMapLightPreset } from '@/shared/hooks/useMapLightPreset'
 import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
-import { useBanner } from '@/shared/lib/banner'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { UserLocationLayer } from '@/features/map/components/UserLocationLayer'
 import { UserAvatarIconCapture } from '@/features/map/components/UserAvatarIconCapture'
@@ -68,11 +68,8 @@ export default function MapScreen() {
     focusLng?: string
     suggest?: string
   }>()
-  const {
-    coords: userCoords,
-    status: locationStatus,
-    grant: grantLocation,
-  } = useLocationGate()
+  const { coords: userCoords, status: locationStatus } = useLocationGate()
+  const requestLocationAccess = useRequestLocationAccess()
   const locationInvite = useLocationInvite(locationStatus)
   const livePos = useUserLiveLocation(locationStatus === 'ready')
   const myPos = livePos ?? userCoords
@@ -84,7 +81,6 @@ export default function MapScreen() {
 
   const filters = useMapUiStore(s => s.filters)
   const setFilters = useMapUiStore(s => s.setFilters)
-  const showBanner = useBanner()
   const lightPreset = useMapLightPreset()
   const headerClearance = useHeaderClearance()
 
@@ -213,34 +209,6 @@ export default function MapScreen() {
     setSelectedEvent(null)
     setSelectedSpot(spot)
     focusOnEvent([spot.longitude, spot.latitude])
-  }
-
-  /**
-   * Caminho ÚNICO pra pedir acesso à localização — card, banner e o botão de
-   * centralizar entram todos por aqui. Antes cada um tinha seu próprio pedido,
-   * e o fluxo ficava impossível de prever.
-   */
-  async function requestLocationAccess() {
-    // Sem banner nos casos que LEVAM a algum lugar: os ajustes abrindo e a tela
-    // de privacidade (que mostra o estado revogado no topo) já são a resposta.
-    // Texto ali seria o terceiro aviso sobre a mesma coisa.
-    if (locationStatus === 'denied') {
-      Linking.openSettings()
-      return
-    }
-    if (locationStatus === 'revoked') {
-      // Revogação se desfaz no app, não nos ajustes do sistema — mandar pra lá
-      // faria a pessoa ativar a permissão e continuar sem ver nada.
-      router.push('/profile/privacy')
-      return
-    }
-    const result = await grantLocation()
-    if (result === 'denied') {
-      Linking.openSettings()
-    } else if (result === 'error') {
-      // Único caso sem destino: aqui o texto é o feedback que existe.
-      showBanner(t('map.banners.locationError'))
-    }
   }
 
   // Centraliza na posição ATUAL (live), com fallback pro fix inicial. Sem

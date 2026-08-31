@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { spotsService } from '../services/spotsService'
-import { spotKeys } from './cacheKeys'
+import { spotKeys, spotListKeys } from './cacheKeys'
 import {
   toSpotPayload,
   type CreateSpotInput,
@@ -15,7 +15,7 @@ export function useCreateSpot() {
     onSuccess: spot => {
       // Semeia a detail pra navegação pós-publicação não refetchar à toa.
       queryClient.setQueryData(spotKeys.detail(spot.id), spot)
-      for (const key of spotKeys.listAll) {
+      for (const key of spotListKeys) {
         queryClient.invalidateQueries({ queryKey: key })
       }
     },

@@ -958,7 +958,6 @@
       "viewEvent": "View event {{title}}"
     },
     "banners": {
-      "locationError": "Couldn't get your location.",
       "enableLocation": "Your position is only visible to you. Turn on location to discover hangouts and events near you.",
       "zoomForMore": "Zoom in to see more events",
       "loadError": "Couldn't load events."
@@ -995,7 +994,16 @@
     "emptyFilteredBody": "Try other filters or clear the selection.",
     "emptyTitle": "Nothing here yet",
     "emptyBody": "Follow people to see their events in your feed.",
-    "nearbySpots": "Hangouts near you"
+    "kindFilter": {
+      "all": "All",
+      "events": "Events",
+      "spots": "Hangouts"
+    },
+    "spotsNeedLocation": {
+      "title": "Turn on location to see hangouts",
+      "description": "A hangout happens somewhere. Without knowing where you are, we can't show what's going on nearby.",
+      "enable": "Enable location"
+    }
   },
   "tabs": {
     "feed": "Feed",
@@ -1337,7 +1345,8 @@
       "denied": "Off",
       "enable": "Turn on"
     },
-    "exportTitle": "My consent history — Clubber"
+    "exportTitle": "My consent history — Clubber",
+    "locationError": "Couldn't get your location."
   },
   "settings": {
     "title": "Settings",

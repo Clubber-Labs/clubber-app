@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { feedService } from '../services/feedService'
 import { normalizeFilters } from '@/shared/utils/normalizeFilters'
+import type { FeedKind } from '../types'
 import type { EventStatus } from '@/shared/types'
 
 type Filters = {
@@ -10,6 +11,9 @@ type Filters = {
   dateFrom?: string
   dateTo?: string
   includePast?: boolean
+  // Eventos, rolês ou a mescla. Entra na queryKey: trocar o filtro é outra
+  // lista, com outro ranking e outro cursor.
+  kinds?: FeedKind
   // Proximidade: enviar ambos ou nenhum. radiusKm só faz sentido com near.
   nearLat?: number
   nearLng?: number

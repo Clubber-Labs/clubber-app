@@ -958,7 +958,6 @@
       "viewEvent": "Ver evento {{title}}"
     },
     "banners": {
-      "locationError": "Não foi possível obter sua localização.",
       "enableLocation": "Sua posição é exibida somente para você. Habilite sua localização no mapa e descubra rolês e eventos perto de você.",
       "zoomForMore": "Aproxime para ver mais eventos",
       "loadError": "Não foi possível carregar os eventos."
@@ -995,7 +994,16 @@
     "emptyFilteredBody": "Tente outros filtros ou limpe a seleção.",
     "emptyTitle": "Nada por aqui ainda",
     "emptyBody": "Siga pessoas para ver os eventos delas no seu feed.",
-    "nearbySpots": "Rolês perto de você"
+    "kindFilter": {
+      "all": "Tudo",
+      "events": "Eventos",
+      "spots": "Rolês"
+    },
+    "spotsNeedLocation": {
+      "title": "Ligue a localização pra ver rolês",
+      "description": "Rolê acontece num lugar. Sem saber onde você está, não dá pra mostrar o que está rolando perto.",
+      "enable": "Ativar localização"
+    }
   },
   "tabs": {
     "feed": "Feed",
@@ -1337,7 +1345,8 @@
       "denied": "Desativado",
       "enable": "Ativar"
     },
-    "exportTitle": "Meu histórico de consentimentos — Clubber"
+    "exportTitle": "Meu histórico de consentimentos — Clubber",
+    "locationError": "Não foi possível obter sua localização."
   },
   "settings": {
     "title": "Configurações",

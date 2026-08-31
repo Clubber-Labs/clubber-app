@@ -1,8 +1,8 @@
+import { feedKey } from '@/features/events/hooks/cacheKeys'
 import type { Bbox } from '@/features/map/services/mapService'
 import type { MapFilterParams } from '@/features/map/types'
 
 const VIEWPORT = ['spots', 'viewport'] as const
-const NEARBY = ['spots', 'nearby'] as const
 
 export const spotKeys = {
   all: ['spots'] as const,
@@ -10,12 +10,15 @@ export const spotKeys = {
     [...VIEWPORT, bbox, filters] as const,
   // Prefixo de TODAS as variações de viewport — pra invalidar/editar em massa.
   viewportAll: VIEWPORT,
-  // Coords do usuário [lng, lat]. Uma posição por sessão (o useUserLocation não
-  // observa o GPS continuamente), então isso não vira enxurrada de refetch.
-  nearby: (coords: [number, number] | null) => [...NEARBY, coords] as const,
-  nearbyAll: NEARBY,
-  // Prefixos das duas listagens de spot (mapa e feed): o que altera um rolê
-  // precisa alcançar as duas, senão o balão some do mapa e fica no feed.
-  listAll: [VIEWPORT, NEARBY] as const,
   detail: (id: string) => ['spots', 'detail', id] as const,
 }
+
+/**
+ * Onde um rolê aparece em lista: balões do mapa e cards do feed (o /feed
+ * mescla eventos e rolês numa resposta só). Quem altera um rolê precisa
+ * alcançar as duas — senão cancelar pelo card o tira do mapa e o deixa no feed.
+ *
+ * Os dois caches têm FORMATOS diferentes (array plano vs. páginas de cursor):
+ * quem edita in-place trata cada um; quem só invalida pode iterar.
+ */
+export const spotListKeys = [spotKeys.viewportAll, feedKey] as const

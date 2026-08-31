@@ -1,9 +1,6 @@
 import { api } from '@/shared/lib/api'
-import type {
-  CursorPaginatedResponse,
-  EventStatus,
-  FeedEvent,
-} from '@/shared/types'
+import type { FeedItem, FeedKind } from '../types'
+import type { CursorPaginatedResponse, EventStatus } from '@/shared/types'
 
 type FeedParams = {
   cursor?: string
@@ -14,8 +11,11 @@ type FeedParams = {
   // Default no backend é true em /feed (mostra passados pra preservar contexto
   // social de interações de amigos). Diferente de /events, que default é false.
   includePast?: boolean
+  // Eventos, rolês ou os dois na mesma lista. Omitido, o backend assume EVENTS.
+  kinds?: FeedKind
   // Localização do device para a descoberta por proximidade. Regra
-  // ambos-ou-nenhum (garantida pelo caller); radiusKm só com near.
+  // ambos-ou-nenhum (garantida pelo caller); radiusKm só com near. É também o
+  // que habilita a pool de rolês da mescla.
   nearLat?: number
   nearLng?: number
   radiusKm?: number
@@ -29,10 +29,11 @@ export const feedService = {
     dateFrom,
     dateTo,
     includePast,
+    kinds,
     nearLat,
     nearLng,
     radiusKm,
-  }: FeedParams = {}): Promise<CursorPaginatedResponse<FeedEvent>> =>
+  }: FeedParams = {}): Promise<CursorPaginatedResponse<FeedItem>> =>
     api
       .get('/feed', {
         params: {
@@ -45,6 +46,7 @@ export const feedService = {
           ...(dateFrom ? { dateFrom } : {}),
           ...(dateTo ? { dateTo } : {}),
           ...(includePast !== undefined ? { includePast } : {}),
+          ...(kinds ? { kinds } : {}),
           ...(nearLat !== undefined && nearLng !== undefined
             ? { nearLat, nearLng }
             : {}),
