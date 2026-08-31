@@ -48,6 +48,15 @@ pnpm exec expo run:android    # compila e roda no emulador Android
 # Nunca editar o nativo à mão; precisa de algo que o config não cobre? Escreva
 # um config plugin. Regenerar o nativo é sempre seguro:
 pnpm exec expo prebuild --clean   # regenera ios/ e android/ do zero (após mudar config/plugins)
+
+# Dependências com patch (patches/ + pnpm-workspace.yaml): quando o config
+# plugin não alcança porque o bug está no código nativo da lib. Hoje só
+# @rnmapbox/maps — ver o comentário em spots/utils/spotSnapshot.ts.
+# GOTCHA: `pnpm patch` muda o hash do diretório do pacote em node_modules/.pnpm,
+# e o ios/Pods.xcodeproj guarda esses caminhos. Depois de criar ou alterar um
+# patch, rode pod install ANTES de compilar, ou o build morre em
+# "Build input files cannot be found".
+pod install --project-directory=ios
 eas build --profile development   # build de desenvolvimento via EAS
 eas build --profile preview       # build de preview (TestFlight / APK interno)
 eas build --profile production    # build de produção (App Store / Play Store)

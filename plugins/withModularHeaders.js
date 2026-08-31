@@ -34,7 +34,7 @@ module.exports = function withModularHeaders(config) {
       if (contents.includes(MARKER)) return modConfig
       if (!contents.includes(ANCHOR)) {
         throw new Error(
-          `[withModularHeaders] âncora não encontrada no Podfile — o template do Expo mudou e o plugin precisa ser revisto.`,
+          '[withModularHeaders] âncora não encontrada no Podfile — o template do Expo mudou e o plugin precisa ser revisto.',
         )
       }
       const declarations = MODULAR_PODS.map(
@@ -42,10 +42,7 @@ module.exports = function withModularHeaders(config) {
       ).join('')
       fs.writeFileSync(
         podfile,
-        contents.replace(
-          ANCHOR,
-          `${ANCHOR}\n  ${MARKER}\n${declarations}`,
-        ),
+        contents.replace(ANCHOR, `${ANCHOR}\n  ${MARKER}\n${declarations}`),
       )
       return modConfig
     },
