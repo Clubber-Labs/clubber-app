@@ -99,6 +99,14 @@ export function FeedList() {
       // nas duas tabelas e não colidem — é o que deixa o resto do app casar
       // item de feed por id cru (like, presença, remoção otimista).
       keyExtractor={(item: FeedItem) => `${item.type}-${item.id}`}
+      // Cada card ocupa quase uma tela e paga duas rodadas de medição (moldura e
+      // picote) mais os SVGs. Nos defaults do RN a troca de aba montava 10 de
+      // uma vez — o toque na aba engasgava esperando isso. Dois cobrem a
+      // viewport; o resto entra em lotes pequenos, já com a lista respondendo.
+      initialNumToRender={2}
+      maxToRenderPerBatch={2}
+      updateCellsBatchingPeriod={80}
+      windowSize={5}
       contentContainerStyle={{
         flexGrow: 1,
         paddingTop: headerClearance,
