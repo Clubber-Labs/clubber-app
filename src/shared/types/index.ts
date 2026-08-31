@@ -271,10 +271,7 @@ export type EventPost = {
   eventId: string
   author: CommentAuthor
   images?: EventImage[]
-  // Aditivo: o backend ainda não devolve o estado da curtida do viewer (ao
-  // contrário de FeedEvent e EventComment). Enquanto não vier, o coração
-  // nasce vazio e só o toque otimista o preenche — ver useTogglePostLike.
-  userLiked?: boolean
+  userLiked: boolean
   _count?: {
     comments: number
     reactions: number
