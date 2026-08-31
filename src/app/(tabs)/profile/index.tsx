@@ -26,6 +26,7 @@ import { ProfileMusicSection } from '@/features/spotify/components/ProfileMusicS
 import { ProfileHeader } from '@/features/users/components/ProfileHeader'
 import { EditProfileButton } from '@/features/users/components/EditProfileButton'
 import { ProfileEventsList } from '@/features/users/components/ProfileEventsList'
+import { ProfileEventsSectionTitle } from '@/features/users/components/ProfileEventsSectionTitle'
 import { ProfileEventsEmpty } from '@/features/users/components/ProfileEventsEmpty'
 import { ProfileLoading } from '@/features/users/components/ProfileLoading'
 import { ProfileEmpty } from '@/features/users/components/ProfileEmpty'
@@ -47,6 +48,7 @@ export default function ProfileScreen() {
     fetchNextPage,
     hasNextPage = false,
     isFetchingNextPage,
+    isLoading: eventsLoading,
   } = useUserEvents(userId)
   const uploadAvatar = useUploadAvatar()
   const performLogout = useLogout()
@@ -67,6 +69,9 @@ export default function ProfileScreen() {
     () => eventsData?.pages.flatMap(p => p.data) ?? [],
     [eventsData],
   )
+  // Total da vitrine (criados + presenças), não o eventsCount de autoria que
+  // alimenta a linha de stats. Só a 1ª página traz.
+  const eventsTotal = eventsData?.pages[0]?.total
 
   const handlePickAvatar = usePickAvatar(uri => uploadAvatar.mutate(uri))
 
@@ -146,8 +151,10 @@ export default function ProfileScreen() {
     <View className="flex-1 bg-background">
       <ProfileEventsList
         events={events}
+        ownerId={userId}
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
+        isLoading={eventsLoading}
         onLoadMore={fetchNextPage}
         bottomPadding={tabBarClearance}
         topPadding={headerClearance}
@@ -183,16 +190,7 @@ export default function ProfileScreen() {
                 />
               }
             />
-            <View className="flex-row items-center gap-2 px-4 pb-3 pt-5">
-              <Text className="text-content-secondary text-sm font-extrabold uppercase tracking-wide">
-                {t('profile.eventsSection')}
-              </Text>
-              {profile.eventsCount > 0 && (
-                <Text className="text-content-subtle text-xs font-bold">
-                  {profile.eventsCount}
-                </Text>
-              )}
-            </View>
+            <ProfileEventsSectionTitle count={eventsTotal} />
           </>
         }
       />

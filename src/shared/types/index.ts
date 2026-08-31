@@ -415,13 +415,36 @@ export type UserProfile = {
   }
 }
 
+export type UserEventsPage = CursorPaginatedResponse<UserEventSummary> & {
+  /**
+   * Total da vitrine do perfil: criados + presenças confirmadas visíveis a
+   * QUEM está olhando. Não é o `eventsCount` do perfil, que conta só autoria e
+   * alimenta a linha de stats. Vem só na 1ª página.
+   */
+  total?: number
+}
+
 export type UserEventSummary = {
   id: string
   title: string
   date: string
+  // Quem criou. Na vitrine o autor pode não ser o dono do perfil — ele também
+  // lista os eventos em que confirmou presença.
+  author?: FeedAuthor
+  // IANA do local do evento: a hora do tile é a de parede DE LÁ, como no card.
+  timezone?: string | null
+  // Calculado pelo backend (mobile nunca deriva status a partir da data).
+  status?: EventStatus | null
   categories: string[]
   images: EventImage[]
   address?: string | null
   isPublic: boolean
-  attendancesCount?: number
+  // /users/:id/events devolve o evento compartilhado inteiro, com o mesmo bloco
+  // de contagens do feed. O antigo `attendancesCount` achatado nunca existiu na
+  // resposta — o contador do tile do perfil ficava mudo por causa dele.
+  _count?: {
+    attendances: number
+    comments: number
+    reactions: number
+  }
 }

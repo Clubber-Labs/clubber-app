@@ -3,16 +3,21 @@ import type { ReactElement } from 'react'
 import { View, FlatList, ActivityIndicator } from 'react-native'
 import { useRouter } from 'expo-router'
 import { ProfileEventTile } from './ProfileEventTile'
+import { ProfileEventsSkeleton } from './ProfileEventsSkeleton'
 import { useActiveTabPress } from '@/shared/hooks/useActiveTabPress'
 import type { UserEventSummary } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
 type Props = {
   events: UserEventSummary[]
+  // Dono do perfil — o tile assina os eventos que não são dele.
+  ownerId: string
   header: ReactElement
   empty: ReactElement
   hasNextPage: boolean
   isFetchingNextPage: boolean
+  // 1ª página em voo: a grade fantasma entra no lugar do estado vazio.
+  isLoading?: boolean
   onLoadMore: () => void
   // Aba com pílula/header flutuantes passa os clearances; perfil de terceiros
   // (stack, header no fluxo) usa os defaults.
@@ -29,10 +34,12 @@ function isSpacer(row: Row): row is Spacer {
 
 export function ProfileEventsList({
   events,
+  ownerId,
   header,
   empty,
   hasNextPage,
   isFetchingNextPage,
+  isLoading = false,
   onLoadMore,
   bottomPadding = 32,
   topPadding = 0,
@@ -69,11 +76,12 @@ export function ProfileEventsList({
         ) : (
           <ProfileEventTile
             event={item}
+            ownerId={ownerId}
             onPress={() => router.push(`/events/${item.id}`)}
           />
         )
       }
-      ListEmptyComponent={empty}
+      ListEmptyComponent={isLoading ? <ProfileEventsSkeleton /> : empty}
       ListFooterComponent={
         isFetchingNextPage ? (
           <ActivityIndicator color={colors.brand} style={{ marginTop: 16 }} />

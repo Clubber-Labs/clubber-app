@@ -220,7 +220,8 @@
       "pickCategoriesFirst": "Escolha categorias para liberar interesses."
     },
     "livePill": {
-      "now": "Rolando agora"
+      "now": "Rolando agora",
+      "nowShort": "AGORA"
     },
     "mapsChooser": {
       "title": "Abrir com"
@@ -1175,6 +1176,14 @@
       "about": "Sobre o app"
     },
     "eventsSection": "Eventos",
+    "eventTile": {
+      "by": "criado por {{name}}",
+      "going_one": "{{count}} vai",
+      "going_other": "{{count}} vão",
+      "here": "{{count}} no rolê",
+      "went_one": "{{count}} foi",
+      "went_other": "{{count}} foram"
+    },
     "edit": {
       "title": "Editar perfil",
       "changePhoto": "Alterar foto",

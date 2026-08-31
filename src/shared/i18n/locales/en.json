@@ -220,7 +220,8 @@
       "pickCategoriesFirst": "Pick categories to unlock interests."
     },
     "livePill": {
-      "now": "Happening now"
+      "now": "Happening now",
+      "nowShort": "NOW"
     },
     "mapsChooser": {
       "title": "Open with"
@@ -1175,6 +1176,14 @@
       "about": "About the app"
     },
     "eventsSection": "Events",
+    "eventTile": {
+      "by": "created by {{name}}",
+      "going_one": "{{count}} going",
+      "going_other": "{{count}} going",
+      "here": "{{count}} here now",
+      "went_one": "{{count}} went",
+      "went_other": "{{count}} went"
+    },
     "edit": {
       "title": "Edit profile",
       "changePhoto": "Change photo",
