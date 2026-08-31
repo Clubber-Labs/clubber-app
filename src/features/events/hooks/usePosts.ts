@@ -5,7 +5,6 @@ import {
 } from '@tanstack/react-query'
 import type { InfiniteData } from '@tanstack/react-query'
 import { eventsService } from '../services/eventsService'
-import { usePostLikesStore } from '../store/postLikesStore'
 import { getApiError } from '@/shared/lib/apiError'
 import { useBanner } from '@/shared/lib/banner'
 import { removeFromInfiniteList } from '@/shared/utils/infiniteList'
@@ -61,18 +60,10 @@ export function useUploadPostImages(eventId: string) {
   })
 }
 
-/**
- * Curtir post, padrão otimista canônico + a memória do postLikesStore.
- *
- * O store não é enfeite: como o GET não devolve `userLiked`, o invalidate do
- * `onSettled` apagaria o estado da curtida e o toque seguinte chamaria `like`
- * outra vez em vez de `unlike` — coração vazio e contagem subindo em dobro. A
- * contagem continua vindo do servidor; o store guarda só o "fui eu".
- */
+// Padrão otimista canônico — ver CLAUDE.md → "Tratamento de erros e feedback".
 export function useTogglePostLike(eventId: string) {
   const queryClient = useQueryClient()
   const key = postsKey(eventId)
-  const setLiked = usePostLikesStore(s => s.setLiked)
 
   return useMutation({
     mutationFn: ({
@@ -88,7 +79,6 @@ export function useTogglePostLike(eventId: string) {
     onMutate: async ({ postId, currentlyLiked }) => {
       await queryClient.cancelQueries({ queryKey: key })
       const prev = queryClient.getQueryData<PostsCache>(key)
-      setLiked(postId, !currentlyLiked)
       queryClient.setQueryData<PostsCache>(key, old =>
         !old
           ? old
@@ -114,8 +104,7 @@ export function useTogglePostLike(eventId: string) {
       )
       return { prev }
     },
-    onError: (_err, { postId, currentlyLiked }, ctx) => {
-      setLiked(postId, currentlyLiked)
+    onError: (_err, _vars, ctx) => {
       if (ctx?.prev) queryClient.setQueryData(key, ctx.prev)
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: key }),

@@ -144,7 +144,13 @@ export const eventsService = {
       .get(`/events/${eventId}/posts`, { params: buildParams(params) })
       .then(r => r.data),
 
-  addPost: (eventId: string, content: string): Promise<EventPost> =>
+  // Só a listagem monta `userLiked`; a resposta do POST não o traz. O post
+  // criado não entra no cache (useAddPost invalida a lista), então o campo
+  // ausente não chega a nenhuma tela — mas o tipo não pode prometê-lo.
+  addPost: (
+    eventId: string,
+    content: string,
+  ): Promise<Omit<EventPost, 'userLiked'>> =>
     api.post(`/events/${eventId}/posts`, { content }).then(r => r.data),
 
   deletePost: (eventId: string, postId: string): Promise<void> =>

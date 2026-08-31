@@ -9,7 +9,6 @@ import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useDeletePost, useTogglePostLike } from '../hooks/usePosts'
-import { usePostLiked } from '../store/postLikesStore'
 import { formatRelative } from '@/shared/utils/dateFormat'
 import { useLocale } from '@/shared/hooks/useLocale'
 import { formatFullName } from '@/shared/utils/fullName'
@@ -44,7 +43,7 @@ export function PostItem({ eventId, post, onReport, isOrganizer }: Props) {
   const deletePost = useDeletePost(eventId)
   const toggleLike = useTogglePostLike(eventId)
   const confirm = useConfirm()
-  const liked = usePostLiked(post.id, post.userLiked)
+  const liked = post.userLiked
   const [menuOpen, setMenuOpen] = useState(false)
 
   const isAuthor = userId === post.authorId
