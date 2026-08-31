@@ -9,6 +9,7 @@ import {
   isNotFoundError,
   isUnauthorizedError,
 } from '@/shared/lib/apiError'
+import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import { useUserProfile } from '@/features/users/hooks/useProfile'
 import { useUserEvents } from '@/features/users/hooks/useUserEvents'
 import { useFollowUser } from '@/features/users/hooks/useFollowUser'
@@ -37,12 +38,24 @@ export default function UserProfileScreen() {
     if (isOwnProfile) router.replace('/(tabs)/profile')
   }, [isOwnProfile, router])
 
-  const { data: profile, isLoading: profileLoading } = useUserProfile(id)
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    refetch: refetchProfile,
+  } = useUserProfile(id)
   const canSeeContent =
     isOwnProfile || !profile?.isPrivate || profile?.followStatus === 'ACCEPTED'
   const eventsQuery = useUserEvents(id, canSeeContent)
   const { follow, unfollow } = useFollowUser(id)
   const createConversation = useCreateConversation()
+  // refetch ignora o `enabled` da query: sem acesso ao conteúdo (perfil
+  // privado), forçar a vitrine bateria num endpoint que vai negar.
+  const { refreshing, onRefresh } = usePullRefresh(() =>
+    Promise.all([
+      refetchProfile(),
+      ...(canSeeContent ? [eventsQuery.refetch()] : []),
+    ]),
+  )
 
   const events = useMemo(
     () => eventsQuery.data?.pages.flatMap(p => p.data) ?? [],
@@ -99,6 +112,10 @@ export default function UserProfileScreen() {
         hasNextPage={eventsQuery.hasNextPage ?? false}
         isFetchingNextPage={eventsQuery.isFetchingNextPage}
         isLoading={eventsQuery.isLoading}
+        // Sem vitrine à vista não há o que trocar por fantasma — o refresh
+        // atualiza só o header, sem o RefreshControl piscar skeleton à toa.
+        refreshing={refreshing && canSeeContent}
+        onRefresh={onRefresh}
         onLoadMore={eventsQuery.fetchNextPage}
         empty={
           <ProfileEventsEmpty variant={canSeeContent ? 'other' : 'private'} />
