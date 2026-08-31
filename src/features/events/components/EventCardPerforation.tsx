@@ -3,7 +3,7 @@ import { View, StyleSheet, type LayoutChangeEvent } from 'react-native'
 import Svg, { Line } from 'react-native-svg'
 import { colors } from '@/shared/theme'
 
-export const NOTCH_RADIUS = 12
+export const NOTCH_RADIUS = 16
 export const PERFORATION_HEIGHT = NOTCH_RADIUS * 2 + 2
 const CY = PERFORATION_HEIGHT / 2
 /**
