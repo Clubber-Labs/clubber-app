@@ -130,15 +130,15 @@ function PlainCover({ event }: { event: UserEventSummary }) {
         <Rect {...COVER_BLEED} fill={`url(#${gradientId})`} />
       </Svg>
       <Text
-        className="absolute -bottom-3 -right-1"
-        style={{ fontSize: 56, opacity: 0.35 }}
+        className="absolute top-6 right-1"
+        style={{ fontSize: 64, opacity: 0.25 }}
       >
         {eventCategoryEmoji(event.categories)}
       </Text>
       <Text
         className="absolute inset-x-2.5 bottom-2.5 font-extrabold uppercase text-content"
         numberOfLines={3}
-        style={{ fontSize: 17, lineHeight: 19, letterSpacing: -0.3 }}
+        style={{ fontSize: 24, lineHeight: 24, letterSpacing: -0.3 }}
       >
         {event.title}
       </Text>
