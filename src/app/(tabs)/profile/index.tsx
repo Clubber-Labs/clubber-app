@@ -69,9 +69,6 @@ export default function ProfileScreen() {
     () => eventsData?.pages.flatMap(p => p.data) ?? [],
     [eventsData],
   )
-  // Total da vitrine (criados + presenças), não o eventsCount de autoria que
-  // alimenta a linha de stats. Só a 1ª página traz.
-  const eventsTotal = eventsData?.pages[0]?.total
 
   const handlePickAvatar = usePickAvatar(uri => uploadAvatar.mutate(uri))
 
@@ -190,7 +187,7 @@ export default function ProfileScreen() {
                 />
               }
             />
-            <ProfileEventsSectionTitle count={eventsTotal} />
+            <ProfileEventsSectionTitle />
           </>
         }
       />

@@ -4,7 +4,7 @@ import type { BackendLocale } from '@/shared/i18n'
 import type {
   CursorPaginatedResponse,
   UserProfile,
-  UserEventsPage,
+  UserEventSummary,
 } from '@/shared/types'
 import type { SearchUserItem } from '../schemas/searchUserSchema'
 
@@ -56,7 +56,7 @@ export const usersService = {
   getUserEvents: (
     userId: string,
     { limit = 20, cursor }: ListParams = {},
-  ): Promise<UserEventsPage> =>
+  ): Promise<CursorPaginatedResponse<UserEventSummary>> =>
     api
       .get(`/users/${userId}/events`, {
         params: { limit, ...(cursor ? { cursor } : {}) },
