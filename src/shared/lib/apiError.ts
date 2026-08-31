@@ -22,6 +22,12 @@ export type ApiErrorData = {
   statusCode?: number
   /** Input que causou o erro, quando o backend o declara. Dirige borda e foco. */
   field?: string
+  /**
+   * O que o backend interpolou na frase, cru. Vale pra tela que precisa do
+   * NÚMERO e não só do texto — o teto do 409 de galeria é o caso: lê-lo daqui
+   * é o que faz o app acompanhar o backend se ele mudar o limite.
+   */
+  params?: Record<string, string | number>
   issues?: ValidationIssue[]
 }
 
@@ -105,14 +111,16 @@ export function getApiError(error: unknown): ApiErrorData {
   const body = (error.response.data ?? {}) as ErrorBody
   const code = typeof body.code === 'string' ? body.code : 'INTERNAL_ERROR'
   const field = typeof body.field === 'string' ? body.field : undefined
+  const params = readParams(body.params)
   const issues = readIssues(body.issues)
   const statusCode = error.response.status
 
   return {
     code,
-    message: translate(code, readParams(body.params), issues, statusCode),
+    message: translate(code, params, issues, statusCode),
     statusCode,
     ...(field ? { field } : {}),
+    ...(Object.keys(params).length ? { params } : {}),
     ...(issues.length ? { issues } : {}),
   }
 }

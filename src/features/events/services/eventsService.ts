@@ -146,7 +146,8 @@ export const eventsService = {
   deletePost: (eventId: string, postId: string): Promise<void> =>
     api.delete(`/events/${eventId}/posts/${postId}`).then(() => undefined),
 
-  uploadEventImage: (eventId: string, uri: string): Promise<EventDetail> => {
+  // Uma imagem por request; entra no fim da galeria (order = max + 1).
+  uploadEventImage: (eventId: string, uri: string): Promise<EventImage> => {
     const form = new FormData()
     form.append('file', buildImageFile(uri, 'event.jpg'))
     return api
@@ -155,6 +156,18 @@ export const eventsService = {
       })
       .then(r => r.data)
   },
+
+  deleteEventImage: (eventId: string, imageId: string): Promise<void> =>
+    api.delete(`/events/${eventId}/images/${imageId}`).then(() => undefined),
+
+  // `order` tem que ser rearranjo EXATO da galeria atual — id faltando, repetido
+  // ou de outro evento volta 400 IMAGE_ORDER_MISMATCH. Devolve a galeria já
+  // reordenada, e images[0] é a nova capa.
+  reorderEventImages: (
+    eventId: string,
+    order: string[],
+  ): Promise<EventImage[]> =>
+    api.patch(`/events/${eventId}/images`, { order }).then(r => r.data),
 
   uploadPostImage: (
     eventId: string,

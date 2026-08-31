@@ -6,7 +6,10 @@ import {
 import type { InfiniteData } from '@tanstack/react-query'
 import { eventsService } from '../services/eventsService'
 import { usePostLikesStore } from '../store/postLikesStore'
+import { getApiError } from '@/shared/lib/apiError'
+import { useBanner } from '@/shared/lib/banner'
 import { removeFromInfiniteList } from '@/shared/utils/infiniteList'
+import { settleAll } from '@/shared/utils/settleAll'
 import type { CursorPaginatedResponse, EventPost } from '@/shared/types'
 
 const postsKey = (eventId: string) => ['events', eventId, 'posts']
@@ -35,27 +38,23 @@ export function useAddPost(eventId: string) {
   })
 }
 
-// Sobe imagens de um post recém-criado, uma requisição por imagem (espelha
-// useUploadEventImages). Tolera falha parcial via allSettled; ao terminar,
-// invalida a lista pra hidratar as imagens. O post já existe (texto-first),
-// então a falha aqui não perde o conteúdo.
+/**
+ * Sobe imagens de um post recém-criado, uma requisição por imagem (espelha
+ * useUploadEventImages). O post já existe (texto-first), então a falha aqui não
+ * perde o conteúdo — mas ela PRECISA aparecer: o post publica sem a foto, e sem
+ * uma linha dizendo o motivo (arquivo grande demais, formato ilegível, rede) o
+ * app parece ter engolido a imagem.
+ */
 export function useUploadPostImages(eventId: string) {
   const queryClient = useQueryClient()
+  const showBanner = useBanner()
 
   return useMutation({
-    mutationFn: async ({
-      postId,
-      uris,
-    }: {
-      postId: string
-      uris: string[]
-    }) => {
-      const results = await Promise.allSettled(
+    mutationFn: ({ postId, uris }: { postId: string; uris: string[] }) =>
+      settleAll(
         uris.map(uri => eventsService.uploadPostImage(eventId, postId, uri)),
-      )
-      const failed = results.filter(r => r.status === 'rejected').length
-      return { postId, total: uris.length, failed }
-    },
+      ),
+    onError: error => showBanner(getApiError(error).message),
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: postsKey(eventId) })
     },

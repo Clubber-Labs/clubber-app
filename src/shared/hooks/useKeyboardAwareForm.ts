@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useFocusEffect } from 'expo-router'
 import {
   TextInput,
@@ -49,7 +49,14 @@ export type KeyboardAwareForm = {
     onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void
     scrollEventThrottle: number
     keyboardShouldPersistTaps: 'handled'
+    scrollEnabled: boolean
   }
+  /**
+   * Trava a rolagem enquanto uma seção segura o dedo (arrastar pra reordenar).
+   * Sem isso os dois gestos disputam o mesmo toque e a tela rola junto com o
+   * item arrastado.
+   */
+  setScrollLocked: (locked: boolean) => void
   /** Espalhe no TextInput: vira alvo de foco e sobe sozinho ao ganhar foco. */
   input: (name: string) => {
     ref: (node: TextInput | null) => void
@@ -86,6 +93,7 @@ export function useKeyboardAwareForm(
 ): KeyboardAwareForm {
   const scrollRef = useRef<ScrollView>(null)
   const offset = useRef(0)
+  const [scrollLocked, setScrollLocked] = useState(false)
   // Topo do teclado em coordenadas de janela; null enquanto ele está fechado.
   const keyboardTop = useRef<number | null>(null)
   const inputs = useRef(new Map<string, TextInput>())
@@ -156,8 +164,9 @@ export function useKeyboardAwareForm(
       },
       scrollEventThrottle: 16,
       keyboardShouldPersistTaps: 'handled' as const,
+      scrollEnabled: !scrollLocked,
     }),
-    [],
+    [scrollLocked],
   )
 
   // Props memoizadas por nome: um objeto novo a cada render remontaria o ref
@@ -239,6 +248,7 @@ export function useKeyboardAwareForm(
 
   return {
     scrollProps,
+    setScrollLocked,
     input,
     anchor,
     scrollToField,

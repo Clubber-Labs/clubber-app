@@ -56,6 +56,8 @@
     "EVENT_ACCESS_DENIED": "No tienes acceso a este evento.",
     "EVENT_CANCELED": "Este evento fue cancelado.",
     "EVENT_ENDED": "Este evento ya terminó.",
+    "EVENT_IMAGE_LIMIT": "Máximo {{max}} fotos por evento.",
+    "EVENT_IMAGE_NOT_FOUND": "Esta foto ya no está en el evento.",
     "EVENT_NOT_FOUND": "Este evento ya no existe.",
     "FILE_TOO_LARGE": "El archivo supera {{maxMb}} MB.",
     "FOLLOWER_NOT_FOUND": "Esta persona no está entre tus seguidores.",
@@ -67,6 +69,7 @@
     "FRIENDS_FILTER_REQUIRES_AUTH": "Inicia sesión para filtrar por amigos.",
     "GROUP_NEEDS_PARTICIPANT": "Un grupo necesita al menos un participante.",
     "GROUP_ONLY_OPERATION": "Eso solo funciona en conversaciones de grupo.",
+    "IMAGE_ORDER_MISMATCH": "Las fotos cambiaron mientras reordenabas. Revisa la galería e inténtalo de nuevo.",
     "IMAGE_REQUIRED": "Elige una imagen.",
     "INVALID_AUDIO_CONTENT": "No pudimos leer este audio.",
     "INVALID_AUDIO_METADATA": "Los datos del audio no son válidos.",
@@ -811,6 +814,15 @@
       "cover": "Portada",
       "removePhoto": "Quitar foto",
       "addPhotos": "Agregar fotos"
+    },
+    "imagesEditor": {
+      "hint": "La primera foto es la portada. Toca para definir la portada, mantén pulsado para arrastrar.",
+      "savedOnTheSpot": "Cada cambio se guarda al instante.",
+      "setCover": "Definir como portada",
+      "currentCover": "Foto de portada",
+      "uploading": "Subiendo foto",
+      "removeMessage": "La foto sale del evento para todos.",
+      "removeConfirm": "Quitar"
     },
     "share": {
       "message": "{{title}}\n\nMíralo en Clubber: {{url}}",

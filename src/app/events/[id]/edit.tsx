@@ -2,6 +2,7 @@ import { View, Text, ActivityIndicator, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 import { EventForm } from '@/features/events/components/EventForm'
+import { EventImagesEditor } from '@/features/events/components/images/EventImagesEditor'
 import { useEvent } from '@/features/events/hooks/useEvents'
 import { useUpdateEvent } from '@/features/events/hooks/useUpdateEvent'
 import { useAuthStore } from '@/features/auth/store/authStore'
@@ -79,6 +80,9 @@ export default function EditEventScreen() {
         submitLabel={t('events.edit.submit')}
         submittingLabel={t('events.edit.submitting')}
         errorMessage={t('events.edit.error')}
+        imagesSection={
+          <EventImagesEditor eventId={event.id} images={event.images} />
+        }
       />
     </View>
   )
