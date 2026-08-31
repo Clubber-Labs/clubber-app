@@ -58,6 +58,13 @@ export function useChatRealtime(myId: string, onAuthError: () => void) {
         // Mensagens (só aplica se a conversa já estiver carregada no cache).
         applyIncomingMessage(queryClient, message, myId)
 
+        // SYSTEM anuncia mudança no grupo — participants[] vive no detalhe.
+        if (message.type === 'SYSTEM') {
+          queryClient.invalidateQueries({
+            queryKey: chatKeys.conversation(conversationId),
+          })
+        }
+
         // Inbox: atualiza se a conversa existe; senão é uma conversa nova
         // (1º contato) → refetch da inbox.
         if (inboxHasConversation(queryClient, conversationId)) {
