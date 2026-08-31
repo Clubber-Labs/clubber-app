@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query'
 import { feedService } from '../services/feedService'
 import { normalizeFilters } from '@/shared/utils/normalizeFilters'
 import type { FeedCounts, FeedKind } from '../types'
@@ -42,6 +42,10 @@ export function useFeed(
     // cursor é token opaco: parar quando vier null (inclui cursor antigo/expirado,
     // que o backend responde com data:[] e nextCursor:null — fim, não erro).
     getNextPageParam: lastPage => lastPage.nextCursor ?? null,
+    // Trocar de aba não esvazia a lista: os itens da anterior ficam até os novos
+    // chegarem. Sem isto o toque na aba pagava, ali mesmo, o desmonte de todos
+    // os cards montados — a árvore mais cara da tela — antes de a resposta sair.
+    placeholderData: keepPreviousData,
     enabled,
   })
 

@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import {
   FlatList,
   View,
@@ -10,11 +10,10 @@ import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { useFeed } from '../hooks/useFeed'
 import { FeedKindTabs } from './FeedKindTabs'
+import { FeedRow } from './FeedRow'
 import { FeedSpotsNeedLocation } from './FeedSpotsNeedLocation'
 import type { FeedItem, FeedKind } from '../types'
-import { EventCard } from '@/features/events/components/EventCard'
 import { EventStatusFilter } from '@/features/events/components/EventStatusFilter'
-import { SpotFeedCard } from '@/features/spots/components/SpotFeedCard'
 import { Collapsible } from '@/shared/components/Collapsible'
 import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import { useActiveTabPress } from '@/shared/hooks/useActiveTabPress'
@@ -56,6 +55,7 @@ export function FeedList() {
     isLoading,
     isError,
     isFetchingNextPage,
+    isPlaceholderData,
     hasNextPage,
     fetchNextPage,
     refetch,
@@ -70,6 +70,11 @@ export function FeedList() {
     { enabled: locationResolved && !spotsWithoutLocation },
   )
   const { refreshing, onRefresh } = usePullRefresh(refetch)
+  // Estável: um arrow novo por render anularia o memo da linha.
+  const openEvent = useCallback(
+    (id: string) => router.push(`/events/${id}`),
+    [router],
+  )
 
   // Re-tap na aba Feed: volta ao topo e atualiza (padrão de plataforma).
   const listRef = useRef<FlatList<FeedItem>>(null)
@@ -94,7 +99,11 @@ export function FeedList() {
       keyboardShouldPersistTaps="handled"
       ref={listRef}
       className="flex-1"
-      data={!locationResolved || isLoading || isError ? [] : items}
+      data={
+        spotsWithoutLocation || !locationResolved || isLoading || isError
+          ? []
+          : items
+      }
       // Chave composta por legibilidade, não por necessidade: os ids são uuid()
       // nas duas tabelas e não colidem — é o que deixa o resto do app casar
       // item de feed por id cru (like, presença, remoção otimista).
@@ -150,20 +159,9 @@ export function FeedList() {
           </View>
         )
       }
-      renderItem={({ item }) =>
-        item.type === 'SPOT' ? (
-          <SpotFeedCard spot={item} userCoords={userCoords} />
-        ) : (
-          <EventCard
-            event={item}
-            onPress={() => router.push(`/events/${item.id}`)}
-            // A tela é dona da localização: o useUserLocation monta estado e
-            // listener de AppState próprios a cada chamada, então um por card
-            // sairia caro numa lista.
-            userCoords={userCoords}
-          />
-        )
-      }
+      renderItem={({ item }) => (
+        <FeedRow item={item} userCoords={userCoords} onOpenEvent={openEvent} />
+      )}
       refreshControl={
         <RefreshControl
           refreshing={refreshing}
@@ -172,7 +170,11 @@ export function FeedList() {
         />
       }
       onEndReached={() => {
-        if (hasNextPage && !isFetchingNextPage) fetchNextPage()
+        // isPlaceholderData: a lista ainda mostra a aba anterior; paginar aqui
+        // pediria a página 2 de uma query cuja página 1 nem chegou.
+        if (hasNextPage && !isFetchingNextPage && !isPlaceholderData) {
+          fetchNextPage()
+        }
       }}
       onEndReachedThreshold={0.3}
       ListFooterComponent={
