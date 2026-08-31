@@ -1,23 +1,27 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { eventsService } from '../services/eventsService'
 import { invalidateEventViews } from './cacheKeys'
+import { getApiError } from '@/shared/lib/apiError'
+import { useBanner } from '@/shared/lib/banner'
+import { settleAll } from '@/shared/utils/settleAll'
 
 type Args = { eventId: string; uris: string[] }
 
+/**
+ * Sobe as fotos escolhidas no cadastro, contra o evento já criado. O evento não
+ * se perde se uma imagem falhar — mas a falha aparece: sem isso o evento nasce
+ * sem capa e ninguém fica sabendo por quê.
+ */
 export function useUploadEventImages() {
   const queryClient = useQueryClient()
+  const showBanner = useBanner()
 
   return useMutation({
-    mutationFn: async ({ eventId, uris }: Args) => {
-      const results = await Promise.allSettled(
-        uris.map(uri => eventsService.uploadEventImage(eventId, uri)),
-      )
-      const failed = results.filter(r => r.status === 'rejected').length
-      return { eventId, total: uris.length, failed }
-    },
-    onSettled: (data, _err, vars) => {
-      const id = data?.eventId ?? vars.eventId
-      invalidateEventViews(queryClient, id)
+    mutationFn: ({ eventId, uris }: Args) =>
+      settleAll(uris.map(uri => eventsService.uploadEventImage(eventId, uri))),
+    onError: error => showBanner(getApiError(error).message),
+    onSettled: (_data, _err, vars) => {
+      invalidateEventViews(queryClient, vars.eventId)
     },
   })
 }

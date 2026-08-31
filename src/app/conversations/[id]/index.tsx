@@ -41,6 +41,7 @@ import { AttachmentMenu } from '@/features/chat/components/AttachmentMenu'
 import { MessageActionsSheet } from '@/features/chat/components/MessageActionsSheet'
 import { ReportReasonSheet } from '@/features/reports/components/ReportReasonSheet'
 import { ImageViewerModal } from '@/shared/components/ImageViewerModal'
+import { shrinkForUpload } from '@/shared/lib/imageShrink'
 import { VideoPlayerModal } from '@/features/chat/components/VideoPlayerModal'
 import type { UserMini } from '@/shared/types'
 import type { ChatMessage, ReplyPreview } from '@/features/chat/types'
@@ -270,7 +271,9 @@ export default function ConversationScreen() {
     if (res.canceled || !res.assets[0]) return
     const asset = res.assets[0]
     if (asset.type === 'video') sendVideoUri(asset)
-    else sendImageUri(asset.uri, asset.width, asset.height)
+    // Dimensões do asset original: o encolhimento é proporcional, então a bolha
+    // otimista reserva o mesmo aspect-ratio.
+    else sendImageUri(await shrinkForUpload(asset), asset.width, asset.height)
   }
 
   async function pickFromCamera() {
@@ -287,7 +290,7 @@ export default function ConversationScreen() {
     if (res.canceled || !res.assets[0]) return
     const asset = res.assets[0]
     if (asset.type === 'video') sendVideoUri(asset)
-    else sendImageUri(asset.uri, asset.width, asset.height)
+    else sendImageUri(await shrinkForUpload(asset), asset.width, asset.height)
   }
 
   function onRetry(message: ChatMessage) {

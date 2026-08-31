@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import * as ImagePicker from 'expo-image-picker'
+import { shrinkForUpload } from '../lib/imageShrink'
 
 type Options = {
   maxCount?: number
@@ -19,7 +20,9 @@ export function usePickImages(
         quality,
       })
       if (result.canceled || result.assets.length === 0) return
-      onPicked(result.assets.map(a => a.uri))
+      // Encolhe antes de entregar: o preview passa a mostrar o arquivo que vai
+      // subir de verdade, e nenhum caminho de upload precisa lembrar disso.
+      onPicked(await Promise.all(result.assets.map(shrinkForUpload)))
     } catch {
       // sistema já mostra prompt de permissão quando necessário
     }
