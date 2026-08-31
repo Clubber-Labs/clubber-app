@@ -24,8 +24,8 @@ export type Spot = {
   creator: FeedAuthor
   memberCount: number
   // Prévia do grupo (primeiros membros, criador incluso) pro pulso social do
-  // card do feed. Opcional: o mapa não pede esse campo e o backend só o expõe
-  // na listagem por proximidade.
+  // card do feed. Opcional: só o /feed hidrata esse campo — mapa e detalhe
+  // seguem sem, e o card degrada pro criador sozinho.
   members?: FeedAuthor[]
   // Identificação do estabelecimento por trás do placeId. Opcional pelo mesmo
   // motivo dos sinais de SpotSuggestion — o card degrada pra só a distância.
