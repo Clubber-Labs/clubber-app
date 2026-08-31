@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { eventsService } from '../services/eventsService'
+import { eventsService, type InviteTarget } from '../services/eventsService'
 
 const invitesKey = (eventId: string) => ['events', eventId, 'invites']
 
@@ -15,8 +15,8 @@ export function useInviteUsers(eventId: string) {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (invitedIds?: string[]) =>
-      eventsService.inviteUsers(eventId, invitedIds),
+    mutationFn: (target: InviteTarget) =>
+      eventsService.inviteUsers(eventId, target),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: invitesKey(eventId) }),
   })

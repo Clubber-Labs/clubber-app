@@ -27,6 +27,10 @@ type ListEventsParams = ListParams & {
   dateTo?: string
 }
 
+export type InviteTarget =
+  | { kind: 'selected'; userIds: string[] }
+  | { kind: 'all' }
+
 const buildParams = ({ limit = 20, cursor }: ListParams) => ({
   limit,
   ...(cursor ? { cursor } : {}),
@@ -188,11 +192,13 @@ export const eventsService = {
   createInviteLink: (eventId: string): Promise<InviteLink> =>
     api.post(`/events/${eventId}/invite-links`).then(r => r.data),
 
-  inviteUsers: (eventId: string, invitedIds?: string[]): Promise<void> =>
+  // Corpo strict — campo extra dá 400. Omitir a lista significa "convida todos
+  // os seguidores": o alvo é explícito pra `undefined` não virar fan-out.
+  inviteUsers: (eventId: string, target: InviteTarget): Promise<void> =>
     api
       .post(
         `/events/${eventId}/invites`,
-        invitedIds ? { invitedIds } : undefined,
+        target.kind === 'all' ? { all: true } : { userIds: target.userIds },
       )
       .then(() => undefined),
 
