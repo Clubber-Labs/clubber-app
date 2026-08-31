@@ -511,7 +511,8 @@ Quando perceber qualquer desses, extraia.
 |---|---|---|
 | **Mutation otimista** (like, follow, attendance, toggle) | Optimistic update + silent revert em erro | A UI muda na hora; em falha, volta. O usuário entende implicitamente que "não pegou" sem ler texto. |
 | **Optimistic remove** (delete post, delete comment) | Item some imediatamente; reaparece se backend falhar | Mesma lógica — o re-aparecer é o feedback. |
-| **Add otimista raso** (add post, add comment) | Sem otimismo; input mantém texto se falhar | User retenta tocando enviar de novo. Botão volta ao estado normal é o sinal de fim de ciclo. |
+| **Add de post** | Sem otimismo; input mantém texto se falhar | User retenta tocando enviar de novo. Botão volta ao estado normal é o sinal de fim de ciclo. |
+| **Add de comentário** | Otimista (entra na lista esmaecido) + texto de volta no campo **e** `FormError` inline | Exceção deliberada. Aqui o revert sozinho não basta: o comentário some da lista E o texto reaparece no campo ao mesmo tempo — sem uma linha dizendo o porquê, parece que o app engoliu a mensagem. Ver `CommentComposer`. |
 | **Validação de formulário** (login, cadastro, create event) | Banner no topo + borda acesa no campo + rolar e focar nele | O user submeteu deliberadamente e espera resposta, mas o texto sob o input polui e some fora da viewport. A mensagem é sempre a do campo que recebeu o foco. |
 | **Erro de submit vindo da API** (409, 5xx) | Banner, ou marcação no campo quando o backend diz qual é | Mesmo canal da validação, pra não existirem dois lugares onde erro aparece. |
 | **Erro crítico bloqueante** (sem rede, 500 persistente) | Banner sutil no topo (a implementar) | Estado global, dismissable, não-modal. |
@@ -588,7 +589,7 @@ Dois cuidados que o hook resolve e que uma implementação à mão erra:
 Quando revisar um PR deste projeto e ver `mutation.mutate(args)` sem `onError`, **não sugira** adicionar:
 - ❌ Toast / `showError` / `showSuccess`
 - ❌ `Alert.alert(...)` para feedback de erro
-- ❌ Texto inline "Não foi possível X" em ações pontuais (likes, comments, posts, attendance, delete)
+- ❌ Texto inline "Não foi possível X" em ações pontuais (likes, posts, attendance, delete) — **exceto** o envio de comentário, que tem `FormError` inline por decisão registrada na tabela acima
 - ❌ `{errors.campo && <Text>{errors.campo.message}</Text>}` abaixo do input — o padrão do app é banner + borda + foco
 
 Em vez disso, valide se:

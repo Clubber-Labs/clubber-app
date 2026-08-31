@@ -23,3 +23,14 @@ export const usePostLikesStore = create<PostLikesState>(set => ({
   setLiked: (postId, value) =>
     set(state => ({ liked: { ...state.liked, [postId]: value } })),
 }))
+
+/**
+ * Curtida do viewer num post: o que ele fez nesta sessão vence o que veio da
+ * API. Mora aqui junto do store pra a gambiarra inteira caber num arquivo só —
+ * quando o backend mandar `userLiked`, apaga-se este módulo e o PostItem passa
+ * a ler `post.userLiked` direto.
+ */
+export function usePostLiked(postId: string, fromApi?: boolean): boolean {
+  const override = usePostLikesStore(state => state.liked[postId])
+  return override ?? fromApi ?? false
+}

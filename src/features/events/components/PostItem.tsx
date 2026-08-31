@@ -9,7 +9,7 @@ import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useConfirm } from '@/shared/lib/confirm'
 import { useDeletePost, useTogglePostLike } from '../hooks/usePosts'
-import { usePostLikesStore } from '../store/postLikesStore'
+import { usePostLiked } from '../store/postLikesStore'
 import { formatRelative } from '@/shared/utils/dateFormat'
 import { useLocale } from '@/shared/hooks/useLocale'
 import { formatFullName } from '@/shared/utils/fullName'
@@ -44,15 +44,12 @@ export function PostItem({ eventId, post, onReport, isOrganizer }: Props) {
   const deletePost = useDeletePost(eventId)
   const toggleLike = useTogglePostLike(eventId)
   const confirm = useConfirm()
-  const likedOverride = usePostLikesStore(s => s.liked[post.id])
+  const liked = usePostLiked(post.id, post.userLiked)
   const [menuOpen, setMenuOpen] = useState(false)
 
   const isAuthor = userId === post.authorId
   const images = post.images ?? []
   const hasImages = images.length > 0
-  // O que o viewer fez nesta sessão vence o que veio da API — que hoje nem
-  // manda `userLiked`. Ver postLikesStore.
-  const liked = likedOverride ?? post.userLiked ?? false
 
   async function handleDelete() {
     const ok = await confirm({
