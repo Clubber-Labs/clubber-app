@@ -162,6 +162,11 @@ export function ProfileEventTile({ event, ownerId, onPress }: Props) {
   // todo tile do próprio perfil só pesa — a autoria dele já é o padrão ali.
   const host = event.author && event.author.id !== ownerId ? event.author : null
 
+  // `status` vem calculado do backend em TODA resposta desta rota (o normalize
+  // da listagem compartilhada o preenche), e o mobile nunca o deriva da data —
+  // mesma premissa do EventStatusBadge. O opcional no tipo é só tolerância a
+  // contrato antigo; nesse caso a fase cai em "upcoming", que mostra a hora do
+  // evento (fato que vem do `date`) e nenhum selo.
   const live = event.status === 'ONGOING'
   const canceled = event.status === 'CANCELED'
   const closed = event.status === 'PAST' || canceled

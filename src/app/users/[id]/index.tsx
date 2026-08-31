@@ -48,6 +48,9 @@ export default function UserProfileScreen() {
     () => eventsQuery.data?.pages.flatMap(p => p.data) ?? [],
     [eventsQuery.data],
   )
+  // Total da vitrine (criados + presenças), não o eventsCount de autoria que
+  // alimenta a linha de stats. Só a 1ª página traz.
+  const eventsTotal = eventsQuery.data?.pages[0]?.total
 
   async function openConversation() {
     if (createConversation.isPending) return
@@ -140,9 +143,7 @@ export default function UserProfileScreen() {
                 ) : undefined
               }
             />
-            <ProfileEventsSectionTitle
-              count={eventsQuery.data?.pages[0]?.total}
-            />
+            <ProfileEventsSectionTitle count={eventsTotal} />
           </>
         }
       />
