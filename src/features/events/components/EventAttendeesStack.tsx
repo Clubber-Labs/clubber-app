@@ -8,11 +8,17 @@ type Props = {
   // Participantes em destaque (amigos primeiro). As fotos vêm do avatarUrl.
   attendees: FriendAttendance[]
   totalAttendances: number
+  // Diâmetro do avatar — o rodapé do card do feed pede uma versão compacta.
+  size?: number
 }
 
 const MAX_VISIBLE = 4
 
-export function EventAttendeesStack({ attendees, totalAttendances }: Props) {
+export function EventAttendeesStack({
+  attendees,
+  totalAttendances,
+  size = 26,
+}: Props) {
   const { t } = useTranslation()
   if (attendees.length === 0) return null
 
@@ -33,13 +39,13 @@ export function EventAttendeesStack({ attendees, totalAttendances }: Props) {
           <View
             key={a.user.id}
             className="rounded-full border-2 border-surface"
-            style={{ marginLeft: i === 0 ? 0 : -10 }}
+            style={{ marginLeft: i === 0 ? 0 : -size * 0.38 }}
           >
             <ProfileLink userId={a.user.id} username={a.user.username}>
               <UserAvatar
                 name={a.user.name}
                 avatarUrl={a.user.avatarUrl}
-                size={26}
+                size={size}
               />
             </ProfileLink>
           </View>

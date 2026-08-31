@@ -251,6 +251,9 @@
     "viewProfile": "Ver el perfil de {{username}}",
     "form": {
       "checkFields": "Revisa los campos destacados."
+    },
+    "mediaViewer": {
+      "closeImage": "Cerrar imagen"
     }
   },
   "auth": {
@@ -707,7 +710,8 @@
     "card": {
       "attendeeCount_one": "{{count}} persona va",
       "attendeeCount_other": "{{count}} personas van",
-      "viewAllComments": "Ver los {{count}} comentarios"
+      "viewAllComments": "Ver los {{count}} comentarios",
+      "moreActions": "Más opciones"
     },
     "attendees": {
       "oneGoing": "{{name}} va",
@@ -719,7 +723,8 @@
       "openInMap": "Abrir en el mapa",
       "whoIsGoing": "Quién va",
       "confirmedCount_one": "{{count}} confirmado",
-      "confirmedCount_other": "{{count}} confirmados"
+      "confirmedCount_other": "{{count}} confirmados",
+      "expandPhoto": "Ver foto en pantalla completa"
     },
     "status": {
       "soon": "Empieza pronto",
@@ -753,7 +758,12 @@
       "placeholder": "Escribe un comentario...",
       "report": "Denunciar comentario",
       "like": "Me gusta",
-      "unlike": "Quitar me gusta"
+      "unlike": "Quitar me gusta",
+      "composerPlaceholder": "Comenta...",
+      "send": "Enviar comentario",
+      "viewCount_one": "Ver 1 comentario",
+      "viewCount_other": "Ver los {{count}} comentarios",
+      "cannotComment": "Marca interés o asistencia en el evento para comentar."
     },
     "posts": {
       "deleteTitle": "Eliminar post",
@@ -764,7 +774,13 @@
       "imagesLabel": "Fotos de la publicación",
       "publish": "Publicar",
       "empty": "Aún no hay posts. ¡Sé el primero!",
-      "attendToPost": "Marca interés o asistencia en el evento para publicar."
+      "attendToPost": "Marca interés o asistencia en el evento para publicar.",
+      "placeholderLive": "Publica desde la pista...",
+      "sectionTitle": "Publicaciones del evento",
+      "sectionSubtitle_one": "{{count}} publicación · de los confirmados",
+      "sectionSubtitle_other": "{{count}} publicaciones · de los confirmados",
+      "sectionFrom": "de los confirmados",
+      "expandPhoto": "Ver foto en pantalla completa"
     },
     "imagePicker": {
       "label": "Fotos del evento",
@@ -773,13 +789,8 @@
       "addPhotos": "Agregar fotos"
     },
     "share": {
-      "label": "Compartir evento",
       "message": "{{title}}\n\nMíralo en Clubber: {{url}}",
-      "sheetTitle": "Compartir",
-      "otherApps": "Otras apps",
       "stories": {
-        "option": "Stories de Instagram",
-        "optionHint": "Abre Instagram con el arte del evento",
         "byAuthor": "por @{{username}}",
         "linkCopied": "Enlace copiado — pégalo en el sticker de Enlace de la historia",
         "linkCopiedReturn": "¡Enlace copiado! Vuelve a Instagram y pégalo en el sticker de Enlace",
@@ -809,7 +820,45 @@
     "detail": {
       "unavailable": "Evento no disponible",
       "loadError": "No se pudo cargar el evento.",
-      "privateNotice": "Este evento es de un perfil privado. Sigue al autor para verlo."
+      "privateNotice": "Este evento es de un perfil privado. Sigue al autor para verlo.",
+      "whoIsThere": "Quién está",
+      "checkIn": {
+        "prompt": "¿Llegaste a {{venue}}?",
+        "promptGeneric": "¿Llegaste al evento?",
+        "peopleCount_one": "{{count}} persona hizo check-in",
+        "peopleCount_other": "{{count}} personas hicieron check-in",
+        "cta": "Check-in",
+        "done": "Check-in hecho",
+        "nowCount_one": "{{count}} check-in ahora",
+        "nowCount_other": "{{count}} check-ins ahora",
+        "ofConfirmed_one": "de {{count}} confirmado",
+        "ofConfirmed_other": "de {{count}} confirmados",
+        "count_one": "{{count}} check-in",
+        "count_other": "{{count}} check-ins"
+      },
+      "invite": {
+        "title": "{{name}} te invitó",
+        "withOne": "junto a {{name}}",
+        "withOthers_one": "junto a {{name}} y {{count}} más",
+        "withOthers_other": "junto a {{name}} y {{count}} más"
+      },
+      "promotion": {
+        "title": "Difusión",
+        "onlyYou": "solo tú lo ves",
+        "stories": "Compartir en Stories",
+        "otherApps": "Compartir en otras apps",
+        "copyLink": "Copiar enlace de invitación",
+        "linkCopied": "Enlace de invitación copiado",
+        "guestsCount_one": "{{count}} invitado",
+        "guestsCount_other": "{{count}} invitados",
+        "guestsEmpty": "Nadie invitado todavía",
+        "views_one": "{{count}} visualización",
+        "views_other": "{{count}} visualizaciones",
+        "shares_one": "{{count}} compart.",
+        "shares_other": "{{count}} compart.",
+        "checkIns_one": "{{count}} check-in",
+        "checkIns_other": "{{count}} check-ins"
+      }
     },
     "create": {
       "submit": "Crear evento",
@@ -997,7 +1046,6 @@
       "camera": "Cámara",
       "image": "Imagen",
       "video": "Video",
-      "closeImage": "Cerrar imagen",
       "closeVideo": "Cerrar video",
       "playAudio": "Reproducir audio",
       "pauseAudio": "Pausar audio",

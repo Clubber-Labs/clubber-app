@@ -1,33 +1,21 @@
 import { useState } from 'react'
 import { View, Text, Pressable, StyleSheet } from 'react-native'
-import {
-  BuildingsIcon,
-  MapPinIcon,
-  ClockIcon,
-  UsersIcon,
-  CheckCircleIcon,
-  XCircleIcon,
-  HeartIcon,
-  ChatCircleIcon,
-} from 'phosphor-react-native'
+import { UsersIcon, HeartIcon, ChatCircleIcon } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
+import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg'
 import { useToggleLike } from '../hooks/useToggleLike'
-import { useSetAttendance, useCancelAttendance } from '../hooks/useAttendance'
 import { EventCardHero } from './EventCardHero'
+import { EventCardPerforation } from './EventCardPerforation'
+import { EventCardOutline } from './EventCardOutline'
+import { EventCardStub } from './EventCardStub'
 import { InlineCommentsSection } from './InlineCommentsSection'
+import { CommentPreview } from './CommentPreview'
+import { CommentComposer } from './CommentComposer'
 import { EventAttendeesStack } from './EventAttendeesStack'
 import { FeedReasonBanner } from './FeedReasonBanner'
-import { ProfileLink } from '@/features/users/components/ProfileLink'
-import { UserAvatar } from '@/shared/components/UserAvatar'
-import { formatRelative, formatTime } from '@/shared/utils/dateFormat'
-import { useLocale } from '@/shared/hooks/useLocale'
-import { formatFullName } from '@/shared/utils/fullName'
 import { featuredAttendees } from '@/shared/utils/featuredAttendees'
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg'
-import { useCategories } from '@/shared/hooks/useCategories'
-import { eventCategoryEmoji } from '@/shared/utils/eventCategoryEmoji'
 import type { FeedEvent } from '@/shared/types'
-import { colors, categoryHue, METAL, SPECTRUM } from '@/shared/theme'
+import { colors, METAL, SPECTRUM } from '@/shared/theme'
 
 type Props = {
   event: FeedEvent
@@ -35,32 +23,27 @@ type Props = {
   // Banner de "amigo X" só faz sentido em contexto personalizado (/feed).
   // Em listagens genéricas (sem dado de amizade), passe false.
   showReason?: boolean
+  // Coords do usuário [lng, lat] pra distância na barra de local. Quem lista
+  // sem proximidade resolvida omite e a distância simplesmente não aparece.
+  userCoords?: [number, number] | null
 }
 
-// Chip pequeno da categoria principal — mesmo vocabulário de matiz dos chips
-// do mapa (cor é informação, não marca).
-function CategoryChip({ categories }: { categories: string[] }) {
-  const { categories: tree } = useCategories()
-  const primary = categories[0]
-  const label = tree.find(entry => entry.value === primary)?.label
-  if (!primary || !label) return null
-  const hue = categoryHue(primary)
-  return (
-    <View
-      className="flex-row items-center gap-1 self-start rounded-full border px-2 py-0.5"
-      style={{ backgroundColor: hue.chipBg, borderColor: hue.chipBorder }}
-    >
-      <Text className="text-[10px]">{eventCategoryEmoji(categories)}</Text>
-      <Text className="text-[10px] font-bold" style={{ color: hue.chipText }}>
-        {label}
-      </Text>
-    </View>
-  )
-}
-
-export function EventCard({ event, onPress, showReason = true }: Props) {
+/**
+ * Card do feed no formato "pôster com canhoto destacável": a capa é o cartaz do
+ * rolê (quem organiza, o que é, onde), o picote separa, e o canhoto carrega a
+ * decisão (quando é, você vai?) mais o rastro social.
+ *
+ * A leitura desce em uma direção só — reconhecer, decidir, comentar — e por
+ * isso o que era meta-row solta (categoria, relógio, prévia de comentário)
+ * saiu: cada uma dessas informações já tem lugar próprio no novo desenho.
+ */
+export function EventCard({
+  event,
+  onPress,
+  showReason = true,
+  userCoords = null,
+}: Props) {
   const { t } = useTranslation()
-  const locale = useLocale()
   const [expanded, setExpanded] = useState(false)
   // Medida real do card pro frame de destaque: Rect com "100%" não
   // re-resolve quando a altura do container muda (RNSVG/new arch) — a
@@ -68,31 +51,30 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
   const [frameSize, setFrameSize] = useState<{ w: number; h: number } | null>(
     null,
   )
+  // O contorno do card é desenhado, não é `border`: ver EventCardOutline.
+  const [cardSize, setCardSize] = useState<{ w: number; h: number } | null>(
+    null,
+  )
+  const [notchY, setNotchY] = useState<number | null>(null)
   const toggleLike = useToggleLike(event.id)
-  const setAttendance = useSetAttendance(event.id)
-  const cancelAttendance = useCancelAttendance(event.id)
 
   const liked = event.userLiked
-  const reason = showReason ? event.reason : null
-  const hasImage = !!event.images[0]?.url
   const attendees = featuredAttendees(event)
-  const going = event.userAttendance === 'CONFIRMED'
-  const declined = event.userAttendance === 'NOT_INTERESTED'
-  const rsvpPending = setAttendance.isPending || cancelAttendance.isPending
 
-  function handleLike() {
-    toggleLike.mutate(liked)
-  }
-
-  function handleGoing() {
-    if (going) cancelAttendance.mutate()
-    else setAttendance.mutate('CONFIRMED')
-  }
-
-  function handleDeclined() {
-    if (declined) cancelAttendance.mutate()
-    else setAttendance.mutate('NOT_INTERESTED')
-  }
+  // self_created duplica o autor já exibido na assinatura da capa.
+  const reason = showReason ? event.reason : null
+  const showBanner = !!reason && reason.kind !== 'self_created'
+  // Sem foto o banner pousa SOBRE a capa de categoria e não pinta fundo
+  // próprio — dois gradientes vizinhos nunca leem como um só. Com foto ele
+  // segue sendo uma faixa com o tint dele, acima da imagem.
+  const hasImage = !!event.images[0]?.url
+  const banner = showBanner ? (
+    <FeedReasonBanner
+      reason={reason}
+      categories={event.categories}
+      overlay={!hasImage}
+    />
+  ) : undefined
 
   // Molduras de destaque: ao vivo = gradiente do espectro; patrocinado =
   // metal (prata, par da aura dos pins). Live vence quando coincidem; fora
@@ -103,158 +85,47 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
   const frameId = `card-frame-${event.id}`
 
   const card = (
+    // Sem borda: ela e o picote disputavam a aresta. Filho de View com borda é
+    // inset pela largura dela, então os furos ficavam 1px pra dentro e a linha
+    // passava reta por fora, sem acompanhar o recorte — e cobrir a borda pelo
+    // filho diverge entre iOS (CALayer desenha por cima) e Android (por baixo).
+    // O card é um ingresso: a aresta é o corte, dada pelo contraste
+    // surface/background. Os variantes com moldura já não tinham borda.
     <View
-      className={`overflow-hidden rounded-xl bg-surface ${framed ? '' : 'border border-line'}`}
+      className="overflow-hidden rounded-xl bg-surface"
+      onLayout={e => {
+        const { width, height } = e.nativeEvent.layout
+        setCardSize(prev =>
+          prev?.w === width && prev?.h === height
+            ? prev
+            : { w: width, h: height },
+        )
+      }}
     >
-      {/* self_created duplica o autor já exibido logo abaixo */}
-      {reason && reason.kind !== 'self_created' && (
-        <FeedReasonBanner reason={reason} categories={event.categories} />
-      )}
-
       <Pressable onPress={onPress}>
-        <EventCardHero event={event} />
-
-        <View className="gap-2 px-4 pt-3">
-          <CategoryChip categories={event.categories} />
-          {/* Com foto, a assinatura do autor já aparece sobreposta no hero;
-              sem foto, o título está no hero e a assinatura vem aqui. */}
-          {hasImage ? (
-            <Text className="text-xl font-extrabold leading-tight text-content">
-              {event.title}
-            </Text>
-          ) : (
-            <ProfileLink
-              userId={event.author.id}
-              username={event.author.username}
-              className="flex-row items-center gap-2 self-start py-0.5"
-            >
-              <UserAvatar
-                name={event.author.name}
-                avatarUrl={event.author.avatarUrl}
-                size={24}
-              />
-              <Text className="text-xs text-content-muted" numberOfLines={1}>
-                <Text className="font-semibold text-content-secondary">
-                  {formatFullName(event.author.name, event.author.lastname)}
-                </Text>
-                {`  ·  ${formatRelative(event.createdAt, locale)}`}
-              </Text>
-            </ProfileLink>
-          )}
-
-          <View className="flex-row items-center gap-4">
-            {!!(event.venueName ?? event.address) && (
-              <View className="flex-1 flex-row items-center gap-1">
-                {event.venueName ? (
-                  <BuildingsIcon size={14} color={colors.contentMuted} />
-                ) : (
-                  <MapPinIcon size={14} color={colors.contentMuted} />
-                )}
-                <Text
-                  className="flex-1 text-xs text-content-muted"
-                  numberOfLines={1}
-                >
-                  {event.venueName ?? event.address}
-                </Text>
-              </View>
-            )}
-            <View className="flex-row items-center gap-1">
-              <ClockIcon size={14} color={colors.contentMuted} />
-              <Text className="text-xs text-content-muted">
-                {formatTime(event.date, locale, event.timezone ?? undefined)}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {attendees.length > 0 ? (
-          <View className="px-4 pt-3">
-            <EventAttendeesStack
-              attendees={attendees}
-              totalAttendances={event._count.attendances}
-            />
-          </View>
-        ) : (
-          event._count.attendances > 0 && (
-            <View className="flex-row items-center gap-1.5 px-4 pt-3">
-              <UsersIcon size={14} color={colors.contentMuted} />
-              <Text className="text-xs text-content-muted">
-                {t('events.card.attendeeCount', {
-                  count: event._count.attendances,
-                })}
-              </Text>
-            </View>
-          )
-        )}
+        <EventCardHero
+          event={event}
+          userCoords={userCoords}
+          onPress={onPress}
+          banner={banner}
+        />
       </Pressable>
 
-      {/* RSVP compacto (pills com rótulo) — estados por PESO, sem cor
-          semântica: pendente = branco cheio; respondido = quieto (outline
-          claro no confirmado, fantasma no não vou). "Interessado" vive só na
-          tela de detalhe. */}
-      <View className="flex-row items-center gap-2 px-4 pt-3">
-        {going ? (
-          <Pressable
-            onPress={handleGoing}
-            disabled={rsvpPending}
-            accessibilityRole="button"
-            accessibilityState={{ selected: true, busy: rsvpPending }}
-            className="flex-row items-center gap-2 rounded-full border border-white/40 px-5 py-2.5"
-          >
-            <CheckCircleIcon size={17} color={colors.content} weight="fill" />
-            <Text className="text-sm font-bold text-content">
-              {t('events.rsvp.confirmed')}
-            </Text>
-          </Pressable>
-        ) : (
-          <>
-            <Pressable
-              onPress={handleGoing}
-              disabled={rsvpPending}
-              accessibilityRole="button"
-              accessibilityState={{ selected: false, busy: rsvpPending }}
-              className={`flex-row items-center gap-2 rounded-full px-5 py-2.5 ${
-                declined ? 'border border-line-strong' : 'bg-content'
-              }`}
-            >
-              {!declined && (
-                <CheckCircleIcon size={17} color={colors.background} />
-              )}
-              <Text
-                className={`text-sm font-bold ${declined ? 'text-content-muted' : 'text-background'}`}
-              >
-                {t('events.rsvp.going')}
-              </Text>
-            </Pressable>
-            <Pressable
-              onPress={handleDeclined}
-              disabled={rsvpPending}
-              accessibilityRole="button"
-              accessibilityState={{ selected: declined, busy: rsvpPending }}
-              className="flex-row items-center gap-2 rounded-full border border-line px-5 py-2.5"
-            >
-              {declined && (
-                <XCircleIcon
-                  size={17}
-                  color={colors.contentSubtle}
-                  weight="fill"
-                />
-              )}
-              <Text
-                className={`text-sm font-bold ${declined ? 'text-content-subtle' : 'text-content-muted'}`}
-              >
-                {t('events.rsvp.notGoing')}
-              </Text>
-            </Pressable>
-          </>
-        )}
-      </View>
+      {/* O contorno precisa saber ONDE o picote caiu — depende da altura da
+          capa, que varia com a foto. */}
+      <EventCardPerforation
+        onCenterChange={center =>
+          setNotchY(prev => (prev === center ? prev : center))
+        }
+      />
+      <EventCardStub event={event} />
 
-      {/* engajamento leve */}
-      <View className="flex-row items-center gap-1 px-2 pt-1">
+      <View className="flex-row items-center gap-1 border-t border-line px-2 py-1">
         <Pressable
-          onPress={handleLike}
+          onPress={() => toggleLike.mutate(liked)}
           disabled={toggleLike.isPending}
+          accessibilityRole="button"
+          accessibilityState={{ selected: liked }}
           className="flex-row items-center gap-1 rounded-full px-3 py-2"
         >
           <HeartIcon
@@ -271,6 +142,8 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
 
         <Pressable
           onPress={() => setExpanded(v => !v)}
+          accessibilityRole="button"
+          accessibilityState={{ expanded }}
           className="flex-row items-center gap-1 rounded-full px-3 py-2"
         >
           <ChatCircleIcon
@@ -284,42 +157,59 @@ export function EventCard({ event, onPress, showReason = true }: Props) {
             {event._count.comments}
           </Text>
         </Pressable>
-      </View>
 
-      {!expanded && (event.recentComments?.length ?? 0) > 0 && (
-        <View className="gap-1 px-4 pb-3 pt-1">
-          {event.recentComments.slice(0, 1).map(comment => (
-            <View key={comment.id} className="flex-row">
-              <ProfileLink
-                userId={comment.author.id}
-                username={comment.author.username}
-                hitSlop={6}
-              >
-                <Text className="text-sm font-semibold text-content">
-                  {comment.author.username}{' '}
-                </Text>
-              </ProfileLink>
-              <Text
-                className="flex-1 text-sm text-content-tertiary"
-                numberOfLines={2}
-              >
-                {comment.content}
-              </Text>
-            </View>
-          ))}
-          {event._count.comments > 1 && (
-            <Pressable onPress={() => setExpanded(true)}>
-              <Text className="mt-0.5 text-xs text-content-subtle">
-                {t('events.card.viewAllComments', {
-                  count: event._count.comments,
+        {attendees.length > 0 ? (
+          <View className="flex-1 pl-2">
+            <EventAttendeesStack
+              attendees={attendees}
+              totalAttendances={event._count.attendances}
+              size={22}
+            />
+          </View>
+        ) : (
+          event._count.attendances > 0 && (
+            <View className="flex-1 flex-row items-center justify-end gap-1.5 pr-2">
+              <UsersIcon size={14} color={colors.contentMuted} />
+              <Text className="text-xs text-content-muted" numberOfLines={1}>
+                {t('events.card.attendeeCount', {
+                  count: event._count.attendances,
                 })}
               </Text>
-            </Pressable>
-          )}
-        </View>
+            </View>
+          )
+        )}
+      </View>
+
+      {/* Prévia sai de recentComments, que o feed já traz — a seção expandida
+          busca a lista real e não pode ficar montada por card. */}
+      {!expanded && (
+        <CommentPreview
+          comments={event.recentComments}
+          totalCount={event._count.comments}
+          onExpand={() => setExpanded(true)}
+        />
       )}
 
-      {expanded && <InlineCommentsSection eventId={event.id} />}
+      {expanded && (
+        <InlineCommentsSection
+          eventId={event.id}
+          eventAuthorId={event.author.id}
+        />
+      )}
+
+      {/* Rodapé fixo: comentar não depende da seção estar aberta, e focar o
+          campo abre a conversa junto. */}
+      <CommentComposer eventId={event.id} onFocus={() => setExpanded(true)} />
+
+      {/* Última camada: a aresta é desenhada POR CIMA do conteúdo, senão os
+          furos não conseguiriam perfurar a capa. */}
+      {!!cardSize && notchY !== null && (
+        <EventCardOutline
+          width={cardSize.w}
+          height={cardSize.h}
+          notchY={notchY}
+        />
+      )}
     </View>
   )
 

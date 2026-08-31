@@ -20,6 +20,13 @@ type Props = {
   // Matiz da categoria do evento — tinge SÓ razões sociais (amigo fez algo);
   // razões de sistema (você criou/interagiu, descoberta) seguem neutras.
   categories?: string[]
+  /**
+   * O banner está POUSADO sobre uma superfície já pintada (a capa de categoria
+   * do card sem foto), que corre atrás dele. Aí ele não pinta fundo nem borda:
+   * dois gradientes vizinhos com escalas e direções próprias sempre deixam
+   * emenda visível, por mais afinados que estejam. Quem pinta é a capa.
+   */
+  overlay?: boolean
 }
 
 const SOCIAL_KINDS = new Set([
@@ -29,7 +36,7 @@ const SOCIAL_KINDS = new Set([
   'friend_commented',
 ])
 
-export function FeedReasonBanner({ reason, categories }: Props) {
+export function FeedReasonBanner({ reason, categories, overlay }: Props) {
   const { t } = useTranslation()
   const content = render(reason)
   // useId é estável por instância e evita colisão de id de gradiente entre os
@@ -41,29 +48,52 @@ export function FeedReasonBanner({ reason, categories }: Props) {
   const hue = social ? categoryHue(categories?.[0]) : null
   const tint = hue ? hue.chipBg : colors.brandSurface
   return (
-    <View className="relative border-b border-line">
-      <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
-        <Defs>
-          <LinearGradient id={gradientId} x1="0" y1="0" x2="1" y2="0">
-            <Stop offset="0" stopColor={tint} stopOpacity={0.7} />
-            <Stop offset="1" stopColor={tint} stopOpacity={0} />
-          </LinearGradient>
-        </Defs>
-        <Rect
-          x="0"
-          y="0"
-          width="100%"
-          height="100%"
-          fill={`url(#${gradientId})`}
-        />
-      </Svg>
-      <View className="flex-row items-center gap-1.5 px-4 py-2">
+    // Sobre a capa a régua é branca a 10%, não `line`: um divisor opaco cortaria
+    // o gradiente em dois: assim ele passa por baixo e a linha lê como vinco do
+    // mesmo material.
+    <View
+      className={
+        overlay ? 'border-b border-white/10' : 'relative border-b border-line'
+      }
+    >
+      {!overlay && (
+        <Svg style={StyleSheet.absoluteFill} pointerEvents="none">
+          <Defs>
+            <LinearGradient id={gradientId} x1="0" y1="0" x2="1" y2="0">
+              <Stop offset="0" stopColor={tint} stopOpacity={0.7} />
+              <Stop offset="1" stopColor={tint} stopOpacity={0} />
+            </LinearGradient>
+          </Defs>
+          <Rect
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+            fill={`url(#${gradientId})`}
+          />
+        </Svg>
+      )}
+      {/* Sobre a capa a faixa é mais alta e abre espaço à direita: é ali que o
+          ⋯ do card se aloja, e com py-2 ele não cabia sem cruzar a régua. */}
+      <View
+        className={`flex-row items-center gap-1.5 ${overlay ? 'py-3 pl-4 pr-14' : 'px-4 py-2'}`}
+      >
         <content.icon
           size={13}
           weight="fill"
-          color={hue ? hue.chipText : colors.brandText}
+          color={
+            overlay
+              ? colors.contentSecondary
+              : hue
+                ? hue.chipText
+                : colors.brandText
+          }
         />
-        <Text className="flex-1 text-xs text-content-muted" numberOfLines={1}>
+        {/* Sobre a capa colorida o muted some — o texto sobe um degrau. */}
+        <Text
+          className={`flex-1 text-xs ${overlay ? 'text-content-secondary' : 'text-content-muted'}`}
+          numberOfLines={1}
+        >
           {t(content.key, content.params)}
         </Text>
       </View>

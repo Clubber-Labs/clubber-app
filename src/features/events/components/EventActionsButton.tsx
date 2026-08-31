@@ -37,8 +37,9 @@ export function EventActionsButton({ eventId }: Props) {
       label: t('events.actions.edit'),
       onPress: () => router.push(`/events/${eventId}/edit`),
     },
-    // Convidar saiu do menu: virou ação de primeira classe no detalhe
-    // (EventInviteButton). Aqui fica só a lista de convidados, que é do autor.
+    // Convidar saiu do menu: virou ação de primeira classe no detalhe (linha
+    // "Convidados" da divulgação, botão + no RSVP). Aqui fica a LISTA de quem
+    // já foi convidado, que é do autor.
     {
       label: t('events.actions.invited'),
       onPress: () => router.push(`/events/${eventId}/invited`),

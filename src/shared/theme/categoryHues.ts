@@ -63,10 +63,14 @@ function derive(base: string): CategoryHue {
     chipBg: mix(base, DARK_ANCHOR, 0.62),
     chipBorder: mix(base, DARK_ANCHOR, 0.2),
     chipText: mix(base, LIGHT_ANCHOR, 0.62),
+    // Capa do card sem foto. Puxa MUITO mais pro escuro que o chip: aqui o
+    // matiz cobre a área toda do pôster, e no mesmo tom do chip ele gritava e
+    // roubava a leitura do título. É pra dizer a categoria de relance, não pra
+    // ser o assunto.
     cover: [
-      mix(base, DARK_ANCHOR, 0.84),
-      mix(base, DARK_ANCHOR, 0.58),
-      mix(base, DARK_ANCHOR, 0.3),
+      mix(base, DARK_ANCHOR, 0.94),
+      mix(base, DARK_ANCHOR, 0.85),
+      mix(base, DARK_ANCHOR, 0.68),
     ],
   }
 }

@@ -251,6 +251,9 @@
     "viewProfile": "View {{username}}'s profile",
     "form": {
       "checkFields": "Check the highlighted fields."
+    },
+    "mediaViewer": {
+      "closeImage": "Close image"
     }
   },
   "auth": {
@@ -707,7 +710,8 @@
     "card": {
       "attendeeCount_one": "{{count}} person going",
       "attendeeCount_other": "{{count}} people going",
-      "viewAllComments": "See all {{count}} comments"
+      "viewAllComments": "See all {{count}} comments",
+      "moreActions": "More options"
     },
     "attendees": {
       "oneGoing": "{{name}} is going",
@@ -719,7 +723,8 @@
       "openInMap": "Open in map",
       "whoIsGoing": "Who's going",
       "confirmedCount_one": "{{count}} confirmed",
-      "confirmedCount_other": "{{count}} confirmed"
+      "confirmedCount_other": "{{count}} confirmed",
+      "expandPhoto": "View photo full screen"
     },
     "status": {
       "soon": "Starting soon",
@@ -753,7 +758,12 @@
       "placeholder": "Write a comment...",
       "report": "Report comment",
       "like": "Like",
-      "unlike": "Unlike"
+      "unlike": "Unlike",
+      "composerPlaceholder": "Comment...",
+      "send": "Send comment",
+      "viewCount_one": "View 1 comment",
+      "viewCount_other": "View all {{count}} comments",
+      "cannotComment": "Mark interest or attendance in the event to comment."
     },
     "posts": {
       "deleteTitle": "Delete post",
@@ -764,7 +774,13 @@
       "imagesLabel": "Post photos",
       "publish": "Post",
       "empty": "No posts yet. Be the first!",
-      "attendToPost": "Mark yourself interested or going to post."
+      "attendToPost": "Mark yourself interested or going to post.",
+      "placeholderLive": "Post from the floor...",
+      "sectionTitle": "Event posts",
+      "sectionSubtitle_one": "{{count}} post · from attendees",
+      "sectionSubtitle_other": "{{count}} posts · from attendees",
+      "sectionFrom": "from attendees",
+      "expandPhoto": "View photo full screen"
     },
     "imagePicker": {
       "label": "Event photos",
@@ -773,13 +789,8 @@
       "addPhotos": "Add photos"
     },
     "share": {
-      "label": "Share event",
       "message": "{{title}}\n\nCheck it out on Clubber: {{url}}",
-      "sheetTitle": "Share",
-      "otherApps": "Other apps",
       "stories": {
-        "option": "Instagram Stories",
-        "optionHint": "Opens Instagram with the event artwork",
         "byAuthor": "by @{{username}}",
         "linkCopied": "Link copied — paste it into the story’s Link sticker",
         "linkCopiedReturn": "Link copied! Head back to Instagram and paste it into the Link sticker",
@@ -809,7 +820,45 @@
     "detail": {
       "unavailable": "Event unavailable",
       "loadError": "Couldn't load the event.",
-      "privateNotice": "This event belongs to a private profile. Follow the author to see it."
+      "privateNotice": "This event belongs to a private profile. Follow the author to see it.",
+      "whoIsThere": "Who's there",
+      "checkIn": {
+        "prompt": "Arrived at {{venue}}?",
+        "promptGeneric": "Arrived at the event?",
+        "peopleCount_one": "{{count}} person checked in",
+        "peopleCount_other": "{{count}} people checked in",
+        "cta": "Check in",
+        "done": "Checked in",
+        "nowCount_one": "{{count}} check-in now",
+        "nowCount_other": "{{count}} check-ins now",
+        "ofConfirmed_one": "of {{count}} confirmed",
+        "ofConfirmed_other": "of {{count}} confirmed",
+        "count_one": "{{count}} check-in",
+        "count_other": "{{count}} check-ins"
+      },
+      "invite": {
+        "title": "{{name}} invited you",
+        "withOne": "along with {{name}}",
+        "withOthers_one": "along with {{name}} and {{count}} other",
+        "withOthers_other": "along with {{name}} and {{count}} others"
+      },
+      "promotion": {
+        "title": "Promotion",
+        "onlyYou": "only you see this",
+        "stories": "Share to Stories",
+        "otherApps": "Share to other apps",
+        "copyLink": "Copy invite link",
+        "linkCopied": "Invite link copied",
+        "guestsCount_one": "{{count}} guest",
+        "guestsCount_other": "{{count}} guests",
+        "guestsEmpty": "No one invited yet",
+        "views_one": "{{count}} view",
+        "views_other": "{{count}} views",
+        "shares_one": "{{count}} share",
+        "shares_other": "{{count}} shares",
+        "checkIns_one": "{{count}} check-in",
+        "checkIns_other": "{{count}} check-ins"
+      }
     },
     "create": {
       "submit": "Create event",
@@ -997,7 +1046,6 @@
       "camera": "Camera",
       "image": "Image",
       "video": "Video",
-      "closeImage": "Close image",
       "closeVideo": "Close video",
       "playAudio": "Play audio",
       "pauseAudio": "Pause audio",
