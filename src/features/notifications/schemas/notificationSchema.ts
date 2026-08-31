@@ -10,6 +10,7 @@ export const NOTIFICATION_TYPES = [
   'EVENT_INVITE',
   'EVENT_COMMENT',
   'POST_COMMENT',
+  'COMMENT_REPLY',
   'EVENT_REACTION',
   'POST_REACTION',
   'COMMENT_REACTION',
@@ -32,7 +33,9 @@ export const notificationActorSchema = z.object({
 
 export const notificationSchema = z.object({
   id: z.uuid(),
-  type: notificationTypeSchema,
+  // String crua, não o enum: um tipo mais novo que este app tem que degradar
+  // pra linha genérica, não derrubar o parse (no WS o frame seria descartado).
+  type: z.string(),
   actorId: z.uuid().nullable(),
   eventId: z.uuid().nullable(),
   postId: z.uuid().nullable(),
@@ -63,14 +66,14 @@ export const notificationWsFrameSchema = z.object({
 
 // `data` do push do SO. O payload de um push NÃO é confiável (deep-link pode
 // ser forjado) — só estes campos roteiam, depois de validados; o resto é
-// ignorado. O `.catch(null)` por campo degrada valor malformado/desconhecido
-// individualmente (ex.: NotificationType novo num app antigo) sem derrubar o
-// parse inteiro — o roteamento cai no fallback em vez de quebrar.
+// ignorado. O `.catch(null)` por campo degrada valor malformado individualmente
+// (ex.: uuid inválido) sem derrubar o parse inteiro — o roteamento cai no
+// fallback em vez de quebrar.
 export const pushDataSchema = z.object({
   // Contrato enriquecido (backend com buildPushData): permite marcar como
   // lida e rotear por tipo no tap.
   notificationId: z.uuid().nullish().catch(null),
-  type: notificationTypeSchema.nullish().catch(null),
+  type: z.string().nullish().catch(null),
   actorId: z.uuid().nullish().catch(null),
   eventId: z.uuid().nullish().catch(null),
   postId: z.uuid().nullish().catch(null),

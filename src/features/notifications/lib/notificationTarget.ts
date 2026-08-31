@@ -1,4 +1,4 @@
-import type { NotificationType } from '../schemas/notificationSchema'
+import { isKnownNotificationType } from '../utils/isKnownNotificationType'
 
 // Destino de navegação derivado de type + ids — whitelist explícita; nunca uma
 // URL vinda do payload.
@@ -13,7 +13,7 @@ export type NotificationTarget =
 // Subconjunto que o roteamento usa — satisfeito tanto pela Notification
 // completa (central/WS) quanto pelo data enriquecido do push.
 type NotificationTargetInput = {
-  type: NotificationType
+  type: string
   actorId?: string | null
   eventId?: string | null
   spotId?: string | null
@@ -22,6 +22,9 @@ type NotificationTargetInput = {
 export function notificationTarget(
   n: NotificationTargetInput,
 ): NotificationTarget | null {
+  // Tipo que este app não conhece: linha não navegável (o tap só marca lida).
+  if (!isKnownNotificationType(n.type)) return null
+
   switch (n.type) {
     case 'FOLLOW_REQUEST':
       return { kind: 'followRequests' }
@@ -37,8 +40,9 @@ export function notificationTarget(
     case 'POST_COMMENT':
     case 'POST_REACTION':
     case 'COMMENT_REACTION':
-      // O contrato atual não popula eventId nesses tipos (só postId/commentId,
-      // e post não tem rota própria) — o melhor destino disponível é o autor.
+    case 'COMMENT_REPLY':
+      // Post não tem rota própria, então o backend manda o eventId dele nesses
+      // tipos; sem ele, o melhor destino disponível é o autor.
       if (n.eventId) return { kind: 'event', eventId: n.eventId }
       return n.actorId ? { kind: 'profile', userId: n.actorId } : null
     case 'SPOT_NEARBY':
