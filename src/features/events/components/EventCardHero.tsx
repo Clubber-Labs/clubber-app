@@ -40,7 +40,8 @@ type Props = {
 
 // Respiro padrão da capa (o p-3 / inset-x-3 das duas variantes).
 const BASE_PADDING = 12
-const PHOTO_RATIO = 4 / 5
+// Exportado pro EventCardSkeleton reservar a mesma altura de capa.
+export const PHOTO_RATIO = 4 / 5
 const TITLE_SIZE_PHOTO = 32
 const TITLE_SIZE_PLAIN = 26
 

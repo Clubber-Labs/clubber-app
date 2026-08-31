@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 import type { ReactElement } from 'react'
-import { View, FlatList, ActivityIndicator } from 'react-native'
+import { View, FlatList, ActivityIndicator, RefreshControl } from 'react-native'
 import { useRouter } from 'expo-router'
 import { ProfileEventTile } from './ProfileEventTile'
 import { ProfileEventsSkeleton } from './ProfileEventsSkeleton'
@@ -18,6 +18,13 @@ type Props = {
   isFetchingNextPage: boolean
   // 1ª página em voo: a grade fantasma entra no lugar do estado vazio.
   isLoading?: boolean
+  // Pull-to-refresh: presente, liga o RefreshControl e troca a grade pela
+  // fantasma enquanto dura — mesmo padrão do feed. Ausente, a lista fica sem.
+  refreshing?: boolean
+  onRefresh?: () => void
+  // Desligue quando o refresh não refaz a vitrine (perfil privado): o spinner
+  // segue girando, mas a grade não vira fantasma de uma lista que não vem.
+  showSkeletonOnRefresh?: boolean
   onLoadMore: () => void
   // Aba com pílula/header flutuantes passa os clearances; perfil de terceiros
   // (stack, header no fluxo) usa os defaults.
@@ -40,6 +47,9 @@ export function ProfileEventsList({
   hasNextPage,
   isFetchingNextPage,
   isLoading = false,
+  refreshing = false,
+  onRefresh,
+  showSkeletonOnRefresh = true,
   onLoadMore,
   bottomPadding = 32,
   topPadding = 0,
@@ -55,8 +65,10 @@ export function ProfileEventsList({
 
   // numColumns=2: completa a linha ímpar com um espaçador pra os tiles (flex-1)
   // manterem largura igual sem o último esticar pra largura cheia.
-  const data: Row[] =
+  const rows: Row[] =
     events.length % 2 ? [...events, { __spacer: 'spacer' }] : events
+  const ghosting = refreshing && showSkeletonOnRefresh
+  const data: Row[] = ghosting ? [] : rows
 
   return (
     <FlatList
@@ -81,13 +93,30 @@ export function ProfileEventsList({
           />
         )
       }
-      ListEmptyComponent={isLoading ? <ProfileEventsSkeleton /> : empty}
+      ListEmptyComponent={
+        isLoading || ghosting ? <ProfileEventsSkeleton /> : empty
+      }
       ListFooterComponent={
         isFetchingNextPage ? (
           <ActivityIndicator color={colors.brand} style={{ marginTop: 16 }} />
         ) : null
       }
-      onEndReached={() => hasNextPage && onLoadMore()}
+      refreshControl={
+        onRefresh ? (
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.brandEmphasis}
+            // O spinner nasce no topo do scroll view — atrás do header de
+            // vidro nas abas. O offset o empurra pro primeiro pixel visível;
+            // no stack (topPadding 0) não muda nada.
+            progressViewOffset={topPadding}
+          />
+        ) : undefined
+      }
+      // refreshing: o refetch em voo vai substituir as páginas — paginar
+      // agora pediria página nova pra uma lista que está sendo trocada.
+      onEndReached={() => hasNextPage && !refreshing && onLoadMore()}
       onEndReachedThreshold={0.3}
     />
   )

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useLocalSearchParams, useRouter } from 'expo-router'
@@ -9,6 +9,7 @@ import {
   isNotFoundError,
   isUnauthorizedError,
 } from '@/shared/lib/apiError'
+import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import { useUserProfile } from '@/features/users/hooks/useProfile'
 import { useUserEvents } from '@/features/users/hooks/useUserEvents'
 import { useFollowUser } from '@/features/users/hooks/useFollowUser'
@@ -37,12 +38,28 @@ export default function UserProfileScreen() {
     if (isOwnProfile) router.replace('/(tabs)/profile')
   }, [isOwnProfile, router])
 
-  const { data: profile, isLoading: profileLoading } = useUserProfile(id)
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    refetch: refetchProfile,
+  } = useUserProfile(id)
   const canSeeContent =
     isOwnProfile || !profile?.isPrivate || profile?.followStatus === 'ACCEPTED'
   const eventsQuery = useUserEvents(id, canSeeContent)
   const { follow, unfollow } = useFollowUser(id)
   const createConversation = useCreateConversation()
+  // refetch ignora o `enabled` da query: sem acesso ao conteúdo (perfil
+  // privado), forçar a vitrine bateria num endpoint que vai negar.
+  const { refetch: refetchEvents } = eventsQuery
+  const refreshAll = useCallback(
+    () =>
+      Promise.all([
+        refetchProfile(),
+        ...(canSeeContent ? [refetchEvents()] : []),
+      ]),
+    [refetchProfile, refetchEvents, canSeeContent],
+  )
+  const { refreshing, onRefresh } = usePullRefresh(refreshAll)
 
   const events = useMemo(
     () => eventsQuery.data?.pages.flatMap(p => p.data) ?? [],
@@ -99,6 +116,11 @@ export default function UserProfileScreen() {
         hasNextPage={eventsQuery.hasNextPage ?? false}
         isFetchingNextPage={eventsQuery.isFetchingNextPage}
         isLoading={eventsQuery.isLoading}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        // Sem vitrine à vista o refresh atualiza só o header: o spinner gira
+        // normal, mas a grade não pisca fantasma de uma lista que não vem.
+        showSkeletonOnRefresh={canSeeContent}
         onLoadMore={eventsQuery.fetchNextPage}
         empty={
           <ProfileEventsEmpty variant={canSeeContent ? 'other' : 'private'} />

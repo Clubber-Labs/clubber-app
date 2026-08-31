@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { View, Text } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
@@ -20,6 +20,7 @@ import { useLogout } from '@/features/auth/hooks/useLogout'
 import { useFollowRequests } from '@/features/follows/hooks/useFollowRequests'
 import { useConfirm } from '@/shared/lib/confirm'
 import { UserAvatar } from '@/shared/components/UserAvatar'
+import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 import { ProfileMusicSection } from '@/features/spotify/components/ProfileMusicSection'
@@ -40,7 +41,11 @@ export default function ProfileScreen() {
   const router = useRouter()
   const tabBarClearance = useTabBarClearance()
   const headerClearance = useHeaderClearance(0)
-  const { data: profile, isLoading: profileLoading } = useMyProfile()
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    refetch: refetchProfile,
+  } = useMyProfile()
   const userId = profile?.id ?? ''
 
   const {
@@ -49,7 +54,13 @@ export default function ProfileScreen() {
     hasNextPage = false,
     isFetchingNextPage,
     isLoading: eventsLoading,
+    refetch: refetchEvents,
   } = useUserEvents(userId)
+  const refreshAll = useCallback(
+    () => Promise.all([refetchProfile(), refetchEvents()]),
+    [refetchProfile, refetchEvents],
+  )
+  const { refreshing, onRefresh } = usePullRefresh(refreshAll)
   const uploadAvatar = useUploadAvatar()
   const performLogout = useLogout()
   const confirm = useConfirm()
@@ -152,6 +163,8 @@ export default function ProfileScreen() {
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
         isLoading={eventsLoading}
+        refreshing={refreshing}
+        onRefresh={onRefresh}
         onLoadMore={fetchNextPage}
         bottomPadding={tabBarClearance}
         topPadding={headerClearance}
