@@ -14,13 +14,14 @@ import {
   focusForTouch,
   nextExpand,
   snapTarget,
-  travelDistance,
+  stageMax,
+  stageTravel,
   type StageFocus,
 } from '../utils/profileStage'
 
 // Sem overshoot: a seção encaixa no topo; passar dele abriria uma fresta.
 const SPRING = { damping: 26, stiffness: 240, overshootClamping: true }
-const SETTLED = 0.999
+const EPSILON = 0.001
 
 type Params = {
   // Sem o que expandir (vazio ou até 2 fileiras): o toque no mural vira eventos.
@@ -31,12 +32,13 @@ type Params = {
 
 /**
  * Palco do perfil: header + mural + eventos no mesmo lugar, e um gesto que é
- * contextual à seção tocada. `expand` (0..1) é o único estado animado: 0 é o
- * resumo, 1 é o foco no lugar. Foco em eventos: a seção sobe até o topo,
- * cobrindo mural e header. Foco no mural: só a seção de eventos desce e sai —
- * header e mural ficam, e a grade rola normal se houver mais fotos; ao voltar
- * ao topo, eventos retorna sozinha. O dedo dirige o valor (1:1 com a seção
- * que se move) e o soltar faz o snap.
+ * contextual à seção tocada. `expand` é o único estado animado e conta
+ * ESTÁGIOS: 0 é o resumo. Foco no mural (máx. 1): a seção de eventos desce e
+ * sai; header e mural ficam, a grade rola normal e leva o header junto. Foco
+ * em eventos (máx. 2): a folha sobe a altura do mural e encaixa sob o header
+ * fixo (1); puxar de novo leva header e folha juntos até o header sair (2);
+ * só então a lista rola. Tudo por transform — nenhuma propriedade de layout
+ * muda por frame, e é isso que mantém o gesto liso.
  */
 export function useProfileStage({ muralLocked, muralHeight }: Params) {
   const expand = useSharedValue(0)
@@ -51,7 +53,7 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
   const muralSummary = useSharedValue(muralHeight)
   const muralIsLocked = useSharedValue(muralLocked)
   const reported = useSharedValue<StageFocus | null>(null)
-  // Seção expandida e parada — é ela que ganha scroll próprio.
+  // Seção no último estágio e parada — é ela que ganha scroll próprio.
   const [expanded, setExpanded] = useState<StageFocus | null>(null)
   // Cópia JS da altura do header: a lista do mural recua esse tanto no topo
   // (é um prop de layout, muda só quando o header muda).
@@ -69,14 +71,16 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
     muralIsLocked.value = muralLocked
   }, [muralLocked, muralIsLocked])
 
-  // Só nos pontos de repouso (0 e 1): trocar estado JS no meio do gesto
-  // re-renderiza as duas grades e o dedo sente o engasgo. Entre um e outro o
-  // valor anterior fica — o pan já decide sozinho quem é dono do toque.
+  // Só nos pontos de repouso extremos (0 e o último estágio): trocar estado
+  // JS no meio do gesto re-renderiza as duas grades e o dedo sente o engasgo.
+  // Entre um e outro o valor anterior fica — o pan já decide sozinho quem é
+  // dono do toque.
   useAnimatedReaction(
     () => expand.value,
     value => {
-      const settledAtTop = value >= SETTLED
-      const settledAtRest = value <= 1 - SETTLED
+      const max = stageMax(focus.value)
+      const settledAtTop = value >= max - EPSILON
+      const settledAtRest = value <= EPSILON
       if (!settledAtTop && !settledAtRest) return
       const next: StageFocus | null = settledAtTop ? focus.value : null
       if (next === reported.value) return
@@ -111,31 +115,37 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
           cancelAnimation(expand)
           const offset =
             focus.value === 'mural' ? muralOffset.value : eventsOffset.value
-          // Expandida, a lista é dona do gesto — exceto arrastar pra baixo com
-          // ela no topo, que é o pedido de voltar ao resumo.
+          // No último estágio a lista é dona do gesto — exceto arrastar pra
+          // baixo com ela no topo, que é o pedido de voltar um estágio.
           panOwns.value =
-            expand.value < 1 || (e.translationY > 0 && offset <= 0)
+            expand.value < stageMax(focus.value) ||
+            (e.translationY > 0 && offset <= 0)
           startExpand.value = expand.value
           startTranslation.value = e.translationY
         })
         .onUpdate(e => {
           if (!panOwns.value) return
-          const distance = travelDistance(
-            focus.value,
-            headerHeight.value,
-            muralSummary.value,
-            stageHeight.value,
-          )
           expand.value = nextExpand(
             startExpand.value,
             e.translationY - startTranslation.value,
-            distance,
+            stageTravel(
+              focus.value,
+              headerHeight.value,
+              muralSummary.value,
+              stageHeight.value,
+            ),
+            stageMax(focus.value),
           )
         })
         .onEnd(e => {
           if (!panOwns.value) return
           expand.value = withSpring(
-            snapTarget(expand.value, e.velocityY),
+            snapTarget(
+              expand.value,
+              startExpand.value,
+              e.velocityY,
+              stageMax(focus.value),
+            ),
             SPRING,
           )
         }),
@@ -168,7 +178,7 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
         previous > 0 &&
         offset <= 0 &&
         focus.value === 'mural' &&
-        expand.value >= SETTLED
+        expand.value >= 1 - EPSILON
       ) {
         expand.value = withSpring(0, SPRING)
       }
@@ -180,62 +190,44 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
     },
   })
 
-  // Encaixada = eventos parada logo abaixo do header. É o único momento em
-  // que a folha muda de geometria (top 0 + espaçador da altura do header
-  // dentro da lista): uma vez, na thread de UI, no mesmo frame — o que a
-  // tela mostra antes e depois é idêntico.
-  const isDocked = () => {
+  // Quanto do header já saiu por cima: no mural é o scroll da grade
+  // (collapsing header); em eventos é o segundo estágio do gesto.
+  const headerCollapse = () => {
     'worklet'
-    return focus.value === 'events' && expand.value >= SETTLED
+    const h = headerHeight.value
+    if (focus.value === 'events') {
+      return h * Math.min(1, Math.max(0, expand.value - 1))
+    }
+    return Math.min(h, Math.max(0, muralOffset.value))
   }
 
-  // O header nunca sai pelo gesto: ele colapsa junto com a lista que rola
-  // (mural expandido ou eventos encaixada), pelo offset dela — collapsing
-  // header. Só uma das duas rola por vez.
-  const headerStyle = useAnimatedStyle(() => {
-    const collapse = Math.max(0, muralOffset.value, eventsOffset.value)
-    return {
-      transform: [{ translateY: -Math.min(collapse, headerHeight.value) }],
-    }
-  })
+  const headerStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: -headerCollapse() }],
+  }))
 
   // O mural ocupa o palco inteiro, por baixo do header (a lista recua a
   // altura dele). O que o "recorta" no resumo é a seção de eventos por cima
   // (fundo opaco); quando ela desce, o resto da grade aparece por trás. Não
   // se move: header e eventos é que passam por cima. `height` só muda com o
-  // layout, nunca por frame — layout por frame é o que engasga.
+  // layout, nunca por frame.
   const muralStyle = useAnimatedStyle(() => ({
     top: 0,
     height: stageHeight.value,
   }))
 
   // Foco no mural: desce e sai por baixo. Foco em eventos: sobe a altura do
-  // mural e encaixa sob o header; encaixada, assume o palco inteiro (top 0)
-  // com o espaçador cobrindo a faixa do header, e rola normal.
+  // mural (estágio 1) e depois a do header, junto com ele (estágio 2).
   const eventsStyle = useAnimatedStyle(() => {
-    if (isDocked()) {
-      return {
-        top: 0,
-        height: stageHeight.value,
-        transform: [{ translateY: 0 }],
-      }
-    }
     const top = headerHeight.value + muralSummary.value
-    const travel =
-      focus.value === 'mural' ? stageHeight.value - top : -muralSummary.value
-    return {
-      top,
-      height: stageHeight.value,
-      transform: [{ translateY: travel * expand.value }],
-    }
+    const translateY =
+      focus.value === 'mural'
+        ? (stageHeight.value - top) * expand.value
+        : -(muralSummary.value * Math.min(1, expand.value) + headerCollapse())
+    return { top, height: stageHeight.value, transform: [{ translateY }] }
   })
 
-  const eventsSpacerStyle = useAnimatedStyle(() => ({
-    height: isDocked() ? headerHeight.value : 0,
-  }))
-
   const veilStyle = useAnimatedStyle(() => ({
-    opacity: 1 - expand.value,
+    opacity: 1 - Math.min(1, expand.value),
   }))
 
   const setHeaderHeight = useCallback(
@@ -252,6 +244,7 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
     [stageHeight],
   )
 
+  // "Ver todas/todos": o primeiro estágio, com a mesma animação do gesto.
   const expandTo = useCallback(
     (target: StageFocus) => {
       focus.value = target
@@ -278,7 +271,6 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
     headerStyle,
     muralStyle,
     eventsStyle,
-    eventsSpacerStyle,
     veilStyle,
     expanded,
     headerInset,

@@ -32,9 +32,6 @@ type Props = {
   native: NativeGesture
   listRef: RefObject<FlatList | null>
   onScroll: ComponentProps<typeof Animated.FlatList>['onScroll']
-  // Faixa do header: só existe encaixada (a lista passa a começar no topo do
-  // palco e o header colapsa com o scroll dela).
-  spacerStyle: ComponentProps<typeof Animated.View>['style']
   onCreate?: () => void
   // Expande a seção (o mesmo que puxar pra cima).
   onViewAll: () => void
@@ -58,7 +55,6 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
   native,
   listRef,
   onScroll,
-  spacerStyle,
   onCreate,
   onViewAll,
   bottomPadding,
@@ -107,10 +103,9 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
           contentContainerStyle={{ paddingBottom: bottomPadding }}
           columnWrapperStyle={{ paddingHorizontal: 16, gap: 8 }}
           // Alça e cabeçalho moram na lista pra rolarem junto quando ela
-          // assume o palco. A alça é o sinal universal de "puxe pra cima".
+          // rola. A alça é o sinal universal de "puxe pra cima".
           ListHeaderComponent={
             <>
-              <Animated.View style={spacerStyle} />
               <View
                 className="items-center"
                 style={{

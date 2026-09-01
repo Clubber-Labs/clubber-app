@@ -66,43 +66,79 @@ export function focusForTouch(
   return y < headerHeight + muralHeight ? 'mural' : 'events'
 }
 
-// Quanto o gesto percorre até o encaixe, pra o dedo e a seção andarem 1:1.
-// Eventos sobe a altura do mural e encaixa logo abaixo do header (que fica
-// fixo); no mural é a seção de eventos que desce do seu topo até sair do
-// palco (mural e header ficam onde estão).
-export function travelDistance(
+// Estágios do foco. Mural: um só (eventos desce e sai). Eventos: dois —
+// sobe a altura do mural e encaixa sob o header fixo (1); depois header e
+// folha sobem juntos até o header sair (2). Só então a lista rola.
+export function stageMax(focus: StageFocus): number {
+  'worklet'
+  return focus === 'events' ? 2 : 1
+}
+
+export type StageTravel = { first: number; second: number }
+
+// Quanto cada estágio percorre em pixels, pra o dedo e a seção andarem 1:1.
+export function stageTravel(
   focus: StageFocus,
   headerHeight: number,
   muralHeight: number,
   stageHeight: number,
-): number {
+): StageTravel {
   'worklet'
   if (focus === 'mural') {
-    return Math.max(1, stageHeight - headerHeight - muralHeight)
+    return {
+      first: Math.max(1, stageHeight - headerHeight - muralHeight),
+      second: 0,
+    }
   }
-  return Math.max(1, muralHeight)
+  return { first: Math.max(1, muralHeight), second: Math.max(1, headerHeight) }
 }
 
+function travelPx(expand: number, travel: StageTravel): number {
+  'worklet'
+  return expand <= 1
+    ? expand * travel.first
+    : travel.first + (expand - 1) * travel.second
+}
+
+function expandFromPx(px: number, travel: StageTravel, max: number): number {
+  'worklet'
+  const total = travel.first + (max - 1) * travel.second
+  const clamped = Math.min(total, Math.max(0, px))
+  return clamped <= travel.first
+    ? clamped / travel.first
+    : 1 + (clamped - travel.first) / travel.second
+}
+
+// Progresso a partir do deslocamento do dedo (pra cima = avança), contínuo
+// através dos estágios: o pixel manda, o estágio é só a régua.
 export function nextExpand(
   start: number,
   translationY: number,
-  distance: number,
+  travel: StageTravel,
+  max: number,
 ): number {
   'worklet'
-  if (distance <= 0) return start
-  const next = start - translationY / distance
-  return Math.min(1, Math.max(0, next))
+  return expandFromPx(travelPx(start, travel) - translationY, travel, max)
 }
 
 const FLICK_VELOCITY = 300
-// A seção de eventos percorre header + mural (~600px) até o topo: exigir
-// metade disso antes de encaixar pesa no dedo. Um terço do caminho já diz a
-// intenção.
+// Um terço do estágio já diz a intenção; exigir metade pesa no dedo.
 const SNAP_RATIO = 0.35
 
-// Ao soltar: um flick decide pela direção; sem flick, a intenção pelo caminho.
-export function snapTarget(expand: number, velocityY: number): 0 | 1 {
+// Ao soltar: um flick vai pro próximo estágio na direção; sem flick, a
+// intenção pelo caminho percorrido desde o estágio de partida.
+export function snapTarget(
+  expand: number,
+  start: number,
+  velocityY: number,
+  max: number,
+): number {
   'worklet'
-  if (Math.abs(velocityY) > FLICK_VELOCITY) return velocityY < 0 ? 1 : 0
-  return expand > SNAP_RATIO ? 1 : 0
+  const clamp = (value: number) => Math.min(max, Math.max(0, value))
+  if (Math.abs(velocityY) > FLICK_VELOCITY) {
+    return clamp(velocityY < 0 ? Math.floor(expand) + 1 : Math.ceil(expand) - 1)
+  }
+  const from = clamp(Math.round(start))
+  if (expand > from) return clamp(expand - from > SNAP_RATIO ? from + 1 : from)
+  return clamp(from - expand > SNAP_RATIO ? from - 1 : from)
 }
