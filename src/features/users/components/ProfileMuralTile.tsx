@@ -18,7 +18,7 @@ type Props = {
   onPress: (photo: UserPhoto) => void
 }
 
-const VEIL_BG = 'rgba(11, 11, 13, 0.55)'
+const VEIL_BG = 'rgba(5, 8, 13, 0.55)'
 
 // Tile reto (sem raio): a grade é colada à borda da tela, como um mural.
 // Memoizado: o palco re-renderiza a grade ao encaixar, e 30 tiles com Image

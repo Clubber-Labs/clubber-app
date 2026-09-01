@@ -43,7 +43,7 @@ const PLAIN_TITLE_INSET = 10
 // Foto do criador no rodapé: pequena o bastante pra não competir com o título.
 const AVATAR_SIZE = 24
 // Vidro escuro dos sobrepostos — o único que encosta na arte do flyer.
-const OVERLAY_BG = 'rgba(11, 11, 13, 0.65)'
+const OVERLAY_BG = 'rgba(5, 8, 13, 0.65)'
 // viewBox mapeia o espaço do SVG direto no viewport; "100%" sozinho não resolve
 // exato e deixa um fio sem pintura na borda (mesma correção do EventCardHero).
 const COVER_VIEWBOX = '0 0 100 100'

@@ -20,7 +20,7 @@ const require = createRequire(import.meta.url)
 // As medidas vêm do spec, que o app.config.js também lê pra montar o
 // `imageWidth` — sem isso o lado do artboard e o do plugin saem de sincronia (já
 // aconteceu: artboard em retrato e imageWidth quadrado encolheram a arte 20%).
-const BG = '#0B0B0D' // colors.background
+const BG = '#05080D' // colors.background
 const FG = '#ffffff' // colors.content
 const SCALE = 4
 
