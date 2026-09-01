@@ -43,9 +43,9 @@ function isAddSlot(cell: Cell): cell is AddSlot {
 
 const ADD_SLOT: AddSlot = { __add: true }
 
-// Grade 3×N do mural, colada às bordas da tela. A mesma lista serve ao resumo
-// (2 fileiras visíveis, o 6º tile com "+N") e ao mural cheio — o palco só
-// muda quanto dela aparece.
+// Grade do mural (MURAL_COLUMNS × N), colada às bordas da tela. A mesma lista
+// serve ao resumo (até 2 fileiras visíveis, o último tile delas com "+N") e ao
+// mural cheio — o palco só muda quanto dela aparece.
 export function ProfileMuralGrid({
   photos,
   totalCount,
