@@ -64,6 +64,7 @@ export function VenuePicker({ value, onChange, coords, hasError }: Props) {
               longitude: result.longitude,
             })
           }
+          coords={coords}
           hasError={hasError}
         />
         <Pressable
