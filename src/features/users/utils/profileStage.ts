@@ -11,7 +11,7 @@ export const STAGE_SECTION_GAP = 8
 // (fileiras do resumo, vaga do "+", véu "+N", limiar de expansão) deriva daqui.
 export const MURAL_COLUMNS = 3
 export const MURAL_GAP = 2
-export const MURAL_SUMMARY_ROWS = 3
+export const MURAL_SUMMARY_ROWS = 2
 export const MURAL_SUMMARY_COUNT = MURAL_COLUMNS * MURAL_SUMMARY_ROWS
 // Altura fixa do cabeçalho de seção — a geometria do palco é calculada, não
 // medida, e uma altura de conteúdo aqui a tornaria imprevisível.
