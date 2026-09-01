@@ -161,6 +161,10 @@ const styles = StyleSheet.create({
   // o mesmo hairline do SheetModal. Ao subir, encaixa sob o header de vidro
   // com essa borda.
   eventsSheet: {
+    // As laterais saem meio pixel da tela: o hairline precisa existir nos
+    // quatro lados pra contornar o raio, mas visível só no topo.
+    left: -StyleSheet.hairlineWidth,
+    right: -StyleSheet.hairlineWidth,
     borderTopLeftRadius: EVENTS_SHEET_RADIUS,
     borderTopRightRadius: EVENTS_SHEET_RADIUS,
     borderWidth: StyleSheet.hairlineWidth,
