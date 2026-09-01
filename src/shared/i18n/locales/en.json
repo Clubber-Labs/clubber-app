@@ -1295,8 +1295,7 @@
       "emptyOther": "No photos yet",
       "moreActions": "More options",
       "deleteTitle": "Delete photo",
-      "deleteMessage": "The post leaves your wall. Are you sure?",
-      "addPhoto": "Post more photos"
+      "deleteMessage": "The post leaves your wall. Are you sure?"
     },
     "photo": {
       "title": "Post a photo",

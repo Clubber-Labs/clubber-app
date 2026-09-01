@@ -1,5 +1,5 @@
 import { memo } from 'react'
-import { Pressable } from 'react-native'
+import { Pressable, Text } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { PlusIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
@@ -9,8 +9,8 @@ type Props = {
   onPress?: () => void
 }
 
-// "+" discreto na vaga livre da fileira: convida a preencher o mural sem
-// competir com as fotos — superfície neutra, ícone apagado, sem borda.
+// Vaga livre da fileira virando convite: tracejado (é um lugar a preencher,
+// não uma foto), "+" e o rótulo. Reto como os tiles do mural.
 export const ProfileMuralAddTile = memo(function ProfileMuralAddTile({
   size,
   onPress,
@@ -20,11 +20,14 @@ export const ProfileMuralAddTile = memo(function ProfileMuralAddTile({
     <Pressable
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityLabel={t('profile.mural.addPhoto')}
-      className="items-center justify-center bg-surface active:bg-surface-elevated"
+      accessibilityLabel={t('profile.photo.title')}
+      className="items-center justify-center gap-2 border border-dashed border-line-strong bg-surface active:bg-surface-elevated"
       style={{ width: size, height: size }}
     >
-      <PlusIcon size={22} color={colors.contentSubtle} />
+      <PlusIcon size={26} color={colors.contentMuted} />
+      <Text className="text-[13px] font-semibold text-content-muted">
+        {t('profile.photo.title')}
+      </Text>
     </Pressable>
   )
 })

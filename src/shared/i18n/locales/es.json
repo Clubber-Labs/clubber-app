@@ -1295,8 +1295,7 @@
       "emptyOther": "Aún no hay fotos",
       "moreActions": "Más opciones",
       "deleteTitle": "Eliminar foto",
-      "deleteMessage": "La publicación sale de tu muro. ¿Seguro?",
-      "addPhoto": "Publicar más fotos"
+      "deleteMessage": "La publicación sale de tu muro. ¿Seguro?"
     },
     "photo": {
       "title": "Publicar foto",
