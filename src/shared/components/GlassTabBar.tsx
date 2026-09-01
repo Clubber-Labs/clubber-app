@@ -21,7 +21,7 @@ export const TAB_BAR_BOTTOM_MARGIN = 8
 export const TAB_BAR_SIDE_MARGIN = 24
 // Compacta também na largura: as cinco lentes menores cabem numa pílula mais
 // curta, e ela deixa de parecer uma barra.
-const COMPACT_SIDE_MARGIN = 52
+const COMPACT_SIDE_MARGIN = 72
 
 const LENS_SIZE = 44
 const COMPACT_LENS_SCALE = 36 / LENS_SIZE
