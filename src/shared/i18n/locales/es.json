@@ -161,7 +161,11 @@
     "USE_LEAVE_GROUP": "Para salir del grupo, usa «Salir del grupo».",
     "VIDEO_NOT_FOUND": "Este video ya no existe.",
     "VIDEO_NOT_IN_CONVERSATION": "Este video no pertenece a esta conversación.",
-    "VIDEO_UPLOAD_REQUIRES_R2": "La subida de video no está disponible en este servidor."
+    "VIDEO_UPLOAD_REQUIRES_R2": "La subida de video no está disponible en este servidor.",
+    "EVENT_NOT_ATTENDED": "Solo puedes vincular un evento al que fuiste.",
+    "NOT_USER_PHOTO_AUTHOR": "Solo puedes eliminar tus propias fotos.",
+    "USER_PHOTO_IMAGE_LIMIT": "Máximo {{max}} fotos por publicación.",
+    "USER_PHOTO_NOT_FOUND": "Esta foto ya no está en el muro."
   },
   "format": {
     "date": {

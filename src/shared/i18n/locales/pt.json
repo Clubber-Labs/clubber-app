@@ -161,7 +161,11 @@
     "USE_LEAVE_GROUP": "Para sair do grupo, use \"Sair do grupo\".",
     "VIDEO_NOT_FOUND": "Este vídeo não existe mais.",
     "VIDEO_NOT_IN_CONVERSATION": "Este vídeo não pertence a esta conversa.",
-    "VIDEO_UPLOAD_REQUIRES_R2": "O envio de vídeo está indisponível neste servidor."
+    "VIDEO_UPLOAD_REQUIRES_R2": "O envio de vídeo está indisponível neste servidor.",
+    "EVENT_NOT_ATTENDED": "Só dá pra vincular um evento em que você esteve.",
+    "NOT_USER_PHOTO_AUTHOR": "Você só pode apagar as suas fotos.",
+    "USER_PHOTO_IMAGE_LIMIT": "No máximo {{max}} fotos por publicação.",
+    "USER_PHOTO_NOT_FOUND": "Esta foto não está mais no mural."
   },
   "format": {
     "date": {

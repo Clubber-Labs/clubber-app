@@ -161,7 +161,11 @@
     "USE_LEAVE_GROUP": "To leave the group, use “Leave group”.",
     "VIDEO_NOT_FOUND": "This video no longer exists.",
     "VIDEO_NOT_IN_CONVERSATION": "This video doesn't belong to this conversation.",
-    "VIDEO_UPLOAD_REQUIRES_R2": "Video upload is unavailable on this server."
+    "VIDEO_UPLOAD_REQUIRES_R2": "Video upload is unavailable on this server.",
+    "EVENT_NOT_ATTENDED": "You can only link an event you attended.",
+    "NOT_USER_PHOTO_AUTHOR": "You can only delete your own photos.",
+    "USER_PHOTO_IMAGE_LIMIT": "At most {{max}} photos per post.",
+    "USER_PHOTO_NOT_FOUND": "This photo is no longer on the wall."
   },
   "format": {
     "date": {
