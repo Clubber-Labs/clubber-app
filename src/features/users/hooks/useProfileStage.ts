@@ -52,7 +52,9 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
   const reported = useSharedValue<StageFocus | null>(null)
   // Seção expandida e parada — é ela que ganha scroll próprio.
   const [expanded, setExpanded] = useState<StageFocus | null>(null)
-  const [headerMeasured, setHeaderMeasured] = useState(false)
+  // Cópia JS da altura do header: a lista do mural recua esse tanto no topo
+  // (é um prop de layout, muda só quando o header muda).
+  const [headerInset, setHeaderInset] = useState(0)
 
   useEffect(() => {
     muralSummary.value = muralHeight
@@ -172,26 +174,27 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
     },
   })
 
-  // Avatar e stats só saem por cima quando eventos toma o palco; no mural o
-  // header fica.
-  const headerStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY:
-          focus.value === 'events' ? -headerHeight.value * expand.value : 0,
-      },
-    ],
-  }))
+  // Eventos tomando o palco: o header sai com ela. Mural rolando: o header
+  // acompanha a grade pra cima até sumir (collapsing header) — a lista começa
+  // no topo do palco com um recuo igual ao header, então o mesmo offset move
+  // os dois em sincronia.
+  const headerStyle = useAnimatedStyle(() => {
+    const translateY =
+      focus.value === 'events'
+        ? -headerHeight.value * expand.value
+        : -Math.min(Math.max(0, muralOffset.value), headerHeight.value)
+    return { transform: [{ translateY }] }
+  })
 
-  // O mural ocupa do pé do header ao pé do palco. O que o "recorta" no resumo
-  // é a seção de eventos por cima dele (fundo opaco); quando ela desce, o
-  // resto da grade aparece por trás. Quando é eventos que sobe, o mural
-  // acompanha o header pra cima — senão as fotos ficam paradas atrás
-  // enquanto o perfil sai. `top`/`height` só mudam com o layout, nunca por
-  // frame — layout por frame é o que engasga.
+  // O mural ocupa o palco inteiro, por baixo do header (a lista recua a
+  // altura dele). O que o "recorta" no resumo é a seção de eventos por cima
+  // (fundo opaco); quando ela desce, o resto da grade aparece por trás.
+  // Quando é eventos que sobe, o mural acompanha o header pra cima — senão
+  // as fotos ficam paradas atrás enquanto o perfil sai. `height` só muda com
+  // o layout, nunca por frame — layout por frame é o que engasga.
   const muralStyle = useAnimatedStyle(() => ({
-    top: headerHeight.value,
-    height: Math.max(0, stageHeight.value - headerHeight.value),
+    top: 0,
+    height: stageHeight.value,
     transform: [
       {
         translateY:
@@ -219,7 +222,7 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
   const setHeaderHeight = useCallback(
     (height: number) => {
       headerHeight.value = height
-      setHeaderMeasured(height > 0)
+      setHeaderInset(height)
     },
     [headerHeight],
   )
@@ -252,7 +255,7 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
     eventsStyle,
     veilStyle,
     expanded,
-    headerMeasured,
+    headerInset,
     setHeaderHeight,
     setStageHeight,
     expandTo,

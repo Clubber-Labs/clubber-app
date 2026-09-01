@@ -15,6 +15,7 @@ type Props = {
   photos: StageList<UserPhoto>
   isOwnProfile: boolean
   tileSize: number
+  topInset: number
   scrollEnabled: boolean
   native: NativeGesture
   onScroll: ComponentProps<typeof Animated.FlatList>['onScroll']
@@ -28,10 +29,13 @@ type Props = {
 }
 
 // memo: ao encaixar, o palco só re-renderiza a seção cujo scrollEnabled mudou.
+// Tudo (cabeçalho, grade, vazio, fantasma) mora na lista: é ela que rola sob o
+// header do perfil e o leva junto.
 export const ProfileMuralSection = memo(function ProfileMuralSection({
   photos,
   isOwnProfile,
   tileSize,
+  topInset,
   scrollEnabled,
   native,
   onScroll,
@@ -43,39 +47,42 @@ export const ProfileMuralSection = memo(function ProfileMuralSection({
   bottomPadding,
 }: Props) {
   const { t } = useTranslation()
-  const hasPhotos = photos.items.length > 0
   const showAddTile =
     isOwnProfile && !!onAddPhoto && muralHasFreeSlot(photos.items.length)
 
   return (
     <View className="flex-1 bg-background">
-      <ProfileSectionHeader
-        title={t('profile.mural.title')}
-        count={photos.totalCount}
-        action={expandable ? t('profile.mural.viewAll') : undefined}
-        onAction={expandable ? onViewAll : undefined}
+      <ProfileMuralGrid
+        photos={photos.isLoading ? [] : photos.items}
+        totalCount={photos.totalCount}
+        tileSize={tileSize}
+        topInset={topInset}
+        header={
+          <ProfileSectionHeader
+            title={t('profile.mural.title')}
+            count={photos.totalCount}
+            action={expandable ? t('profile.mural.viewAll') : undefined}
+            onAction={expandable ? onViewAll : undefined}
+          />
+        }
+        empty={
+          photos.isLoading ? (
+            <ProfileMuralSkeleton tileSize={tileSize} />
+          ) : (
+            <ProfileMuralEmpty isOwnProfile={isOwnProfile} />
+          )
+        }
+        scrollEnabled={scrollEnabled}
+        native={native}
+        onScroll={onScroll}
+        veilStyle={veilStyle}
+        hasNextPage={photos.hasNextPage}
+        isFetchingNextPage={photos.isFetchingNextPage}
+        onLoadMore={photos.onLoadMore}
+        onPressPhoto={onPressPhoto}
+        onAddPhoto={showAddTile ? onAddPhoto : undefined}
+        bottomPadding={bottomPadding}
       />
-      {photos.isLoading ? (
-        <ProfileMuralSkeleton tileSize={tileSize} />
-      ) : hasPhotos ? (
-        <ProfileMuralGrid
-          photos={photos.items}
-          totalCount={photos.totalCount}
-          tileSize={tileSize}
-          scrollEnabled={scrollEnabled}
-          native={native}
-          onScroll={onScroll}
-          veilStyle={veilStyle}
-          hasNextPage={photos.hasNextPage}
-          isFetchingNextPage={photos.isFetchingNextPage}
-          onLoadMore={photos.onLoadMore}
-          onPressPhoto={onPressPhoto}
-          onAddPhoto={showAddTile ? onAddPhoto : undefined}
-          bottomPadding={bottomPadding}
-        />
-      ) : (
-        <ProfileMuralEmpty isOwnProfile={isOwnProfile} />
-      )}
     </View>
   )
 })

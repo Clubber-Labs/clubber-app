@@ -1,4 +1,4 @@
-import { useCallback, type ComponentProps } from 'react'
+import { useCallback, type ComponentProps, type ReactElement } from 'react'
 import type { ListRenderItem } from 'react-native'
 import { ActivityIndicator } from 'react-native'
 import {
@@ -20,6 +20,13 @@ type Props = {
   photos: UserPhoto[]
   totalCount: number
   tileSize: number
+  // Recuo no topo igual ao header do perfil: a lista começa por baixo dele e o
+  // header acompanha o scroll (collapsing header) — ver useProfileStage.
+  topInset: number
+  // Cabeçalho da seção e estado vazio/carregando VIVEM na lista, pra rolarem
+  // junto com o header do perfil.
+  header: ReactElement
+  empty: ReactElement | null
   // Só a seção expandida rola; no resumo a grade é recortada pelo palco.
   scrollEnabled: boolean
   native: NativeGesture
@@ -50,6 +57,9 @@ export function ProfileMuralGrid({
   photos,
   totalCount,
   tileSize,
+  topInset,
+  header,
+  empty,
   scrollEnabled,
   native,
   onScroll,
@@ -96,8 +106,14 @@ export function ProfileMuralGrid({
         onScroll={onScroll}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
+        ListHeaderComponent={header}
+        ListEmptyComponent={empty}
         columnWrapperStyle={{ gap: MURAL_GAP }}
-        contentContainerStyle={{ gap: MURAL_GAP, paddingBottom: bottomPadding }}
+        contentContainerStyle={{
+          gap: MURAL_GAP,
+          paddingTop: topInset,
+          paddingBottom: bottomPadding,
+        }}
         // O resumo recorta a grade em vez de fatiar os dados: as fileiras
         // seguintes precisam já existir pra aparecerem conforme ele cresce.
         initialNumToRender={30}
