@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { FlatList } from 'react-native'
 import { Gesture } from 'react-native-gesture-handler'
 import {
   cancelAnimation,
@@ -55,6 +56,11 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
   // Cópia JS da altura do header: a lista do mural recua esse tanto no topo
   // (é um prop de layout, muda só quando o header muda).
   const [headerInset, setHeaderInset] = useState(0)
+  // As listas de dentro: o collapse imperativo (re-tap na aba) precisa
+  // devolvê-las ao topo, senão o resumo mostra fileiras roladas e o header
+  // preso escondido (o headerStyle segue o offset do mural).
+  const muralList = useRef<FlatList>(null)
+  const eventsList = useRef<FlatList>(null)
 
   useEffect(() => {
     muralSummary.value = muralHeight
@@ -241,13 +247,19 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
     [focus, expand],
   )
   const collapse = useCallback(() => {
+    muralList.current?.scrollToOffset({ offset: 0, animated: false })
+    eventsList.current?.scrollToOffset({ offset: 0, animated: false })
+    muralOffset.value = 0
+    eventsOffset.value = 0
     expand.value = withSpring(0, SPRING)
-  }, [expand])
+  }, [expand, muralOffset, eventsOffset])
 
   return {
     pan,
     muralNative,
     eventsNative,
+    muralList,
+    eventsList,
     onMuralScroll,
     onEventsScroll,
     headerStyle,

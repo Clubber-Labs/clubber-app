@@ -13,7 +13,7 @@ import { isProfileTab } from '../utils/tabRoutes'
 // compacta e a distância acompanha.
 export function useTabBarClearance(gap = 12) {
   const insets = useSafeAreaInsets()
-  const segments = useSegments() as string[]
+  const segments = useSegments()
   const height = isProfileTab(segments)
     ? TAB_BAR_COMPACT_HEIGHT
     : TAB_BAR_HEIGHT

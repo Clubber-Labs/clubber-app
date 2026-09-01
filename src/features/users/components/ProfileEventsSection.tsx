@@ -1,5 +1,5 @@
-import { memo, useCallback, type ComponentProps } from 'react'
-import type { ListRenderItem } from 'react-native'
+import { memo, useCallback, type ComponentProps, type RefObject } from 'react'
+import type { FlatList, ListRenderItem } from 'react-native'
 import { View, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
@@ -15,13 +15,13 @@ import { ProfileEventsSkeleton } from './ProfileEventsSkeleton'
 import { ProfileEventsEmpty } from './ProfileEventsEmpty'
 import type { StageList } from './ProfileStage'
 import { STAGE_SECTION_GAP } from '../utils/profileStage'
+import type { UserEventSummary } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 // Respiro acima e abaixo da alça, somado ao respiro entre as seções: a alça
 // precisa de ar por cima pra não colar no arredondado da folha.
 const HANDLE_PADDING_TOP = 12
 const HANDLE_PADDING_BOTTOM = 6
-import type { UserEventSummary } from '@/shared/types'
-import { colors } from '@/shared/theme'
 
 type Props = {
   events: StageList<UserEventSummary>
@@ -30,6 +30,7 @@ type Props = {
   isOwnProfile: boolean
   scrollEnabled: boolean
   native: NativeGesture
+  listRef: RefObject<FlatList | null>
   onScroll: ComponentProps<typeof Animated.FlatList>['onScroll']
   onCreate?: () => void
   // Expande a seção (o mesmo que puxar pra cima).
@@ -52,6 +53,7 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
   isOwnProfile,
   scrollEnabled,
   native,
+  listRef,
   onScroll,
   onCreate,
   onViewAll,
@@ -106,6 +108,7 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
       />
       <GestureDetector gesture={native}>
         <Animated.FlatList
+          ref={listRef}
           data={rows}
           numColumns={2}
           keyExtractor={item => (isSpacer(item) ? item.__spacer : item.id)}

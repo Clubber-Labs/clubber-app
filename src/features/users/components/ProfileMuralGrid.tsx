@@ -1,5 +1,10 @@
-import { useCallback, type ComponentProps, type ReactElement } from 'react'
-import type { ListRenderItem } from 'react-native'
+import {
+  useCallback,
+  type ComponentProps,
+  type ReactElement,
+  type RefObject,
+} from 'react'
+import type { FlatList, ListRenderItem } from 'react-native'
 import { ActivityIndicator } from 'react-native'
 import {
   GestureDetector,
@@ -30,6 +35,7 @@ type Props = {
   // Só a seção expandida rola; no resumo a grade é recortada pelo palco.
   scrollEnabled: boolean
   native: NativeGesture
+  listRef: RefObject<FlatList | null>
   onScroll: ComponentProps<typeof Animated.FlatList>['onScroll']
   veilStyle: ComponentProps<typeof Animated.View>['style']
   hasNextPage: boolean
@@ -62,6 +68,7 @@ export function ProfileMuralGrid({
   empty,
   scrollEnabled,
   native,
+  listRef,
   onScroll,
   veilStyle,
   hasNextPage,
@@ -96,6 +103,7 @@ export function ProfileMuralGrid({
   return (
     <GestureDetector gesture={native}>
       <Animated.FlatList
+        ref={listRef}
         data={cells}
         numColumns={MURAL_COLUMNS}
         keyExtractor={cell => (isAddSlot(cell) ? '__add' : cell.id)}

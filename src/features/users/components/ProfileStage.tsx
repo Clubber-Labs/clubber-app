@@ -115,6 +115,7 @@ export function ProfileStage({
                 topInset={stage.headerInset}
                 scrollEnabled={stage.expanded === 'mural'}
                 native={stage.muralNative}
+                listRef={stage.muralList}
                 onScroll={stage.onMuralScroll}
                 veilStyle={stage.veilStyle}
                 expandable={expandable}
@@ -141,6 +142,7 @@ export function ProfileStage({
                 isOwnProfile={isOwnProfile}
                 scrollEnabled={stage.expanded === 'events'}
                 native={stage.eventsNative}
+                listRef={stage.eventsList}
                 onScroll={stage.onEventsScroll}
                 onCreate={onCreateEvent}
                 onViewAll={openEvents}

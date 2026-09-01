@@ -1,4 +1,5 @@
-import { memo, type ComponentProps } from 'react'
+import { memo, type ComponentProps, type RefObject } from 'react'
+import type { FlatList } from 'react-native'
 import { View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import type { NativeGesture } from 'react-native-gesture-handler'
@@ -18,6 +19,7 @@ type Props = {
   topInset: number
   scrollEnabled: boolean
   native: NativeGesture
+  listRef: RefObject<FlatList | null>
   onScroll: ComponentProps<typeof Animated.FlatList>['onScroll']
   veilStyle: ComponentProps<typeof Animated.View>['style']
   // Mais que as duas fileiras do resumo: mostra "Ver todas" e aceita o gesto.
@@ -38,6 +40,7 @@ export const ProfileMuralSection = memo(function ProfileMuralSection({
   topInset,
   scrollEnabled,
   native,
+  listRef,
   onScroll,
   veilStyle,
   expandable,
@@ -74,6 +77,7 @@ export const ProfileMuralSection = memo(function ProfileMuralSection({
         }
         scrollEnabled={scrollEnabled}
         native={native}
+        listRef={listRef}
         onScroll={onScroll}
         veilStyle={veilStyle}
         hasNextPage={photos.hasNextPage}

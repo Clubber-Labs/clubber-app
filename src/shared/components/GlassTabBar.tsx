@@ -37,7 +37,7 @@ export function GlassTabBar({
   navigation,
 }: BottomTabBarProps) {
   const insets = useSafeAreaInsets()
-  const segments = useSegments() as string[]
+  const segments = useSegments()
   const compact = isProfileTab(segments)
 
   // Um valor só dirige largura, altura e lente: trocar de aba anima entre os dois
