@@ -7,12 +7,11 @@ export type StageFocus = 'mural' | 'events'
 // DENTRO da seção de eventos (padding com fundo opaco): o mural tem sempre a
 // altura do palco, e um vão entre as seções deixaria a 3ª fileira aparecer.
 export const STAGE_SECTION_GAP = 8
-// Tiles quadrados em 2 colunas, colados à borda da tela: a foto pede tamanho,
-// e em 3 colunas ela virava miniatura. O resto da geometria (fileiras do
-// resumo, vaga do "+", véu "+N", limiar de expansão) deriva daqui.
-export const MURAL_COLUMNS = 2
+// Tiles quadrados em 3 colunas, colados à borda da tela. O resto da geometria
+// (fileiras do resumo, vaga do "+", véu "+N", limiar de expansão) deriva daqui.
+export const MURAL_COLUMNS = 3
 export const MURAL_GAP = 2
-export const MURAL_SUMMARY_ROWS = 2
+export const MURAL_SUMMARY_ROWS = 3
 export const MURAL_SUMMARY_COUNT = MURAL_COLUMNS * MURAL_SUMMARY_ROWS
 // Altura fixa do cabeçalho de seção — a geometria do palco é calculada, não
 // medida, e uma altura de conteúdo aqui a tornaria imprevisível.
