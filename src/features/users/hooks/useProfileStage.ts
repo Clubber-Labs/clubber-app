@@ -13,7 +13,6 @@ import {
   nextExpand,
   snapTarget,
   travelDistance,
-  STAGE_SECTION_GAP,
   type StageFocus,
 } from '../utils/profileStage'
 
@@ -59,10 +58,16 @@ export function useProfileStage({ muralEmpty, muralHeight }: Params) {
     muralIsEmpty.value = muralEmpty
   }, [muralEmpty, muralIsEmpty])
 
+  // Só nos pontos de repouso (0 e 1): trocar estado JS no meio do gesto
+  // re-renderiza as duas grades e o dedo sente o engasgo. Entre um e outro o
+  // valor anterior fica — o pan já decide sozinho quem é dono do toque.
   useAnimatedReaction(
     () => expand.value,
     value => {
-      const next: StageFocus | null = value >= SETTLED ? focus.value : null
+      const settledAtTop = value >= SETTLED
+      const settledAtRest = value <= 1 - SETTLED
+      if (!settledAtTop && !settledAtRest) return
+      const next: StageFocus | null = settledAtTop ? focus.value : null
       if (next === reported.value) return
       reported.value = next
       runOnJS(setExpanded)(next)
@@ -151,24 +156,21 @@ export function useProfileStage({ muralEmpty, muralHeight }: Params) {
     transform: [{ translateY: -headerHeight.value * expand.value }],
   }))
 
-  // Segue o header pra cima e cresce até o palco inteiro quando é o foco.
-  const muralStyle = useAnimatedStyle(() => {
-    const summary = muralSummary.value
-    const height =
-      focus.value === 'mural'
-        ? summary + (stageHeight.value - summary) * expand.value
-        : summary
-    return {
-      top: headerHeight.value,
-      height,
-      transform: [{ translateY: -headerHeight.value * expand.value }],
-    }
-  })
+  // SÓ transform durante o gesto: `top`/`height` são propriedades de layout e
+  // mudá-las a cada frame força o Yoga a recalcular as duas grades — é isso
+  // que engasga. O mural tem sempre a altura do palco; o que o "recorta" no
+  // resumo é a seção de eventos por cima dele (fundo opaco). Quando eventos
+  // desce, o mural aparece por trás, sem crescer de verdade.
+  const muralStyle = useAnimatedStyle(() => ({
+    top: headerHeight.value,
+    height: stageHeight.value,
+    transform: [{ translateY: -headerHeight.value * expand.value }],
+  }))
 
   // Foco no mural: desce e sai por baixo. Foco em eventos: sobe até o topo,
   // cobrindo o mural.
   const eventsStyle = useAnimatedStyle(() => {
-    const top = headerHeight.value + muralSummary.value + STAGE_SECTION_GAP
+    const top = headerHeight.value + muralSummary.value
     const travel = focus.value === 'mural' ? stageHeight.value - top : -top
     return {
       top,

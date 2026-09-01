@@ -3,7 +3,9 @@
 
 export type StageFocus = 'mural' | 'events'
 
-// Respiro entre o fim do mural (modo resumo) e o cabeçalho de eventos.
+// Respiro entre o fim do mural (modo resumo) e o cabeçalho de eventos. Vive
+// DENTRO da seção de eventos (padding com fundo opaco): o mural tem sempre a
+// altura do palco, e um vão entre as seções deixaria a 3ª fileira aparecer.
 export const STAGE_SECTION_GAP = 8
 // Tiles quadrados em 3 colunas, colados à borda da tela.
 export const MURAL_COLUMNS = 3
@@ -50,9 +52,7 @@ export function travelDistance(
   muralHeight: number,
 ): number {
   'worklet'
-  return focus === 'mural'
-    ? headerHeight
-    : headerHeight + muralHeight + STAGE_SECTION_GAP
+  return focus === 'mural' ? headerHeight : headerHeight + muralHeight
 }
 
 export function nextExpand(
@@ -66,11 +66,15 @@ export function nextExpand(
   return Math.min(1, Math.max(0, next))
 }
 
-const FLICK_VELOCITY = 500
+const FLICK_VELOCITY = 300
+// A seção de eventos percorre header + mural (~600px) até o topo: exigir
+// metade disso antes de encaixar pesa no dedo. Um terço do caminho já diz a
+// intenção.
+const SNAP_RATIO = 0.35
 
-// Ao soltar: um flick decide pela direção; sem flick, o lado mais próximo.
+// Ao soltar: um flick decide pela direção; sem flick, a intenção pelo caminho.
 export function snapTarget(expand: number, velocityY: number): 0 | 1 {
   'worklet'
   if (Math.abs(velocityY) > FLICK_VELOCITY) return velocityY < 0 ? 1 : 0
-  return expand > 0.5 ? 1 : 0
+  return expand > SNAP_RATIO ? 1 : 0
 }

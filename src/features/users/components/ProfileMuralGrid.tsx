@@ -1,4 +1,5 @@
-import type { ComponentProps } from 'react'
+import { useCallback, type ComponentProps } from 'react'
+import type { ListRenderItem } from 'react-native'
 import { ActivityIndicator } from 'react-native'
 import {
   GestureDetector,
@@ -48,6 +49,22 @@ export function ProfileMuralGrid({
   bottomPadding,
 }: Props) {
   const hiddenCount = Math.max(0, totalCount - MURAL_SUMMARY_COUNT)
+  // Identidade estável: renderItem novo a cada render faz o FlatList
+  // re-renderizar toda célula visível.
+  const renderItem = useCallback<ListRenderItem<UserPhoto>>(
+    ({ item, index }) => (
+      <ProfileMuralTile
+        photo={item}
+        size={tileSize}
+        index={index}
+        total={totalCount}
+        veilCount={index === MURAL_SUMMARY_COUNT - 1 ? hiddenCount : 0}
+        veilStyle={veilStyle}
+        onPress={onPressPhoto}
+      />
+    ),
+    [tileSize, totalCount, hiddenCount, veilStyle, onPressPhoto],
+  )
 
   return (
     <GestureDetector gesture={native}>
@@ -67,17 +84,7 @@ export function ProfileMuralGrid({
         // O resumo recorta a grade em vez de fatiar os dados: as fileiras
         // seguintes precisam já existir pra aparecerem conforme ele cresce.
         initialNumToRender={30}
-        renderItem={({ item, index }) => (
-          <ProfileMuralTile
-            photo={item}
-            size={tileSize}
-            index={index}
-            total={totalCount}
-            veilCount={index === MURAL_SUMMARY_COUNT - 1 ? hiddenCount : 0}
-            veilStyle={veilStyle}
-            onPress={() => onPressPhoto(item)}
-          />
-        )}
+        renderItem={renderItem}
         onEndReached={() => scrollEnabled && hasNextPage && onLoadMore()}
         onEndReachedThreshold={0.4}
         ListFooterComponent={

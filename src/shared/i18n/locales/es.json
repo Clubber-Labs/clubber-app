@@ -207,9 +207,7 @@
       "event": "Evento",
       "eventHint": "Con fecha, lugar y lista de asistentes",
       "spot": "Plan",
-      "spotHint": "Un encuentro rápido cerca de ti",
-      "photo": "Publicar foto",
-      "photoHint": "Fotos en el muro de tu perfil"
+      "spotHint": "Un encuentro rápido cerca de ti"
     },
     "datePicker": {
       "placeholder": "Selecciona una fecha",

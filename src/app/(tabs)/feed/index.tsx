@@ -16,7 +16,6 @@ export default function FeedScreen() {
         onCreateSpot={() =>
           router.push({ pathname: '/(tabs)/map', params: { suggest: '1' } })
         }
-        onCreatePhoto={() => router.push('/profile/photos/create')}
       />
     </View>
   )

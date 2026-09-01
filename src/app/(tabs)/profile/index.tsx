@@ -9,6 +9,7 @@ import {
   ShieldCheckIcon,
   InfoIcon,
   SignOutIcon,
+  PlusIcon,
 } from 'phosphor-react-native'
 import {
   useMyProfile,
@@ -22,7 +23,7 @@ import { useLogout } from '@/features/auth/hooks/useLogout'
 import { useFollowRequests } from '@/features/follows/hooks/useFollowRequests'
 import { useConfirm } from '@/shared/lib/confirm'
 import { UserAvatar } from '@/shared/components/UserAvatar'
-import { CreateFab } from '@/shared/components/CreateFab'
+import { Fab } from '@/shared/components/Fab'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 import { ProfileMusicSection } from '@/features/spotify/components/ProfileMusicSection'
@@ -224,14 +225,11 @@ export default function ProfileScreen() {
         onClose={() => setInterestsOpen(false)}
         profile={profile}
       />
-      <CreateFab
-        onCreateEvent={() => router.push('/events/create')}
-        // O fluxo de rolê (sugestões por área) vive no mapa — navega até lá
-        // com o pedido de abrir o painel.
-        onCreateSpot={() =>
-          router.push({ pathname: '/(tabs)/map', params: { suggest: '1' } })
-        }
-        onCreatePhoto={() => router.push('/profile/photos/create')}
+      {/* No perfil o "+" só tem um sentido: foto no mural. Direto, sem seletor. */}
+      <Fab
+        icon={PlusIcon}
+        accessibilityLabel={t('profile.photo.title')}
+        onPress={() => router.push('/profile/photos/create')}
       />
       <ProfileDrawer items={drawerItems} header={drawerHeader} />
     </View>
