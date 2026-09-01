@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native'
 import Svg, { Circle, Path } from 'react-native-svg'
 import { NOTCH_RADIUS } from './EventCardPerforation'
+import { ticketOutlinePath } from '@/shared/utils/ticketOutline'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -18,44 +19,14 @@ const CARD_RADIUS = 12
 const STROKE_INSET = 0.5
 
 /**
- * A aresta do card num traçado só: cantos arredondados e os dois recortes do
- * picote como arcos DO PRÓPRIO contorno (varredura 0 = a curva entra pra dentro
- * do card).
+ * A aresta do card. Existe porque `border` do RN não serve aqui: filho de View
+ * com borda é inset pela largura dela, então o furo nascia 1px pra dentro e a
+ * linha passava reta por fora, sem acompanhar o recorte — e cobrir a borda pelo
+ * filho diverge entre iOS (CALayer desenha por cima) e Android (por baixo).
  *
- * Existe porque `border` do RN não serve aqui. Filho de View com borda é inset
- * pela largura dela, então o furo nascia 1px pra dentro e a linha passava reta
- * por fora, sem acompanhar o recorte — e cobrir a borda pelo filho diverge entre
- * iOS (CALayer desenha por cima) e Android (por baixo).
+ * O traçado em si é o `ticketOutlinePath`, o mesmo que a moldura de destaque
+ * usa — as duas precisam mergulhar no picote pelo mesmo caminho.
  */
-function cardOutline(width: number, height: number, notchY: number): string {
-  const left = STROKE_INSET
-  const top = STROKE_INSET
-  const right = width - STROKE_INSET
-  const bottom = height - STROKE_INSET
-  // O raio encolhe junto com o recuo: recuar um retângulo arredondado em d sem
-  // tirar d do raio deixa os cantos DESALINHADOS do clip do card (rounded-xl).
-  // A diferença é meio pixel, e é por ela que a cor da capa escapava por fora
-  // do traço nos cantos.
-  const r = CARD_RADIUS - STROKE_INSET
-  const n = NOTCH_RADIUS
-  return [
-    `M ${left + r} ${top}`,
-    `L ${right - r} ${top}`,
-    `A ${r} ${r} 0 0 1 ${right} ${top + r}`,
-    `L ${right} ${notchY - n}`,
-    `A ${n} ${n} 0 0 0 ${right} ${notchY + n}`,
-    `L ${right} ${bottom - r}`,
-    `A ${r} ${r} 0 0 1 ${right - r} ${bottom}`,
-    `L ${left + r} ${bottom}`,
-    `A ${r} ${r} 0 0 1 ${left} ${bottom - r}`,
-    `L ${left} ${notchY + n}`,
-    `A ${n} ${n} 0 0 0 ${left} ${notchY - n}`,
-    `L ${left} ${top + r}`,
-    `A ${r} ${r} 0 0 1 ${left + r} ${top}`,
-    'Z',
-  ].join(' ')
-}
-
 export function EventCardOutline({ width, height, notchY }: Props) {
   return (
     <Svg
@@ -76,7 +47,17 @@ export function EventCardOutline({ width, height, notchY }: Props) {
         fill={colors.background}
       />
       <Path
-        d={cardOutline(width, height, notchY)}
+        d={ticketOutlinePath({
+          width,
+          height,
+          // O raio encolhe junto com o recuo: recuar um retângulo arredondado
+          // em d sem tirar d do raio deixa os cantos DESALINHADOS do clip do
+          // card (rounded-xl). A diferença é meio pixel, e é por ela que a cor
+          // da capa escapava por fora do traço nos cantos.
+          radius: CARD_RADIUS - STROKE_INSET,
+          inset: STROKE_INSET,
+          notch: { y: notchY, radius: NOTCH_RADIUS },
+        })}
         fill="none"
         stroke={colors.line}
         strokeWidth={1}
