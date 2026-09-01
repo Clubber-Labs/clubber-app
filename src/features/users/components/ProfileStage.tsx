@@ -102,10 +102,10 @@ export function ProfileStage({
           style={styles.stage}
           onLayout={e => stage.setStageHeight(e.nativeEvent.layout.height)}
         >
-          {/* Ordem = camadas: mural embaixo (rola sob o header), header no
-              meio, eventos por cima (cobre os dois ao subir). Seções só depois
-              do header medido: antes disso o recuo seria 0 e a grade piscaria
-              por cima do header. */}
+          {/* Ordem = camadas: mural embaixo, eventos no meio, header por cima.
+              Nenhuma seção sobe além do pé do header, e as duas rolam por
+              baixo dele (collapsing header). Seções só depois do header
+              medido: antes disso o recuo seria 0 e a grade piscaria. */}
           {stage.headerInset > 0 && (
             <Animated.View style={[styles.section, stage.muralStyle]}>
               <ProfileMuralSection
@@ -126,12 +126,6 @@ export function ProfileStage({
               />
             </Animated.View>
           )}
-          <Animated.View
-            style={[styles.header, stage.headerStyle]}
-            onLayout={e => stage.setHeaderHeight(e.nativeEvent.layout.height)}
-          >
-            {header}
-          </Animated.View>
           {stage.headerInset > 0 && (
             <Animated.View
               style={[styles.section, styles.eventsSheet, stage.eventsStyle]}
@@ -151,6 +145,12 @@ export function ProfileStage({
               />
             </Animated.View>
           )}
+          <Animated.View
+            style={[styles.header, stage.headerStyle]}
+            onLayout={e => stage.setHeaderHeight(e.nativeEvent.layout.height)}
+          >
+            {header}
+          </Animated.View>
         </View>
       </GestureDetector>
     </View>
