@@ -19,6 +19,9 @@ export const TAB_BAR_HEIGHT = 64
 export const TAB_BAR_COMPACT_HEIGHT = 50
 export const TAB_BAR_BOTTOM_MARGIN = 8
 export const TAB_BAR_SIDE_MARGIN = 24
+// Compacta também na largura: as cinco lentes menores cabem numa pílula mais
+// curta, e ela deixa de parecer uma barra.
+const COMPACT_SIDE_MARGIN = 52
 
 const LENS_SIZE = 44
 const COMPACT_LENS_SCALE = 36 / LENS_SIZE
@@ -37,7 +40,7 @@ export function GlassTabBar({
   const segments = useSegments() as string[]
   const compact = isProfileTab(segments)
 
-  // Um valor só dirige altura e lente: trocar de aba anima entre os dois
+  // Um valor só dirige largura, altura e lente: trocar de aba anima entre os dois
   // tamanhos em vez de saltar. A lente encolhe por transform (sem re-layout);
   // a altura é a única propriedade de layout, numa view só.
   const progress = useSharedValue(compact ? 1 : 0)
@@ -45,6 +48,14 @@ export function GlassTabBar({
     progress.value = withTiming(compact ? 1 : 0, { duration: COMPACT_MS })
   }, [compact, progress])
 
+  const frameStyle = useAnimatedStyle(() => {
+    const side = interpolate(
+      progress.value,
+      [0, 1],
+      [TAB_BAR_SIDE_MARGIN, COMPACT_SIDE_MARGIN],
+    )
+    return { left: side, right: side }
+  })
   const barStyle = useAnimatedStyle(() => {
     const height = interpolate(
       progress.value,
@@ -60,19 +71,20 @@ export function GlassTabBar({
   }))
 
   return (
-    <View
+    <Animated.View
       pointerEvents="box-none"
-      style={{
-        position: 'absolute',
-        left: TAB_BAR_SIDE_MARGIN,
-        right: TAB_BAR_SIDE_MARGIN,
-        bottom: insets.bottom + TAB_BAR_BOTTOM_MARGIN,
-        shadowColor: 'rgb(0, 0, 0)',
-        shadowOpacity: 0.7,
-        shadowRadius: 16,
-        shadowOffset: { width: 0, height: 8 },
-        elevation: 12,
-      }}
+      style={[
+        {
+          position: 'absolute',
+          bottom: insets.bottom + TAB_BAR_BOTTOM_MARGIN,
+          shadowColor: 'rgb(0, 0, 0)',
+          shadowOpacity: 0.7,
+          shadowRadius: 16,
+          shadowOffset: { width: 0, height: 8 },
+          elevation: 12,
+        },
+        frameStyle,
+      ]}
     >
       <Animated.View style={[{ overflow: 'hidden' }, barStyle]}>
         <GlassSurface
@@ -136,6 +148,6 @@ export function GlassTabBar({
           })}
         </GlassSurface>
       </Animated.View>
-    </View>
+    </Animated.View>
   )
 }
