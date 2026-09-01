@@ -22,25 +22,46 @@ export function muralTileSize(width: number): number {
   return (width - MURAL_GAP * (MURAL_COLUMNS - 1)) / MURAL_COLUMNS
 }
 
-// Altura do mural no modo resumo (cabeçalho + 2 fileiras, ou o estado vazio).
-export function muralSummaryHeight(width: number, empty: boolean): number {
-  if (empty) return SECTION_HEADER_HEIGHT + MURAL_EMPTY_HEIGHT
-  const rows = MURAL_SUMMARY_ROWS
+// Fileiras do resumo: até 3 fotos cabem numa, o resto ocupa duas. O "+" do
+// dono entra na vaga livre da fileira, nunca abre outra.
+export function muralSummaryRows(photoCount: number): number {
+  if (photoCount <= 0) return 0
+  return Math.min(MURAL_SUMMARY_ROWS, Math.ceil(photoCount / MURAL_COLUMNS))
+}
+
+// Altura do mural no modo resumo (cabeçalho + fileiras, ou o estado vazio).
+export function muralSummaryHeight(width: number, photoCount: number): number {
+  const rows = muralSummaryRows(photoCount)
+  if (rows === 0) return SECTION_HEADER_HEIGHT + MURAL_EMPTY_HEIGHT
   return (
     SECTION_HEADER_HEIGHT + muralTileSize(width) * rows + MURAL_GAP * (rows - 1)
   )
 }
 
+// Só vale expandir quando há mais que as duas fileiras do resumo.
+export function muralExpandable(
+  totalCount: number,
+  hasNextPage: boolean,
+): boolean {
+  return hasNextPage || totalCount > MURAL_SUMMARY_COUNT
+}
+
+// Vaga livre na última fileira do resumo — onde o "+" do dono se encaixa.
+export function muralHasFreeSlot(photoCount: number): boolean {
+  return photoCount < MURAL_SUMMARY_COUNT && photoCount % MURAL_COLUMNS !== 0
+}
+
 // Qual seção o toque escolheu: acima do fim do mural é mural (o cabeçalho do
-// perfil conta como mural). Mural vazio não tem o que expandir — vira eventos.
+// perfil conta como mural). Mural travado (vazio ou sem mais que o resumo) não
+// tem o que expandir — vira eventos.
 export function focusForTouch(
   y: number,
   headerHeight: number,
   muralHeight: number,
-  muralEmpty: boolean,
+  muralLocked: boolean,
 ): StageFocus {
   'worklet'
-  if (muralEmpty) return 'events'
+  if (muralLocked) return 'events'
   return y < headerHeight + muralHeight ? 'mural' : 'events'
 }
 

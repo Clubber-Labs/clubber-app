@@ -7,6 +7,7 @@ import {
 } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 import { ProfileMuralTile } from './ProfileMuralTile'
+import { ProfileMuralAddTile } from './ProfileMuralAddTile'
 import {
   MURAL_COLUMNS,
   MURAL_GAP,
@@ -28,8 +29,19 @@ type Props = {
   isFetchingNextPage: boolean
   onLoadMore: () => void
   onPressPhoto: (photo: UserPhoto) => void
+  // Presente = o "+" do dono entra na vaga livre da última fileira do resumo.
+  onAddPhoto?: () => void
   bottomPadding: number
 }
+
+type AddSlot = { __add: true }
+type Cell = UserPhoto | AddSlot
+
+function isAddSlot(cell: Cell): cell is AddSlot {
+  return '__add' in cell
+}
+
+const ADD_SLOT: AddSlot = { __add: true }
 
 // Grade 3×N do mural, colada às bordas da tela. A mesma lista serve ao resumo
 // (2 fileiras visíveis, o 6º tile com "+N") e ao mural cheio — o palco só
@@ -46,32 +58,37 @@ export function ProfileMuralGrid({
   isFetchingNextPage,
   onLoadMore,
   onPressPhoto,
+  onAddPhoto,
   bottomPadding,
 }: Props) {
   const hiddenCount = Math.max(0, totalCount - MURAL_SUMMARY_COUNT)
+  const cells: Cell[] = onAddPhoto ? [...photos, ADD_SLOT] : photos
   // Identidade estável: renderItem novo a cada render faz o FlatList
   // re-renderizar toda célula visível.
-  const renderItem = useCallback<ListRenderItem<UserPhoto>>(
-    ({ item, index }) => (
-      <ProfileMuralTile
-        photo={item}
-        size={tileSize}
-        index={index}
-        total={totalCount}
-        veilCount={index === MURAL_SUMMARY_COUNT - 1 ? hiddenCount : 0}
-        veilStyle={veilStyle}
-        onPress={onPressPhoto}
-      />
-    ),
-    [tileSize, totalCount, hiddenCount, veilStyle, onPressPhoto],
+  const renderItem = useCallback<ListRenderItem<Cell>>(
+    ({ item, index }) =>
+      isAddSlot(item) ? (
+        <ProfileMuralAddTile size={tileSize} onPress={onAddPhoto} />
+      ) : (
+        <ProfileMuralTile
+          photo={item}
+          size={tileSize}
+          index={index}
+          total={totalCount}
+          veilCount={index === MURAL_SUMMARY_COUNT - 1 ? hiddenCount : 0}
+          veilStyle={veilStyle}
+          onPress={onPressPhoto}
+        />
+      ),
+    [tileSize, totalCount, hiddenCount, veilStyle, onPressPhoto, onAddPhoto],
   )
 
   return (
     <GestureDetector gesture={native}>
       <Animated.FlatList
-        data={photos}
+        data={cells}
         numColumns={MURAL_COLUMNS}
-        keyExtractor={photo => photo.id}
+        keyExtractor={cell => (isAddSlot(cell) ? '__add' : cell.id)}
         scrollEnabled={scrollEnabled}
         // Sem bounce: no topo, arrastar pra baixo é do palco, não da lista.
         bounces={false}
