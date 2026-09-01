@@ -186,6 +186,15 @@ export function useAddComment(target: CommentTarget) {
   })
 }
 
+const applyLike = (
+  comment: EventComment,
+  nextLiked: boolean,
+): EventComment => ({
+  ...comment,
+  userLiked: nextLiked,
+  reactionsCount: comment.reactionsCount + (nextLiked ? 1 : -1),
+})
+
 export function useToggleCommentLike(target: CommentTarget) {
   const queryClient = useQueryClient()
 
@@ -200,13 +209,7 @@ export function useToggleCommentLike(target: CommentTarget) {
       pages: cache.pages.map(page => ({
         ...page,
         data: page.data.map(comment =>
-          comment.id === commentId
-            ? {
-                ...comment,
-                userLiked: nextLiked,
-                reactionsCount: comment.reactionsCount + (nextLiked ? 1 : -1),
-              }
-            : comment,
+          comment.id === commentId ? applyLike(comment, nextLiked) : comment,
         ),
       })),
     }
@@ -226,18 +229,35 @@ export function useToggleCommentLike(target: CommentTarget) {
         : eventsService.likeComment(commentId),
     onMutate: async ({ commentId, currentlyLiked, parentId }) => {
       const key = listKeyFor(target, parentId)
-      await queryClient.cancelQueries({ queryKey: key })
+      const detailKey = commentKeys.detail(target, commentId)
+      await Promise.all([
+        queryClient.cancelQueries({ queryKey: key }),
+        queryClient.cancelQueries({ queryKey: detailKey }),
+      ])
       const prev = queryClient.getQueryData<CommentsCache>(key)
+      const prevDetail = queryClient.getQueryData<EventComment>(detailKey)
       queryClient.setQueryData<CommentsCache>(key, old =>
         patch(old, commentId, !currentlyLiked),
       )
-      return { key, prev }
+      // A raiz fixada pelo deep-link é servida pelo cache de detalhe, não pelo
+      // da lista — sem o mesmo patch aqui, curtir ela seria um toque morto.
+      queryClient.setQueryData<EventComment>(detailKey, old =>
+        old ? applyLike(old, !currentlyLiked) : old,
+      )
+      return { key, prev, detailKey, prevDetail }
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.prev) queryClient.setQueryData(ctx.key, ctx.prev)
+      if (ctx?.prevDetail) {
+        queryClient.setQueryData(ctx.detailKey, ctx.prevDetail)
+      }
     },
-    onSettled: (_data, _err, { parentId }) =>
-      queryClient.invalidateQueries({ queryKey: listKeyFor(target, parentId) }),
+    onSettled: (_data, _err, { commentId, parentId }) => {
+      queryClient.invalidateQueries({ queryKey: listKeyFor(target, parentId) })
+      queryClient.invalidateQueries({
+        queryKey: commentKeys.detail(target, commentId),
+      })
+    },
   })
 }
 
@@ -250,14 +270,19 @@ export function useDeleteComment(target: CommentTarget) {
       eventsService.deleteComment(target, commentId),
     onMutate: async ({ commentId, parentId }) => {
       const key = listKeyFor(target, parentId)
+      const detailKey = commentKeys.detail(target, commentId)
       await queryClient.cancelQueries({ queryKey: key })
       const prev = queryClient.getQueryData<CommentsCache>(key)
+      const prevDetail = queryClient.getQueryData<EventComment>(detailKey)
       const prevFeeds = queryClient.getQueriesData<FeedCache>({
         queryKey: ['feed'],
       })
       queryClient.setQueryData<CommentsCache>(key, old =>
         removeFromInfiniteList(old, commentId),
       )
+      // A raiz fixada pelo deep-link não está na lista, então o filtro acima
+      // não a alcança: sem descartar o detalhe, ela sobreviveria à remoção.
+      queryClient.removeQueries({ queryKey: detailKey })
       // O contador e a prévia do feed andam junto com a lista: sem isto o card
       // seguiria anunciando um comentário que já saiu.
       patchFeedEvent(queryClient, target, event => ({
@@ -268,10 +293,13 @@ export function useDeleteComment(target: CommentTarget) {
           comments: Math.max(0, event._count.comments - 1),
         },
       }))
-      return { key, prev, prevFeeds }
+      return { key, prev, detailKey, prevDetail, prevFeeds }
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.prev) queryClient.setQueryData(ctx.key, ctx.prev)
+      if (ctx?.prevDetail) {
+        queryClient.setQueryData(ctx.detailKey, ctx.prevDetail)
+      }
       ctx?.prevFeeds?.forEach(([queryKey, data]) =>
         queryClient.setQueryData(queryKey, data),
       )
