@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Gesture } from 'react-native-gesture-handler'
 import {
+  cancelAnimation,
   useAnimatedReaction,
   useAnimatedScrollHandler,
   useAnimatedStyle,
@@ -97,6 +98,9 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
           }
         })
         .onStart(e => {
+          // Tocar no meio do encaixe: o spring pararia de brigar com o dedo
+          // só no fim — cancela e o gesto assume de onde a seção está.
+          cancelAnimation(expand)
           const offset =
             focus.value === 'mural' ? muralOffset.value : eventsOffset.value
           // Expandida, a lista é dona do gesto — exceto arrastar pra baixo com
@@ -146,11 +150,15 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
 
   const onMuralScroll = useAnimatedScrollHandler({
     onScroll: e => {
-      muralOffset.value = e.contentOffset.y
-      // Chegou de volta ao topo rolando: a seção de eventos volta sozinha, sem
-      // pedir um segundo gesto (o mural nunca sai do lugar, só ela).
+      const previous = muralOffset.value
+      const offset = e.contentOffset.y
+      muralOffset.value = offset
+      // CHEGOU de volta ao topo rolando (vinha de baixo): a seção de eventos
+      // volta sozinha, sem pedir um segundo gesto. Só na chegada — um arrasto
+      // que começa no topo também emite y = 0 e não pode disparar isto.
       if (
-        e.contentOffset.y <= 0 &&
+        previous > 0 &&
+        offset <= 0 &&
         focus.value === 'mural' &&
         expand.value >= SETTLED
       ) {
