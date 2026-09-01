@@ -28,10 +28,16 @@ function parseArgs(argv) {
   const opts = { backendSource: null, codes: null }
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
-    const value = argv[i + 1]
-    if (arg === '--backend-source' && value) opts.backendSource = argv[++i]
-    else if (arg === '--codes' && value) opts.codes = argv[++i]
-    else if (arg === '--help' || arg === '-h') {
+    if (arg === '--backend-source' || arg === '--codes') {
+      const value = argv[i + 1]
+      if (value === undefined || value.startsWith('--')) {
+        console.error(`${arg} exige um valor.\n\n${USAGE}`)
+        process.exit(1)
+      }
+      i++
+      if (arg === '--backend-source') opts.backendSource = value
+      else opts.codes = value
+    } else if (arg === '--help' || arg === '-h') {
       console.log(USAGE)
       process.exit(0)
     } else {
