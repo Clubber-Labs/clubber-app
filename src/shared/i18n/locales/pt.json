@@ -791,7 +791,19 @@
       "send": "Enviar comentário",
       "viewCount_one": "Ver 1 comentário",
       "viewCount_other": "Ver os {{count}} comentários",
-      "cannotComment": "Marque interesse ou presença no evento para comentar."
+      "cannotComment": "Marque interesse ou presença no evento para comentar.",
+      "reply": "Responder",
+      "replyPlaceholder": "Escreva uma resposta...",
+      "viewReplies_one": "Ver 1 resposta",
+      "viewReplies_other": "Ver {{count}} respostas",
+      "viewMoreReplies": "Ver mais respostas",
+      "replyingTo": "Respondendo a @{{username}}",
+      "cancelReply": "Cancelar resposta",
+      "hideReplies": "Ocultar respostas",
+      "sheetTitle": "Comentários",
+      "viewAll_one": "Ver 1 comentário",
+      "viewAll_other": "Ver todos os {{count}} comentários",
+      "openComments": "Abrir comentários"
     },
     "posts": {
       "deleteTitle": "Excluir post",

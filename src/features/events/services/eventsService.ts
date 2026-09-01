@@ -27,6 +27,17 @@ type ListEventsParams = ListParams & {
   dateTo?: string
 }
 
+// Comentário vive em evento ou em post, e as duas famílias de rota são
+// espelhadas — o alvo é o que muda o prefixo.
+export type CommentTarget =
+  | { kind: 'event'; eventId: string }
+  | { kind: 'post'; postId: string }
+
+const commentsPath = (target: CommentTarget) =>
+  target.kind === 'event'
+    ? `/events/${target.eventId}/comments`
+    : `/posts/${target.postId}/comments`
+
 export type InviteTarget =
   | { kind: 'selected'; userIds: string[] }
   | { kind: 'all' }
@@ -118,23 +129,51 @@ export const eventsService = {
   unlikePost: (postId: string): Promise<void> =>
     api.delete(`/posts/${postId}/reactions`).then(() => undefined),
 
+  // Só as raízes da thread: as respostas saem por listReplies, senão
+  // apareceriam soltas na lista, fora do comentário que responderam.
   listComments: (
-    eventId: string,
+    target: CommentTarget,
     params: ListParams = {},
   ): Promise<CursorPaginatedResponse<EventComment>> =>
     api
-      .get(`/events/${eventId}/comments`, {
+      .get(commentsPath(target), {
         params: buildParams({ limit: 10, ...params }),
       })
       .then(r => r.data),
 
-  addComment: (eventId: string, content: string): Promise<EventComment> =>
-    api.post(`/events/${eventId}/comments`, { content }).then(r => r.data),
+  addComment: (target: CommentTarget, content: string): Promise<EventComment> =>
+    api.post(commentsPath(target), { content }).then(r => r.data),
 
-  deleteComment: (eventId: string, commentId: string): Promise<void> =>
+  // A notificação de resposta chega com o id da RESPOSTA — é o `parentId` do
+  // que volta daqui que diz qual thread abrir.
+  getComment: (
+    target: CommentTarget,
+    commentId: string,
+  ): Promise<EventComment> =>
+    api.get(`${commentsPath(target)}/${commentId}`).then(r => r.data),
+
+  // Cronológica (o backend ordena por createdAt asc), ao contrário da listagem
+  // de raízes que a UI exibe do mais novo pro mais velho.
+  listReplies: (
+    target: CommentTarget,
+    parentId: string,
+    params: ListParams = {},
+  ): Promise<CursorPaginatedResponse<EventComment>> =>
     api
-      .delete(`/events/${eventId}/comments/${commentId}`)
-      .then(() => undefined),
+      .get(`${commentsPath(target)}/${parentId}/replies`, {
+        params: buildParams({ limit: 10, ...params }),
+      })
+      .then(r => r.data),
+
+  addReply: (
+    target: CommentTarget,
+    parentId: string,
+    content: string,
+  ): Promise<EventComment> =>
+    api.post(commentsPath(target), { content, parentId }).then(r => r.data),
+
+  deleteComment: (target: CommentTarget, commentId: string): Promise<void> =>
+    api.delete(`${commentsPath(target)}/${commentId}`).then(() => undefined),
 
   listPosts: (
     eventId: string,

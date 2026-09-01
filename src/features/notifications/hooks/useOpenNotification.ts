@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useBanner } from '@/shared/lib/banner'
 import { isNotFoundError, isForbiddenError } from '@/shared/lib/apiError'
 import { eventsService } from '@/features/events/services/eventsService'
-import { eventKeys } from '@/features/events/hooks/cacheKeys'
+import { commentKeys, eventKeys } from '@/features/events/hooks/cacheKeys'
 import { spotsService } from '@/features/spots/services/spotsService'
 import { spotKeys } from '@/features/spots/hooks/cacheKeys'
 import type { Spot } from '@/features/spots/types'
@@ -53,6 +53,39 @@ export function useOpenNotification() {
           }
           router.push(`/events/${target.eventId}`)
           return
+        case 'commentThread': {
+          // A notificação traz o id da RESPOSTA; a thread é a do pai dela. Um
+          // salto só resolve: o backend não deixa responder uma resposta, então
+          // o pai é sempre a raiz — não há árvore pra subir.
+          const commentTarget = target.postId
+            ? ({ kind: 'post', postId: target.postId } as const)
+            : ({ kind: 'event', eventId: target.eventId } as const)
+          // O drawer de comentários vive no detalhe do evento — inclusive o de
+          // post, que não tem tela própria. Os params dizem qual conversa abrir.
+          const params = new URLSearchParams()
+          try {
+            const reply = await queryClient.fetchQuery({
+              queryKey: commentKeys.detail(commentTarget, target.commentId),
+              queryFn: () =>
+                eventsService.getComment(commentTarget, target.commentId),
+            })
+            // Sem parentId a notificada JÁ é a raiz: foca ela mesma, e aí não
+            // há resposta a destacar dentro da thread.
+            params.set('thread', reply.parentId ?? reply.id)
+            if (reply.parentId) params.set('highlight', reply.id)
+            if (target.postId) params.set('post', target.postId)
+            router.push(`/events/${target.eventId}?${params.toString()}`)
+          } catch (err) {
+            if (isNotFoundError(err) || isForbiddenError(err)) {
+              showBanner(t('notifications.open.contentGone'))
+              // Comentário apagado não é evento inacessível: o rolê segue lá.
+              router.push(`/events/${target.eventId}`)
+              return
+            }
+            router.push(`/events/${target.eventId}`)
+          }
+          return
+        }
         case 'spot':
           // 404 cobre expirado/removido, privado e bloqueio (o backend não
           // distingue de propósito) — vira banner, sem revelar mais que isso.

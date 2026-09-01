@@ -8,9 +8,9 @@ import { EventCardHero } from './EventCardHero'
 import { EventCardPerforation } from './EventCardPerforation'
 import { EventCardOutline } from './EventCardOutline'
 import { EventCardStub } from './EventCardStub'
-import { InlineCommentsSection } from './InlineCommentsSection'
 import { CommentPreview } from './CommentPreview'
-import { CommentComposer } from './CommentComposer'
+import { CommentComposerButton } from './comments/CommentComposerButton'
+import { CommentsSheet } from './comments/CommentsSheet'
 import { EventAttendeesStack } from './EventAttendeesStack'
 import { FeedReasonBanner } from './FeedReasonBanner'
 import { featuredAttendees } from '@/shared/utils/featuredAttendees'
@@ -44,7 +44,7 @@ export function EventCard({
   userCoords = null,
 }: Props) {
   const { t } = useTranslation()
-  const [expanded, setExpanded] = useState(false)
+  const [sheetOpen, setSheetOpen] = useState(false)
   // O contorno do card é desenhado, não é `border`: ver EventCardOutline.
   const [cardSize, setCardSize] = useState<{ w: number; h: number } | null>(
     null,
@@ -134,19 +134,13 @@ export function EventCard({
         </Pressable>
 
         <Pressable
-          onPress={() => setExpanded(v => !v)}
+          onPress={() => setSheetOpen(true)}
           accessibilityRole="button"
-          accessibilityState={{ expanded }}
+          accessibilityLabel={t('events.comments.openComments')}
           className="flex-row items-center gap-1 rounded-full px-3 py-2"
         >
-          <ChatCircleIcon
-            size={18}
-            color={expanded ? colors.brandEmphasis : colors.contentSecondary}
-            weight={expanded ? 'fill' : 'regular'}
-          />
-          <Text
-            className={`text-sm ${expanded ? 'text-brand-text' : 'text-content-secondary'}`}
-          >
+          <ChatCircleIcon size={18} color={colors.contentSecondary} />
+          <Text className="text-sm text-content-secondary">
             {event._count.comments}
           </Text>
         </Pressable>
@@ -173,26 +167,25 @@ export function EventCard({
         )}
       </View>
 
-      {/* Prévia sai de recentComments, que o feed já traz — a seção expandida
-          busca a lista real e não pode ficar montada por card. */}
-      {!expanded && (
-        <CommentPreview
-          comments={event.recentComments}
-          totalCount={event._count.comments}
-          onExpand={() => setExpanded(true)}
+      {/* Prévia sai de recentComments, que o feed já traz — a conversa inteira
+          é o drawer, que só monta quando abre. */}
+      <CommentPreview
+        comments={event.recentComments}
+        totalCount={event._count.comments}
+        onExpand={() => setSheetOpen(true)}
+      />
+
+      {/* Rodapé fixo, no espírito do "Adicione um comentário..." do Instagram:
+          tocar não digita aqui, abre o drawer. */}
+      <CommentComposerButton onPress={() => setSheetOpen(true)} />
+
+      {sheetOpen && (
+        <CommentsSheet
+          visible
+          onClose={() => setSheetOpen(false)}
+          target={{ kind: 'event', eventId: event.id }}
         />
       )}
-
-      {expanded && (
-        <InlineCommentsSection
-          eventId={event.id}
-          eventAuthorId={event.author.id}
-        />
-      )}
-
-      {/* Rodapé fixo: comentar não depende da seção estar aberta, e focar o
-          campo abre a conversa junto. */}
-      <CommentComposer eventId={event.id} onFocus={() => setExpanded(true)} />
 
       {/* Última camada: a aresta é desenhada POR CIMA do conteúdo, senão os
           furos não conseguiriam perfurar a capa. */}

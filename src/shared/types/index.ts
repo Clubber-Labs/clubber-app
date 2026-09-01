@@ -105,6 +105,11 @@ export type EventComment = {
   authorId: string
   author: CommentAuthor
   reactionsCount: number
+  repliesCount: number
+  // null na raiz; nas respostas, o id do comentário respondido. A thread é rasa
+  // de um nível — o backend recusa responder uma resposta (COMMENT_REPLY_DEPTH),
+  // então o pai de uma resposta é SEMPRE uma raiz.
+  parentId: string | null
   userLiked: boolean
   // Só existe no cache: marca o comentário otimista que ainda não voltou do
   // backend, pra lista poder exibi-lo esmaecido. Nunca vem da API.

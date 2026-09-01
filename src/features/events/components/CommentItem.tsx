@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { HeartIcon } from 'phosphor-react-native'
-import { useToggleCommentLike } from '../hooks/useComments'
 import { CommentActionsSheet } from './CommentActionsSheet'
 import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
@@ -13,11 +12,15 @@ import { colors } from '@/shared/theme'
 
 type Props = {
   comment: EventComment
-  eventId: string
+  // A curtida vem de fora porque o patch de cache é diferente na lista do
+  // evento e na thread (raiz avulsa + respostas paginadas).
+  onToggleLike: () => void
   // Presente quando o usuário pode apagar: autor do comentário ou organizador.
   onDelete?: () => void
   // Presente só para comentários de terceiros.
   onReport?: () => void
+  // Resposta que a notificação apontou — tinge a linha pra ela ser achada.
+  highlighted?: boolean
 }
 
 const AVATAR = 32
@@ -30,11 +33,16 @@ const AVATAR = 32
  * Moderação some atrás do long-press: um ⋯ fixo em cada linha custaria ruído
  * permanente por uma ação rara.
  */
-export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
+export function CommentItem({
+  comment,
+  onToggleLike,
+  onDelete,
+  onReport,
+  highlighted,
+}: Props) {
   const { t } = useTranslation()
   const locale = useLocale()
   const [sheetOpen, setSheetOpen] = useState(false)
-  const toggleLike = useToggleCommentLike(eventId)
 
   const moderable = !!onDelete || !!onReport
   // Comentário otimista ainda não existe no backend: curtir ou moderar iria
@@ -48,7 +56,7 @@ export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
           moderable && settled ? () => setSheetOpen(true) : undefined
         }
         delayLongPress={300}
-        className="flex-row gap-3 px-4 py-3"
+        className={`flex-row gap-3 px-4 py-3 ${highlighted ? 'bg-brand-surface' : ''}`}
         style={{ opacity: comment.pending ? 0.6 : 1 }}
       >
         <ProfileLink
@@ -84,12 +92,7 @@ export function CommentItem({ comment, eventId, onDelete, onReport }: Props) {
         </View>
 
         <Pressable
-          onPress={() =>
-            toggleLike.mutate({
-              commentId: comment.id,
-              currentlyLiked: comment.userLiked,
-            })
-          }
+          onPress={onToggleLike}
           disabled={!settled}
           hitSlop={8}
           accessibilityRole="button"
