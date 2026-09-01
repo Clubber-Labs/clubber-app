@@ -112,6 +112,7 @@
     "PLACES_UNAVAILABLE": "La búsqueda de lugares no está disponible ahora.",
     "PLACE_NOT_FOUND": "No encontramos este lugar.",
     "POST_IMAGE_LIMIT": "Máximo {{max}} imágenes por publicación.",
+    "POST_IMAGE_NOT_FOUND": "Esta foto ya no está en la publicación.",
     "POST_NOT_FOUND": "Esta publicación ya no existe.",
     "PREMIUM_REQUIRED": "Esta función es del plan Premium.",
     "PRIVATE_PROFILE": "Este perfil es privado.",
