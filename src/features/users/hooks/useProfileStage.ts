@@ -30,10 +30,11 @@ type Params = {
 /**
  * Palco do perfil: header + mural + eventos no mesmo lugar, e um gesto que é
  * contextual à seção tocada. `expand` (0..1) é o único estado animado: 0 é o
- * resumo, 1 é a seção focada ocupando o palco. O dedo dirige o valor (a seção
- * anda 1:1 com ele) e o soltar faz o snap. Com a seção expandida a lista de
- * dentro rola normalmente; arrastar pra baixo com ela no topo devolve o gesto
- * ao palco — o mesmo mecanismo de um bottom sheet com conteúdo rolável.
+ * resumo, 1 é o foco no lugar. Foco em eventos: a seção sobe até o topo,
+ * cobrindo mural e header. Foco no mural: só a seção de eventos desce e sai —
+ * header e mural ficam, e a grade rola normal se houver mais fotos; ao voltar
+ * ao topo, eventos retorna sozinha. O dedo dirige o valor (1:1 com a seção
+ * que se move) e o soltar faz o snap.
  */
 export function useProfileStage({ muralLocked, muralHeight }: Params) {
   const expand = useSharedValue(0)
@@ -111,6 +112,7 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
             focus.value,
             headerHeight.value,
             muralSummary.value,
+            stageHeight.value,
           )
           expand.value = nextExpand(
             startExpand.value,
@@ -133,6 +135,7 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
       headerHeight,
       muralSummary,
       muralIsLocked,
+      stageHeight,
       muralOffset,
       eventsOffset,
       panOwns,
@@ -144,6 +147,15 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
   const onMuralScroll = useAnimatedScrollHandler({
     onScroll: e => {
       muralOffset.value = e.contentOffset.y
+      // Chegou de volta ao topo rolando: a seção de eventos volta sozinha, sem
+      // pedir um segundo gesto (o mural nunca sai do lugar, só ela).
+      if (
+        e.contentOffset.y <= 0 &&
+        focus.value === 'mural' &&
+        expand.value >= SETTLED
+      ) {
+        expand.value = withSpring(0, SPRING)
+      }
     },
   })
   const onEventsScroll = useAnimatedScrollHandler({
@@ -152,20 +164,24 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
     },
   })
 
-  // Avatar e stats saem por cima nos dois casos.
+  // Avatar e stats só saem por cima quando eventos toma o palco; no mural o
+  // header fica.
   const headerStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: -headerHeight.value * expand.value }],
+    transform: [
+      {
+        translateY:
+          focus.value === 'events' ? -headerHeight.value * expand.value : 0,
+      },
+    ],
   }))
 
-  // SÓ transform durante o gesto: `top`/`height` são propriedades de layout e
-  // mudá-las a cada frame força o Yoga a recalcular as duas grades — é isso
-  // que engasga. O mural tem sempre a altura do palco; o que o "recorta" no
-  // resumo é a seção de eventos por cima dele (fundo opaco). Quando eventos
-  // desce, o mural aparece por trás, sem crescer de verdade.
+  // O mural não se move: ocupa do pé do header ao pé do palco, sempre. O que
+  // o "recorta" no resumo é a seção de eventos por cima dele (fundo opaco);
+  // quando ela desce, o resto da grade aparece por trás. `top`/`height` só
+  // mudam com o layout, nunca por frame — layout por frame é o que engasga.
   const muralStyle = useAnimatedStyle(() => ({
     top: headerHeight.value,
-    height: stageHeight.value,
-    transform: [{ translateY: -headerHeight.value * expand.value }],
+    height: Math.max(0, stageHeight.value - headerHeight.value),
   }))
 
   // Foco no mural: desce e sai por baixo. Foco em eventos: sobe até o topo,

@@ -66,15 +66,18 @@ export function focusForTouch(
   return y < headerHeight + muralHeight ? 'mural' : 'events'
 }
 
-// Quanto a seção focada percorre até encaixar no topo: o dedo e a seção andam
-// 1:1, então o progresso é o deslocamento dividido por esta distância.
+// Quanto o gesto percorre até o encaixe, pra o dedo e a seção andarem 1:1:
+// eventos sobe do seu topo até o do palco; no mural é a seção de eventos que
+// desce do seu topo até sair do palco (o mural e o header ficam onde estão).
 export function travelDistance(
   focus: StageFocus,
   headerHeight: number,
   muralHeight: number,
+  stageHeight: number,
 ): number {
   'worklet'
-  return focus === 'mural' ? headerHeight : headerHeight + muralHeight
+  const eventsTop = headerHeight + muralHeight
+  return focus === 'mural' ? Math.max(1, stageHeight - eventsTop) : eventsTop
 }
 
 export function nextExpand(
