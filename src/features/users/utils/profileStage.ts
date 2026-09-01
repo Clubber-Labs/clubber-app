@@ -66,9 +66,10 @@ export function focusForTouch(
   return y < headerHeight + muralHeight ? 'mural' : 'events'
 }
 
-// Quanto o gesto percorre até o encaixe, pra o dedo e a seção andarem 1:1:
-// eventos sobe do seu topo até o do palco; no mural é a seção de eventos que
-// desce do seu topo até sair do palco (o mural e o header ficam onde estão).
+// Quanto o gesto percorre até o encaixe, pra o dedo e a seção andarem 1:1.
+// Eventos sobe a altura do mural e encaixa logo abaixo do header (que fica
+// fixo); no mural é a seção de eventos que desce do seu topo até sair do
+// palco (mural e header ficam onde estão).
 export function travelDistance(
   focus: StageFocus,
   headerHeight: number,
@@ -76,8 +77,10 @@ export function travelDistance(
   stageHeight: number,
 ): number {
   'worklet'
-  const eventsTop = headerHeight + muralHeight
-  return focus === 'mural' ? Math.max(1, stageHeight - eventsTop) : eventsTop
+  if (focus === 'mural') {
+    return Math.max(1, stageHeight - headerHeight - muralHeight)
+  }
+  return Math.max(1, muralHeight)
 }
 
 export function nextExpand(

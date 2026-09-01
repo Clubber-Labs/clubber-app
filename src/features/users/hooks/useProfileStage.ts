@@ -180,46 +180,59 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
     },
   })
 
-  // Eventos tomando o palco: o header sai com ela. Mural rolando: o header
-  // acompanha a grade pra cima até sumir (collapsing header) — a lista começa
-  // no topo do palco com um recuo igual ao header, então o mesmo offset move
-  // os dois em sincronia.
+  // Encaixada = eventos parada logo abaixo do header. É o único momento em
+  // que a folha muda de geometria (top 0 + espaçador da altura do header
+  // dentro da lista): uma vez, na thread de UI, no mesmo frame — o que a
+  // tela mostra antes e depois é idêntico.
+  const isDocked = () => {
+    'worklet'
+    return focus.value === 'events' && expand.value >= SETTLED
+  }
+
+  // O header nunca sai pelo gesto: ele colapsa junto com a lista que rola
+  // (mural expandido ou eventos encaixada), pelo offset dela — collapsing
+  // header. Só uma das duas rola por vez.
   const headerStyle = useAnimatedStyle(() => {
-    const translateY =
-      focus.value === 'events'
-        ? -headerHeight.value * expand.value
-        : -Math.min(Math.max(0, muralOffset.value), headerHeight.value)
-    return { transform: [{ translateY }] }
+    const collapse = Math.max(0, muralOffset.value, eventsOffset.value)
+    return {
+      transform: [{ translateY: -Math.min(collapse, headerHeight.value) }],
+    }
   })
 
   // O mural ocupa o palco inteiro, por baixo do header (a lista recua a
   // altura dele). O que o "recorta" no resumo é a seção de eventos por cima
-  // (fundo opaco); quando ela desce, o resto da grade aparece por trás.
-  // Quando é eventos que sobe, o mural acompanha o header pra cima — senão
-  // as fotos ficam paradas atrás enquanto o perfil sai. `height` só muda com
-  // o layout, nunca por frame — layout por frame é o que engasga.
+  // (fundo opaco); quando ela desce, o resto da grade aparece por trás. Não
+  // se move: header e eventos é que passam por cima. `height` só muda com o
+  // layout, nunca por frame — layout por frame é o que engasga.
   const muralStyle = useAnimatedStyle(() => ({
     top: 0,
     height: stageHeight.value,
-    transform: [
-      {
-        translateY:
-          focus.value === 'events' ? -headerHeight.value * expand.value : 0,
-      },
-    ],
   }))
 
-  // Foco no mural: desce e sai por baixo. Foco em eventos: sobe até o topo,
-  // cobrindo o mural.
+  // Foco no mural: desce e sai por baixo. Foco em eventos: sobe a altura do
+  // mural e encaixa sob o header; encaixada, assume o palco inteiro (top 0)
+  // com o espaçador cobrindo a faixa do header, e rola normal.
   const eventsStyle = useAnimatedStyle(() => {
+    if (isDocked()) {
+      return {
+        top: 0,
+        height: stageHeight.value,
+        transform: [{ translateY: 0 }],
+      }
+    }
     const top = headerHeight.value + muralSummary.value
-    const travel = focus.value === 'mural' ? stageHeight.value - top : -top
+    const travel =
+      focus.value === 'mural' ? stageHeight.value - top : -muralSummary.value
     return {
       top,
       height: stageHeight.value,
       transform: [{ translateY: travel * expand.value }],
     }
   })
+
+  const eventsSpacerStyle = useAnimatedStyle(() => ({
+    height: isDocked() ? headerHeight.value : 0,
+  }))
 
   const veilStyle = useAnimatedStyle(() => ({
     opacity: 1 - expand.value,
@@ -265,6 +278,7 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
     headerStyle,
     muralStyle,
     eventsStyle,
+    eventsSpacerStyle,
     veilStyle,
     expanded,
     headerInset,

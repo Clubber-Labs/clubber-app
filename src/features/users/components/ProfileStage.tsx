@@ -144,6 +144,7 @@ export function ProfileStage({
                 native={stage.eventsNative}
                 listRef={stage.eventsList}
                 onScroll={stage.onEventsScroll}
+                spacerStyle={stage.eventsSpacerStyle}
                 onCreate={onCreateEvent}
                 onViewAll={openEvents}
                 bottomPadding={bottomPadding}

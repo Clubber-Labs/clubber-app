@@ -32,6 +32,9 @@ type Props = {
   native: NativeGesture
   listRef: RefObject<FlatList | null>
   onScroll: ComponentProps<typeof Animated.FlatList>['onScroll']
+  // Faixa do header: só existe encaixada (a lista passa a começar no topo do
+  // palco e o header colapsa com o scroll dela).
+  spacerStyle: ComponentProps<typeof Animated.View>['style']
   onCreate?: () => void
   // Expande a seção (o mesmo que puxar pra cima).
   onViewAll: () => void
@@ -55,6 +58,7 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
   native,
   listRef,
   onScroll,
+  spacerStyle,
   onCreate,
   onViewAll,
   bottomPadding,
@@ -88,24 +92,6 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
 
   return (
     <View className="flex-1 bg-background">
-      {/* Alça de folha: a seção cobre o mural como um sheet, e a alça é o
-          sinal universal de "puxe pra cima". Ocupa o respiro entre seções. */}
-      <View
-        className="items-center"
-        style={{
-          paddingTop: STAGE_SECTION_GAP + HANDLE_PADDING_TOP,
-          paddingBottom: HANDLE_PADDING_BOTTOM,
-        }}
-      >
-        <View className="h-1 w-9 rounded-full bg-surface-high" />
-      </View>
-      <ProfileSectionHeader
-        title={t('profile.eventsSection')}
-        count={events.totalCount}
-        action={showHint ? t('profile.eventsViewAll') : undefined}
-        actionIcon={showHint ? CaretUpIcon : undefined}
-        onAction={showHint ? onViewAll : undefined}
-      />
       <GestureDetector gesture={native}>
         <Animated.FlatList
           ref={listRef}
@@ -120,6 +106,29 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: bottomPadding }}
           columnWrapperStyle={{ paddingHorizontal: 16, gap: 8 }}
+          // Alça e cabeçalho moram na lista pra rolarem junto quando ela
+          // assume o palco. A alça é o sinal universal de "puxe pra cima".
+          ListHeaderComponent={
+            <>
+              <Animated.View style={spacerStyle} />
+              <View
+                className="items-center"
+                style={{
+                  paddingTop: STAGE_SECTION_GAP + HANDLE_PADDING_TOP,
+                  paddingBottom: HANDLE_PADDING_BOTTOM,
+                }}
+              >
+                <View className="h-1 w-9 rounded-full bg-surface-high" />
+              </View>
+              <ProfileSectionHeader
+                title={t('profile.eventsSection')}
+                count={events.totalCount}
+                action={showHint ? t('profile.eventsViewAll') : undefined}
+                actionIcon={showHint ? CaretUpIcon : undefined}
+                onAction={showHint ? onViewAll : undefined}
+              />
+            </>
+          }
           renderItem={renderItem}
           ListEmptyComponent={
             events.isLoading ? (
