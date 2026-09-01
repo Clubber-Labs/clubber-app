@@ -16,8 +16,10 @@ import { ProfileEventsEmpty } from './ProfileEventsEmpty'
 import type { StageList } from './ProfileStage'
 import { STAGE_SECTION_GAP } from '../utils/profileStage'
 
-// Altura extra pra alça caber além do respiro entre as seções.
-const HANDLE_AREA = 8
+// Respiro acima e abaixo da alça, somado ao respiro entre as seções: a alça
+// precisa de ar por cima pra não colar no arredondado da folha.
+const HANDLE_PADDING_TOP = 12
+const HANDLE_PADDING_BOTTOM = 6
 import type { UserEventSummary } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
@@ -87,8 +89,11 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
       {/* Alça de folha: a seção cobre o mural como um sheet, e a alça é o
           sinal universal de "puxe pra cima". Ocupa o respiro entre seções. */}
       <View
-        className="items-center justify-center"
-        style={{ height: STAGE_SECTION_GAP + HANDLE_AREA }}
+        className="items-center"
+        style={{
+          paddingTop: STAGE_SECTION_GAP + HANDLE_PADDING_TOP,
+          paddingBottom: HANDLE_PADDING_BOTTOM,
+        }}
       >
         <View className="h-1 w-9 rounded-full bg-surface-high" />
       </View>
