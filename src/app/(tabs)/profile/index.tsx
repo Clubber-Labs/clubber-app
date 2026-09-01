@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { View, Text } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
@@ -15,20 +15,22 @@ import {
   useUploadAvatar,
 } from '@/features/users/hooks/useProfile'
 import { useUserEvents } from '@/features/users/hooks/useUserEvents'
+import { useUserPhotos } from '@/features/users/hooks/useUserPhotos'
+import { useDeleteUserPhoto } from '@/features/users/hooks/useDeleteUserPhoto'
 import { usePickAvatar } from '@/features/users/hooks/usePickAvatar'
 import { useLogout } from '@/features/auth/hooks/useLogout'
 import { useFollowRequests } from '@/features/follows/hooks/useFollowRequests'
 import { useConfirm } from '@/shared/lib/confirm'
 import { UserAvatar } from '@/shared/components/UserAvatar'
-import { usePullRefresh } from '@/shared/hooks/usePullRefresh'
+import { CreateFab } from '@/shared/components/CreateFab'
 import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import { useHeaderClearance } from '@/shared/hooks/useHeaderClearance'
 import { ProfileMusicSection } from '@/features/spotify/components/ProfileMusicSection'
 import { ProfileHeader } from '@/features/users/components/ProfileHeader'
 import { EditProfileButton } from '@/features/users/components/EditProfileButton'
-import { ProfileEventsList } from '@/features/users/components/ProfileEventsList'
-import { ProfileEventsSectionTitle } from '@/features/users/components/ProfileEventsSectionTitle'
-import { ProfileEventsEmpty } from '@/features/users/components/ProfileEventsEmpty'
+import { ProfileStage } from '@/features/users/components/ProfileStage'
+import { ProfilePhotoViewer } from '@/features/users/components/ProfilePhotoViewer'
+import { InterestsSheet } from '@/features/users/components/InterestsSheet'
 import { ProfileLoading } from '@/features/users/components/ProfileLoading'
 import { ProfileEmpty } from '@/features/users/components/ProfileEmpty'
 import {
@@ -41,29 +43,17 @@ export default function ProfileScreen() {
   const router = useRouter()
   const tabBarClearance = useTabBarClearance()
   const headerClearance = useHeaderClearance(0)
-  const {
-    data: profile,
-    isLoading: profileLoading,
-    refetch: refetchProfile,
-  } = useMyProfile()
+  const { data: profile, isLoading: profileLoading } = useMyProfile()
   const userId = profile?.id ?? ''
 
-  const {
-    data: eventsData,
-    fetchNextPage,
-    hasNextPage = false,
-    isFetchingNextPage,
-    isLoading: eventsLoading,
-    refetch: refetchEvents,
-  } = useUserEvents(userId)
-  const refreshAll = useCallback(
-    () => Promise.all([refetchProfile(), refetchEvents()]),
-    [refetchProfile, refetchEvents],
-  )
-  const { refreshing, onRefresh } = usePullRefresh(refreshAll)
+  const eventsQuery = useUserEvents(userId)
+  const photosQuery = useUserPhotos(userId)
+  const deletePhoto = useDeleteUserPhoto(userId)
   const uploadAvatar = useUploadAvatar()
   const performLogout = useLogout()
   const confirm = useConfirm()
+  const [viewerPhotoId, setViewerPhotoId] = useState<string | null>(null)
+  const [interestsOpen, setInterestsOpen] = useState(false)
   const { data: requestsData } = useFollowRequests(profile?.isPrivate === true)
   const firstRequestsPage = requestsData?.pages?.[0]
   const pendingFirstPageCount = firstRequestsPage?.data.length ?? 0
@@ -77,8 +67,12 @@ export default function ProfileScreen() {
       : 0
 
   const events = useMemo(
-    () => eventsData?.pages.flatMap(p => p.data) ?? [],
-    [eventsData],
+    () => eventsQuery.data?.pages.flatMap(p => p.data) ?? [],
+    [eventsQuery.data],
+  )
+  const photos = useMemo(
+    () => photosQuery.data?.pages.flatMap(p => p.data) ?? [],
+    [photosQuery.data],
   )
 
   const handlePickAvatar = usePickAvatar(uri => uploadAvatar.mutate(uri))
@@ -91,6 +85,16 @@ export default function ProfileScreen() {
       destructive: true,
     })
     if (ok) performLogout()
+  }
+
+  async function handleDeletePhoto(photoId: string) {
+    const ok = await confirm({
+      title: t('profile.mural.deleteTitle'),
+      message: t('profile.mural.deleteMessage'),
+      confirmLabel: t('common.delete'),
+      destructive: true,
+    })
+    if (ok) deletePhoto.mutate(photoId)
   }
 
   if (profileLoading) return <ProfileLoading />
@@ -157,52 +161,77 @@ export default function ProfileScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      <ProfileEventsList
-        events={events}
+      <ProfileStage
         ownerId={userId}
-        hasNextPage={hasNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-        isLoading={eventsLoading}
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-        onLoadMore={fetchNextPage}
-        bottomPadding={tabBarClearance}
+        isOwnProfile
         topPadding={headerClearance}
-        empty={
-          <ProfileEventsEmpty
-            variant="own"
-            onCreate={() => router.push('/events/create')}
+        bottomPadding={tabBarClearance}
+        header={
+          <ProfileHeader
+            profile={profile}
+            highlights={
+              <ProfileMusicSection
+                featured={profile.featuredArtist}
+                artists={profile.topArtists ?? []}
+                windows={profile.artistWindows}
+              />
+            }
+            isOwnProfile
+            avatarUploading={uploadAvatar.isPending}
+            onAvatarPress={handlePickAvatar}
+            onFollowersPress={() =>
+              router.push(`/users/${profile.id}/followers`)
+            }
+            onFollowingPress={() =>
+              router.push(`/users/${profile.id}/following`)
+            }
+            onInterestsPress={() => setInterestsOpen(true)}
+            actions={
+              <EditProfileButton onPress={() => router.push('/profile/edit')} />
+            }
           />
         }
-        header={
-          <>
-            <ProfileHeader
-              profile={profile}
-              highlights={
-                <ProfileMusicSection
-                  featured={profile.featuredArtist}
-                  artists={profile.topArtists ?? []}
-                  windows={profile.artistWindows}
-                />
-              }
-              isOwnProfile
-              avatarUploading={uploadAvatar.isPending}
-              onAvatarPress={handlePickAvatar}
-              onFollowersPress={() =>
-                router.push(`/users/${profile.id}/followers`)
-              }
-              onFollowingPress={() =>
-                router.push(`/users/${profile.id}/following`)
-              }
-              actions={
-                <EditProfileButton
-                  onPress={() => router.push('/profile/edit')}
-                />
-              }
-            />
-            <ProfileEventsSectionTitle />
-          </>
+        photos={{
+          items: photos,
+          totalCount: profile.photosCount ?? photos.length,
+          isLoading: photosQuery.isLoading,
+          hasNextPage: photosQuery.hasNextPage ?? false,
+          isFetchingNextPage: photosQuery.isFetchingNextPage,
+          onLoadMore: photosQuery.fetchNextPage,
+        }}
+        events={{
+          items: events,
+          totalCount: profile.eventsCount,
+          isLoading: eventsQuery.isLoading,
+          hasNextPage: eventsQuery.hasNextPage ?? false,
+          isFetchingNextPage: eventsQuery.isFetchingNextPage,
+          onLoadMore: eventsQuery.fetchNextPage,
+        }}
+        onPressPhoto={photo => setViewerPhotoId(photo.id)}
+        onCreateEvent={() => router.push('/events/create')}
+      />
+
+      <ProfilePhotoViewer
+        photos={photos}
+        photoId={viewerPhotoId}
+        isOwner
+        onClose={() => setViewerPhotoId(null)}
+        onDelete={handleDeletePhoto}
+        onOpenEvent={eventId => router.push(`/events/${eventId}`)}
+      />
+      <InterestsSheet
+        visible={interestsOpen}
+        onClose={() => setInterestsOpen(false)}
+        profile={profile}
+      />
+      <CreateFab
+        onCreateEvent={() => router.push('/events/create')}
+        // O fluxo de rolê (sugestões por área) vive no mapa — navega até lá
+        // com o pedido de abrir o painel.
+        onCreateSpot={() =>
+          router.push({ pathname: '/(tabs)/map', params: { suggest: '1' } })
         }
+        onCreatePhoto={() => router.push('/profile/photos/create')}
       />
       <ProfileDrawer items={drawerItems} header={drawerHeader} />
     </View>

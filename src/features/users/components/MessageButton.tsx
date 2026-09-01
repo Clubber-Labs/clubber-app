@@ -1,6 +1,6 @@
 import { Pressable, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { ChatCircleIcon } from 'phosphor-react-native'
+import { PaperPlaneTiltIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
 type Props = {
@@ -8,8 +8,8 @@ type Props = {
   loading?: boolean
 }
 
-// Botão compacto de mensagem ao lado do FollowButton. Mesma altura/estilo do
-// Button secondary (py-3 + borda zinc-700) pra alinhar na mesma linha.
+// Pílula branca cheia com o avião: mesma altura do FollowButton pra alinhar na
+// linha de ações.
 export function MessageButton({ onPress, loading }: Props) {
   const { t } = useTranslation()
   return (
@@ -19,12 +19,12 @@ export function MessageButton({ onPress, loading }: Props) {
       accessibilityRole="button"
       accessibilityLabel={t('profile.message')}
       accessibilityState={{ disabled: !!loading, busy: !!loading }}
-      className="rounded-lg py-3 px-4 items-center justify-center border border-line-strong"
+      className="h-11 min-w-[56px] items-center justify-center rounded-full bg-content px-5"
     >
       {loading ? (
-        <ActivityIndicator size="small" color={colors.contentSecondary} />
+        <ActivityIndicator size="small" color={colors.background} />
       ) : (
-        <ChatCircleIcon size={20} color={colors.contentSecondary} />
+        <PaperPlaneTiltIcon size={18} weight="fill" color={colors.background} />
       )}
     </Pressable>
   )

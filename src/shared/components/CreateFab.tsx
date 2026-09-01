@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next'
 import {
   PlusIcon,
   CaretRightIcon,
-  CalendarBlankIcon,
-  SparkleIcon,
+  CalendarPlusIcon,
+  ChatCircleDotsIcon,
+  ImageSquareIcon,
   type Icon,
 } from 'phosphor-react-native'
 import { SheetModal } from '@/shared/components/SheetModal'
@@ -15,12 +16,18 @@ import { useSheetExit } from '@/shared/hooks/useSheetExit'
 type Props = {
   onCreateEvent: () => void
   onCreateSpot: () => void
+  onCreatePhoto: () => void
 }
 
 // Ação única de criar, igual em todas as abas: o "+" abre um seletor (evento
-// formal × rolê) em vez de FABs distintos por tela. Cada opção dispara o fluxo
-// que a tela hospedeira passar (o rolê fora do mapa navega até ele).
-export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
+// formal × rolê × foto no mural) em vez de FABs distintos por tela. Cada opção
+// dispara o fluxo que a tela hospedeira passar (o rolê fora do mapa navega
+// até ele).
+export function CreateFab({
+  onCreateEvent,
+  onCreateSpot,
+  onCreatePhoto,
+}: Props) {
   const { t } = useTranslation()
   const sheet = useSheetExit()
   const tabBarClearance = useTabBarClearance()
@@ -54,16 +61,22 @@ export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
             {t('shared.createFab.title')}
           </Text>
           <CreateOption
-            icon={CalendarBlankIcon}
+            icon={CalendarPlusIcon}
             title={t('shared.createFab.event')}
             subtitle={t('shared.createFab.eventHint')}
             onPress={() => sheet.exitTo(onCreateEvent)}
           />
           <CreateOption
-            icon={SparkleIcon}
+            icon={ChatCircleDotsIcon}
             title={t('shared.createFab.spot')}
             subtitle={t('shared.createFab.spotHint')}
             onPress={() => sheet.exitTo(onCreateSpot)}
+          />
+          <CreateOption
+            icon={ImageSquareIcon}
+            title={t('shared.createFab.photo')}
+            subtitle={t('shared.createFab.photoHint')}
+            onPress={() => sheet.exitTo(onCreatePhoto)}
           />
         </View>
       </SheetModal>

@@ -1,9 +1,15 @@
+import { useState } from 'react'
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { ClockIcon, UsersIcon } from 'phosphor-react-native'
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg'
 import { LivePill } from '@/shared/components/LivePill'
 import { CardHighlightFrame } from '@/shared/components/CardHighlightFrame'
+import {
+  TicketPerforation,
+  perforationOverlap,
+} from '@/shared/components/TicketPerforation'
+import { TicketOutline } from '@/shared/components/TicketOutline'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { useLocale } from '@/shared/hooks/useLocale'
 import {
@@ -14,7 +20,7 @@ import {
 } from '@/shared/utils/dateFormat'
 import { eventCategoryEmoji } from '@/shared/utils/eventCategoryEmoji'
 import type { UserEventSummary } from '@/shared/types'
-import { categoryHue, colors, SPECTRUM } from '@/shared/theme'
+import { categoryHue, colors, METAL, SPECTRUM } from '@/shared/theme'
 
 type Props = {
   event: UserEventSummary
@@ -28,6 +34,12 @@ type Props = {
 // reservar exatamente o mesmo espaço.
 export const PROFILE_TILE_ART_HEIGHT = 200
 const TILE_RADIUS = 12
+// Furo do picote: o tile tem metade da largura do card do feed, então o raio
+// de lá comeria a arte. Exportado pro fantasma somar o que o picote avança.
+export const PROFILE_TILE_NOTCH_RADIUS = 8
+const TILE_PERFORATION_OVERLAP = perforationOverlap(PROFILE_TILE_NOTCH_RADIUS)
+// Respiro do título da PlainCover ao pé da arte.
+const PLAIN_TITLE_INSET = 10
 // Foto do criador no rodapé: pequena o bastante pra não competir com o título.
 const AVATAR_SIZE = 24
 // Vidro escuro dos sobrepostos — o único que encosta na arte do flyer.
@@ -136,9 +148,16 @@ function PlainCover({ event }: { event: UserEventSummary }) {
         {eventCategoryEmoji(event.categories)}
       </Text>
       <Text
-        className="absolute inset-x-2.5 bottom-2.5 font-extrabold uppercase text-content"
+        className="absolute inset-x-2.5 font-extrabold uppercase text-content"
         numberOfLines={3}
-        style={{ fontSize: 24, lineHeight: 24, letterSpacing: -0.3 }}
+        // O picote avança por cima do pé da arte: o título sobe junto, senão
+        // o tracejado corta a última linha.
+        style={{
+          bottom: PLAIN_TITLE_INSET + TILE_PERFORATION_OVERLAP,
+          fontSize: 24,
+          lineHeight: 24,
+          letterSpacing: -0.3,
+        }}
       >
         {event.title}
       </Text>
@@ -157,6 +176,12 @@ export function ProfileEventTile({ event, ownerId, onPress }: Props) {
   const locale = useLocale()
   const zone = event.timezone ?? undefined
   const imageUrl = event.images[0]?.url ?? null
+  // A aresta é desenhada, não é `border` — ver TicketOutline. Ela e a moldura
+  // precisam do tamanho real e de onde o picote caiu.
+  const [tileSize, setTileSize] = useState<{ w: number; h: number } | null>(
+    null,
+  )
+  const [notchY, setNotchY] = useState<number | null>(null)
   // Só assina o que é de OUTRA pessoa: a vitrine mistura o que o dono criou com
   // o que ele vai, e a assinatura é o que separa os dois. Repetir a cara dele em
   // todo tile do próprio perfil só pesa — a autoria dele já é o padrão ali.
@@ -171,6 +196,10 @@ export function ProfileEventTile({ event, ownerId, onPress }: Props) {
   const canceled = event.status === 'CANCELED'
   const closed = event.status === 'PAST' || canceled
   const phase = live ? 'live' : closed ? 'past' : 'upcoming'
+  // Mesma régua do card do feed: ao vivo = espectro, promovido = metal, e o
+  // ao vivo vence quando coincidem.
+  const framed = live || !!event.isFeatured
+  const frameStops = live ? SPECTRUM : METAL
 
   const attendees = event._count?.attendances
   const people =
@@ -193,7 +222,15 @@ export function ProfileEventTile({ event, ownerId, onPress }: Props) {
         locale,
         zone,
       )}, ${formatTime(event.date, locale, zone)}`}
-      className="mb-2 flex-1 overflow-hidden rounded-xl border border-line bg-surface"
+      className="mb-2 flex-1 overflow-hidden rounded-xl bg-surface"
+      onLayout={e => {
+        const { width, height } = e.nativeEvent.layout
+        setTileSize(prev =>
+          prev?.w === width && prev?.h === height
+            ? prev
+            : { w: width, h: height },
+        )
+      }}
     >
       <View
         className="bg-surface-elevated"
@@ -234,7 +271,16 @@ export function ProfileEventTile({ event, ownerId, onPress }: Props) {
         )}
       </View>
 
-      <View className="px-2.5 pb-2.5 pt-2">
+      {/* O picote cavalga a emenda arte/rodapé: o centro dos furos cai na
+          borda inferior da foto (ou do gradiente), como no card do feed. */}
+      <TicketPerforation
+        radius={PROFILE_TILE_NOTCH_RADIUS}
+        onCenterChange={center =>
+          setNotchY(prev => (prev === center ? prev : center))
+        }
+      />
+
+      <View className="px-2.5 pb-2.5 pt-1">
         <Text
           className={`text-[13px] font-extrabold ${
             closed ? 'text-content-muted' : 'text-content'
@@ -275,10 +321,32 @@ export function ProfileEventTile({ event, ownerId, onPress }: Props) {
         )}
       </View>
 
-      {/* Moldura do "ao vivo": a mesma peça medida em pixel que o card do feed
-          usa. Um gradiente de fundo clipado pelo raio do tile deixaria escapar
-          a base nas quinas — ver StatusChip. */}
-      {live && <CardHighlightFrame stops={SPECTRUM} radius={TILE_RADIUS} />}
+      {/* Aresta por cima do conteúdo, senão os furos não perfuram a arte. */}
+      {!!tileSize && notchY !== null && (
+        <TicketOutline
+          width={tileSize.w}
+          height={tileSize.h}
+          notchY={notchY}
+          notchRadius={PROFILE_TILE_NOTCH_RADIUS}
+          radius={TILE_RADIUS}
+        />
+      )}
+
+      {/* Moldura de destaque: a mesma peça medida em pixel que o card do feed
+          usa, mergulhando no mesmo picote que a aresta. Um gradiente de fundo
+          clipado pelo raio do tile deixaria escapar a base nas quinas — ver
+          StatusChip. */}
+      {framed && (
+        <CardHighlightFrame
+          stops={frameStops}
+          radius={TILE_RADIUS}
+          notch={
+            notchY === null
+              ? null
+              : { y: notchY, radius: PROFILE_TILE_NOTCH_RADIUS }
+          }
+        />
+      )}
     </Pressable>
   )
 }

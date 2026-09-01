@@ -27,7 +27,10 @@ const CATEGORY_EMOJIS: Record<string, string> = {
 
 const FALLBACK_CATEGORY_EMOJI = '📅'
 
+export function categoryEmoji(category: string | undefined): string {
+  return (category && CATEGORY_EMOJIS[category]) || FALLBACK_CATEGORY_EMOJI
+}
+
 export function eventCategoryEmoji(categories: string[]): string {
-  const primary = categories[0]
-  return (primary && CATEGORY_EMOJIS[primary]) || FALLBACK_CATEGORY_EMOJI
+  return categoryEmoji(categories[0])
 }

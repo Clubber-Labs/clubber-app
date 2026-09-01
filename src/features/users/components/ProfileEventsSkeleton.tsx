@@ -6,11 +6,17 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated'
-import { PROFILE_TILE_ART_HEIGHT } from './ProfileEventTile'
+import { perforationOverlap } from '@/shared/components/TicketPerforation'
+import {
+  PROFILE_TILE_ART_HEIGHT,
+  PROFILE_TILE_NOTCH_RADIUS,
+} from './ProfileEventTile'
 
-// Arte + rodapé de uma linha de título: o fantasma ocupa o mesmo lugar que o
-// tile vai ocupar, pra grade não saltar quando os dados chegam.
-const GHOST_HEIGHT = PROFILE_TILE_ART_HEIGHT + 52
+// Arte + o que o picote avança abaixo da emenda + rodapé de uma linha de
+// título: o fantasma ocupa o mesmo lugar que o tile vai ocupar, pra grade não
+// saltar quando os dados chegam.
+const GHOST_HEIGHT =
+  PROFILE_TILE_ART_HEIGHT + perforationOverlap(PROFILE_TILE_NOTCH_RADIUS) + 48
 const ROWS = [0, 1]
 const COLUMNS = [0, 1]
 

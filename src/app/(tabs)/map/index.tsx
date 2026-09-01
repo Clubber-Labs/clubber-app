@@ -380,6 +380,7 @@ export default function MapScreen() {
           <CreateFab
             onCreateEvent={() => router.push('/events/create')}
             onCreateSpot={() => setSuggestionsOpen(true)}
+            onCreatePhoto={() => router.push('/profile/photos/create')}
           />
         </>
       )}

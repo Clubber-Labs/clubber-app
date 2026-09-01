@@ -5,6 +5,7 @@ export const userKeys = {
   me: ['users', 'me'] as const,
   profile: (id: string) => ['users', id] as const,
   events: (id: string) => ['users', id, 'events'] as const,
+  photos: (id: string) => ['users', id, 'photos'] as const,
   search: (q: string) => ['users', 'search', q] as const,
   // Username na chave: cada valor tem a própria entrada, então resposta de um
   // valor antigo não pinta o estado do valor atual.
@@ -17,5 +18,6 @@ export function invalidateUserViews(queryClient: QueryClient, userId?: string) {
   if (userId) {
     queryClient.invalidateQueries({ queryKey: userKeys.profile(userId) })
     queryClient.invalidateQueries({ queryKey: userKeys.events(userId) })
+    queryClient.invalidateQueries({ queryKey: userKeys.photos(userId) })
   }
 }

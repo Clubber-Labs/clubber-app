@@ -203,7 +203,9 @@
       "event": "Event",
       "eventHint": "With date, place and guest list",
       "spot": "Hangout",
-      "spotHint": "A quick meetup near you"
+      "spotHint": "A quick meetup near you",
+      "photo": "Post a photo",
+      "photoHint": "Photos on your profile wall"
     },
     "datePicker": {
       "placeholder": "Select a date",
@@ -262,6 +264,12 @@
     },
     "mediaViewer": {
       "closeImage": "Close image"
+    },
+    "imagePicker": {
+      "label": "Photos",
+      "cover": "Cover",
+      "removePhoto": "Remove photo",
+      "addPhotos": "Add photos"
     }
   },
   "auth": {
@@ -1274,7 +1282,52 @@
       "createEvent": "Create event"
     },
     "notFound": "User not found.",
-    "notFoundBanner": "User not found"
+    "notFoundBanner": "User not found",
+    "mural": {
+      "title": "Wall",
+      "viewAll": "See all",
+      "more": "+{{count}}",
+      "photoLabel": "Photo {{index}} of {{total}}",
+      "counter": "{{index}}/{{total}}",
+      "emptyOwn": "Post your first photo to the wall",
+      "emptyOther": "No photos yet",
+      "moreActions": "More options",
+      "deleteTitle": "Delete photo",
+      "deleteMessage": "The post leaves your wall. Are you sure?"
+    },
+    "photo": {
+      "title": "Post a photo",
+      "photosLabel": "Photos",
+      "captionPlaceholder": "Write a caption (optional)",
+      "linkEvent": "Link to an event",
+      "linkOptional": "Optional",
+      "linkNone": "No link",
+      "linkEmpty": "You haven't been to any event yet.",
+      "publish": "Publish",
+      "publishing": "Publishing…"
+    },
+    "interests": {
+      "title": "Your interests",
+      "subtitle": "They show on your profile and tune your feed.",
+      "add": "Add interests",
+      "groups": {
+        "scene": "Scene",
+        "sound": "Sound",
+        "places": "Places"
+      }
+    },
+    "more": {
+      "label": "More options",
+      "share": "Share profile",
+      "report": "Report",
+      "block": "Block @{{username}}",
+      "blockTitle": "Block @{{username}}",
+      "blockMessage": "You won't see each other or exchange messages anymore. Block {{name}}?",
+      "blockConfirm": "Block"
+    },
+    "share": {
+      "message": "Check out {{name}}'s (@{{username}}) profile on Clubber: {{url}}"
+    }
   },
   "users": {
     "search": {
@@ -1640,7 +1693,8 @@
       "comment": "Report comment",
       "message": "Report message",
       "user": "Report user",
-      "spot": "Report hangout"
+      "spot": "Report hangout",
+      "photo": "Report photo"
     },
     "reasons": {
       "HATE_SPEECH": "Hate speech",

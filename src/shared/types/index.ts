@@ -352,9 +352,14 @@ export type UserProfile = {
   // followStatus responde se o follow é mútuo — o que perfil privado exige pra
   // liberar conversa. Opcional pra degradar contra backend anterior ao campo.
   followsYou?: boolean
+  // Quando o viewer passou a seguir (só com followStatus ACCEPTED). Decide se
+  // deixar de seguir pede confirmação: só um vínculo antigo merece a fricção.
+  followedAt?: string | null
   eventsCount: number
   followersCount: number
   followingCount: number
+  // Publicações do mural. Opcional pra degradar contra backend sem o recurso.
+  photosCount?: number
   // Values do enum EventCategory (MAIÚSCULAS). Sempre array; vazio = []. Não
   // incluído nos selects reduzidos (/users e /users/search), por isso opcional.
   preferredCategories?: string[]
@@ -417,6 +422,18 @@ export type UserProfile = {
   }
 }
 
+// Publicação do mural de fotos do perfil (GET /users/:id/photos). Cada uma
+// leva 1..10 imagens; o tile mostra a primeira e sinaliza quando há mais.
+export type UserPhoto = {
+  id: string
+  images: EventImage[]
+  caption?: string | null
+  // Evento a que a foto está vinculada (o dono compareceu), já resumido pelo
+  // servidor — o viewer linka pelo título sem uma busca a mais.
+  event?: { id: string; title: string } | null
+  createdAt: string
+}
+
 export type UserEventSummary = {
   id: string
   title: string
@@ -432,6 +449,7 @@ export type UserEventSummary = {
   images: EventImage[]
   address?: string | null
   isPublic: boolean
+  isFeatured?: boolean
   // /users/:id/events devolve o evento compartilhado inteiro, com o mesmo bloco
   // de contagens do feed. O antigo `attendancesCount` achatado nunca existiu na
   // resposta — o contador do tile do perfil ficava mudo por causa dele.

@@ -1,0 +1,76 @@
+// Geometria do palco do perfil (mural ↔ eventos). Funções puras e worklets:
+// rodam na thread de UI dentro do gesto, então nada aqui toca React.
+
+export type StageFocus = 'mural' | 'events'
+
+// Respiro entre o fim do mural (modo resumo) e o cabeçalho de eventos.
+export const STAGE_SECTION_GAP = 8
+// Tiles quadrados em 3 colunas, colados à borda da tela.
+export const MURAL_COLUMNS = 3
+export const MURAL_GAP = 2
+export const MURAL_SUMMARY_ROWS = 2
+export const MURAL_SUMMARY_COUNT = MURAL_COLUMNS * MURAL_SUMMARY_ROWS
+// Altura fixa do cabeçalho de seção — a geometria do palco é calculada, não
+// medida, e uma altura de conteúdo aqui a tornaria imprevisível.
+export const SECTION_HEADER_HEIGHT = 44
+// Estado vazio do mural em modo resumo: altura fixa pela mesma razão.
+export const MURAL_EMPTY_HEIGHT = 112
+
+export function muralTileSize(width: number): number {
+  return (width - MURAL_GAP * (MURAL_COLUMNS - 1)) / MURAL_COLUMNS
+}
+
+// Altura do mural no modo resumo (cabeçalho + 2 fileiras, ou o estado vazio).
+export function muralSummaryHeight(width: number, empty: boolean): number {
+  if (empty) return SECTION_HEADER_HEIGHT + MURAL_EMPTY_HEIGHT
+  const rows = MURAL_SUMMARY_ROWS
+  return (
+    SECTION_HEADER_HEIGHT + muralTileSize(width) * rows + MURAL_GAP * (rows - 1)
+  )
+}
+
+// Qual seção o toque escolheu: acima do fim do mural é mural (o cabeçalho do
+// perfil conta como mural). Mural vazio não tem o que expandir — vira eventos.
+export function focusForTouch(
+  y: number,
+  headerHeight: number,
+  muralHeight: number,
+  muralEmpty: boolean,
+): StageFocus {
+  'worklet'
+  if (muralEmpty) return 'events'
+  return y < headerHeight + muralHeight ? 'mural' : 'events'
+}
+
+// Quanto a seção focada percorre até encaixar no topo: o dedo e a seção andam
+// 1:1, então o progresso é o deslocamento dividido por esta distância.
+export function travelDistance(
+  focus: StageFocus,
+  headerHeight: number,
+  muralHeight: number,
+): number {
+  'worklet'
+  return focus === 'mural'
+    ? headerHeight
+    : headerHeight + muralHeight + STAGE_SECTION_GAP
+}
+
+export function nextExpand(
+  start: number,
+  translationY: number,
+  distance: number,
+): number {
+  'worklet'
+  if (distance <= 0) return start
+  const next = start - translationY / distance
+  return Math.min(1, Math.max(0, next))
+}
+
+const FLICK_VELOCITY = 500
+
+// Ao soltar: um flick decide pela direção; sem flick, o lado mais próximo.
+export function snapTarget(expand: number, velocityY: number): 0 | 1 {
+  'worklet'
+  if (Math.abs(velocityY) > FLICK_VELOCITY) return velocityY < 0 ? 1 : 0
+  return expand > 0.5 ? 1 : 0
+}

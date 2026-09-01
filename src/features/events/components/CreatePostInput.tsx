@@ -10,7 +10,7 @@ import {
 import { CameraIcon, PaperPlaneTiltIcon } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
 import { useAddPost, useUploadPostImages } from '../hooks/usePosts'
-import { EventImagePicker } from './EventImagePicker'
+import { ImageGalleryPicker } from '@/shared/components/ImageGalleryPicker'
 import { useMe } from '@/features/auth/hooks/useMe'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { colors } from '@/shared/theme'
@@ -108,7 +108,7 @@ export function CreatePostInput({
 
       {expanded && (
         <View className="gap-2 pl-[46px]">
-          <EventImagePicker
+          <ImageGalleryPicker
             uris={imageUris}
             onChange={setImageUris}
             maxCount={MAX_POST_IMAGES}

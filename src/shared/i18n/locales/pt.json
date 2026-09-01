@@ -203,7 +203,9 @@
       "event": "Evento",
       "eventHint": "Com data, local e lista de presença",
       "spot": "Rolê",
-      "spotHint": "Um encontro rápido perto de você"
+      "spotHint": "Um encontro rápido perto de você",
+      "photo": "Postar foto",
+      "photoHint": "Fotos no mural do seu perfil"
     },
     "datePicker": {
       "placeholder": "Selecione uma data",
@@ -262,6 +264,12 @@
     },
     "mediaViewer": {
       "closeImage": "Fechar imagem"
+    },
+    "imagePicker": {
+      "label": "Fotos",
+      "cover": "Capa",
+      "removePhoto": "Remover foto",
+      "addPhotos": "Adicionar fotos"
     }
   },
   "auth": {
@@ -1274,7 +1282,52 @@
       "createEvent": "Criar evento"
     },
     "notFound": "Usuário não encontrado.",
-    "notFoundBanner": "Usuário não encontrado"
+    "notFoundBanner": "Usuário não encontrado",
+    "mural": {
+      "title": "Mural",
+      "viewAll": "Ver todas",
+      "more": "+{{count}}",
+      "photoLabel": "Foto {{index}} de {{total}}",
+      "counter": "{{index}}/{{total}}",
+      "emptyOwn": "Poste sua primeira foto no mural",
+      "emptyOther": "Nenhuma foto ainda",
+      "moreActions": "Mais opções",
+      "deleteTitle": "Excluir foto",
+      "deleteMessage": "A publicação sai do seu mural. Tem certeza?"
+    },
+    "photo": {
+      "title": "Postar foto",
+      "photosLabel": "Fotos",
+      "captionPlaceholder": "Escreva uma legenda (opcional)",
+      "linkEvent": "Vincular a um evento",
+      "linkOptional": "Opcional",
+      "linkNone": "Sem vínculo",
+      "linkEmpty": "Você ainda não foi a nenhum evento.",
+      "publish": "Publicar",
+      "publishing": "Publicando…"
+    },
+    "interests": {
+      "title": "Seus interesses",
+      "subtitle": "Eles aparecem no seu perfil e afinam o feed.",
+      "add": "Adicionar interesses",
+      "groups": {
+        "scene": "Cena",
+        "sound": "Som",
+        "places": "Lugares"
+      }
+    },
+    "more": {
+      "label": "Mais opções",
+      "share": "Compartilhar perfil",
+      "report": "Denunciar",
+      "block": "Bloquear @{{username}}",
+      "blockTitle": "Bloquear @{{username}}",
+      "blockMessage": "Vocês não vão mais se ver nem trocar mensagens. Bloquear {{name}}?",
+      "blockConfirm": "Bloquear"
+    },
+    "share": {
+      "message": "Veja o perfil de {{name}} (@{{username}}) no Clubber: {{url}}"
+    }
   },
   "users": {
     "search": {
@@ -1640,7 +1693,8 @@
       "comment": "Denunciar comentário",
       "message": "Denunciar mensagem",
       "user": "Denunciar usuário",
-      "spot": "Denunciar rolê"
+      "spot": "Denunciar rolê",
+      "photo": "Denunciar foto"
     },
     "reasons": {
       "HATE_SPEECH": "Discurso de ódio",

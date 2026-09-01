@@ -25,7 +25,7 @@ function StatItem({
       className="flex-1 items-center py-1"
     >
       <Text className="text-content text-lg font-extrabold">{value}</Text>
-      <Text className="text-content-muted mt-0.5 text-xs">{label}</Text>
+      <Text className="text-content-muted mt-0.5 text-[11px]">{label}</Text>
     </Pressable>
   )
 }
