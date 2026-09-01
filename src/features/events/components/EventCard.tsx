@@ -3,6 +3,7 @@ import { View, Text, Pressable } from 'react-native'
 import { UsersIcon, HeartIcon, ChatCircleIcon } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
 import { CardHighlightFrame } from '@/shared/components/CardHighlightFrame'
+import { useAuthStore } from '@/features/auth/store/authStore'
 import { useToggleLike } from '../hooks/useToggleLike'
 import { EventCardHero } from './EventCardHero'
 import { EventCardPerforation } from './EventCardPerforation'
@@ -44,6 +45,7 @@ export function EventCard({
   userCoords = null,
 }: Props) {
   const { t } = useTranslation()
+  const userId = useAuthStore(s => s.userId)
   const [sheetOpen, setSheetOpen] = useState(false)
   // O contorno do card é desenhado, não é `border`: ver EventCardOutline.
   const [cardSize, setCardSize] = useState<{ w: number; h: number } | null>(
@@ -184,6 +186,7 @@ export function EventCard({
           visible
           onClose={() => setSheetOpen(false)}
           target={{ kind: 'event', eventId: event.id }}
+          isOrganizer={!!userId && userId === event.author.id}
         />
       )}
 

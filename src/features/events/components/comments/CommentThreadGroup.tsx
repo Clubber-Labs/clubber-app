@@ -12,6 +12,7 @@ type Props = {
   onToggleExpanded: () => void
   highlightReplyId?: string
   myId: string | null
+  isOrganizer: boolean
   onReply: (username: string, parentId: string) => void
   onToggleLike: (
     commentId: string,
@@ -34,6 +35,7 @@ export function CommentThreadGroup({
   onToggleExpanded,
   highlightReplyId,
   myId,
+  isOrganizer,
   onReply,
   onToggleLike,
   onDelete,
@@ -47,7 +49,9 @@ export function CommentThreadGroup({
       <CommentItem
         comment={comment}
         onToggleLike={() => onToggleLike(comment.id, comment.userLiked)}
-        onDelete={mine ? () => onDelete(comment.id, mine) : undefined}
+        onDelete={
+          mine || isOrganizer ? () => onDelete(comment.id, mine) : undefined
+        }
         onReport={mine ? undefined : () => onReport(comment.id)}
       />
 
@@ -87,6 +91,7 @@ export function CommentThreadGroup({
           parentId={comment.id}
           highlightId={highlightReplyId}
           myId={myId}
+          isOrganizer={isOrganizer}
           onToggleLike={(id, liked) => onToggleLike(id, liked, comment.id)}
           onDelete={(id, isMine) => onDelete(id, isMine, comment.id)}
           onReport={onReport}

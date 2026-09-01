@@ -267,6 +267,7 @@ export default function EventDetailScreen() {
               ? { kind: 'post', postId: post }
               : { kind: 'event', eventId: event.id }
           }
+          isOrganizer={isAuthor}
           focusRootId={thread}
           focusReplyId={highlight}
         />

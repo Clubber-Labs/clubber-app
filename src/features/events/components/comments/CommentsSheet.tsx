@@ -29,6 +29,9 @@ type Props = {
   visible: boolean
   onClose: () => void
   target: CommentTarget
+  // Viewer é o organizador do evento — modera comentário alheio, aqui como no
+  // post. Ausente quando quem renderiza não sabe: aí só se apaga o que é seu.
+  isOrganizer?: boolean
   // Deep-link de notificação: a raiz a focar e a resposta a destacar. A raiz
   // pode estar em qualquer página da lista, então ela é buscada por id e
   // fixada no topo — paginar até achá-la custaria uma ida por página.
@@ -44,6 +47,7 @@ export function CommentsSheet({
   visible,
   onClose,
   target,
+  isOrganizer = false,
   focusRootId,
   focusReplyId,
 }: Props) {
@@ -138,6 +142,7 @@ export function CommentsSheet({
                   item.id === focusRootId ? focusReplyId : undefined
                 }
                 myId={myId}
+                isOrganizer={isOrganizer}
                 onReply={(username, parentId) =>
                   setReplyTo({ username, parentId })
                 }

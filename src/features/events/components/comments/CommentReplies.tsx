@@ -12,6 +12,7 @@ type Props = {
   // Resposta apontada pela notificação: a lista pagina até achá-la e a tinge.
   highlightId?: string
   myId: string | null
+  isOrganizer: boolean
   onToggleLike: (commentId: string, currentlyLiked: boolean) => void
   onDelete: (commentId: string, mine: boolean) => void
   onReport: (commentId: string) => void
@@ -26,6 +27,7 @@ export function CommentReplies({
   parentId,
   highlightId,
   myId,
+  isOrganizer,
   onToggleLike,
   onDelete,
   onReport,
@@ -62,7 +64,9 @@ export function CommentReplies({
             comment={reply}
             highlighted={reply.id === highlightId}
             onToggleLike={() => onToggleLike(reply.id, reply.userLiked)}
-            onDelete={mine ? () => onDelete(reply.id, mine) : undefined}
+            onDelete={
+              mine || isOrganizer ? () => onDelete(reply.id, mine) : undefined
+            }
             onReport={mine ? undefined : () => onReport(reply.id)}
           />
         )

@@ -190,6 +190,7 @@ export function PostItem({ eventId, post, onReport, isOrganizer }: Props) {
           visible
           onClose={() => setCommentsOpen(false)}
           target={{ kind: 'post', postId: post.id }}
+          isOrganizer={isOrganizer}
         />
       )}
     </View>
