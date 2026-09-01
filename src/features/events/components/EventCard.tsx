@@ -3,11 +3,14 @@ import { View, Text, Pressable } from 'react-native'
 import { UsersIcon, HeartIcon, ChatCircleIcon } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
 import { CardHighlightFrame } from '@/shared/components/CardHighlightFrame'
+import {
+  TicketPerforation,
+  NOTCH_RADIUS,
+} from '@/shared/components/TicketPerforation'
+import { TicketOutline } from '@/shared/components/TicketOutline'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useToggleLike } from '../hooks/useToggleLike'
 import { EventCardHero } from './EventCardHero'
-import { EventCardPerforation, NOTCH_RADIUS } from './EventCardPerforation'
-import { EventCardOutline } from './EventCardOutline'
 import { EventCardStub } from './EventCardStub'
 import { CommentPreview } from './CommentPreview'
 import { CommentComposerButton } from './comments/CommentComposerButton'
@@ -47,7 +50,7 @@ export function EventCard({
   const { t } = useTranslation()
   const userId = useAuthStore(s => s.userId)
   const [sheetOpen, setSheetOpen] = useState(false)
-  // O contorno do card é desenhado, não é `border`: ver EventCardOutline.
+  // O contorno do card é desenhado, não é `border`: ver TicketOutline.
   const [cardSize, setCardSize] = useState<{ w: number; h: number } | null>(
     null,
   )
@@ -108,7 +111,7 @@ export function EventCard({
 
       {/* O contorno precisa saber ONDE o picote caiu — depende da altura da
           capa, que varia com a foto. */}
-      <EventCardPerforation
+      <TicketPerforation
         onCenterChange={center =>
           setNotchY(prev => (prev === center ? prev : center))
         }
@@ -193,11 +196,7 @@ export function EventCard({
       {/* Última camada: a aresta é desenhada POR CIMA do conteúdo, senão os
           furos não conseguiriam perfurar a capa. */}
       {!!cardSize && notchY !== null && (
-        <EventCardOutline
-          width={cardSize.w}
-          height={cardSize.h}
-          notchY={notchY}
-        />
+        <TicketOutline width={cardSize.w} height={cardSize.h} notchY={notchY} />
       )}
     </View>
   )

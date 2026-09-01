@@ -161,7 +161,11 @@
     "USE_LEAVE_GROUP": "Para salir del grupo, usa «Salir del grupo».",
     "VIDEO_NOT_FOUND": "Este video ya no existe.",
     "VIDEO_NOT_IN_CONVERSATION": "Este video no pertenece a esta conversación.",
-    "VIDEO_UPLOAD_REQUIRES_R2": "La subida de video no está disponible en este servidor."
+    "VIDEO_UPLOAD_REQUIRES_R2": "La subida de video no está disponible en este servidor.",
+    "EVENT_NOT_ATTENDED": "Solo puedes vincular un evento al que fuiste.",
+    "NOT_USER_PHOTO_AUTHOR": "Solo puedes eliminar tus propias fotos.",
+    "USER_PHOTO_IMAGE_LIMIT": "Máximo {{max}} fotos por publicación.",
+    "USER_PHOTO_NOT_FOUND": "Esta foto ya no está en el muro."
   },
   "format": {
     "date": {
@@ -203,7 +207,9 @@
       "event": "Evento",
       "eventHint": "Con fecha, lugar y lista de asistentes",
       "spot": "Plan",
-      "spotHint": "Un encuentro rápido cerca de ti"
+      "spotHint": "Un encuentro rápido cerca de ti",
+      "photo": "Publicar foto",
+      "photoHint": "Fotos en el muro de tu perfil"
     },
     "datePicker": {
       "placeholder": "Selecciona una fecha",
@@ -262,6 +268,12 @@
     },
     "mediaViewer": {
       "closeImage": "Cerrar imagen"
+    },
+    "imagePicker": {
+      "label": "Fotos",
+      "cover": "Portada",
+      "removePhoto": "Quitar foto",
+      "addPhotos": "Añadir fotos"
     }
   },
   "auth": {
@@ -1274,7 +1286,52 @@
       "createEvent": "Crear evento"
     },
     "notFound": "Usuario no encontrado.",
-    "notFoundBanner": "Usuario no encontrado"
+    "notFoundBanner": "Usuario no encontrado",
+    "mural": {
+      "title": "Muro",
+      "viewAll": "Ver todas",
+      "more": "+{{count}}",
+      "photoLabel": "Foto {{index}} de {{total}}",
+      "counter": "{{index}}/{{total}}",
+      "emptyOwn": "Publica tu primera foto en el muro",
+      "emptyOther": "Aún no hay fotos",
+      "moreActions": "Más opciones",
+      "deleteTitle": "Eliminar foto",
+      "deleteMessage": "La publicación sale de tu muro. ¿Seguro?"
+    },
+    "photo": {
+      "title": "Publicar foto",
+      "photosLabel": "Fotos",
+      "captionPlaceholder": "Escribe una descripción (opcional)",
+      "linkEvent": "Vincular a un evento",
+      "linkOptional": "Opcional",
+      "linkNone": "Sin vínculo",
+      "linkEmpty": "Todavía no has ido a ningún evento.",
+      "publish": "Publicar",
+      "publishing": "Publicando…"
+    },
+    "interests": {
+      "title": "Tus intereses",
+      "subtitle": "Aparecen en tu perfil y afinan el feed.",
+      "add": "Añadir intereses",
+      "groups": {
+        "scene": "Escena",
+        "sound": "Sonido",
+        "places": "Lugares"
+      }
+    },
+    "more": {
+      "label": "Más opciones",
+      "share": "Compartir perfil",
+      "report": "Denunciar",
+      "block": "Bloquear a @{{username}}",
+      "blockTitle": "Bloquear a @{{username}}",
+      "blockMessage": "Ya no se verán ni podrán intercambiar mensajes. ¿Bloquear a {{name}}?",
+      "blockConfirm": "Bloquear"
+    },
+    "share": {
+      "message": "Mira el perfil de {{name}} (@{{username}}) en Clubber: {{url}}"
+    }
   },
   "users": {
     "search": {
@@ -1640,7 +1697,8 @@
       "comment": "Denunciar comentario",
       "message": "Denunciar mensaje",
       "user": "Denunciar usuario",
-      "spot": "Denunciar plan"
+      "spot": "Denunciar plan",
+      "photo": "Denunciar foto"
     },
     "reasons": {
       "HATE_SPEECH": "Discurso de odio",

@@ -11,7 +11,7 @@ type Props = {
   label?: string
 }
 
-export function EventImagePicker({
+export function ImageGalleryPicker({
   uris,
   onChange,
   maxCount = 5,
@@ -33,7 +33,7 @@ export function EventImagePicker({
   return (
     <View className="gap-2">
       <Text className="text-sm font-medium text-content-tertiary">
-        {label ?? t('events.imagePicker.label')}{' '}
+        {label ?? t('shared.imagePicker.label')}{' '}
         <Text className="text-content-subtle text-xs">
           ({uris.length}/{maxCount})
         </Text>
@@ -54,7 +54,7 @@ export function EventImagePicker({
             {i === 0 && (
               <View className="absolute bottom-1 left-1 rounded-full bg-background/70 border border-line-strong px-2 py-0.5">
                 <Text className="text-content text-[9px] font-bold uppercase">
-                  {t('events.imagePicker.cover')}
+                  {t('shared.imagePicker.cover')}
                 </Text>
               </View>
             )}
@@ -62,7 +62,7 @@ export function EventImagePicker({
               onPress={() => remove(i)}
               className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-surface border border-line-strong items-center justify-center"
               hitSlop={6}
-              accessibilityLabel={t('events.imagePicker.removePhoto')}
+              accessibilityLabel={t('shared.imagePicker.removePhoto')}
             >
               <XIcon size={14} color={colors.contentBright} />
             </Pressable>
@@ -72,7 +72,7 @@ export function EventImagePicker({
           <Pressable
             onPress={pick}
             className="w-20 h-20 rounded-xl bg-surface border border-dashed border-line-strong items-center justify-center"
-            accessibilityLabel={t('events.imagePicker.addPhotos')}
+            accessibilityLabel={t('shared.imagePicker.addPhotos')}
           >
             <PlusIcon size={24} color={colors.contentMuted} />
           </Pressable>

@@ -3,6 +3,7 @@ import { buildImageFile } from '@/shared/utils/imageUpload'
 import type { BackendLocale } from '@/shared/i18n'
 import type {
   CursorPaginatedResponse,
+  UserPhoto,
   UserProfile,
   UserEventSummary,
 } from '@/shared/types'
@@ -30,6 +31,12 @@ export type UpdateMePayload = {
   // Idioma explícito da interface (null volta a seguir o aparelho). O enum do
   // backend é regional: 'pt' dá 400 — use toBackendLocale.
   localePreference?: BackendLocale | null
+}
+
+export type CreatePhotoPayload = {
+  uris: string[]
+  caption?: string
+  eventId?: string
 }
 
 export const usersService = {
@@ -62,6 +69,39 @@ export const usersService = {
         params: { limit, ...(cursor ? { cursor } : {}) },
       })
       .then(r => r.data),
+
+  getUserPhotos: (
+    userId: string,
+    { limit = 30, cursor }: ListParams = {},
+  ): Promise<CursorPaginatedResponse<UserPhoto>> =>
+    api
+      .get(`/users/${userId}/photos`, {
+        params: { limit, ...(cursor ? { cursor } : {}) },
+      })
+      .then(r => r.data),
+
+  // Um request só, atômico: a publicação nasce com todas as imagens ou não
+  // nasce — o mural nunca mostra um tile vazio de upload que falhou no meio.
+  createPhoto: ({
+    uris,
+    caption,
+    eventId,
+  }: CreatePhotoPayload): Promise<UserPhoto> => {
+    const form = new FormData()
+    uris.forEach((uri, i) =>
+      form.append('images', buildImageFile(uri, `photo-${i}.jpg`)),
+    )
+    if (caption) form.append('caption', caption)
+    if (eventId) form.append('eventId', eventId)
+    return api
+      .post('/users/me/photos', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .then(r => r.data)
+  },
+
+  deletePhoto: (photoId: string): Promise<void> =>
+    api.delete(`/users/me/photos/${photoId}`).then(() => undefined),
 
   // Rota PÚBLICA (o cadastro ainda não tem token) e case-sensitive, espelhando
   // o predicado do POST /users: normalizar aqui faria o app dizer "indisponível"

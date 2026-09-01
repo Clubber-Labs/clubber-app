@@ -3,7 +3,7 @@ import { View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { EventForm } from '@/features/events/components/EventForm'
-import { EventImagePicker } from '@/features/events/components/EventImagePicker'
+import { ImageGalleryPicker } from '@/shared/components/ImageGalleryPicker'
 import { useCreateEvent } from '@/features/events/hooks/useCreateEvent'
 import { useUploadEventImages } from '@/features/events/hooks/useUploadEventImages'
 import type { CreateEventInput } from '@/features/events/schemas/createEventSchema'
@@ -38,7 +38,11 @@ export default function CreateEventScreen() {
         submittingLabel={t('events.create.submitting')}
         errorMessage={t('events.create.error')}
         imagesSection={
-          <EventImagePicker uris={imageUris} onChange={setImageUris} />
+          <ImageGalleryPicker
+            uris={imageUris}
+            onChange={setImageUris}
+            label={t('events.imagePicker.label')}
+          />
         }
       />
     </View>

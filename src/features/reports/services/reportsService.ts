@@ -23,6 +23,8 @@ function reportPath(target: ReportTarget): string {
       return `/users/${target.id}/report`
     case 'spot':
       return `/spots/${target.id}/report`
+    case 'photo':
+      return `/user-photos/${target.id}/report`
   }
 }
 

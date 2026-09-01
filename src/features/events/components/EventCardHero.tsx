@@ -12,7 +12,7 @@ import Svg, {
 import { EventStatusBadge } from './EventStatusBadge'
 import { EventCardMenu } from './EventCardMenu'
 import { EventCardLocationBar } from './EventCardLocationBar'
-import { PERFORATION_OVERLAP } from './EventCardPerforation'
+import { PERFORATION_OVERLAP } from '@/shared/components/TicketPerforation'
 import { SponsoredBadge } from '@/features/featured-events/components/SponsoredBadge'
 import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
