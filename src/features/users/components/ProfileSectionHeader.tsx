@@ -1,4 +1,6 @@
 import { View, Text, Pressable } from 'react-native'
+import type { Icon } from 'phosphor-react-native'
+import { colors } from '@/shared/theme'
 import { SECTION_HEADER_HEIGHT } from '../utils/profileStage'
 
 type Props = {
@@ -6,6 +8,8 @@ type Props = {
   count?: number
   // Ação à direita (ex.: "Ver todas"). Some sem onAction.
   action?: string
+  // Ícone antes do rótulo da ação (ex.: caret pra cima = "puxe").
+  actionIcon?: Icon
   onAction?: () => void
 }
 
@@ -15,6 +19,7 @@ export function ProfileSectionHeader({
   title,
   count,
   action,
+  actionIcon: ActionIcon,
   onAction,
 }: Props) {
   return (
@@ -40,8 +45,11 @@ export function ProfileSectionHeader({
           onPress={onAction}
           hitSlop={8}
           accessibilityRole="button"
-          className="h-full justify-center"
+          className="h-full flex-row items-center gap-1"
         >
+          {ActionIcon && (
+            <ActionIcon size={12} weight="bold" color={colors.contentMuted} />
+          )}
           <Text className="text-xs font-bold text-content-muted">{action}</Text>
         </Pressable>
       )}

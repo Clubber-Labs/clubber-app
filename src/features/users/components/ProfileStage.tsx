@@ -79,6 +79,7 @@ export function ProfileStage({
   // a cada encaixe do palco.
   const { expandTo } = stage
   const openMural = useCallback(() => expandTo('mural'), [expandTo])
+  const openEvents = useCallback(() => expandTo('events'), [expandTo])
 
   if (locked) {
     return (
@@ -138,6 +139,7 @@ export function ProfileStage({
                   native={stage.eventsNative}
                   onScroll={stage.onEventsScroll}
                   onCreate={onCreateEvent}
+                  onViewAll={openEvents}
                   bottomPadding={bottomPadding}
                 />
               </Animated.View>
