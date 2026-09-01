@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
 } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useLocalSearchParams, useRouter } from 'expo-router'
+import { ChatCircleIcon } from 'phosphor-react-native'
+import { CommentsSheet } from '@/features/events/components/comments/CommentsSheet'
 import type { EventDetail } from '@/shared/types'
 import { useEvent } from '@/features/events/hooks/useEvents'
 import { useAuthStore } from '@/features/auth/store/authStore'
@@ -35,9 +37,17 @@ type HeaderProps = {
   isAuthor: boolean
   isPremium: boolean
   onShared: () => void
+  onOpenComments: () => void
 }
 
-function DetailHeader({ event, isAuthor, isPremium, onShared }: HeaderProps) {
+function DetailHeader({
+  event,
+  isAuthor,
+  isPremium,
+  onShared,
+  onOpenComments,
+}: HeaderProps) {
+  const { t } = useTranslation()
   const allowAttendance = event.status !== 'PAST' && event.status !== 'CANCELED'
   // Privado: só o autor convida. Público: qualquer um. Evento encerrado ou
   // cancelado não recebe convite — mesma janela do RSVP.
@@ -115,6 +125,23 @@ function DetailHeader({ event, isAuthor, isPremium, onShared }: HeaderProps) {
 
         <EventAttendeesSection event={event} />
         <EventLocationMap event={event} />
+
+        {/* A conversa do evento vive no drawer, igual ao card do feed — é a
+            mesma lista, e é onde o deep-link de resposta aterrissa. */}
+        <Pressable
+          onPress={onOpenComments}
+          accessibilityRole="button"
+          className="flex-row items-center gap-2"
+        >
+          <ChatCircleIcon size={20} color={colors.contentSecondary} />
+          <Text className="text-[15px] font-semibold text-content-secondary">
+            {event._count.comments > 0
+              ? t('events.comments.viewAll', {
+                  count: event._count.comments,
+                })
+              : t('events.comments.composerPlaceholder')}
+          </Text>
+        </Pressable>
       </View>
       <View className="border-t border-line" />
     </View>
@@ -123,8 +150,17 @@ function DetailHeader({ event, isAuthor, isPremium, onShared }: HeaderProps) {
 
 export default function EventDetailScreen() {
   const { t } = useTranslation()
-  const { id } = useLocalSearchParams<{ id: string }>()
+  // `thread`/`highlight` chegam do tap numa notificação de resposta: a raiz já
+  // resolvida e a resposta a destacar. `post` diz que a conversa é a de um
+  // post do evento, não a do evento.
+  const { id, thread, highlight, post } = useLocalSearchParams<{
+    id: string
+    thread?: string
+    highlight?: string
+    post?: string
+  }>()
   const router = useRouter()
+  const [commentsOpen, setCommentsOpen] = useState(false)
   const userId = useAuthStore(state => state.userId)
   const { data: event, isLoading, isError, error } = useEvent(id)
   const { data: profile } = useMyProfile()
@@ -142,6 +178,15 @@ export default function EventDetailScreen() {
       trackView()
     }
   }, [event, trackView])
+
+  // Chegou por notificação de resposta: a conversa abre sozinha na thread
+  // apontada. Só na ida — fechar o drawer não pode reabri-lo.
+  const openedFromLink = useRef(false)
+  useEffect(() => {
+    if (!thread || openedFromLink.current) return
+    openedFromLink.current = true
+    setCommentsOpen(true)
+  }, [thread])
 
   if (isLoading) {
     return (
@@ -208,9 +253,25 @@ export default function EventDetailScreen() {
             isAuthor={isAuthor}
             isPremium={!!profile?.isPremium}
             onShared={() => trackShare()}
+            onOpenComments={() => setCommentsOpen(true)}
           />
         }
       />
+
+      {commentsOpen && (
+        <CommentsSheet
+          visible
+          onClose={() => setCommentsOpen(false)}
+          target={
+            post
+              ? { kind: 'post', postId: post }
+              : { kind: 'event', eventId: event.id }
+          }
+          isOrganizer={isAuthor}
+          focusRootId={thread}
+          focusReplyId={highlight}
+        />
+      )}
     </KeyboardAvoidingView>
   )
 }

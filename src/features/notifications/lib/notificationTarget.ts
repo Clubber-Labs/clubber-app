@@ -9,6 +9,14 @@ export type NotificationTarget =
   | { kind: 'spot'; spotId: string; highlightRenew?: boolean }
   // Direto pro grupo do spot (o chat é resolvido via GET /spots/:id).
   | { kind: 'spotChat'; spotId: string }
+  // `commentId` é o id da RESPOSTA, não o da raiz: quem abre resolve o pai
+  // (GET .../comments/:id → parentId) e usa este id pra destacar a linha.
+  | {
+      kind: 'commentThread'
+      eventId: string
+      postId?: string
+      commentId: string
+    }
 
 // Subconjunto que o roteamento usa — satisfeito tanto pela Notification
 // completa (central/WS) quanto pelo data enriquecido do push.
@@ -16,6 +24,8 @@ type NotificationTargetInput = {
   type: string
   actorId?: string | null
   eventId?: string | null
+  postId?: string | null
+  commentId?: string | null
   spotId?: string | null
 }
 
@@ -37,10 +47,21 @@ export function notificationTarget(
     case 'EVENT_REACTION':
     case 'EVENT_ATTENDANCE':
       return n.eventId ? { kind: 'event', eventId: n.eventId } : null
+    case 'COMMENT_REPLY':
+      // Sem commentId não há como resolver a thread — cai no evento, que é
+      // onde este tipo ia inteiro antes das rotas de comentário isolado.
+      if (n.eventId && n.commentId) {
+        return {
+          kind: 'commentThread',
+          eventId: n.eventId,
+          ...(n.postId ? { postId: n.postId } : {}),
+          commentId: n.commentId,
+        }
+      }
+      return n.eventId ? { kind: 'event', eventId: n.eventId } : null
     case 'POST_COMMENT':
     case 'POST_REACTION':
     case 'COMMENT_REACTION':
-    case 'COMMENT_REPLY':
       // Post não tem rota própria, então o backend manda o eventId dele nesses
       // tipos; sem ele, o melhor destino disponível é o autor.
       if (n.eventId) return { kind: 'event', eventId: n.eventId }

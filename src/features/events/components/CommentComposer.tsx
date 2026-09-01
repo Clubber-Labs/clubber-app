@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { View, Text, TextInput, Pressable } from 'react-native'
-import { PaperPlaneTiltIcon } from 'phosphor-react-native'
+import { PaperPlaneTiltIcon, XIcon } from 'phosphor-react-native'
 import { useTranslation } from 'react-i18next'
-import { useAddComment } from '../hooks/useComments'
 import { useMe } from '@/features/auth/hooks/useMe'
 import { UserAvatar } from '@/shared/components/UserAvatar'
 import { FormError } from '@/shared/components/FormError'
@@ -10,7 +9,15 @@ import { getApiError } from '@/shared/lib/apiError'
 import { colors } from '@/shared/theme'
 
 type Props = {
-  eventId: string
+  // Rejeitar = erro tratado aqui (texto de volta + linha inline). Quem chama
+  // decide o que é enviar: comentário na raiz ou resposta numa thread.
+  onSubmit: (content: string) => Promise<unknown>
+  placeholder?: string
+  // Username de quem está sendo respondido — a faixa acima do campo é o que
+  // diz que o envio NÃO vai virar comentário solto.
+  replyingTo?: string
+  onCancelReply?: () => void
+  autoFocus?: boolean
   // Foco no campo abre a seção junto — comentar e ler são o mesmo gesto.
   onFocus?: () => void
   // Quando o contexto não libera comentar (ex.: sem RSVP no feed do evento),
@@ -30,7 +37,11 @@ const AVATAR = 24
  * mensagem inline, porque digitação perdida é pior que uma linha de erro.
  */
 export function CommentComposer({
-  eventId,
+  onSubmit,
+  placeholder,
+  replyingTo,
+  onCancelReply,
+  autoFocus,
   onFocus,
   disabled,
   disabledReason,
@@ -39,7 +50,6 @@ export function CommentComposer({
   const [text, setText] = useState('')
   const [error, setError] = useState<string | null>(null)
   const { data: me } = useMe()
-  const addComment = useAddComment(eventId)
 
   if (disabled) {
     return (
@@ -58,17 +68,30 @@ export function CommentComposer({
     if (!content) return
     setText('')
     setError(null)
-    addComment.mutate(content, {
-      onError: e => {
-        // Devolve o texto: o comentário otimista já saiu da lista no rollback.
-        setText(content)
-        setError(getApiError(e).message)
-      },
+    onSubmit(content).catch(e => {
+      // Devolve o texto: o comentário otimista já saiu da lista no rollback.
+      setText(content)
+      setError(getApiError(e).message)
     })
   }
 
   return (
     <View className="mx-4 mb-3 gap-1.5">
+      {!!replyingTo && (
+        <View className="flex-row items-center justify-between px-3">
+          <Text className="text-xs text-content-muted">
+            {t('events.comments.replyingTo', { username: replyingTo })}
+          </Text>
+          <Pressable
+            onPress={onCancelReply}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={t('events.comments.cancelReply')}
+          >
+            <XIcon size={14} color={colors.contentMuted} />
+          </Pressable>
+        </View>
+      )}
       <View className="flex-row items-center gap-2 rounded-full border border-line px-2 py-1.5">
         <UserAvatar
           name={me?.name ?? ''}
@@ -77,10 +100,11 @@ export function CommentComposer({
         />
         <TextInput
           className="max-h-20 flex-1 text-sm text-content"
-          placeholder={t('events.comments.composerPlaceholder')}
+          placeholder={placeholder ?? t('events.comments.composerPlaceholder')}
           placeholderTextColor={colors.contentSubtle}
           value={text}
           onChangeText={setText}
+          autoFocus={autoFocus}
           onFocus={onFocus}
           onSubmitEditing={handleSend}
           multiline

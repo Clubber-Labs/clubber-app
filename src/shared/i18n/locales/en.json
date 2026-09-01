@@ -791,7 +791,19 @@
       "send": "Send comment",
       "viewCount_one": "View 1 comment",
       "viewCount_other": "View all {{count}} comments",
-      "cannotComment": "Mark interest or attendance in the event to comment."
+      "cannotComment": "Mark interest or attendance in the event to comment.",
+      "reply": "Reply",
+      "replyPlaceholder": "Write a reply...",
+      "viewReplies_one": "View 1 reply",
+      "viewReplies_other": "View {{count}} replies",
+      "viewMoreReplies": "View more replies",
+      "replyingTo": "Replying to @{{username}}",
+      "cancelReply": "Cancel reply",
+      "hideReplies": "Hide replies",
+      "sheetTitle": "Comments",
+      "viewAll_one": "View 1 comment",
+      "viewAll_other": "View all {{count}} comments",
+      "openComments": "Open comments"
     },
     "posts": {
       "deleteTitle": "Delete post",

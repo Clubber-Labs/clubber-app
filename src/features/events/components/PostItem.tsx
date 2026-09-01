@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { ChatCircleIcon, DotsThreeIcon, HeartIcon } from 'phosphor-react-native'
 import { ActionsMenu, type MenuAction } from '@/shared/components/ActionsMenu'
 import { PostImages } from './PostImages'
+import { CommentsSheet } from './comments/CommentsSheet'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { ProfileLink } from '@/features/users/components/ProfileLink'
 import { UserAvatar } from '@/shared/components/UserAvatar'
@@ -45,6 +46,7 @@ export function PostItem({ eventId, post, onReport, isOrganizer }: Props) {
   const confirm = useConfirm()
   const liked = post.userLiked
   const [menuOpen, setMenuOpen] = useState(false)
+  const [commentsOpen, setCommentsOpen] = useState(false)
 
   const isAuthor = userId === post.authorId
   const images = post.images ?? []
@@ -151,14 +153,20 @@ export function PostItem({ eventId, post, onReport, isOrganizer }: Props) {
           )}
         </Pressable>
 
-        <View className="flex-row items-center gap-1.5">
+        <Pressable
+          onPress={() => setCommentsOpen(true)}
+          hitSlop={6}
+          accessibilityRole="button"
+          accessibilityLabel={t('events.comments.openComments')}
+          className="flex-row items-center gap-1.5"
+        >
           <ChatCircleIcon size={21} color={colors.contentSecondary} />
           {!!post._count?.comments && (
             <Text className="text-sm text-content-secondary">
               {post._count.comments}
             </Text>
           )}
-        </View>
+        </Pressable>
       </View>
 
       {hasImages && !!post.content && (
@@ -176,6 +184,15 @@ export function PostItem({ eventId, post, onReport, isOrganizer }: Props) {
         actions={actions}
         onClose={() => setMenuOpen(false)}
       />
+
+      {commentsOpen && (
+        <CommentsSheet
+          visible
+          onClose={() => setCommentsOpen(false)}
+          target={{ kind: 'post', postId: post.id }}
+          isOrganizer={isOrganizer}
+        />
+      )}
     </View>
   )
 }
