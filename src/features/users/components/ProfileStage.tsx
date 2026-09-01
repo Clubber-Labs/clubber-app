@@ -111,9 +111,7 @@ export function ProfileStage({
               seria 0 e elas piscariam por cima do header. */}
           {stage.headerMeasured && (
             <>
-              <Animated.View
-                style={[styles.section, styles.muralSheet, stage.muralStyle]}
-              >
+              <Animated.View style={[styles.section, stage.muralStyle]}>
                 <ProfileMuralSection
                   photos={photos}
                   isOwnProfile={isOwnProfile}
@@ -129,7 +127,9 @@ export function ProfileStage({
                   bottomPadding={bottomPadding}
                 />
               </Animated.View>
-              <Animated.View style={[styles.section, stage.eventsStyle]}>
+              <Animated.View
+                style={[styles.section, styles.eventsSheet, stage.eventsStyle]}
+              >
                 <ProfileEventsSection
                   events={events}
                   ownerId={ownerId}
@@ -149,18 +149,18 @@ export function ProfileStage({
   )
 }
 
-const MURAL_SHEET_RADIUS = 24
+const EVENTS_SHEET_RADIUS = 24
 
 const styles = StyleSheet.create({
   stage: { flex: 1, overflow: 'hidden' },
   header: { position: 'absolute', top: 0, left: 0, right: 0 },
   section: { position: 'absolute', left: 0, right: 0, overflow: 'hidden' },
-  // O mural começa como uma folha: topo arredondado (raio de sheet) com o
-  // mesmo hairline do SheetModal. O overflow hidden da seção faz a primeira
-  // fileira de fotos acompanhar o arredondado.
-  muralSheet: {
-    borderTopLeftRadius: MURAL_SHEET_RADIUS,
-    borderTopRightRadius: MURAL_SHEET_RADIUS,
+  // Eventos é a folha que cobre o mural: topo arredondado (raio de sheet) com
+  // o mesmo hairline do SheetModal. Ao subir, encaixa sob o header de vidro
+  // com essa borda.
+  eventsSheet: {
+    borderTopLeftRadius: EVENTS_SHEET_RADIUS,
+    borderTopRightRadius: EVENTS_SHEET_RADIUS,
     borderWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: 0,
     borderColor: 'rgba(255, 255, 255, 0.1)',
