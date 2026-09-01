@@ -102,48 +102,51 @@ export function ProfileStage({
           style={styles.stage}
           onLayout={e => stage.setStageHeight(e.nativeEvent.layout.height)}
         >
+          {/* Ordem = camadas: mural embaixo (rola sob o header), header no
+              meio, eventos por cima (cobre os dois ao subir). Seções só depois
+              do header medido: antes disso o recuo seria 0 e a grade piscaria
+              por cima do header. */}
+          {stage.headerInset > 0 && (
+            <Animated.View style={[styles.section, stage.muralStyle]}>
+              <ProfileMuralSection
+                photos={photos}
+                isOwnProfile={isOwnProfile}
+                tileSize={tileSize}
+                topInset={stage.headerInset}
+                scrollEnabled={stage.expanded === 'mural'}
+                native={stage.muralNative}
+                onScroll={stage.onMuralScroll}
+                veilStyle={stage.veilStyle}
+                expandable={expandable}
+                onPressPhoto={onPressPhoto}
+                onAddPhoto={onAddPhoto}
+                onViewAll={openMural}
+                bottomPadding={bottomPadding}
+              />
+            </Animated.View>
+          )}
           <Animated.View
             style={[styles.header, stage.headerStyle]}
             onLayout={e => stage.setHeaderHeight(e.nativeEvent.layout.height)}
           >
             {header}
           </Animated.View>
-          {/* Seções só depois do header medido: antes disso o topo delas
-              seria 0 e elas piscariam por cima do header. */}
-          {stage.headerMeasured && (
-            <>
-              <Animated.View style={[styles.section, stage.muralStyle]}>
-                <ProfileMuralSection
-                  photos={photos}
-                  isOwnProfile={isOwnProfile}
-                  tileSize={tileSize}
-                  scrollEnabled={stage.expanded === 'mural'}
-                  native={stage.muralNative}
-                  onScroll={stage.onMuralScroll}
-                  veilStyle={stage.veilStyle}
-                  expandable={expandable}
-                  onPressPhoto={onPressPhoto}
-                  onAddPhoto={onAddPhoto}
-                  onViewAll={openMural}
-                  bottomPadding={bottomPadding}
-                />
-              </Animated.View>
-              <Animated.View
-                style={[styles.section, styles.eventsSheet, stage.eventsStyle]}
-              >
-                <ProfileEventsSection
-                  events={events}
-                  ownerId={ownerId}
-                  isOwnProfile={isOwnProfile}
-                  scrollEnabled={stage.expanded === 'events'}
-                  native={stage.eventsNative}
-                  onScroll={stage.onEventsScroll}
-                  onCreate={onCreateEvent}
-                  onViewAll={openEvents}
-                  bottomPadding={bottomPadding}
-                />
-              </Animated.View>
-            </>
+          {stage.headerInset > 0 && (
+            <Animated.View
+              style={[styles.section, styles.eventsSheet, stage.eventsStyle]}
+            >
+              <ProfileEventsSection
+                events={events}
+                ownerId={ownerId}
+                isOwnProfile={isOwnProfile}
+                scrollEnabled={stage.expanded === 'events'}
+                native={stage.eventsNative}
+                onScroll={stage.onEventsScroll}
+                onCreate={onCreateEvent}
+                onViewAll={openEvents}
+                bottomPadding={bottomPadding}
+              />
+            </Animated.View>
           )}
         </View>
       </GestureDetector>
