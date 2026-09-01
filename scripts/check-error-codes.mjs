@@ -7,23 +7,47 @@
 // abaixo são cinto e suspensório — o tsc já cobre os três idiomas, porque
 // i18n/index.ts declara `resources` como Record<Locale, typeof pt>.
 //
-// Precisa do repo do backend em disco: por padrão ../connectai-backend, ou
-// BACKEND_DIR=/caminho. Não roda em CI de propósito (é cross-repo); rode ao
-// mexer em erro dos dois lados.
+// De onde vem o vocabulário do backend:
+//   (padrão)                 repo em disco: ../connectai-backend ou BACKEND_DIR
+//   --backend-source -       o error-codes.ts do backend pelo stdin
+//   --backend-source <path>  o error-codes.ts do backend por caminho
+//   --codes A,B,C            os códigos já extraídos
+//
+// Não roda no CI deste repo de propósito: a deriva nasce no backend, no PR que
+// cria o código, e é lá que ela tem que barrar. Os modos por stdin/argumento
+// existem pra um CI de fora chamar sem clonar o backend inteiro; localmente,
+// rode ao mexer em erro dos dois lados.
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const backendDir =
-  process.env.BACKEND_DIR ?? resolve(root, '../connectai-backend')
-const backendFile = join(backendDir, 'src/lib/errors/error-codes.ts')
+const USAGE = `uso: node scripts/check-error-codes.mjs [--backend-source <path|->] [--codes A,B,C]
+  sem opção: lê $BACKEND_DIR/src/lib/errors/error-codes.ts (padrão ../connectai-backend)`
 
-if (!existsSync(backendFile)) {
-  console.error(`Vocabulário do backend não encontrado em:\n  ${backendFile}`)
-  console.error('\nAponte com BACKEND_DIR=/caminho/do/connectai-backend')
-  process.exit(1)
+function parseArgs(argv) {
+  const opts = { backendSource: null, codes: null }
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i]
+    const value = argv[i + 1]
+    if (arg === '--backend-source' && value) opts.backendSource = argv[++i]
+    else if (arg === '--codes' && value) opts.codes = argv[++i]
+    else if (arg === '--help' || arg === '-h') {
+      console.log(USAGE)
+      process.exit(0)
+    } else {
+      console.error(`Opção inválida: ${arg}\n\n${USAGE}`)
+      process.exit(1)
+    }
+  }
+  if (opts.backendSource && opts.codes) {
+    console.error(`--backend-source e --codes são excludentes.\n\n${USAGE}`)
+    process.exit(1)
+  }
+  return opts
 }
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const opts = parseArgs(process.argv.slice(2))
 
 // Lê o array literal direto da fonte: o backend não publica esse vocabulário
 // como pacote, e vendorizar uma cópia criaria uma terceira lista pra derivar.
@@ -36,14 +60,56 @@ function codesFrom(source, name, file) {
   return [...body.matchAll(/'([A-Z_0-9]+)'/g)].map(m => m[1])
 }
 
+function backendCodes({ backendSource, codes }) {
+  if (codes) {
+    const list = codes.split(/[\s,]+/).filter(Boolean)
+    const invalid = list.filter(code => !/^[A-Z][A-Z_0-9]*$/.test(code))
+    if (invalid.length) {
+      console.error(`--codes com valor fora do padrão: ${invalid.join(', ')}`)
+      process.exit(1)
+    }
+    return list
+  }
+
+  if (backendSource === '-') {
+    return codesFrom(readFileSync(0, 'utf8'), 'ERROR_CODES', 'stdin')
+  }
+
+  const backendFile =
+    backendSource ??
+    join(
+      process.env.BACKEND_DIR ?? resolve(root, '../connectai-backend'),
+      'src/lib/errors/error-codes.ts',
+    )
+  if (!existsSync(backendFile)) {
+    console.error(`Vocabulário do backend não encontrado em:\n  ${backendFile}`)
+    console.error(
+      '\nAponte com BACKEND_DIR=/caminho/do/connectai-backend, ' +
+        '--backend-source <path|-> ou --codes A,B,C',
+    )
+    process.exit(1)
+  }
+  return codesFrom(
+    readFileSync(backendFile, 'utf8'),
+    'ERROR_CODES',
+    backendFile,
+  )
+}
+
 const appFile = join(root, 'src/shared/lib/errorCodes.ts')
 const appSource = readFileSync(appFile, 'utf8')
 
-const backend = codesFrom(
-  readFileSync(backendFile, 'utf8'),
-  'ERROR_CODES',
-  backendFile,
-)
+let backend
+try {
+  backend = backendCodes(opts)
+} catch (err) {
+  console.error(err instanceof Error ? err.message : String(err))
+  process.exit(1)
+}
+if (backend.length === 0) {
+  console.error('Vocabulário do backend veio vazio.')
+  process.exit(1)
+}
 const translated = codesFrom(appSource, 'TRANSLATED_ERROR_CODES', appFile)
 const untranslated = codesFrom(appSource, 'UNTRANSLATED_ERROR_CODES', appFile)
 
