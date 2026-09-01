@@ -21,7 +21,7 @@ export const ProfileMuralAddTile = memo(function ProfileMuralAddTile({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={t('profile.photo.title')}
-      className="items-center justify-center gap-2 border border-dashed border-line-strong bg-surface active:bg-surface-elevated"
+      className="items-center justify-center gap-2 border border-dashed border-line-strong/70 bg-surface/50 active:bg-surface"
       style={{ width: size, height: size }}
     >
       <PlusIcon size={26} color={colors.contentMuted} />
