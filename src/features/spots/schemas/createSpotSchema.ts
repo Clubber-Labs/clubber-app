@@ -27,6 +27,11 @@ export const createSpotSchema = z
     visibility: z.enum(['PUBLIC', 'FRIENDS']),
     // Herdados do candidato escolhido — não são editáveis no form.
     placeId: z.string().min(1),
+    // Nome e endereço reenviados da sugestão do Places: o backend não os
+    // deriva do placeId, e sem eles o card do feed fica só com a distância.
+    // Tetos iguais aos do backend (placeText 200/300).
+    placeName: z.string().max(200).optional(),
+    address: z.string().max(300).optional(),
     latitude: z.number().min(-90).max(90),
     longitude: z.number().min(-180).max(180),
     startsAt: z.date({ error: 'spots.errors.startsAtRequired' }),

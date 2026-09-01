@@ -36,16 +36,17 @@ export function SpotWindowBar({ spot, live, userCoords, onPress }: Props) {
   const distance = userCoords
     ? formatDistance(distanceKm(userCoords, [spot.longitude, spot.latitude]))
     : null
-  const place = spot.placeName
+  // Sem nome do lugar o endereço sobe pra linha principal (mesma regra da
+  // faixa do card de evento); sem nenhum dos dois, sobra a distância.
+  const primary = spot.placeName ?? spot.address ?? null
+  const place = primary
     ? distance
-      ? t('spots.feedCard.placeWithDistance', {
-          place: spot.placeName,
-          distance,
-        })
-      : spot.placeName
+      ? t('spots.feedCard.placeWithDistance', { place: primary, distance })
+      : primary
     : distance
       ? t('spots.feedCard.away', { distance })
       : null
+  const secondary = spot.placeName ? spot.address : null
 
   const when = live
     ? {
@@ -90,12 +91,12 @@ export function SpotWindowBar({ spot, live, userCoords, onPress }: Props) {
               >
                 {place}
               </Text>
-              {!!spot.address && (
+              {!!secondary && (
                 <Text
                   className="text-[11px] text-content-muted"
                   numberOfLines={1}
                 >
-                  {spot.address}
+                  {secondary}
                 </Text>
               )}
             </View>
