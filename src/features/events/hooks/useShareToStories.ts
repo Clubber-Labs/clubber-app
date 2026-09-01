@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import * as Clipboard from 'expo-clipboard'
 import type { EventDetail } from '@/shared/types'
 import { useBanner } from '@/shared/lib/banner'
+import { getApiError } from '@/shared/lib/apiError'
 import { SHEET_EXIT_MS } from '@/shared/components/SheetModal'
 import { useLocale } from '@/shared/hooks/useLocale'
 import { formatDayOfMonthAtTime } from '@/shared/utils/dateFormat'
@@ -70,10 +71,13 @@ export function useShareToStories({ event, onShared }: Args) {
           coverAspect,
         },
       })
-    } catch {
-      // Falha ao gerar o link — silencioso, mesmo padrão do share atual.
+    } catch (err) {
+      // Vira banner: sem UI otimista pra reverter, engolir o erro faz a linha
+      // parecer morta — era o que acontecia com evento já encerrado, cujo
+      // link de convite o backend recusa.
+      showBanner(getApiError(err).message)
     }
-  }, [createInviteLink, event, locale, t])
+  }, [createInviteLink, event, locale, showBanner, t])
 
   const handleCaptured = useCallback((uri: string | null) => {
     // Falha de captura é silenciosa (padrão do app) e derruba o fluxo inteiro:

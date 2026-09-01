@@ -4,7 +4,7 @@ import { CaretRightIcon } from 'phosphor-react-native'
 import { colors } from '@/shared/theme'
 
 /** Aceita phosphor e marcas próprias — basta size/color. */
-type RowIcon = ComponentType<{ size?: number; color?: string }>
+export type RowIcon = ComponentType<{ size?: number; color?: string }>
 
 type Props = {
   icon: RowIcon
