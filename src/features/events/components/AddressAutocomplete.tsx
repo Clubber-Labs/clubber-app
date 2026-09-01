@@ -20,6 +20,7 @@ type Props = {
   value: string
   onChange: (address: string) => void
   onSelect: (result: GeocodingResult) => void
+  coords: [number, number] | null
   hasError?: boolean
 }
 
@@ -27,6 +28,7 @@ export function AddressAutocomplete({
   value,
   onChange,
   onSelect,
+  coords,
   hasError,
 }: Props) {
   const { t } = useTranslation()
@@ -34,7 +36,7 @@ export function AddressAutocomplete({
   const [justSelected, setJustSelected] = useState(false)
 
   const query = justSelected ? '' : value
-  const { data: results, isFetching } = useAddressSearch(query)
+  const { data: results, isFetching } = useAddressSearch(query, coords)
 
   const showSuggestions =
     focused && !justSelected && value.trim().length >= 3 && !!results?.length

@@ -31,17 +31,21 @@ const accessToken = Constants.expoConfig?.extra?.mapboxAccessToken as
   | undefined
 
 export const geocodingService = {
-  async search(query: string): Promise<GeocodingResult[]> {
+  async search(
+    query: string,
+    coords: [number, number] | null,
+  ): Promise<GeocodingResult[]> {
     if (!accessToken) return []
     const trimmed = query.trim()
     if (trimmed.length < 3) return []
 
     const types = 'poi,address,place,locality,neighborhood'
-    // `language` acompanha a escolha do usuário (o Mapbox aceita a língua-base);
-    // `country` continua fixo em br — é o recorte de lançamento, não idioma.
+    // Recorte geográfico, não político: `proximity` (lng,lat) enviesa pro
+    // entorno; `country` no Mapbox é filtro e esvaziaria a lista fora do país.
+    const proximity = coords ? `&proximity=${coords[0]},${coords[1]}` : ''
     const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
       trimmed,
-    )}.json?access_token=${accessToken}&autocomplete=true&language=${i18n.language}&country=br&limit=7&types=${types}`
+    )}.json?access_token=${accessToken}&autocomplete=true&language=${i18n.language}${proximity}&limit=7&types=${types}`
 
     const res = await fetch(url)
     if (!res.ok) throw new Error('Falha ao buscar endereços')
