@@ -1,9 +1,10 @@
-import { memo, type ComponentProps, type RefObject } from 'react'
+import { memo, type ComponentProps } from 'react'
 import type { FlatList } from 'react-native'
 import { View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import type { NativeGesture } from 'react-native-gesture-handler'
 import type Animated from 'react-native-reanimated'
+import type { AnimatedRef } from 'react-native-reanimated'
 import { ProfileSectionHeader } from './ProfileSectionHeader'
 import { ProfileMuralGrid } from './ProfileMuralGrid'
 import { ProfileMuralSkeleton } from './ProfileMuralSkeleton'
@@ -17,9 +18,10 @@ type Props = {
   isOwnProfile: boolean
   tileSize: number
   topInset: number
-  scrollEnabled: boolean
+  // Expandido e parado: a grade é dona do scroll de verdade.
+  expanded: boolean
   native: NativeGesture
-  listRef: RefObject<FlatList | null>
+  listRef: AnimatedRef<FlatList>
   onScroll: ComponentProps<typeof Animated.FlatList>['onScroll']
   veilStyle: ComponentProps<typeof Animated.View>['style']
   // Mais que as duas fileiras do resumo: mostra "Ver todas" e aceita o gesto.
@@ -30,7 +32,7 @@ type Props = {
   bottomPadding: number
 }
 
-// memo: ao encaixar, o palco só re-renderiza a seção cujo scrollEnabled mudou.
+// memo: ao encaixar, o palco só re-renderiza a seção cujo `expanded` mudou.
 // Tudo (cabeçalho, grade, vazio, fantasma) mora na lista: é ela que rola sob o
 // header do perfil e o leva junto.
 export const ProfileMuralSection = memo(function ProfileMuralSection({
@@ -38,7 +40,7 @@ export const ProfileMuralSection = memo(function ProfileMuralSection({
   isOwnProfile,
   tileSize,
   topInset,
-  scrollEnabled,
+  expanded,
   native,
   listRef,
   onScroll,
@@ -75,7 +77,7 @@ export const ProfileMuralSection = memo(function ProfileMuralSection({
             <ProfileMuralEmpty isOwnProfile={isOwnProfile} />
           )
         }
-        scrollEnabled={scrollEnabled}
+        expanded={expanded}
         native={native}
         listRef={listRef}
         onScroll={onScroll}

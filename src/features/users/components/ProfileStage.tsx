@@ -14,6 +14,7 @@ import {
 } from '../utils/profileStage'
 import { useActiveTabPress } from '@/shared/hooks/useActiveTabPress'
 import type { UserEventSummary, UserPhoto } from '@/shared/types'
+import { colors } from '@/shared/theme'
 
 export type StageList<T> = {
   items: T[]
@@ -67,10 +68,13 @@ export function ProfileStage({
   const summaryCount = photos.isLoading
     ? MURAL_SUMMARY_COUNT
     : photos.items.length
-  const stage = useProfileStage({
-    muralLocked: !expandable,
-    muralHeight: muralSummaryHeight(width, summaryCount),
-  })
+  const muralHeight = muralSummaryHeight(width, summaryCount)
+  const stage = useProfileStage({ muralLocked: !expandable, muralHeight })
+  // A folha de eventos nasce logo abaixo do resumo do mural, com a altura do
+  // palco (o que passa dele é recortado). Geometria estática: muda só com o
+  // header medido ou o número de fotos, nunca por frame — o gesto é só
+  // transform, e é isso que o mantém liso.
+  const sheetTop = stage.headerInset + muralHeight
 
   // Re-tap na aba Perfil: volta ao resumo. No perfil de terceiros (stack) o
   // evento tabPress nunca é emitido — o hook fica inerte.
@@ -107,13 +111,13 @@ export function ProfileStage({
               baixo dele (collapsing header). Seções só depois do header
               medido: antes disso o recuo seria 0 e a grade piscaria. */}
           {stage.headerInset > 0 && (
-            <Animated.View style={[styles.section, stage.muralStyle]}>
+            <View style={[styles.section, styles.fill]}>
               <ProfileMuralSection
                 photos={photos}
                 isOwnProfile={isOwnProfile}
                 tileSize={tileSize}
                 topInset={stage.headerInset}
-                scrollEnabled={stage.expanded === 'mural'}
+                expanded={stage.expanded === 'mural'}
                 native={stage.muralNative}
                 listRef={stage.muralList}
                 onScroll={stage.onMuralScroll}
@@ -124,17 +128,24 @@ export function ProfileStage({
                 onViewAll={openMural}
                 bottomPadding={bottomPadding}
               />
-            </Animated.View>
+            </View>
           )}
           {stage.headerInset > 0 && (
             <Animated.View
-              style={[styles.section, styles.eventsSheet, stage.eventsStyle]}
+              style={[
+                styles.section,
+                styles.eventsSheet,
+                { top: sheetTop, bottom: -sheetTop },
+                stage.eventsStyle,
+              ]}
             >
               <ProfileEventsSection
                 events={events}
                 ownerId={ownerId}
                 isOwnProfile={isOwnProfile}
-                scrollEnabled={stage.expanded === 'events'}
+                topInset={stage.headerInset}
+                expanded={stage.expanded === 'events'}
+                listStyle={stage.eventsListStyle}
                 native={stage.eventsNative}
                 listRef={stage.eventsList}
                 onScroll={stage.onEventsScroll}
@@ -162,14 +173,20 @@ const styles = StyleSheet.create({
   stage: { flex: 1, overflow: 'hidden' },
   header: { position: 'absolute', top: 0, left: 0, right: 0 },
   section: { position: 'absolute', left: 0, right: 0, overflow: 'hidden' },
-  // Eventos é a folha que cobre o mural: topo arredondado (raio de sheet) com
-  // o mesmo hairline do SheetModal. Ao subir, encaixa sob o header de vidro
-  // com essa borda.
+  // O mural ocupa o palco inteiro, por baixo do header (a lista recua a
+  // altura dele). O que o "recorta" no resumo é a folha de eventos por cima;
+  // quando ela desce, o resto da grade aparece por trás. Não se move.
+  fill: { top: 0, bottom: 0 },
+  // Eventos é a folha que cobre o mural: fundo opaco e topo arredondado (raio
+  // de sheet) com o mesmo hairline do SheetModal. Ao subir, encaixa sob o
+  // header de vidro com essa borda. A lista mora dentro dela e passa do seu
+  // topo — o que passa é recortado E fica fora do alcance do toque.
   eventsSheet: {
     // As laterais saem meio pixel da tela: o hairline precisa existir nos
     // quatro lados pra contornar o raio, mas visível só no topo.
     left: -StyleSheet.hairlineWidth,
     right: -StyleSheet.hairlineWidth,
+    backgroundColor: colors.background,
     borderTopLeftRadius: EVENTS_SHEET_RADIUS,
     borderTopRightRadius: EVENTS_SHEET_RADIUS,
     borderWidth: StyleSheet.hairlineWidth,

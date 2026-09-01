@@ -1,16 +1,11 @@
-import {
-  useCallback,
-  type ComponentProps,
-  type ReactElement,
-  type RefObject,
-} from 'react'
+import { useCallback, type ComponentProps, type ReactElement } from 'react'
 import type { FlatList, ListRenderItem } from 'react-native'
 import { ActivityIndicator } from 'react-native'
 import {
   GestureDetector,
   type NativeGesture,
 } from 'react-native-gesture-handler'
-import Animated from 'react-native-reanimated'
+import Animated, { type AnimatedRef } from 'react-native-reanimated'
 import { ProfileMuralTile } from './ProfileMuralTile'
 import { ProfileMuralAddTile } from './ProfileMuralAddTile'
 import {
@@ -32,10 +27,11 @@ type Props = {
   // junto com o header do perfil.
   header: ReactElement
   empty: ReactElement | null
-  // Só a seção expandida rola; no resumo a grade é recortada pelo palco.
-  scrollEnabled: boolean
+  // Só a seção expandida é dona do scroll; no resumo a grade é recortada pelo
+  // palco e o offset fica preso em zero (useProfileStage).
+  expanded: boolean
   native: NativeGesture
-  listRef: RefObject<FlatList | null>
+  listRef: AnimatedRef<FlatList>
   onScroll: ComponentProps<typeof Animated.FlatList>['onScroll']
   veilStyle: ComponentProps<typeof Animated.View>['style']
   hasNextPage: boolean
@@ -66,7 +62,7 @@ export function ProfileMuralGrid({
   topInset,
   header,
   empty,
-  scrollEnabled,
+  expanded,
   native,
   listRef,
   onScroll,
@@ -107,12 +103,13 @@ export function ProfileMuralGrid({
         data={cells}
         numColumns={MURAL_COLUMNS}
         keyExtractor={cell => (isAddSlot(cell) ? '__add' : cell.id)}
-        scrollEnabled={scrollEnabled}
+        // Sempre rolável: fora do encaixe o palco prende o offset em zero.
         // Sem bounce: no topo, arrastar pra baixo é do palco, não da lista.
         bounces={false}
         overScrollMode="never"
         onScroll={onScroll}
-        scrollEventThrottle={16}
+        // Todo evento, sem throttle: a trava reage no próprio evento.
+        scrollEventThrottle={1}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={header}
         ListEmptyComponent={empty}
@@ -126,7 +123,7 @@ export function ProfileMuralGrid({
         // seguintes precisam já existir pra aparecerem conforme ele cresce.
         initialNumToRender={30}
         renderItem={renderItem}
-        onEndReached={() => scrollEnabled && hasNextPage && onLoadMore()}
+        onEndReached={() => expanded && hasNextPage && onLoadMore()}
         onEndReachedThreshold={0.4}
         ListFooterComponent={
           isFetchingNextPage ? (

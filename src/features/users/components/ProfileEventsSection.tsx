@@ -1,6 +1,6 @@
-import { memo, useCallback, type ComponentProps, type RefObject } from 'react'
+import { memo, useCallback, type ComponentProps } from 'react'
 import type { FlatList, ListRenderItem } from 'react-native'
-import { View, ActivityIndicator } from 'react-native'
+import { View, ActivityIndicator, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
 import { CaretUpIcon } from 'phosphor-react-native'
@@ -8,7 +8,7 @@ import {
   GestureDetector,
   type NativeGesture,
 } from 'react-native-gesture-handler'
-import Animated from 'react-native-reanimated'
+import Animated, { type AnimatedRef } from 'react-native-reanimated'
 import { ProfileSectionHeader } from './ProfileSectionHeader'
 import { ProfileEventTile } from './ProfileEventTile'
 import { ProfileEventsSkeleton } from './ProfileEventsSkeleton'
@@ -28,9 +28,15 @@ type Props = {
   // Dono do perfil — o tile assina os eventos que não são dele.
   ownerId: string
   isOwnProfile: boolean
-  scrollEnabled: boolean
+  // Altura do header do perfil: a lista começa esse tanto ACIMA da folha e o
+  // conteúdo recua o mesmo tanto — encaixada, é a faixa que rola sob o header
+  // e o leva junto. Ver useProfileStage.
+  topInset: number
+  // Encaixada e parada: a lista é dona do scroll de verdade.
+  expanded: boolean
+  listStyle: ComponentProps<typeof Animated.View>['style']
   native: NativeGesture
-  listRef: RefObject<FlatList | null>
+  listRef: AnimatedRef<FlatList>
   onScroll: ComponentProps<typeof Animated.FlatList>['onScroll']
   onCreate?: () => void
   // Expande a seção (o mesmo que puxar pra cima).
@@ -45,13 +51,15 @@ function isSpacer(row: Row): row is Spacer {
   return '__spacer' in row
 }
 
-// Vitrine de eventos (tiles do design 8a) em duas colunas. Vive no palco do
-// perfil: no resumo só a primeira fileira aparece; expandida, rola sozinha.
+// Vitrine de eventos (tiles do design 8a) em duas colunas. Vive na folha do
+// palco do perfil: no resumo só a primeira fileira aparece; encaixada, rola.
 export const ProfileEventsSection = memo(function ProfileEventsSection({
   events,
   ownerId,
   isOwnProfile,
-  scrollEnabled,
+  topInset,
+  expanded,
+  listStyle,
   native,
   listRef,
   onScroll,
@@ -83,24 +91,32 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
     [ownerId, openEvent],
   )
 
-  // Expandida (= rolando), a pista de "puxe pra cima" não faz sentido.
-  const showHint = !scrollEnabled && events.items.length > 0
+  // Encaixada (= rolando), a pista de "puxe pra cima" não faz sentido.
+  const showHint = !expanded && events.items.length > 0
 
   return (
-    <View className="flex-1 bg-background">
+    <Animated.View style={[styles.list, { top: -topInset }, listStyle]}>
       <GestureDetector gesture={native}>
         <Animated.FlatList
           ref={listRef}
           data={rows}
           numColumns={2}
           keyExtractor={item => (isSpacer(item) ? item.__spacer : item.id)}
-          scrollEnabled={scrollEnabled}
+          // Sempre rolável: fora do encaixe o palco prende o offset em zero
+          // (useProfileStage). Sem bounce: no topo, arrastar pra baixo é do
+          // palco, não da lista.
           bounces={false}
           overScrollMode="never"
           onScroll={onScroll}
-          scrollEventThrottle={16}
+          // Todo evento, sem throttle: a trava reage no próprio evento, e um
+          // frame sem evento seria um frame de salto.
+          scrollEventThrottle={1}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: bottomPadding }}
+          // O recuo do fim compensa a faixa da lista que passa do pé do palco.
+          contentContainerStyle={{
+            paddingTop: topInset,
+            paddingBottom: bottomPadding + topInset,
+          }}
           columnWrapperStyle={{ paddingHorizontal: 16, gap: 8 }}
           // Alça e cabeçalho moram na lista pra rolarem junto quando ela
           // rola. A alça é o sinal universal de "puxe pra cima".
@@ -144,11 +160,15 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
             ) : null
           }
           onEndReached={() =>
-            scrollEnabled && events.hasNextPage && events.onLoadMore()
+            expanded && events.hasNextPage && events.onLoadMore()
           }
           onEndReachedThreshold={0.3}
         />
       </GestureDetector>
-    </View>
+    </Animated.View>
   )
+})
+
+const styles = StyleSheet.create({
+  list: { position: 'absolute', left: 0, right: 0, bottom: 0 },
 })
