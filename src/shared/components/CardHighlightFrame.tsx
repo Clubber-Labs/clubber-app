@@ -1,12 +1,19 @@
 import { useId, useState } from 'react'
 import { StyleSheet, View } from 'react-native'
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg'
+import Svg, { Defs, LinearGradient, Path, Stop } from 'react-native-svg'
+import {
+  ticketOutlinePath,
+  type OutlineNotch,
+} from '@/shared/utils/ticketOutline'
 
 type Props = {
   // Paradas do gradiente da moldura — SPECTRUM (ao vivo) ou METAL (patrocinado).
   stops: readonly [string, string, string]
   // Raio do card por baixo, pra moldura acompanhar o canto.
   radius?: number
+  // Picote do card-ingresso. Sem ele a moldura é um retângulo arredondado — é
+  // o caso do tile do perfil e do card de spot, que não têm recorte.
+  notch?: OutlineNotch | null
 }
 
 /**
@@ -15,7 +22,7 @@ type Props = {
  * sozinha — `Rect` com "100%" não re-resolve quando a altura do container muda
  * (RNSVG/new arch) e a moldura ficava cortada no meio do card.
  */
-export function CardHighlightFrame({ stops, radius = 12 }: Props) {
+export function CardHighlightFrame({ stops, radius = 12, notch }: Props) {
   const [size, setSize] = useState<{ w: number; h: number } | null>(null)
   const gradientId = `card-frame-${useId().replace(/:/g, '')}`
 
@@ -41,23 +48,30 @@ export function CardHighlightFrame({ stops, radius = 12 }: Props) {
               <Stop offset="1" stopColor={stops[2]} />
             </LinearGradient>
           </Defs>
-          <Rect
-            x={2}
-            y={2}
-            width={size.w - 4}
-            height={size.h - 4}
-            rx={radius}
+          {/* Os dois traços mantêm o raio cheio no recuo em que correm (não o
+              encolhem como a aresta do card): a moldura foi ajustada no olho,
+              e o `notch` só acrescenta o mergulho no picote. */}
+          <Path
+            d={ticketOutlinePath({
+              width: size.w,
+              height: size.h,
+              radius,
+              inset: 2,
+              notch,
+            })}
             fill="none"
             stroke={`url(#${gradientId})`}
             strokeWidth={6}
             strokeOpacity={0.2}
           />
-          <Rect
-            x={1.25}
-            y={1.25}
-            width={size.w - 2.5}
-            height={size.h - 2.5}
-            rx={radius + 0.5}
+          <Path
+            d={ticketOutlinePath({
+              width: size.w,
+              height: size.h,
+              radius: radius + 0.5,
+              inset: 1.25,
+              notch,
+            })}
             fill="none"
             stroke={`url(#${gradientId})`}
             strokeWidth={2.5}

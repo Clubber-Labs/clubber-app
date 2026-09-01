@@ -6,7 +6,7 @@ import { CardHighlightFrame } from '@/shared/components/CardHighlightFrame'
 import { useAuthStore } from '@/features/auth/store/authStore'
 import { useToggleLike } from '../hooks/useToggleLike'
 import { EventCardHero } from './EventCardHero'
-import { EventCardPerforation } from './EventCardPerforation'
+import { EventCardPerforation, NOTCH_RADIUS } from './EventCardPerforation'
 import { EventCardOutline } from './EventCardOutline'
 import { EventCardStub } from './EventCardStub'
 import { CommentPreview } from './CommentPreview'
@@ -207,7 +207,13 @@ export function EventCard({
   return (
     <View className="relative mb-10">
       {card}
-      <CardHighlightFrame stops={frameStops} />
+      {/* A moldura mergulha no mesmo picote que a aresta — sem o notch ela
+          passava reta por fora dos furos. Só depois do layout: antes disso o
+          centro dos furos não existe. */}
+      <CardHighlightFrame
+        stops={frameStops}
+        notch={notchY === null ? null : { y: notchY, radius: NOTCH_RADIUS }}
+      />
     </View>
   )
 }
