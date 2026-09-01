@@ -1638,7 +1638,8 @@
       "post": "Report post",
       "comment": "Report comment",
       "message": "Report message",
-      "user": "Report user"
+      "user": "Report user",
+      "spot": "Report hangout"
     },
     "reasons": {
       "HATE_SPEECH": "Hate speech",

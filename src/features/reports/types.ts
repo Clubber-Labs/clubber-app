@@ -10,8 +10,14 @@ export type ReportReason =
 
 // Tipo do conteúdo denunciado. Mapeia 1:1 com os endpoints de criação:
 // /events/:id/report, /posts/:id/report, /comments/:id/report,
-// /messages/:id/report, /users/:id/report.
-export type ReportTargetType = 'event' | 'post' | 'comment' | 'message' | 'user'
+// /messages/:id/report, /users/:id/report, /spots/:id/report.
+export type ReportTargetType =
+  | 'event'
+  | 'post'
+  | 'comment'
+  | 'message'
+  | 'user'
+  | 'spot'
 
 // Alvo de uma denúncia em criação. `label` é só contexto opcional pra UI (não
 // vai pro backend) — ex: nome do usuário ou título do evento.

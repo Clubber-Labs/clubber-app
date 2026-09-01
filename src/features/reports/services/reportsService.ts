@@ -21,6 +21,8 @@ function reportPath(target: ReportTarget): string {
       return `/messages/${target.id}/report`
     case 'user':
       return `/users/${target.id}/report`
+    case 'spot':
+      return `/spots/${target.id}/report`
   }
 }
 

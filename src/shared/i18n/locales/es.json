@@ -1638,7 +1638,8 @@
       "post": "Denunciar publicación",
       "comment": "Denunciar comentario",
       "message": "Denunciar mensaje",
-      "user": "Denunciar usuario"
+      "user": "Denunciar usuario",
+      "spot": "Denunciar plan"
     },
     "reasons": {
       "HATE_SPEECH": "Discurso de odio",
