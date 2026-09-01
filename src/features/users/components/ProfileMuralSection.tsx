@@ -18,8 +18,8 @@ type Props = {
   isOwnProfile: boolean
   tileSize: number
   topInset: number
-  // Expandido e parado: a grade é dona do scroll de verdade.
-  expanded: boolean
+  // Expandido e parado — lido na hora (ref no useProfileStage), não no render.
+  canLoadMore: () => boolean
   native: NativeGesture
   listRef: AnimatedRef<FlatList>
   onScroll: ComponentProps<typeof Animated.FlatList>['onScroll']
@@ -40,7 +40,7 @@ export const ProfileMuralSection = memo(function ProfileMuralSection({
   isOwnProfile,
   tileSize,
   topInset,
-  expanded,
+  canLoadMore,
   native,
   listRef,
   onScroll,
@@ -77,7 +77,7 @@ export const ProfileMuralSection = memo(function ProfileMuralSection({
             <ProfileMuralEmpty isOwnProfile={isOwnProfile} />
           )
         }
-        expanded={expanded}
+        canLoadMore={canLoadMore}
         native={native}
         listRef={listRef}
         onScroll={onScroll}

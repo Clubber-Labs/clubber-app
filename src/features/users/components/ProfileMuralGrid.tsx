@@ -27,9 +27,9 @@ type Props = {
   // junto com o header do perfil.
   header: ReactElement
   empty: ReactElement | null
-  // Só a seção expandida é dona do scroll; no resumo a grade é recortada pelo
+  // Só a seção expandida carrega mais; no resumo a grade é recortada pelo
   // palco e o offset fica preso em zero (useProfileStage).
-  expanded: boolean
+  canLoadMore: () => boolean
   native: NativeGesture
   listRef: AnimatedRef<FlatList>
   onScroll: ComponentProps<typeof Animated.FlatList>['onScroll']
@@ -62,7 +62,7 @@ export function ProfileMuralGrid({
   topInset,
   header,
   empty,
-  expanded,
+  canLoadMore,
   native,
   listRef,
   onScroll,
@@ -123,7 +123,7 @@ export function ProfileMuralGrid({
         // seguintes precisam já existir pra aparecerem conforme ele cresce.
         initialNumToRender={30}
         renderItem={renderItem}
-        onEndReached={() => expanded && hasNextPage && onLoadMore()}
+        onEndReached={() => canLoadMore() && hasNextPage && onLoadMore()}
         onEndReachedThreshold={0.4}
         ListFooterComponent={
           isFetchingNextPage ? (

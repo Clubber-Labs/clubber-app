@@ -1,5 +1,7 @@
+import type { ComponentProps } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import type { Icon } from 'phosphor-react-native'
+import Animated from 'react-native-reanimated'
 import { colors } from '@/shared/theme'
 import { SECTION_HEADER_HEIGHT } from '../utils/profileStage'
 
@@ -11,6 +13,8 @@ type Props = {
   // Ícone antes do rótulo da ação (ex.: caret pra cima = "puxe").
   actionIcon?: Icon
   onAction?: () => void
+  // Estilo animado da ação (fade dirigido pelo palco, sem re-render).
+  actionStyle?: ComponentProps<typeof Animated.View>['style']
 }
 
 // Cabeçalho das seções do perfil (MURAL, EVENTOS). Altura fixa: a geometria do
@@ -21,6 +25,7 @@ export function ProfileSectionHeader({
   action,
   actionIcon: ActionIcon,
   onAction,
+  actionStyle,
 }: Props) {
   return (
     <View
@@ -41,17 +46,21 @@ export function ProfileSectionHeader({
         )}
       </View>
       {!!action && !!onAction && (
-        <Pressable
-          onPress={onAction}
-          hitSlop={8}
-          accessibilityRole="button"
-          className="h-full flex-row items-center gap-1"
-        >
-          {ActionIcon && (
-            <ActionIcon size={12} weight="bold" color={colors.contentMuted} />
-          )}
-          <Text className="text-xs font-bold text-content-muted">{action}</Text>
-        </Pressable>
+        <Animated.View style={[{ height: '100%' }, actionStyle]}>
+          <Pressable
+            onPress={onAction}
+            hitSlop={8}
+            accessibilityRole="button"
+            className="h-full flex-row items-center gap-1"
+          >
+            {ActionIcon && (
+              <ActionIcon size={12} weight="bold" color={colors.contentMuted} />
+            )}
+            <Text className="text-xs font-bold text-content-muted">
+              {action}
+            </Text>
+          </Pressable>
+        </Animated.View>
       )}
     </View>
   )

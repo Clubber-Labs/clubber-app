@@ -28,12 +28,19 @@ type Props = {
   // Dono do perfil — o tile assina os eventos que não são dele.
   ownerId: string
   isOwnProfile: boolean
-  // Altura do header do perfil: a lista começa esse tanto ACIMA da folha e o
-  // conteúdo recua o mesmo tanto — encaixada, é a faixa que rola sob o header
-  // e o leva junto. Ver useProfileStage.
+  // Altura do header do perfil. A lista vive header + mural ACIMA da folha
+  // (o quadro dela cobre o palco inteiro, do topo) e o conteúdo recua o mesmo
+  // tanto: rolar tira esse recuo — a folha encaixa, o header colapsa e o
+  // conteúdo alcança o topo da tela. Ver useProfileStage.
   topInset: number
-  // Encaixada e parada: a lista é dona do scroll de verdade.
-  expanded: boolean
+  // Altura do resumo do mural: os primeiros `dockOffset` px de rolagem são a
+  // folha subindo até encaixar — o snap nativo devolve pra 0 ou pra cá.
+  dockOffset: number
+  // Encaixada e parada — lido na hora (ref no useProfileStage), não no
+  // render: o encaixe não pode re-renderizar a seção no rabo da animação.
+  canLoadMore: () => boolean
+  // Fade da pista "Ver todos ↑" conforme a folha encaixa (1 − expand).
+  hintStyle: ComponentProps<typeof Animated.View>['style']
   listStyle: ComponentProps<typeof Animated.View>['style']
   native: NativeGesture
   listRef: AnimatedRef<FlatList>
@@ -58,7 +65,9 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
   ownerId,
   isOwnProfile,
   topInset,
-  expanded,
+  dockOffset,
+  canLoadMore,
+  hintStyle,
   listStyle,
   native,
   listRef,
@@ -91,11 +100,16 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
     [ownerId, openEvent],
   )
 
-  // Encaixada (= rolando), a pista de "puxe pra cima" não faz sentido.
-  const showHint = !expanded && events.items.length > 0
+  // A pista de "puxe pra cima" existe com conteúdo e ESMAECE no encaixe
+  // (hintStyle) — encaixada ela não faz sentido, mas sumir por render seria
+  // um commit no rabo da animação. O toque na pista invisível é inócuo:
+  // expandir o que já está expandido não move nada.
+  const showHint = events.items.length > 0
 
   return (
-    <Animated.View style={[styles.list, { top: -topInset }, listStyle]}>
+    <Animated.View
+      style={[styles.list, { top: -(topInset + dockOffset) }, listStyle]}
+    >
       <GestureDetector gesture={native}>
         <Animated.FlatList
           ref={listRef}
@@ -108,14 +122,19 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
           bounces={false}
           overScrollMode="never"
           onScroll={onScroll}
-          // Todo evento, sem throttle: a trava reage no próprio evento, e um
-          // frame sem evento seria um frame de salto.
+          // Todo evento, sem throttle: folha, header e pista seguem o offset
+          // por transform, e um frame sem evento seria um frame de salto.
           scrollEventThrottle={1}
+          // Soltar no meio do encaixe: física nativa decide entre resumo e
+          // encaixada; dali pra frente a rolagem é livre.
+          snapToOffsets={[0, dockOffset]}
+          snapToEnd={false}
           showsVerticalScrollIndicator={false}
-          // O recuo do fim compensa a faixa da lista que passa do pé do palco.
+          // O recuo do fim compensa a faixa da lista que passa do pé do palco
+          // e o curso extra do encaixe (dockOffset).
           contentContainerStyle={{
-            paddingTop: topInset,
-            paddingBottom: bottomPadding + topInset,
+            paddingTop: topInset + dockOffset,
+            paddingBottom: bottomPadding + topInset + dockOffset,
           }}
           columnWrapperStyle={{ paddingHorizontal: 16, gap: 8 }}
           // Alça e cabeçalho moram na lista pra rolarem junto quando ela
@@ -137,9 +156,14 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
                 action={showHint ? t('profile.eventsViewAll') : undefined}
                 actionIcon={showHint ? CaretUpIcon : undefined}
                 onAction={showHint ? onViewAll : undefined}
+                actionStyle={hintStyle}
               />
             </>
           }
+          // Montar células no meio do scroll é um commit do React na thread
+          // JS, e no Fabric isso adia o transform do header pro commit —
+          // o "travadinha" do collapsing header. Pré-monta a primeira leva.
+          initialNumToRender={16}
           renderItem={renderItem}
           ListEmptyComponent={
             events.isLoading ? (
@@ -160,7 +184,7 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
             ) : null
           }
           onEndReached={() =>
-            expanded && events.hasNextPage && events.onLoadMore()
+            canLoadMore() && events.hasNextPage && events.onLoadMore()
           }
           onEndReachedThreshold={0.3}
         />

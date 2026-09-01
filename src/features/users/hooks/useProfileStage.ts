@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { FlatList } from 'react-native'
 import { Gesture } from 'react-native-gesture-handler'
 import {
@@ -11,9 +11,10 @@ import {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated'
-import { runOnJS } from 'react-native-worklets'
+import { runOnJS, runOnUI } from 'react-native-worklets'
 import {
   focusForTouch,
+  headerCollapse,
   nextExpand,
   snapTarget,
   travelDistance,
@@ -33,26 +34,33 @@ type Params = {
 
 /**
  * Palco do perfil: header + mural + eventos no mesmo lugar, e um gesto que é
- * contextual à seção tocada. `expand` (0..1) é o único estado animado: 0 é o
- * resumo, 1 é a seção em foco no lugar. Foco em eventos: a folha sobe a
- * altura do mural e encaixa sob o header, que fica fixo; encaixada, a lista
- * rola e leva o header junto (collapsing header) — a página inteira rola.
- * Foco no mural: só a seção de eventos desce e sai; header e mural ficam, a
- * grade rola e leva o header; ao voltar ao topo, eventos retorna sozinha.
+ * contextual à seção tocada.
  *
- * Nada de layout muda por frame — só transform — e as listas nunca trocam de
- * `scrollEnabled`: enquanto o palco é dono do toque, o offset delas é preso
- * em zero no próprio evento de scroll (worklet, síncrono na thread de UI).
- * É o que deixa a lista assumir o MESMO toque no instante do encaixe, sem
- * levantar o dedo — trocar scrollEnabled no meio do toque não pega no iOS.
+ * EVENTOS é 100% dirigido pelo scroll nativo da própria lista: puxar a folha
+ * JÁ É rolar (o conteúdo recua header + mural, e esse recuo rolando pra fora é
+ * a folha subindo). Folha, header e pista seguem o offset por transform, e
+ * `snapToOffsets` [0, mural] faz o encaixe/desencaixe com física nativa — sem
+ * pan, sem trava, sem estado: era a briga trava×rastreio (2 eventos + 2
+ * commits de estado por frame, e commits JS pausam os do Reanimated) que
+ * fazia a folha engasgar. `expand` = min(1, offset/mural) vira derivado.
+ *
+ * MURAL é dirigido pelo pan: a folha de eventos desce e sai (expand 0→1);
+ * header e mural ficam, a grade rola e leva o header. Enquanto o pan é dono,
+ * o offset da grade fica preso em zero no próprio evento de scroll (worklet,
+ * síncrono na thread de UI) — é o que deixa a grade assumir o MESMO toque no
+ * instante em que expande (trocar scrollEnabled no meio do toque não pega).
+ *
+ * Nada de layout muda por frame e nenhum setState liga ao gesto.
  */
 export function useProfileStage({ muralLocked, muralHeight }: Params) {
   const expand = useSharedValue(0)
   const focus = useSharedValue<StageFocus>('mural')
   const startExpand = useSharedValue(0)
   const startTranslation = useSharedValue(0)
-  const lastTranslation = useSharedValue(0)
   const panOwns = useSharedValue(false)
+  // Mural travado: o toque FORA da folha também abre eventos — aí é o pan que
+  // dirige o offset (scrollTo por frame), já que a folha não foi tocada.
+  const panDrivesEvents = useSharedValue(false)
   const muralOffset = useSharedValue(0)
   const eventsOffset = useSharedValue(0)
   const headerHeight = useSharedValue(0)
@@ -60,14 +68,19 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
   const muralSummary = useSharedValue(muralHeight)
   const muralIsLocked = useSharedValue(muralLocked)
   const reported = useSharedValue<StageFocus | null>(null)
-  // Seção encaixada e parada. Não decide mais o scroll (isso é a trava, na
-  // thread de UI) — só a pista "Ver todos" e o carregar-mais das listas.
-  const [expanded, setExpanded] = useState<StageFocus | null>(null)
+  // Seção encaixada e parada, FORA do render: um setState aqui re-renderizava
+  // as duas seções no rabo da animação — o micro-engasgo de fim de drawer.
+  // Quem precisa saber (carregar-mais) lê pela função; a pista "Ver todos"
+  // some por opacidade animada, não por render.
+  const expandedRef = useRef<StageFocus | null>(null)
+  const setExpanded = useCallback((value: StageFocus | null) => {
+    expandedRef.current = value
+  }, [])
   // Cópia JS da altura do header: as listas recuam esse tanto no topo (prop
   // de layout, muda só quando o header muda).
   const [headerInset, setHeaderInset] = useState(0)
-  // Refs animadas: a trava do offset (scrollTo no worklet) e o collapse
-  // imperativo (re-tap na aba) precisam alcançar as listas.
+  // Refs animadas: a trava do mural e o pan de eventos (mural travado) fazem
+  // scrollTo de dentro de worklet; o collapse imperativo também.
   const muralList = useAnimatedRef<FlatList>()
   const eventsList = useAnimatedRef<FlatList>()
 
@@ -78,8 +91,7 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
     muralIsLocked.value = muralLocked
   }, [muralLocked, muralIsLocked])
 
-  // Só nos pontos de repouso (0 e 1): trocar estado JS no meio do gesto
-  // re-renderiza as duas grades e o dedo sente o engasgo.
+  // Só nos pontos de repouso (0 e 1), e só a ref — nenhum render.
   useAnimatedReaction(
     () => expand.value,
     value => {
@@ -92,14 +104,6 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
       runOnJS(setExpanded)(next)
     },
   )
-
-  // A lista só é dona do scroll com a própria seção encaixada. Fora disso o
-  // offset volta a zero no mesmo evento que o mudou — o frame nunca chega a
-  // mostrar o deslocamento.
-  const listOwnsScroll = (section: StageFocus) => {
-    'worklet'
-    return focus.value === section && expand.value >= 1 - EPSILON
-  }
 
   const muralNative = useMemo(() => Gesture.Native(), [])
   const eventsNative = useMemo(() => Gesture.Native(), [])
@@ -120,39 +124,31 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
               muralIsLocked.value,
             )
           }
+          // Toque acima do topo atual da folha: ela não foi tocada, então o
+          // scroll nativo não rastreia — o pan assume o offset por ela.
+          panDrivesEvents.value =
+            focus.value === 'events' &&
+            e.y < headerHeight.value + muralSummary.value * (1 - expand.value)
         })
         .onStart(e => {
-          // Tocar no meio do encaixe: o spring pararia de brigar com o dedo
-          // só no fim — cancela e o gesto assume de onde a seção está.
+          // Tocar no meio de uma animação do mural: cancela a mola e o gesto
+          // assume de onde a seção está. (Eventos anima pelo scroll nativo —
+          // tocar a folha já interrompe sozinho.)
           cancelAnimation(expand)
-          const offset =
-            focus.value === 'mural' ? muralOffset.value : eventsOffset.value
-          // Encaixada, a lista é dona do gesto — exceto arrastar pra baixo com
-          // ela no topo, que é o pedido de voltar ao resumo.
-          panOwns.value =
-            expand.value < 1 || (e.translationY > 0 && offset <= 0)
+          if (focus.value === 'events') {
+            panOwns.value = panDrivesEvents.value
+          } else {
+            // Expandida, a grade é dona do gesto — exceto arrastar pra baixo
+            // com ela no topo, que é o pedido de voltar ao resumo.
+            panOwns.value =
+              expand.value < 1 || (e.translationY > 0 && muralOffset.value <= 0)
+          }
           startExpand.value = expand.value
           startTranslation.value = e.translationY
-          lastTranslation.value = e.translationY
         })
         .onUpdate(e => {
-          if (!panOwns.value) {
-            // Eventos encaixada e rolando: a lista chegou ao topo e o dedo
-            // segue descendo — o palco assume no mesmo toque e desencaixa.
-            // (No mural a volta é a mola da chegada, em onMuralScroll.)
-            const takesOver =
-              focus.value === 'events' &&
-              expand.value >= 1 - EPSILON &&
-              eventsOffset.value <= 0 &&
-              e.translationY > lastTranslation.value
-            lastTranslation.value = e.translationY
-            if (!takesOver) return
-            panOwns.value = true
-            startExpand.value = expand.value
-            startTranslation.value = e.translationY
-          }
-          lastTranslation.value = e.translationY
-          expand.value = nextExpand(
+          if (!panOwns.value) return
+          const next = nextExpand(
             startExpand.value,
             e.translationY - startTranslation.value,
             travelDistance(
@@ -162,17 +158,31 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
               stageHeight.value,
             ),
           )
+          if (focus.value === 'events') {
+            // O offset é a única fonte da posição da folha: o pan escreve
+            // nele e tudo (folha, expand, header) segue pelo onScroll.
+            scrollTo(eventsList, 0, next * muralSummary.value, false)
+            return
+          }
+          expand.value = next
         })
         .onEnd(e => {
           if (!panOwns.value) return
-          expand.value = withSpring(
-            snapTarget(expand.value, startExpand.value, e.velocityY),
-            SPRING,
+          const target = snapTarget(
+            expand.value,
+            startExpand.value,
+            e.velocityY,
           )
+          if (focus.value === 'events') {
+            scrollTo(eventsList, 0, target * muralSummary.value, true)
+            return
+          }
+          expand.value = withSpring(target, SPRING)
         }),
     [
       muralNative,
       eventsNative,
+      eventsList,
       expand,
       focus,
       headerHeight,
@@ -180,18 +190,20 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
       muralIsLocked,
       stageHeight,
       muralOffset,
-      eventsOffset,
       panOwns,
+      panDrivesEvents,
       startExpand,
       startTranslation,
-      lastTranslation,
     ],
   )
 
   const onMuralScroll = useAnimatedScrollHandler({
     onScroll: e => {
       const offset = e.contentOffset.y
-      if (!listOwnsScroll('mural')) {
+      // Fora do próprio expandido, a grade não é dona do scroll: o offset
+      // volta a zero no mesmo evento que o mudou — o frame nunca chega a
+      // mostrar o deslocamento, e o mesmo toque assume quando expande.
+      if (!(focus.value === 'mural' && expand.value >= 1 - EPSILON)) {
         if (offset > 0) scrollTo(muralList, 0, 0, false)
         muralOffset.value = 0
         return
@@ -206,64 +218,70 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
       }
     },
   })
+  // Eventos: o offset manda. Os primeiros `mural` px de rolagem são a folha
+  // subindo (expand derivado); dali em diante é header colapsando e conteúdo.
   const onEventsScroll = useAnimatedScrollHandler({
     onScroll: e => {
-      const offset = e.contentOffset.y
-      if (!listOwnsScroll('events')) {
-        if (offset > 0) scrollTo(eventsList, 0, 0, false)
-        eventsOffset.value = 0
-        return
+      eventsOffset.value = e.contentOffset.y
+      if (focus.value === 'events') {
+        expand.value = Math.min(1, e.contentOffset.y / muralSummary.value)
       }
-      eventsOffset.value = offset
     },
   })
 
-  // Quanto do header já saiu por cima: o scroll da lista em foco (collapsing
-  // header). Fora do encaixe o offset é zero pela trava, e o header não sai.
-  const muralCollapse = () => {
-    'worklet'
-    return Math.min(headerHeight.value, Math.max(0, muralOffset.value))
-  }
-  const eventsCollapse = () => {
-    'worklet'
-    return Math.min(headerHeight.value, Math.max(0, eventsOffset.value))
-  }
-
-  const headerStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY: -(focus.value === 'events'
-          ? eventsCollapse()
-          : muralCollapse()),
-      },
-    ],
-  }))
+  // Os estilos leem os offsets DIRETO no updater: o useAnimatedStyle só
+  // assina os shared values presentes na closure dele (não entra em funções
+  // auxiliares), e uma leitura escondida numa função deixa o estilo surdo ao
+  // scroll. No foco em eventos o header só sai depois do encaixe (offset
+  // além da altura do mural).
+  const headerStyle = useAnimatedStyle(() => {
+    const offset =
+      focus.value === 'events'
+        ? eventsOffset.value - muralSummary.value
+        : muralOffset.value
+    return {
+      transform: [{ translateY: -headerCollapse(headerHeight.value, offset) }],
+    }
+  })
 
   // A folha de eventos (recorte + fundo) nasce logo abaixo do resumo do mural
   // com a altura do palco — geometria estática, no ProfileStage. Foco no
-  // mural: desce e sai por baixo. Foco em eventos: sobe a altura do mural e
-  // encaixa sob o header; encaixada, acompanha o header pra cima conforme a
-  // lista rola — é ela que fecha o vão sob ele.
+  // mural: desce e sai por baixo. Foco em eventos: sobe com o scroll até
+  // encaixar (mural px) e segue com o header até ele sair (+ header px).
   const eventsStyle = useAnimatedStyle(() => {
     const top = headerHeight.value + muralSummary.value
     const translateY =
       focus.value === 'mural'
         ? (stageHeight.value - top) * expand.value
-        : -(muralSummary.value * expand.value + eventsCollapse())
+        : -Math.min(eventsOffset.value, muralSummary.value + headerHeight.value)
     return { transform: [{ translateY }] }
   })
 
-  // A lista de eventos vive a altura do header ACIMA da folha (recuo no topo
-  // do conteúdo, recortado por ela) e, encaixada, desfaz o movimento da
-  // folha: fica parada na tela enquanto folha e header sobem, e o conteúdo
-  // rola 1:1 com o dedo. É o "a página inteira rola" sem trocar de geometria.
+  // A lista vive a altura do header ACIMA da folha (recuo no topo do
+  // conteúdo, recortado por ela) e desfaz o movimento da folha: a soma dos
+  // dois transforms é zero e o conteúdo anda SÓ pelo scroll nativo — é o "a
+  // página inteira rola" com o dedo 1:1, liso por construção.
   const eventsListStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: eventsCollapse() }],
+    transform: [
+      {
+        translateY: Math.min(
+          eventsOffset.value,
+          muralSummary.value + headerHeight.value,
+        ),
+      },
+    ],
   }))
 
+  // Fade do resumo: o véu "+N" do mural e a pista "Ver todos ↑" de eventos
+  // somem conforme a seção toma o palco — na thread de UI, sem render.
   const veilStyle = useAnimatedStyle(() => ({
     opacity: 1 - expand.value,
   }))
+
+  const canLoadMore = useCallback(
+    (section: StageFocus) => expandedRef.current === section,
+    [],
+  )
 
   const setHeaderHeight = useCallback(
     (height: number) => {
@@ -279,23 +297,37 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
     [stageHeight],
   )
 
-  // "Ver todas/todos": o mesmo encaixe do gesto.
+  // "Ver todas/todos": o mesmo caminho do gesto — mola no mural, scroll
+  // nativo animado em eventos.
   const expandTo = useCallback(
     (target: StageFocus) => {
-      focus.value = target
+      if (target === 'events') {
+        runOnUI(() => {
+          focus.value = 'events'
+          scrollTo(eventsList, 0, muralSummary.value, true)
+        })()
+        return
+      }
+      focus.value = 'mural'
       expand.value = withSpring(1, SPRING)
     },
-    [focus, expand],
+    [focus, expand, eventsList, muralSummary],
   )
-  // Re-tap na aba: tudo volta ao resumo. As listas precisam voltar ao topo
-  // antes, senão o resumo mostra fileiras roladas e o header preso escondido.
+  // Re-tap na aba: tudo volta ao resumo. A grade volta ao topo antes da mola
+  // (senão o resumo mostra fileiras roladas); eventos volta ROLANDO (é o
+  // scroll que o posiciona).
   const collapse = useCallback(() => {
     muralList.current?.scrollToOffset({ offset: 0, animated: false })
-    eventsList.current?.scrollToOffset({ offset: 0, animated: false })
     muralOffset.value = 0
-    eventsOffset.value = 0
-    expand.value = withSpring(0, SPRING)
-  }, [muralList, eventsList, expand, muralOffset, eventsOffset])
+    runOnUI(() => {
+      if (focus.value === 'events' && eventsOffset.value > 0) {
+        scrollTo(eventsList, 0, 0, true)
+        return
+      }
+      scrollTo(eventsList, 0, 0, false)
+      expand.value = withSpring(0, SPRING)
+    })()
+  }, [muralList, eventsList, expand, focus, eventsOffset, muralOffset])
 
   return {
     pan,
@@ -309,7 +341,7 @@ export function useProfileStage({ muralLocked, muralHeight }: Params) {
     eventsStyle,
     eventsListStyle,
     veilStyle,
-    expanded,
+    canLoadMore,
     headerInset,
     setHeaderHeight,
     setStageHeight,

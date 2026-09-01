@@ -66,6 +66,13 @@ export function focusForTouch(
   return y < headerHeight + muralHeight ? 'mural' : 'events'
 }
 
+// Quanto do header já saiu por cima, pelo offset da lista que rola sob ele
+// (collapsing header): acompanha o scroll até sumir e para ali.
+export function headerCollapse(headerHeight: number, offset: number): number {
+  'worklet'
+  return Math.min(headerHeight, Math.max(0, offset))
+}
+
 // Quanto o gesto percorre até o encaixe, pra o dedo e a seção andarem 1:1.
 // Eventos sobe a altura do mural e encaixa logo abaixo do header (que fica
 // fixo); no mural é a seção de eventos que desce do seu topo até sair do

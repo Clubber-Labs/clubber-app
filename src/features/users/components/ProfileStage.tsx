@@ -81,9 +81,11 @@ export function ProfileStage({
   useActiveTabPress(stage.collapse)
   // Identidade estável: a seção é memoizada e um closure novo a re-renderizaria
   // a cada encaixe do palco.
-  const { expandTo } = stage
+  const { expandTo, canLoadMore } = stage
   const openMural = useCallback(() => expandTo('mural'), [expandTo])
   const openEvents = useCallback(() => expandTo('events'), [expandTo])
+  const canLoadMural = useCallback(() => canLoadMore('mural'), [canLoadMore])
+  const canLoadEvents = useCallback(() => canLoadMore('events'), [canLoadMore])
 
   if (locked) {
     return (
@@ -117,7 +119,7 @@ export function ProfileStage({
                 isOwnProfile={isOwnProfile}
                 tileSize={tileSize}
                 topInset={stage.headerInset}
-                expanded={stage.expanded === 'mural'}
+                canLoadMore={canLoadMural}
                 native={stage.muralNative}
                 listRef={stage.muralList}
                 onScroll={stage.onMuralScroll}
@@ -144,7 +146,11 @@ export function ProfileStage({
                 ownerId={ownerId}
                 isOwnProfile={isOwnProfile}
                 topInset={stage.headerInset}
-                expanded={stage.expanded === 'events'}
+                dockOffset={muralHeight}
+                canLoadMore={canLoadEvents}
+                // O mesmo fade do véu do mural (1 − expand): a pista "Ver
+                // todos ↑" some conforme a folha encaixa, sem re-render.
+                hintStyle={stage.veilStyle}
                 listStyle={stage.eventsListStyle}
                 native={stage.eventsNative}
                 listRef={stage.eventsList}
