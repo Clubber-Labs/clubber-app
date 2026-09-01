@@ -5,51 +5,33 @@ import {
   CaretRightIcon,
   CalendarPlusIcon,
   ChatCircleDotsIcon,
-  ImageSquareIcon,
   type Icon,
 } from 'phosphor-react-native'
+import { Fab } from '@/shared/components/Fab'
 import { SheetModal } from '@/shared/components/SheetModal'
 import { colors } from '@/shared/theme'
-import { useTabBarClearance } from '@/shared/hooks/useTabBarClearance'
 import { useSheetExit } from '@/shared/hooks/useSheetExit'
 
 type Props = {
   onCreateEvent: () => void
   onCreateSpot: () => void
-  onCreatePhoto: () => void
 }
 
-// Ação única de criar, igual em todas as abas: o "+" abre um seletor (evento
-// formal × rolê × foto no mural) em vez de FABs distintos por tela. Cada opção
-// dispara o fluxo que a tela hospedeira passar (o rolê fora do mapa navega
-// até ele).
-export function CreateFab({
-  onCreateEvent,
-  onCreateSpot,
-  onCreatePhoto,
-}: Props) {
+// Ação de criar do feed e do mapa: o "+" abre um seletor (evento formal ×
+// rolê) em vez de FABs distintos por tela. Cada opção dispara o fluxo que a
+// tela hospedeira passar (o rolê fora do mapa navega até ele). Postar foto
+// não entra aqui: é conteúdo do perfil, e lá o "+" vai direto.
+export function CreateFab({ onCreateEvent, onCreateSpot }: Props) {
   const { t } = useTranslation()
   const sheet = useSheetExit()
-  const tabBarClearance = useTabBarClearance()
 
   return (
     <>
-      <Pressable
-        onPress={sheet.open}
-        accessibilityRole="button"
+      <Fab
+        icon={PlusIcon}
         accessibilityLabel={t('shared.createFab.title')}
-        className="absolute right-4 h-14 w-14 items-center justify-center rounded-full bg-content"
-        style={{
-          bottom: tabBarClearance,
-          shadowColor: colors.background,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.2,
-          shadowRadius: 8,
-          elevation: 6,
-        }}
-      >
-        <PlusIcon size={28} color={colors.background} />
-      </Pressable>
+        onPress={sheet.open}
+      />
 
       <SheetModal
         visible={sheet.visible}
@@ -71,12 +53,6 @@ export function CreateFab({
             title={t('shared.createFab.spot')}
             subtitle={t('shared.createFab.spotHint')}
             onPress={() => sheet.exitTo(onCreateSpot)}
-          />
-          <CreateOption
-            icon={ImageSquareIcon}
-            title={t('shared.createFab.photo')}
-            subtitle={t('shared.createFab.photoHint')}
-            onPress={() => sheet.exitTo(onCreatePhoto)}
           />
         </View>
       </SheetModal>

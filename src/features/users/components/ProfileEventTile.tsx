@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { ClockIcon, UsersIcon } from 'phosphor-react-native'
@@ -26,7 +26,7 @@ type Props = {
   event: UserEventSummary
   // Dono do perfil: é o que decide se a assinatura do rodapé leva o "por".
   ownerId: string
-  onPress: () => void
+  onPress: (event: UserEventSummary) => void
 }
 
 // Altura fixa da arte: é ela que mantém a grade alinhada quando um título ocupa
@@ -43,7 +43,7 @@ const PLAIN_TITLE_INSET = 10
 // Foto do criador no rodapé: pequena o bastante pra não competir com o título.
 const AVATAR_SIZE = 24
 // Vidro escuro dos sobrepostos — o único que encosta na arte do flyer.
-const OVERLAY_BG = 'rgba(11, 11, 13, 0.65)'
+const OVERLAY_BG = 'rgba(5, 8, 13, 0.65)'
 // viewBox mapeia o espaço do SVG direto no viewport; "100%" sozinho não resolve
 // exato e deixa um fio sem pintura na borda (mesma correção do EventCardHero).
 const COVER_VIEWBOX = '0 0 100 100'
@@ -171,7 +171,11 @@ function PlainCover({ event }: { event: UserEventSummary }) {
  * imagem. O que encosta na arte é só o carimbo de data (ou o "agora") e, quando
  * o evento já passou, o selo de encerrado.
  */
-export function ProfileEventTile({ event, ownerId, onPress }: Props) {
+export const ProfileEventTile = memo(function ProfileEventTile({
+  event,
+  ownerId,
+  onPress,
+}: Props) {
   const { t } = useTranslation()
   const locale = useLocale()
   const zone = event.timezone ?? undefined
@@ -215,7 +219,7 @@ export function ProfileEventTile({ event, ownerId, onPress }: Props) {
 
   return (
     <Pressable
-      onPress={onPress}
+      onPress={() => onPress(event)}
       accessibilityRole="button"
       accessibilityLabel={`${event.title}, ${formatShortDate(
         event.date,
@@ -349,4 +353,4 @@ export function ProfileEventTile({ event, ownerId, onPress }: Props) {
       )}
     </Pressable>
   )
-}
+})

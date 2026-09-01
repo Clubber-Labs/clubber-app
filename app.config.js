@@ -217,7 +217,7 @@ export default {
       // (height = imageWidth) e os dois fora de sincronia encolhem a arte.
       ["expo-splash-screen", {
         image: "./assets/splash-logo.png",
-        backgroundColor: "#0B0B0D",
+        backgroundColor: "#05080D",
         imageWidth: SPLASH_BOARD,
         // Android 12+ desenha a splash ele mesmo e SEMPRE recorta o ícone num
         // círculo — a composição adesivo+wordmark sai mutilada (verificado em

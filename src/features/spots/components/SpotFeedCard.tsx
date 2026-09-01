@@ -50,7 +50,13 @@ export function SpotFeedCard({ spot, userCoords }: Props) {
     : t('spots.feedCard.byUser', { username: spot.creator.username })
 
   const card = (
-    <View className="overflow-hidden rounded-xl bg-surface">
+    // Aresta em `line` como a do card de evento (lá desenhada por causa do
+    // picote; aqui, sem recorte, o border serve). Ao vivo a moldura é a aresta.
+    <View
+      className={`overflow-hidden rounded-xl bg-surface ${
+        live ? '' : 'border border-line'
+      }`}
+    >
       <Pressable onPress={() => router.push(`/spots/${spot.id}`)}>
         <SpotFeedMap
           spot={spot}
@@ -96,7 +102,7 @@ export function SpotFeedCard({ spot, userCoords }: Props) {
             </View>
           </View>
 
-          {!live && !!spot.description && (
+          {!!spot.description && (
             <Text className="text-[13px] text-content-muted" numberOfLines={1}>
               {spot.description}
             </Text>

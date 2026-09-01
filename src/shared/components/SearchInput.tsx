@@ -34,7 +34,9 @@ export const SearchInput = forwardRef<TextInput, Props>(function SearchInput(
       value={value}
       onChangeText={onChange}
       placeholder={placeholder ?? t('shared.search.placeholder')}
-      placeholderTextColor={overlay ? colors.contentMuted : colors.content}
+      // Sobre o vidro o cinza médio some (ruas e rótulos do mapa vazam pelo
+      // blur): claro como os demais textos sobre vidro, um degrau sob o ícone.
+      placeholderTextColor={overlay ? colors.contentTertiary : colors.content}
       autoCapitalize="none"
       autoCorrect={false}
       returnKeyType="search"

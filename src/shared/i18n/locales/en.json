@@ -207,9 +207,7 @@
       "event": "Event",
       "eventHint": "With date, place and guest list",
       "spot": "Hangout",
-      "spotHint": "A quick meetup near you",
-      "photo": "Post a photo",
-      "photoHint": "Photos on your profile wall"
+      "spotHint": "A quick meetup near you"
     },
     "datePicker": {
       "placeholder": "Select a date",
@@ -1331,7 +1329,8 @@
     },
     "share": {
       "message": "Check out {{name}}'s (@{{username}}) profile on Clubber: {{url}}"
-    }
+    },
+    "eventsViewAll": "See all"
   },
   "users": {
     "search": {

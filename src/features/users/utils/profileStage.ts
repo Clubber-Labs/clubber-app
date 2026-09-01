@@ -3,9 +3,12 @@
 
 export type StageFocus = 'mural' | 'events'
 
-// Respiro entre o fim do mural (modo resumo) e o cabeçalho de eventos.
+// Respiro entre o fim do mural (modo resumo) e o cabeçalho de eventos. Vive
+// DENTRO da seção de eventos (padding com fundo opaco): o mural tem sempre a
+// altura do palco, e um vão entre as seções deixaria a 3ª fileira aparecer.
 export const STAGE_SECTION_GAP = 8
-// Tiles quadrados em 3 colunas, colados à borda da tela.
+// Tiles quadrados em 3 colunas, colados à borda da tela. O resto da geometria
+// (fileiras do resumo, vaga do "+", véu "+N", limiar de expansão) deriva daqui.
 export const MURAL_COLUMNS = 3
 export const MURAL_GAP = 2
 export const MURAL_SUMMARY_ROWS = 2
@@ -20,57 +23,98 @@ export function muralTileSize(width: number): number {
   return (width - MURAL_GAP * (MURAL_COLUMNS - 1)) / MURAL_COLUMNS
 }
 
-// Altura do mural no modo resumo (cabeçalho + 2 fileiras, ou o estado vazio).
-export function muralSummaryHeight(width: number, empty: boolean): number {
-  if (empty) return SECTION_HEADER_HEIGHT + MURAL_EMPTY_HEIGHT
-  const rows = MURAL_SUMMARY_ROWS
+// Fileiras do resumo: até 3 fotos cabem numa, o resto ocupa duas. O "+" do
+// dono entra na vaga livre da fileira, nunca abre outra.
+export function muralSummaryRows(photoCount: number): number {
+  if (photoCount <= 0) return 0
+  return Math.min(MURAL_SUMMARY_ROWS, Math.ceil(photoCount / MURAL_COLUMNS))
+}
+
+// Altura do mural no modo resumo (cabeçalho + fileiras, ou o estado vazio).
+export function muralSummaryHeight(width: number, photoCount: number): number {
+  const rows = muralSummaryRows(photoCount)
+  if (rows === 0) return SECTION_HEADER_HEIGHT + MURAL_EMPTY_HEIGHT
   return (
     SECTION_HEADER_HEIGHT + muralTileSize(width) * rows + MURAL_GAP * (rows - 1)
   )
 }
 
+// Só vale expandir quando há mais que as duas fileiras do resumo.
+export function muralExpandable(
+  totalCount: number,
+  hasNextPage: boolean,
+): boolean {
+  return hasNextPage || totalCount > MURAL_SUMMARY_COUNT
+}
+
+// Vaga livre na última fileira do resumo — onde o "+" do dono se encaixa.
+export function muralHasFreeSlot(photoCount: number): boolean {
+  return photoCount < MURAL_SUMMARY_COUNT && photoCount % MURAL_COLUMNS !== 0
+}
+
 // Qual seção o toque escolheu: acima do fim do mural é mural (o cabeçalho do
-// perfil conta como mural). Mural vazio não tem o que expandir — vira eventos.
+// perfil conta como mural). Mural travado (vazio ou sem mais que o resumo) não
+// tem o que expandir — vira eventos.
 export function focusForTouch(
   y: number,
   headerHeight: number,
   muralHeight: number,
-  muralEmpty: boolean,
+  muralLocked: boolean,
 ): StageFocus {
   'worklet'
-  if (muralEmpty) return 'events'
+  if (muralLocked) return 'events'
   return y < headerHeight + muralHeight ? 'mural' : 'events'
 }
 
-// Quanto a seção focada percorre até encaixar no topo: o dedo e a seção andam
-// 1:1, então o progresso é o deslocamento dividido por esta distância.
+// Quanto do header já saiu por cima, pelo offset da lista que rola sob ele
+// (collapsing header): acompanha o scroll até sumir e para ali.
+export function headerCollapse(headerHeight: number, offset: number): number {
+  'worklet'
+  return Math.min(headerHeight, Math.max(0, offset))
+}
+
+// Quanto o gesto percorre até o encaixe, pra o dedo e a seção andarem 1:1.
+// Eventos sobe a altura do mural e encaixa logo abaixo do header (que fica
+// fixo); no mural é a seção de eventos que desce do seu topo até sair do
+// palco (mural e header ficam onde estão).
 export function travelDistance(
   focus: StageFocus,
   headerHeight: number,
   muralHeight: number,
+  stageHeight: number,
 ): number {
   'worklet'
-  return focus === 'mural'
-    ? headerHeight
-    : headerHeight + muralHeight + STAGE_SECTION_GAP
+  if (focus === 'mural') {
+    return Math.max(1, stageHeight - headerHeight - muralHeight)
+  }
+  return Math.max(1, muralHeight)
 }
 
+// Progresso a partir do deslocamento do dedo (pra cima = avança).
 export function nextExpand(
   start: number,
   translationY: number,
   distance: number,
 ): number {
   'worklet'
-  if (distance <= 0) return start
-  const next = start - translationY / distance
-  return Math.min(1, Math.max(0, next))
+  return Math.min(1, Math.max(0, start - translationY / distance))
 }
 
-const FLICK_VELOCITY = 500
+const FLICK_VELOCITY = 300
+// Um terço do caminho já diz a intenção; exigir metade pesa no dedo.
+const SNAP_RATIO = 0.35
 
-// Ao soltar: um flick decide pela direção; sem flick, o lado mais próximo.
-export function snapTarget(expand: number, velocityY: number): 0 | 1 {
+// Ao soltar: um flick decide pela direção; sem flick, a intenção pelo caminho
+// percorrido desde a partida — o gesto pode começar no meio de uma animação,
+// e o repouso mais perto de onde ele começou é a referência.
+export function snapTarget(
+  expand: number,
+  start: number,
+  velocityY: number,
+): 0 | 1 {
   'worklet'
   if (Math.abs(velocityY) > FLICK_VELOCITY) return velocityY < 0 ? 1 : 0
-  return expand > 0.5 ? 1 : 0
+  const from: 0 | 1 = start < 0.5 ? 0 : 1
+  if (Math.abs(expand - from) <= SNAP_RATIO) return from
+  return from === 0 ? 1 : 0
 }

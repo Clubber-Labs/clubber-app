@@ -207,9 +207,7 @@
       "event": "Evento",
       "eventHint": "Com data, local e lista de presença",
       "spot": "Rolê",
-      "spotHint": "Um encontro rápido perto de você",
-      "photo": "Postar foto",
-      "photoHint": "Fotos no mural do seu perfil"
+      "spotHint": "Um encontro rápido perto de você"
     },
     "datePicker": {
       "placeholder": "Selecione uma data",
@@ -1331,7 +1329,8 @@
     },
     "share": {
       "message": "Veja o perfil de {{name}} (@{{username}}) no Clubber: {{url}}"
-    }
+    },
+    "eventsViewAll": "Ver todos"
   },
   "users": {
     "search": {

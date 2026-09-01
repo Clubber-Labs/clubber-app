@@ -6,13 +6,13 @@
  * sincronia com as variáveis --color-* daquele arquivo.
  */
 export const colors = {
-  // superfícies / fundos (zinc profundo)
-  background: '#0b0b0d',
-  surfaceSunken: '#060607',
-  surface: '#18181b',
-  surfaceElevated: '#27272a',
-  surfaceHigh: '#3f3f46',
-  surfaceHigher: '#52525b',
+  // superfícies / fundos (azul-preto, escala no matiz do fundo)
+  background: '#05080d',
+  surfaceSunken: '#020408',
+  surface: '#16191d',
+  surfaceElevated: '#24282d',
+  surfaceHigh: '#3d4148',
+  surfaceHigher: '#50555d',
 
   // texto / conteúdo
   content: '#ffffff',
@@ -24,20 +24,20 @@ export const colors = {
   contentFaint: '#4e5967',
 
   // bordas
-  line: '#27272a',
-  lineStrong: '#3f3f46',
-  lineSubtle: '#18181b',
+  line: '#24282d',
+  lineStrong: '#3d4148',
+  lineSubtle: '#16191d',
 
   // ação/realce — ex-marca violeta, agora neutros (nomes legados; ver global.css)
-  brand: '#3f3f46',
+  brand: '#3d4148',
   brandEmphasis: '#9aa4b0',
-  brandStrong: '#52525b',
+  brandStrong: '#50555d',
   brandText: '#ccd2da',
   brandTextStrong: '#e2e6eb',
   brandTextBright: '#f2f4f7',
   brandTextSubtle: '#f2f4f7',
-  brandSurface: '#27272a',
-  brandSurfaceStrong: '#3f3f46',
+  brandSurface: '#24282d',
+  brandSurfaceStrong: '#3d4148',
 
   // perigo
   danger: '#ef4444',
