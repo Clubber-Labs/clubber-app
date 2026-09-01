@@ -2,7 +2,7 @@ import { Image, Pressable, StyleSheet, Text } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { StackIcon } from 'phosphor-react-native'
 import Animated from 'react-native-reanimated'
-import type { ComponentProps } from 'react'
+import { memo, type ComponentProps } from 'react'
 import type { UserPhoto } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
@@ -15,13 +15,15 @@ type Props = {
   veilCount: number
   // Opacidade do véu dirigida pelo palco — some conforme o mural expande.
   veilStyle: ComponentProps<typeof Animated.View>['style']
-  onPress: () => void
+  onPress: (photo: UserPhoto) => void
 }
 
 const VEIL_BG = 'rgba(11, 11, 13, 0.55)'
 
 // Tile reto (sem raio): a grade é colada à borda da tela, como um mural.
-export function ProfileMuralTile({
+// Memoizado: o palco re-renderiza a grade ao encaixar, e 30 tiles com Image
+// remontando é o que faria o fim da animação engasgar.
+export const ProfileMuralTile = memo(function ProfileMuralTile({
   photo,
   size,
   index,
@@ -35,7 +37,7 @@ export function ProfileMuralTile({
 
   return (
     <Pressable
-      onPress={onPress}
+      onPress={() => onPress(photo)}
       accessibilityRole="imagebutton"
       accessibilityLabel={t('profile.mural.photoLabel', {
         index: index + 1,
@@ -72,7 +74,7 @@ export function ProfileMuralTile({
       )}
     </Pressable>
   )
-}
+})
 
 const styles = StyleSheet.create({
   stack: { position: 'absolute', top: 6, right: 6 },

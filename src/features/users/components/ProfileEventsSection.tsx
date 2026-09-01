@@ -1,4 +1,5 @@
-import type { ComponentProps } from 'react'
+import { memo, useCallback, type ComponentProps } from 'react'
+import type { ListRenderItem } from 'react-native'
 import { View, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
@@ -12,6 +13,7 @@ import { ProfileEventTile } from './ProfileEventTile'
 import { ProfileEventsSkeleton } from './ProfileEventsSkeleton'
 import { ProfileEventsEmpty } from './ProfileEventsEmpty'
 import type { StageList } from './ProfileStage'
+import { STAGE_SECTION_GAP } from '../utils/profileStage'
 import type { UserEventSummary } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
@@ -36,7 +38,7 @@ function isSpacer(row: Row): row is Spacer {
 
 // Vitrine de eventos (tiles do design 8a) em duas colunas. Vive no palco do
 // perfil: no resumo só a primeira fileira aparece; expandida, rola sozinha.
-export function ProfileEventsSection({
+export const ProfileEventsSection = memo(function ProfileEventsSection({
   events,
   ownerId,
   isOwnProfile,
@@ -56,8 +58,25 @@ export function ProfileEventsSection({
       ? [...events.items, { __spacer: 'spacer' }]
       : events.items
 
+  const openEvent = useCallback(
+    (event: UserEventSummary) => router.push(`/events/${event.id}`),
+    [router],
+  )
+  const renderItem = useCallback<ListRenderItem<Row>>(
+    ({ item }) =>
+      isSpacer(item) ? (
+        <View className="flex-1" />
+      ) : (
+        <ProfileEventTile event={item} ownerId={ownerId} onPress={openEvent} />
+      ),
+    [ownerId, openEvent],
+  )
+
   return (
-    <View className="flex-1 bg-background">
+    <View
+      className="flex-1 bg-background"
+      style={{ paddingTop: STAGE_SECTION_GAP }}
+    >
       <ProfileSectionHeader
         title={t('profile.eventsSection')}
         count={events.totalCount}
@@ -75,17 +94,7 @@ export function ProfileEventsSection({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: bottomPadding }}
           columnWrapperStyle={{ paddingHorizontal: 16, gap: 8 }}
-          renderItem={({ item }) =>
-            isSpacer(item) ? (
-              <View className="flex-1" />
-            ) : (
-              <ProfileEventTile
-                event={item}
-                ownerId={ownerId}
-                onPress={() => router.push(`/events/${item.id}`)}
-              />
-            )
-          }
+          renderItem={renderItem}
           ListEmptyComponent={
             events.isLoading ? (
               <ProfileEventsSkeleton />
@@ -112,4 +121,4 @@ export function ProfileEventsSection({
       </GestureDetector>
     </View>
   )
-}
+})

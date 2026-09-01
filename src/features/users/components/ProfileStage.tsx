@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useCallback, type ReactNode } from 'react'
 import { View, ScrollView, StyleSheet, useWindowDimensions } from 'react-native'
 import { GestureDetector } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
@@ -63,6 +63,10 @@ export function ProfileStage({
   // Re-tap na aba Perfil: volta ao resumo. No perfil de terceiros (stack) o
   // evento tabPress nunca é emitido — o hook fica inerte.
   useActiveTabPress(stage.collapse)
+  // Identidade estável: a seção é memoizada e um closure novo a re-renderizaria
+  // a cada encaixe do palco.
+  const { expandTo } = stage
+  const openMural = useCallback(() => expandTo('mural'), [expandTo])
 
   if (locked) {
     return (
@@ -105,7 +109,7 @@ export function ProfileStage({
                   onScroll={stage.onMuralScroll}
                   veilStyle={stage.veilStyle}
                   onPressPhoto={onPressPhoto}
-                  onViewAll={() => stage.expandTo('mural')}
+                  onViewAll={openMural}
                   bottomPadding={bottomPadding}
                 />
               </Animated.View>

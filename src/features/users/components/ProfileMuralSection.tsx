@@ -1,4 +1,4 @@
-import type { ComponentProps } from 'react'
+import { memo, type ComponentProps } from 'react'
 import { View } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import type { NativeGesture } from 'react-native-gesture-handler'
@@ -23,7 +23,8 @@ type Props = {
   bottomPadding: number
 }
 
-export function ProfileMuralSection({
+// memo: ao encaixar, o palco só re-renderiza a seção cujo scrollEnabled mudou.
+export const ProfileMuralSection = memo(function ProfileMuralSection({
   photos,
   isOwnProfile,
   tileSize,
@@ -68,4 +69,4 @@ export function ProfileMuralSection({
       )}
     </View>
   )
-}
+})
