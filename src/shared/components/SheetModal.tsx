@@ -29,11 +29,24 @@ type Props = {
   onClose: () => void
   children: ReactNode
   instantExit?: boolean
+  /**
+   * Altura TOTAL da folha. Sem ela a folha veste o conteúdo e portanto CRESCE
+   * quando o teclado abre, porque o recuo se soma — o topo sobe. Com ela a
+   * altura não muda: o recuo come o conteúdo (padding entra no height no RN),
+   * e o topo fica onde está. Use em folha com lista + input.
+   */
+  height?: number
 }
 
 // Bottom sheet imperativo simples (dark theme), no espírito do confirm.tsx.
 // Tap no backdrop fecha; tap no conteúdo não propaga. Genérico — qualquer feature.
-export function SheetModal({ visible, onClose, children, instantExit }: Props) {
+export function SheetModal({
+  visible,
+  onClose,
+  children,
+  instantExit,
+  height,
+}: Props) {
   // Folha com input (nomear grupo, detalhar denúncia) fica ancorada embaixo e
   // sumia atrás do teclado. Aqui, e não em cada consumidor, pra ninguém ter que
   // lembrar. A superfície segue indo até a borda da tela, passando por trás do
@@ -90,6 +103,7 @@ export function SheetModal({ visible, onClose, children, instantExit }: Props) {
               ref={sheetRef}
               className="bg-surface rounded-t-3xl border-t border-white/10 pt-2"
               style={{
+                height,
                 paddingBottom:
                   overlap > 0 ? overlap + KEYBOARD_GAP : RESTING_BOTTOM,
               }}

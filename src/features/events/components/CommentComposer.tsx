@@ -92,14 +92,17 @@ export function CommentComposer({
           </Pressable>
         </View>
       )}
-      <View className="flex-row items-center gap-2 rounded-full border border-line px-2 py-1.5">
+      <View className="flex-row items-center gap-2 rounded-full border border-line px-3 py-2.5">
         <UserAvatar
           name={me?.name ?? ''}
           avatarUrl={me?.avatarUrl}
           size={AVATAR}
         />
         <TextInput
-          className="max-h-20 flex-1 text-sm text-content"
+          // min-h dá corpo ao campo de uma linha; sem ele o multiline colapsa
+          // na altura da fonte e a pílula fica apertada.
+          className="max-h-24 min-h-7 flex-1 text-sm text-content"
+          textAlignVertical="center"
           placeholder={placeholder ?? t('events.comments.composerPlaceholder')}
           placeholderTextColor={colors.contentSubtle}
           value={text}

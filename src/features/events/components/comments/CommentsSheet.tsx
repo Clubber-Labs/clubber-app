@@ -41,7 +41,9 @@ type Props = {
 
 type ReplyTo = { username: string; parentId: string } | null
 
-const SHEET_HEIGHT_RATIO = 0.85
+// Fração da tela que a folha ocupa, com teclado ou sem. É o SheetModal que
+// segura isso: aqui dentro o conteúdo só flexiona no que sobrar.
+const SHEET_HEIGHT_RATIO = 0.65
 
 export function CommentsSheet({
   visible,
@@ -113,8 +115,12 @@ export function CommentsSheet({
   }
 
   return (
-    <SheetModal visible={visible} onClose={onClose}>
-      <View style={{ height: height * SHEET_HEIGHT_RATIO }}>
+    <SheetModal
+      visible={visible}
+      onClose={onClose}
+      height={height * SHEET_HEIGHT_RATIO}
+    >
+      <View className="flex-1">
         <Text className="pb-3 text-center text-sm font-bold text-content">
           {t('events.comments.sheetTitle')}
         </Text>

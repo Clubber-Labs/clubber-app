@@ -25,7 +25,9 @@ export function CommentComposerButton({ onPress }: Props) {
       accessibilityLabel={t('events.comments.openComments')}
       className="mx-4 mb-3"
     >
-      <View className="flex-row items-center gap-2 rounded-full border border-line px-2 py-2.5">
+      {/* min-h casa com a pílula real do drawer (avatar + input min-h-7 + py):
+          as duas são a mesma coisa aos olhos de quem toca. */}
+      <View className="min-h-12 flex-row items-center gap-2 rounded-full border border-line px-3 py-2.5">
         <UserAvatar
           name={me?.name ?? ''}
           avatarUrl={me?.avatarUrl}
