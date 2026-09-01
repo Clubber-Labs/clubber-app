@@ -3,6 +3,7 @@ import type { ListRenderItem } from 'react-native'
 import { View, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useRouter } from 'expo-router'
+import { CaretUpIcon } from 'phosphor-react-native'
 import {
   GestureDetector,
   type NativeGesture,
@@ -14,6 +15,9 @@ import { ProfileEventsSkeleton } from './ProfileEventsSkeleton'
 import { ProfileEventsEmpty } from './ProfileEventsEmpty'
 import type { StageList } from './ProfileStage'
 import { STAGE_SECTION_GAP } from '../utils/profileStage'
+
+// Altura extra pra alça caber além do respiro entre as seções.
+const HANDLE_AREA = 8
 import type { UserEventSummary } from '@/shared/types'
 import { colors } from '@/shared/theme'
 
@@ -26,6 +30,8 @@ type Props = {
   native: NativeGesture
   onScroll: ComponentProps<typeof Animated.FlatList>['onScroll']
   onCreate?: () => void
+  // Expande a seção (o mesmo que puxar pra cima).
+  onViewAll: () => void
   bottomPadding: number
 }
 
@@ -46,6 +52,7 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
   native,
   onScroll,
   onCreate,
+  onViewAll,
   bottomPadding,
 }: Props) {
   const { t } = useTranslation()
@@ -72,14 +79,25 @@ export const ProfileEventsSection = memo(function ProfileEventsSection({
     [ownerId, openEvent],
   )
 
+  // Expandida (= rolando), a pista de "puxe pra cima" não faz sentido.
+  const showHint = !scrollEnabled && events.items.length > 0
+
   return (
-    <View
-      className="flex-1 bg-background"
-      style={{ paddingTop: STAGE_SECTION_GAP }}
-    >
+    <View className="flex-1 bg-background">
+      {/* Alça de folha: a seção cobre o mural como um sheet, e a alça é o
+          sinal universal de "puxe pra cima". Ocupa o respiro entre seções. */}
+      <View
+        className="items-center justify-center"
+        style={{ height: STAGE_SECTION_GAP + HANDLE_AREA }}
+      >
+        <View className="h-1 w-9 rounded-full bg-surface-high" />
+      </View>
       <ProfileSectionHeader
         title={t('profile.eventsSection')}
         count={events.totalCount}
+        action={showHint ? t('profile.eventsViewAll') : undefined}
+        actionIcon={showHint ? CaretUpIcon : undefined}
+        onAction={showHint ? onViewAll : undefined}
       />
       <GestureDetector gesture={native}>
         <Animated.FlatList

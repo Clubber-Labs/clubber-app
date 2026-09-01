@@ -1329,7 +1329,8 @@
     },
     "share": {
       "message": "Mira el perfil de {{name}} (@{{username}}) en Clubber: {{url}}"
-    }
+    },
+    "eventsViewAll": "Ver todos"
   },
   "users": {
     "search": {
