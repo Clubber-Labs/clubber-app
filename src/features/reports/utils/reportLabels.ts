@@ -29,4 +29,5 @@ export const REPORT_TITLE_KEYS = {
   comment: 'reports.titleFor.comment',
   message: 'reports.titleFor.message',
   user: 'reports.titleFor.user',
+  spot: 'reports.titleFor.spot',
 } as const satisfies Record<ReportTargetType, string>

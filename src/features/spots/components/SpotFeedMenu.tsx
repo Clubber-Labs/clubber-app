@@ -24,9 +24,6 @@ type Props = {
  * Renovar não age aqui: ele consome a quota diária e o 429 pede a folha de
  * upsell, que já existe no detalhe. O deep-link `renew=1` (o mesmo da
  * notificação "seu rolê está acabando") leva pra lá com o CTA em destaque.
- *
- * Denúncia mira o CRIADOR: não existe endpoint de denúncia de rolê no backend,
- * e inventar um alvo que ele não conhece daria 404 no envio.
  */
 export function SpotFeedMenu({ spot, isCreator }: Props) {
   const { t } = useTranslation()
@@ -65,12 +62,12 @@ export function SpotFeedMenu({ spot, isCreator }: Props) {
       ]
     : [
         {
-          label: t(REPORT_TITLE_KEYS.user),
+          label: t(REPORT_TITLE_KEYS.spot),
           onPress: () =>
             report.requestReport({
-              type: 'user',
-              id: spot.creator.id,
-              label: spot.creator.username,
+              type: 'spot',
+              id: spot.id,
+              label: spot.title,
             }),
         },
       ]
