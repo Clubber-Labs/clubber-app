@@ -6,7 +6,12 @@ import { ProfileMuralSection } from './ProfileMuralSection'
 import { ProfileEventsSection } from './ProfileEventsSection'
 import { ProfileEventsEmpty } from './ProfileEventsEmpty'
 import { useProfileStage } from '../hooks/useProfileStage'
-import { muralSummaryHeight, muralTileSize } from '../utils/profileStage'
+import {
+  MURAL_SUMMARY_COUNT,
+  muralExpandable,
+  muralSummaryHeight,
+  muralTileSize,
+} from '../utils/profileStage'
 import { useActiveTabPress } from '@/shared/hooks/useActiveTabPress'
 import type { UserEventSummary, UserPhoto } from '@/shared/types'
 
@@ -28,6 +33,8 @@ type Props = {
   photos: StageList<UserPhoto>
   events: StageList<UserEventSummary>
   onPressPhoto: (photo: UserPhoto) => void
+  // Dono do perfil: o "+" discreto na vaga livre da fileira.
+  onAddPhoto?: () => void
   onCreateEvent?: () => void
   // Aba com pílula/header flutuantes passa os clearances; perfil de terceiros
   // (stack, header no fluxo) usa os defaults.
@@ -48,16 +55,21 @@ export function ProfileStage({
   photos,
   events,
   onPressPhoto,
+  onAddPhoto,
   onCreateEvent,
   topPadding = 0,
   bottomPadding = 32,
 }: Props) {
   const { width } = useWindowDimensions()
-  const muralEmpty = !photos.isLoading && photos.items.length === 0
   const tileSize = muralTileSize(width)
+  const expandable = muralExpandable(photos.totalCount, photos.hasNextPage)
+  // Carregando, o fantasma tem duas fileiras — o resumo reserva o mesmo.
+  const summaryCount = photos.isLoading
+    ? MURAL_SUMMARY_COUNT
+    : photos.items.length
   const stage = useProfileStage({
-    muralEmpty,
-    muralHeight: muralSummaryHeight(width, muralEmpty),
+    muralLocked: !expandable,
+    muralHeight: muralSummaryHeight(width, summaryCount),
   })
 
   // Re-tap na aba Perfil: volta ao resumo. No perfil de terceiros (stack) o
@@ -108,7 +120,9 @@ export function ProfileStage({
                   native={stage.muralNative}
                   onScroll={stage.onMuralScroll}
                   veilStyle={stage.veilStyle}
+                  expandable={expandable}
                   onPressPhoto={onPressPhoto}
+                  onAddPhoto={onAddPhoto}
                   onViewAll={openMural}
                   bottomPadding={bottomPadding}
                 />

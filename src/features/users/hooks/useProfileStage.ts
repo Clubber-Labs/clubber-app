@@ -21,7 +21,8 @@ const SPRING = { damping: 26, stiffness: 240, overshootClamping: true }
 const SETTLED = 0.999
 
 type Params = {
-  muralEmpty: boolean
+  // Sem o que expandir (vazio ou até 2 fileiras): o toque no mural vira eventos.
+  muralLocked: boolean
   // Altura do mural em modo resumo — calculada (utils/profileStage), não medida.
   muralHeight: number
 }
@@ -34,7 +35,7 @@ type Params = {
  * dentro rola normalmente; arrastar pra baixo com ela no topo devolve o gesto
  * ao palco — o mesmo mecanismo de um bottom sheet com conteúdo rolável.
  */
-export function useProfileStage({ muralEmpty, muralHeight }: Params) {
+export function useProfileStage({ muralLocked, muralHeight }: Params) {
   const expand = useSharedValue(0)
   const focus = useSharedValue<StageFocus>('mural')
   const startExpand = useSharedValue(0)
@@ -45,7 +46,7 @@ export function useProfileStage({ muralEmpty, muralHeight }: Params) {
   const headerHeight = useSharedValue(0)
   const stageHeight = useSharedValue(0)
   const muralSummary = useSharedValue(muralHeight)
-  const muralIsEmpty = useSharedValue(muralEmpty)
+  const muralIsLocked = useSharedValue(muralLocked)
   const reported = useSharedValue<StageFocus | null>(null)
   // Seção expandida e parada — é ela que ganha scroll próprio.
   const [expanded, setExpanded] = useState<StageFocus | null>(null)
@@ -55,8 +56,8 @@ export function useProfileStage({ muralEmpty, muralHeight }: Params) {
     muralSummary.value = muralHeight
   }, [muralHeight, muralSummary])
   useEffect(() => {
-    muralIsEmpty.value = muralEmpty
-  }, [muralEmpty, muralIsEmpty])
+    muralIsLocked.value = muralLocked
+  }, [muralLocked, muralIsLocked])
 
   // Só nos pontos de repouso (0 e 1): trocar estado JS no meio do gesto
   // re-renderiza as duas grades e o dedo sente o engasgo. Entre um e outro o
@@ -90,7 +91,7 @@ export function useProfileStage({ muralEmpty, muralHeight }: Params) {
               e.y,
               headerHeight.value,
               muralSummary.value,
-              muralIsEmpty.value,
+              muralIsLocked.value,
             )
           }
         })
@@ -131,7 +132,7 @@ export function useProfileStage({ muralEmpty, muralHeight }: Params) {
       focus,
       headerHeight,
       muralSummary,
-      muralIsEmpty,
+      muralIsLocked,
       muralOffset,
       eventsOffset,
       panOwns,

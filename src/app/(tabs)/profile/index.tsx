@@ -209,6 +209,7 @@ export default function ProfileScreen() {
           onLoadMore: eventsQuery.fetchNextPage,
         }}
         onPressPhoto={photo => setViewerPhotoId(photo.id)}
+        onAddPhoto={() => router.push('/profile/photos/create')}
         onCreateEvent={() => router.push('/events/create')}
       />
 
