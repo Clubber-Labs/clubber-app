@@ -528,7 +528,6 @@
     },
     "form": {
       "title": "Title",
-      "aiSuggested": "AI suggested",
       "titlePlaceholder": "What would you call this hangout?",
       "description": "Description",
       "optional": "(optional)",

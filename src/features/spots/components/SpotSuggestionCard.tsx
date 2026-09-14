@@ -10,6 +10,7 @@ import { Button } from '@/shared/components/Button'
 import { useFormatDistance } from '@/shared/hooks/useFormatDistance'
 import { useLocale } from '@/shared/hooks/useLocale'
 import { formatRating, priceLevelSymbol } from '../utils/suggestionMeta'
+import { SpotHighlights } from './SpotHighlights'
 import { SpotSuggestionReason } from './SpotSuggestionReason'
 import type { SpotSuggestion } from '../types'
 import { colors } from '@/shared/theme'
@@ -24,9 +25,10 @@ type Props = {
   reason?: string
 }
 
-// Candidato gerado pela IA. Spots não têm foto: a copy da IA (suggestedTitle) é
-// o destaque. O rank 1 ganha faixa de motivo + botão primário; os demais ficam
-// compactos com link. Sem avatar — ele vive só no pin do mapa.
+// Candidato gerado pela IA. Spots não têm foto: o nome do estabelecimento é o
+// destaque, com `about`/`highlights` explicando o lugar. O rank 1 ganha faixa de
+// motivo + botão primário; os demais ficam compactos com link. Sem avatar — ele
+// vive só no pin do mapa.
 export function SpotSuggestionCard({
   suggestion,
   rank,
@@ -36,7 +38,8 @@ export function SpotSuggestionCard({
   const { t } = useTranslation()
   const formatDistance = useFormatDistance()
   const locale = useLocale()
-  const { rating, userRatingCount, priceLevel, openNow } = suggestion
+  const { about, highlights, rating, userRatingCount, priceLevel, openNow } =
+    suggestion
   const isBest = rank === 1
   const price = priceLevelSymbol(priceLevel)
   const distance =
@@ -45,7 +48,7 @@ export function SpotSuggestionCard({
       : null
 
   // No melhor match a distância vai no rodapé de sinais; nos compactos ela já
-  // aparece ao lado do nome no cabeçalho (evita repetir).
+  // aparece no cabeçalho, ao lado do rank (evita repetir).
   const meta =
     typeof rating === 'number' || price !== null || (isBest && distance) ? (
       <View className="flex-row flex-wrap items-center gap-x-3 gap-y-1 px-3.5 mt-2.5">
@@ -82,13 +85,16 @@ export function SpotSuggestionCard({
           {t('spots.card.bestMatch')}
         </Text>
       ) : (
-        <Text
-          numberOfLines={1}
-          className="flex-1 text-content-muted text-xs font-semibold"
-        >
-          {suggestion.name}
-          {distance && ` · ${distance}`}
-        </Text>
+        <View className="flex-1 flex-row items-center gap-1">
+          {distance && (
+            <>
+              <NavigationArrowIcon size={11} color={colors.contentSubtle} />
+              <Text className="text-content-muted text-xs font-semibold">
+                {distance}
+              </Text>
+            </>
+          )}
+        </View>
       )}
       {openNow === true ? (
         <View className="flex-row items-center gap-1 rounded-md bg-success/20 border border-success/30 px-2 py-1">
@@ -109,11 +115,12 @@ export function SpotSuggestionCard({
 
   const title = (
     <Text
+      numberOfLines={2}
       className={`text-content font-extrabold leading-tight px-3.5 mt-2 ${
         isBest ? 'text-xl' : 'text-base'
       }`}
     >
-      {suggestion.suggestedTitle}
+      {suggestion.name}
     </Text>
   )
 
@@ -123,23 +130,29 @@ export function SpotSuggestionCard({
         {reason && <SpotSuggestionReason text={reason} />}
         {header}
         {title}
-        <View className="flex-row items-center gap-1.5 px-3.5 mt-1.5">
-          <MapPinIcon size={13} color={colors.contentMuted} />
+        {suggestion.address && (
+          <View className="flex-row items-center gap-1.5 px-3.5 mt-1.5">
+            <MapPinIcon size={13} color={colors.contentMuted} />
+            <Text
+              numberOfLines={1}
+              className="flex-1 text-content-muted text-[13px]"
+            >
+              {suggestion.address}
+            </Text>
+          </View>
+        )}
+        {about && (
           <Text
-            numberOfLines={1}
-            className="flex-1 text-content-muted text-[13px]"
-          >
-            {suggestion.name}
-            {suggestion.address && ` · ${suggestion.address}`}
-          </Text>
-        </View>
-        {suggestion.suggestedDescription && (
-          <Text
-            numberOfLines={2}
+            numberOfLines={3}
             className="px-3.5 mt-1.5 text-content-muted text-[13px] leading-snug"
           >
-            {suggestion.suggestedDescription}
+            {about}
           </Text>
+        )}
+        {highlights.length > 0 && (
+          <View className="px-3.5 mt-2.5">
+            <SpotHighlights items={highlights} />
+          </View>
         )}
         {meta}
         <View className="px-3.5 pt-3.5 pb-3.5">
@@ -160,6 +173,21 @@ export function SpotSuggestionCard({
     >
       {header}
       {title}
+      {about && (
+        <Text
+          numberOfLines={2}
+          className="px-3.5 mt-1 text-content-muted text-[13px] leading-snug"
+        >
+          {about}
+        </Text>
+      )}
+      {highlights.length > 0 && (
+        <View className="px-3.5 mt-2">
+          {/* Compacto mostra só os 2 primeiros: a folha de resultados tem
+              ~meia tela e 5 chips por card empurrariam a lista pra fora. */}
+          <SpotHighlights items={highlights} max={2} />
+        </View>
+      )}
       {meta}
       <View className="flex-row items-center justify-between px-3.5 py-3 mt-3 border-t border-line">
         <Text className="text-brand-text-bright text-[13px] font-bold">

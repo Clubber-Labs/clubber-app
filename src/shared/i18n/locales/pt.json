@@ -528,7 +528,6 @@
     },
     "form": {
       "title": "Título",
-      "aiSuggested": "sugerido pela IA",
       "titlePlaceholder": "Como você chamaria esse rolê?",
       "description": "Descrição",
       "optional": "(opcional)",

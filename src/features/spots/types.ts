@@ -61,8 +61,12 @@ export type SpotSuggestion = {
   // Distância até o usuário. Com alcance "Capital inteira" pode chegar a ~40km.
   // Opcional pela mesma razão — guardado antes de formatar.
   distanceMeters?: number
-  suggestedTitle: string
-  suggestedDescription: string | null
+  // Descrição factual do estabelecimento (≤140 chars). null quando o backend
+  // não tem informação confiável — não inventar texto no lugar.
+  about: string | null
+  // Até 5 fatos curtos (≤55 chars) que ajudam a escolher: som, público, agenda,
+  // ambiente, preço. Lista vazia é caso normal, não erro.
+  highlights: string[]
 }
 
 export type SpotSuggestionsResponse = {

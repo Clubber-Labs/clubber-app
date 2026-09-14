@@ -528,7 +528,6 @@
     },
     "form": {
       "title": "Título",
-      "aiSuggested": "sugerido por la IA",
       "titlePlaceholder": "¿Cómo llamarías este plan?",
       "description": "Descripción",
       "optional": "(opcional)",
