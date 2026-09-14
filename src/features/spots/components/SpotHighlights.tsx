@@ -14,9 +14,9 @@ export function SpotHighlights({ items, max }: Props) {
 
   return (
     <View className="flex-row flex-wrap gap-1.5">
-      {shown.map(item => (
+      {shown.map((item, index) => (
         <View
-          key={item}
+          key={`${index}-${item}`}
           className="rounded-full bg-surface-elevated border border-line px-2.5 py-1"
         >
           <Text className="text-content-tertiary text-[11px] font-semibold">

@@ -85,6 +85,8 @@ export function SpotSuggestionCard({
           {t('spots.card.bestMatch')}
         </Text>
       ) : (
+        // flex-1 é o espaçador que empurra o selo de aberto/fechado pra direita
+        // — fica vazia, e não some, quando não há distância.
         <View className="flex-1 flex-row items-center gap-1">
           {distance && (
             <>

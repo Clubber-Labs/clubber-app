@@ -11,12 +11,35 @@ import type {
 
 type ListParams = Bbox & MapFilterParams & { limit?: number }
 
+// `highlights` é obrigatório no contrato, mas os cards leem a lista direto do
+// payload: um item sem ela derruba o painel inteiro no .length — e o backend já
+// omitiu campo novo durante rollout antes (ver os sinais opcionais em types.ts).
+// Normalizado aqui, 1x por resposta: no retorno do hook seria 1x por render.
+function normalizeSuggestions(
+  response: SpotSuggestionsResponse,
+): SpotSuggestionsResponse {
+  const suggestions = Array.isArray(response.suggestions)
+    ? response.suggestions
+    : []
+  return {
+    ...response,
+    suggestions: suggestions.map(suggestion => ({
+      ...suggestion,
+      highlights: Array.isArray(suggestion.highlights)
+        ? suggestion.highlights
+        : [],
+    })),
+  }
+}
+
 export const spotsService = {
   // Consome quota diária — o caller deve travar o botão enquanto pendente.
   generateSuggestions: (
     params: SpotSuggestionsParams,
   ): Promise<SpotSuggestionsResponse> =>
-    api.post('/spots/suggestions', params).then(r => r.data),
+    api
+      .post('/spots/suggestions', params)
+      .then(r => normalizeSuggestions(r.data)),
 
   // Salva o raio padrão da busca de spots (inteiro, min 2, ≤ teto). Mesmo modelo
   // do PATCH de notification-prefs; 400 "Raio máximo permitido: Nkm" se exceder.
