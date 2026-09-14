@@ -135,17 +135,9 @@ export function SpotForm({
         {headerSection}
 
         <View className="gap-1" {...form.anchor('title')}>
-          <View className="flex-row items-center justify-between">
-            <Text className="text-sm font-medium text-content-tertiary">
-              {t('spots.form.title')}
-            </Text>
-            <View className="flex-row items-center gap-1 rounded-full bg-brand-surface border border-brand-surface-strong px-2 py-0.5">
-              <SparkleIcon size={10} color={colors.brandText} />
-              <Text className="text-brand-text text-[10px] font-bold">
-                {t('spots.form.aiSuggested')}
-              </Text>
-            </View>
-          </View>
+          <Text className="text-sm font-medium text-content-tertiary">
+            {t('spots.form.title')}
+          </Text>
           <Controller
             control={control}
             name="title"

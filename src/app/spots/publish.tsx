@@ -1,15 +1,14 @@
 import { useMemo, useState } from 'react'
-import { View, Text } from 'react-native'
-import { MapPinIcon } from 'phosphor-react-native'
+import { View } from 'react-native'
 import { Redirect, useLocalSearchParams, useRouter } from 'expo-router'
 import { getApiError, isConflictError } from '@/shared/lib/apiError'
 import { useMyProfile } from '@/features/users/hooks/useProfile'
 import { useCreateSpot } from '@/features/spots/hooks/useCreateSpot'
 import { SpotForm } from '@/features/spots/components/SpotForm'
+import { SpotCandidateCard } from '@/features/spots/components/SpotCandidateCard'
 import { SpotLimitReached } from '@/features/spots/components/SpotLimitReached'
 import type { CreateSpotInput } from '@/features/spots/schemas/createSpotSchema'
 import type { SpotSuggestion } from '@/features/spots/types'
-import { colors } from '@/shared/theme'
 
 // Janela default = atalho "Agora · por 2h" do form (o usuário ajusta nos
 // presets/pickers; o teto de 24h vive no schema e no picker).
@@ -20,7 +19,11 @@ function parseCandidate(raw: string | undefined): SpotSuggestion | null {
   try {
     const parsed = JSON.parse(raw) as SpotSuggestion
     if (!parsed.placeId || typeof parsed.latitude !== 'number') return null
-    return parsed
+    // A rota é deep-linkável: sem a lista o card de referência quebraria.
+    return {
+      ...parsed,
+      highlights: Array.isArray(parsed.highlights) ? parsed.highlights : [],
+    }
   } catch {
     return null
   }
@@ -29,9 +32,10 @@ function parseCandidate(raw: string | undefined): SpotSuggestion | null {
 function toDefaults(candidate: SpotSuggestion): Partial<CreateSpotInput> {
   const now = Date.now()
   return {
-    // Copy da IA pré-preenchida — o usuário edita à vontade.
-    title: candidate.suggestedTitle,
-    description: candidate.suggestedDescription ?? '',
+    // Título e descrição saem em branco: a sugestão descreve o lugar (`about`,
+    // `highlights`), não o rolê — quem escreve o convite é o usuário.
+    title: '',
+    description: '',
     // A sugestão não traz mais categoria (era um palpite do tipo do Places). O
     // usuário confirma a categoria de verdade no SpotForm ao publicar.
     categories: [],
@@ -96,26 +100,7 @@ export default function PublishSpotScreen() {
         onSubmit={handleSubmit}
         submitting={create.isPending}
         submitError={submitError}
-        headerSection={
-          <View className="bg-surface border border-line rounded-2xl p-3 flex-row items-center gap-3">
-            <View className="w-12 h-12 rounded-lg bg-brand-surface border border-brand-surface-strong items-center justify-center">
-              <MapPinIcon weight="fill" size={20} color={colors.brandText} />
-            </View>
-            <View className="flex-1">
-              <Text
-                className="text-content text-base font-semibold"
-                numberOfLines={1}
-              >
-                {candidate.name}
-              </Text>
-              {candidate.address && (
-                <Text className="text-content-subtle text-xs" numberOfLines={1}>
-                  {candidate.address}
-                </Text>
-              )}
-            </View>
-          </View>
-        }
+        headerSection={<SpotCandidateCard candidate={candidate} />}
       />
     </View>
   )
